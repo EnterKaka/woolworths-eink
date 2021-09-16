@@ -1,89 +1,84 @@
 <div class="app-content content">
     <div class="content-wrapper">
-      <div class="content-wrapper-before"></div>
+        <div class="content-wrapper-before"></div>
         <div class="content-header row">
-          <div class="content-header-left col-md-4 col-12 mb-2">
-            <h3 class="content-header-title">Charts</h3>
-          </div>
-          <div class="content-header-right col-md-8 col-12">
-            <div class="breadcrumbs-top float-md-right">
-              <div class="breadcrumb-wrapper mr-1">
-                <ol class="breadcrumb">
-                  <li class="breadcrumb-item"><a href="/charts">Home</a>
-                  </li>
-                  <li class="breadcrumb-item active">Charts
-                  </li>
-                </ol>
-              </div>
+            <div class="content-header-left col-md-4 col-12 mb-2">
+                <h3 class="content-header-title">Charts</h3>
             </div>
-          </div>
+            <div class="content-header-right col-md-8 col-12">
+                <div class="breadcrumbs-top float-md-right">
+                    <div class="breadcrumb-wrapper mr-1">
+                        <ol class="breadcrumb">
+                            <li class="breadcrumb-item"><a href="/charts">Home</a></li>
+                            <li class="breadcrumb-item active">Charts</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
         </div>
         <div class="content-body">
             <!-- Bar charts section start -->
             <section id="chartjs-bar-charts">
               <!-- Owl 3d viewer -->
-              <div class="row">
-                  <div class="col-12">
-                      <div class="card">
-                          <div class="card-header">
-                            <h4 class="card-title">Owl 3D Viewer</h4>
-                              <a class="heading-elements-toggle"><i class="la la-ellipsis-v font-medium-3"></i></a>
-                              <div class="heading-elements">
-                                  <ul class="list-inline mb-0">
-                                      <li><a data-action="collapse"><i class="ft-minus"></i></a></li>
-                                      <li><a data-action="reload"><i class="ft-rotate-cw"></i></a></li>
-                                      <li><a data-action="expand"><i class="ft-maximize"></i></a></li>
-                                      <li><a data-action="close"><i class="ft-x"></i></a></li>
-                                  </ul>
-                              </div>
-                          </div>
-                          <div class="card-content collapse show">
-                              <div class="card-body" style="padding: 0.1rem;">
-                                  <div>
-                                    <!--<canvas id="column-chart1"></canvas>-->
-                                      <%- include('../owl3dviewer/owlmain.ejs')%>
-                                  </div>
-                              </div>
-                          </div>
-                      </div>
-                  </div>
-              </div>
+                <div class="row">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-header">
+                                <h4 class="card-title">Owl 3D Viewer</h4>
+                                <a class="heading-elements-toggle"><i class="la la-ellipsis-v font-medium-3"></i></a>
+                                <div class="heading-elements">
+                                    <ul class="list-inline mb-0">
+                                        <li><a data-action="collapse"><i class="ft-minus"></i></a></li>
+                                        <li><a data-action="reload"><i class="ft-rotate-cw"></i></a></li>
+                                        <li><a data-action="expand"><i class="ft-maximize"></i></a></li>
+                                        <li><a data-action="close"><i class="ft-x"></i></a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="card-content collapse show">
+                                <div class="card-body" style="padding: 0.1rem;">
+                                    <div>
+                                    <!--<canvas id="column-chart"></canvas>-->
+                                        <%- include('../owl3dviewer/owlmain.ejs')%>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </section>
 
-<!-- line chart section start -->
-<section id="chartjs-line-charts">
-  <!-- Line Chart -->
-  <div class="row">
-      <div class="col-12">
-          <div class="card">
-              <div class="card-header">
-                  <h4 class="card-title">Simple Line Chart</h4>
-                  <a class="heading-elements-toggle"><i class="la la-ellipsis-v font-medium-3"></i></a>
-                  <div class="heading-elements">
-                      <ul class="list-inline mb-0">
-                          <li><a data-action="collapse"><i class="ft-minus"></i></a></li>
-                          <li><a data-action="reload"><i class="ft-rotate-cw"></i></a></li>
-                          <li><a data-action="expand"><i class="ft-maximize"></i></a></li>
-                          <li><a data-action="close"><i class="ft-x"></i></a></li>
-                      </ul>
-                  </div>
-              </div>
-              <div class="card-content collapse show">
-                  <div class="card-body chartjs">
-                          <div class="height-500">
-                      <canvas id="line-chart"></canvas>
-                      </div>
-                  </div>
-              </div>
-          </div>
-      </div>
-  </div>
-
-</section>
-<!-- // line chart section end -->
-
-
-      </div>
+            <!-- line chart section start -->
+            <section id="chartjs-line-charts">
+              <!-- Line Chart -->
+                <div class="row">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-header">
+                                <h4 class="card-title">Simple Line Chart</h4>
+                                <a class="heading-elements-toggle"><i class="la la-ellipsis-v font-medium-3"></i></a>
+                                <div class="heading-elements">
+                                    <ul class="list-inline mb-0">
+                                        <li><a data-action="collapse"><i class="ft-minus"></i></a></li>
+                                        <li><a data-action="reload"><i class="ft-rotate-cw"></i></a></li>
+                                        <li><a data-action="expand"><i class="ft-maximize"></i></a></li>
+                                        <li><a data-action="close"><i class="ft-x"></i></a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="card-content collapse show">
+                                <div class="card-body chartjs">
+                                    <div class="height-500">
+                                        <canvas id="line-chart"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            <!-- // line chart section end -->
+        </div>
     </div>
 </div>
   <!-- ////////////////////////////////////////////////////////////////////////////-->
