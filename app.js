@@ -1,14 +1,17 @@
 var express = require('express');
 var logger = require('morgan');
+const mongoose = require('mongoose')
+
 var app = express();
-var expressMongoDb = require('express-mongo-db');
+// var expressMongoDb = require('express-mongo-db');
 /**
  * Store database credentials in a separate config.js file
  * Load the file/module and its values
  * For MongoDB, we basically store the connection URL in config file
- */ 
+ */
 var config = require('./config');
-app.use(expressMongoDb(config.database.url));
+console.log(config.database.url);
+// app.use(expressMongoDb(config.database.url));
 
 /**
  * setting up the templating view engine
@@ -91,6 +94,19 @@ app.use('/', index);
 app.use('/users', users);
 app.use('/health', health);
 
-app.listen(3000, function(){
-	console.log('Server running at port 3000: http://127.0.0.1:3000')
-});
+mongoose
+   .connect(config.database.url, { // 'mongodb://127.0.0.1:27017'            process.env.MONGO_URI
+        useNewUrlParser: true,
+        useUnifiedTopology: true,
+    })
+    .then(() => {
+        console.log('connected to db');
+        app.listen(3000, function(){
+        console.log('Server running at port 3000: http://127.0.0.1:3000')
+      });
+    }).catch((err) => {
+         console.log("mongodb connect error ========");
+         console.error(err)
+         process.exit(1)
+    })
+

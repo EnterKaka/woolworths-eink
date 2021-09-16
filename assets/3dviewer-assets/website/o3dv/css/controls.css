@@ -1,0 +1,92 @@
+div.ov_svg_icon
+{
+	color: var(--ov_icon_color);
+	font-size: 18px;
+	width: 18px;
+	height: 18px;
+}
+
+div.ov_svg_icon.left
+{
+	margin-right: 10px;
+	float: left;
+}
+
+div.ov_svg_icon.left_inline
+{
+	margin-right: 10px;
+	margin-top: 2px;
+	float: left;
+}
+
+div.ov_svg_icon.light
+{
+	color: var(--ov_light_icon_color);
+}
+
+div.ov_svg_icon.selected
+{
+	color: var(--ov_primary_color);
+}
+
+div.ov_thin_scrollbar
+{
+	scrollbar-color: var(--ov_border_color) transparent;
+	scrollbar-width: thin;
+}
+
+div.ov_thin_scrollbar::-webkit-scrollbar
+{
+	width: 3px;
+	height: 3px;
+}
+
+div.ov_thin_scrollbar::-webkit-scrollbar-thumb
+{
+	background: #cccccc;
+}
+
+div.ov_button
+{
+	color: var(--ov_secondary_color);
+	background: var(--ov_primary_color);
+	text-align: center;
+	padding: 3px;
+	border: 1px solid var(--ov_primary_color);
+	border-radius: 5px;
+	cursor: pointer;
+}
+
+div.ov_button.outline
+{
+	color: var(--ov_primary_color);
+	background: transparent;
+}
+
+div.ov_tooltip
+{
+	color: var(--ov_foreground_color);
+	background: var(--ov_background_color);
+	border: 1px solid var(--ov_light_border_color);
+	padding: 5px 10px;
+	border-radius: 5px;
+	position: absolute;
+	box-shadow: 0px 0px 3px #cccccc;
+}
+
+@media (hover)
+{
+
+div.ov_button:hover
+{
+	background: var(--ov_primary_hover_color);
+    border: 1px solid var(--ov_primary_hover_color);
+}
+
+div.ov_button.outline:hover
+{
+	background: var(--ov_secondary_hover_color);
+	border: 1px solid var(--ov_primary_color);
+}
+
+}

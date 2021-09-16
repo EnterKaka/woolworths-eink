@@ -3,7 +3,22 @@ var app = express()
 
 app.get('/', function(req, res) {
 	// render to views/index.ejs template file
-	res.render('index', {title: 'My Node.js Application'})
+	res.render('pages/index', {title: 'Owl Studio Web App'})
+})
+
+app.get('/dashboard', function(req, res) {
+	// render to views/index.ejs template file
+	res.render('pages/index', {title: 'DashBoard - Owl Studio Web App'})
+})
+
+app.get('/charts', function(req, res) {
+	// render to views/index.ejs template file
+	res.render('pages/charts', {title: 'Owl Studio Web App'})
+})
+
+app.get('/3dviewer', function(req, res) {
+	// render to views/index.ejs template file
+	res.render('pages/owl3dviewer', {title: 'Owl Studio Web App'})
 })
 
 /** 
