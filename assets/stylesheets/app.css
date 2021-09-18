@@ -1,4 +1,11 @@
-body {
+/* body {
     font: 20px sans-serif;
     background: #d5d5d5;
+}; */
+div.ov_tree_item.clickable{
+    overflow: hidden;
+};
+
+div.ov_navigator_info_panel.ov_thin_scrollbar{
+    overflow: hidden;
 };

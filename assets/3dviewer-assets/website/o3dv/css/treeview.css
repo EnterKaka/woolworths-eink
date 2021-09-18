@@ -5,7 +5,7 @@ div.ov_tree_view
 
 div.ov_tree_view div.ov_tree_item
 {
-	overflow: auto;
+	/* overflow: auto; */
 	border-radius: 5px;
 	padding-right: 5px;
 }

@@ -80,6 +80,8 @@
 <script type="text/javascript" src="/3dviewer-assets/source/viewer/domviewer.js"></script>
 <!-- engine end -->
 
+
+
 <!-- website start -->
 <link rel="stylesheet" type="text/css" href="/3dviewer-assets/website/o3dv/css/icons.css">
 <link rel="stylesheet" type="text/css" href="/3dviewer-assets/website/o3dv/css/core.css">
@@ -111,6 +113,8 @@
 <script type="text/javascript" src="/3dviewer-assets/website/o3dv/js/website.js"></script>
 <script type="text/javascript" src="/3dviewer-assets/website/o3dv/js/embed.js"></script>
 <!-- website end -->
+
+
 
 <!-- externals start -->
 <script type="text/javascript">
@@ -159,6 +163,9 @@
     <link rel="stylesheet" type="text/css" href="/theme-assets/css/pages/dashboard-ecommerce.css">
     <!-- END Page Level CSS-->
     <!-- BEGIN Custom CSS-->
+    <!-- my css start-->
+    <link rel="stylesheet" type="text/css" href="/stylesheets/app.css">
+    <!-- my css end -->
     <!-- END Custom CSS-->
 </head>
 <body class="vertical-layout vertical-menu 2-columns   menu-expanded fixed-navbar" style="max-height: 100vh; overflow: auto" data-open="click" data-menu="vertical-menu" data-color="bg-chartbg" data-col="2-columns">
@@ -234,7 +241,98 @@
   </div>
 
   <!-- dashboard -->
-  <%- include('../sections/chart');  %>
+  <div class="app-content content">
+    <div class="content-wrapper">
+        <div class="content-wrapper-before"></div>
+        <div class="content-header row">
+            <div class="content-header-left col-md-4 col-12 mb-2">
+                <h3 class="content-header-title">Charts</h3>
+            </div>
+            <div class="content-header-right col-md-8 col-12">
+                <div class="breadcrumbs-top float-md-right">
+                    <div class="breadcrumb-wrapper mr-1">
+                        <ol class="breadcrumb">
+                            <li class="breadcrumb-item"><a href="/charts">Home</a></li>
+                            <li class="breadcrumb-item active">Charts</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="content-body">
+            <!-- Bar charts section start -->
+            <section id="chartjs-bar-charts">
+              <!-- Owl 3d viewer -->
+                <div class="row">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-header">
+                                <h4 class="card-title">Owl 3D Viewer</h4>
+                                <a class="heading-elements-toggle"><i class="la la-ellipsis-v font-medium-3"></i></a>
+                                <div class="heading-elements">
+                                    <ul class="list-inline mb-0">
+                                        <li><a data-action="collapse"><i class="ft-minus"></i></a></li>
+                                        <li><a data-action="reload"><i class="ft-rotate-cw"></i></a></li>
+                                        <li><a data-action="expand"><i class="ft-maximize"></i></a></li>
+                                        <li><a data-action="close"><i class="ft-x"></i></a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="card-content collapse show">
+                                <div class="card-body" style="padding: 0.1rem; height: 750px;" id = "main-card-view">
+                                    <div>
+                                    <!--<canvas id="column-chart"></canvas>-->
+                                    <input type="file" id="open_file" style="display:none;" multiple></input>
+                                        <div class="header" id="header">
+                                            <div class="title">
+                                                <div class="title_left">
+                                                    <a href="/charts">
+                                                        <img class="logo_image" src="/3dviewer-assets/website/assets/images/ST_2.png"></img>
+                                                    </a>
+                                                </div>
+                                                <div class="title_right" id="header_buttons">
+                                                </div>
+                                            </div>
+                                            <div class="toolbar" id="toolbar"></div>
+                                        </div>
+                                        <div class="main" id="main">
+                                            <div class="main_navigator only_full_width" id="main_navigator">
+                                            </div>
+                                            <div class="main_viewer" id="main_viewer">
+                                            </div>
+                                            <div class="main_sidebar only_full_width" id="main_sidebar">
+                                            </div>
+                                        </div>
+                                        <div class="intro ov_thin_scrollbar" id="intro">
+                                            <div class="intro_section only_full_width only_full_height"><img src="/3dviewer-assets/website/assets/images/Eule_Grau.png" class="intro_logo"></img></div>
+                                            <div class="intro_section intro_big_text">
+                                                Drag and drop your 3D models here.<br>
+                                                <b>obj, txt</b>
+                                            </div>
+                                            <div class="intro_section">
+                                                Or you can use the browse button above.
+                                            </div>
+                                            <div class="intro_section">
+                                                <div>Example models:</div>
+                                                <div class="example_models">
+                                                    <a href="/charts#model=/3dviewer-assets/website/assets/models/logo.obj,assets/models/logo.mtl">logo</a>
+                                                    <span style="color:#aaaaaa;"> | </span>
+                                                    <a href="/charts#model=/3dviewer-assets/website/assets/models/solids.obj,assets/models/solids.mtl">solids</a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </div>
+</div>
+  <!-- ////////////////////////////////////////////////////////////////////////////-->
+  
 <!-- page content end -->
 
 <!-- page footer -->

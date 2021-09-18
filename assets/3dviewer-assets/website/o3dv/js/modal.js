@@ -158,7 +158,7 @@ OV.ProgressDialog = class extends OV.Dialog
         let contentDiv = this.modal.GetContentDiv ();
         contentDiv.addClass ('ov_progress');
 
-        this.imageDiv = $('<img>').addClass ('ov_progress_img').attr ('src', 'assets/images/3dviewer_net_logo.svg').appendTo (contentDiv);
+        this.imageDiv = $('<img>').addClass ('ov_progress_img').attr ('src', '/img/Eule_Grau.png').appendTo (contentDiv);
         this.textDiv = $('<div>').addClass ('ov_progress_text').appendTo (contentDiv);
         
         this.SetText (text);

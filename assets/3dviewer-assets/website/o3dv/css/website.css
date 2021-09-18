@@ -182,7 +182,7 @@ div.ov_navigator_info_panel div.ov_navigator_info_button
 	margin-top: 10px;
 	border: 1px solid var(--ov_light_border_color);
 	border-radius: 5px;
-	overflow: auto;
+	overflow: hidden;
 }
 
 div.ov_navigator_info_panel div.ov_navigator_info_button_text
