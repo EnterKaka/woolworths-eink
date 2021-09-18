@@ -69,8 +69,9 @@ OV.Website = class
 
     Resize ()
     {
-        let windowWidth = $(window).outerWidth ();
-        let windowHeight = $(window).outerHeight ();
+        let windowWidth = $('.card-body').outerWidth ();
+        let windowHeight = $('.card-body').outerHeight ();
+        let constant_diff = 30;
         let headerHeight = parseInt (this.parameters.headerDiv.outerHeight (true), 10);
 
         let navigatorWidth = 0;
@@ -84,10 +85,10 @@ OV.Website = class
             safetyMargin = 1;
         }
         
-        let contentWidth = windowWidth - navigatorWidth - sidebarWidth - safetyMargin;
-        let contentHeight = windowHeight - headerHeight - safetyMargin;
+        let contentWidth = windowWidth - navigatorWidth - sidebarWidth - safetyMargin - constant_diff;
+        let contentHeight = windowHeight - headerHeight - safetyMargin - constant_diff;
         
-        this.parameters.navigatorDiv.outerHeight (contentHeight, true);
+        this.parameters.navigatorDiv.outerHeight (contentHeight, false);
         this.parameters.sidebarDiv.outerHeight (contentHeight, true);
         this.parameters.introDiv.outerHeight (contentHeight, true);
 
@@ -303,12 +304,12 @@ OV.Website = class
         this.viewer.Init (canvas.get (0));
         this.viewer.SetBackgroundColor (this.settings.backgroundColor);
         this.viewer.SetEnvironmentMap ([
-            'assets/envmaps/fishermans_bastion/posx.jpg',
-            'assets/envmaps/fishermans_bastion/negx.jpg',
-            'assets/envmaps/fishermans_bastion/posy.jpg',
-            'assets/envmaps/fishermans_bastion/negy.jpg',
-            'assets/envmaps/fishermans_bastion/posz.jpg',
-            'assets/envmaps/fishermans_bastion/negz.jpg'
+            '/3dviewer-assets/website/assets/envmaps/fishermans_bastion/posx.jpg',
+            '/3dviewer-assets/website/assets/envmaps/fishermans_bastion/negx.jpg',
+            '/3dviewer-assets/website/assets/envmaps/fishermans_bastion/posy.jpg',
+            '/3dviewer-assets/website/assets/envmaps/fishermans_bastion/negy.jpg',
+            '/3dviewer-assets/website/assets/envmaps/fishermans_bastion/posz.jpg',
+            '/3dviewer-assets/website/assets/envmaps/fishermans_bastion/negz.jpg'
         ]);
         this.ShowViewer (false);
     }
