@@ -1,4 +1,4 @@
-OV.ImporterObj = class extends OV.ImporterBase
+OV.ImporterTxt = class extends OV.ImporterBase
 {
     constructor ()
     {
@@ -7,14 +7,14 @@ OV.ImporterObj = class extends OV.ImporterBase
 
     CanImportExtension (extension)
     {
-        return extension === 'obj';
+        return extension === 'txt';
     }
     
     GetKnownFileFormats ()
     {
         return {
-            'obj' : OV.FileFormat.Text,
-            'mtl' : OV.FileFormat.Text
+            'txt' : OV.FileFormat.Text,
+            'obj' : OV.FileFormat.Text
         };
     }
 
@@ -55,7 +55,6 @@ OV.ImporterObj = class extends OV.ImporterBase
     
     ImportContent (fileContent, onFinish)
     {
-        debugger;
         OV.ReadLines (fileContent, (line) => {
             if (!this.WasError ()) {
                 this.ProcessLine (line);
@@ -66,7 +65,6 @@ OV.ImporterObj = class extends OV.ImporterBase
     
     ProcessLine (line)
     {
-        debugger;
         if (line[0] === '#') {
             return;
         }
@@ -76,16 +74,16 @@ OV.ImporterObj = class extends OV.ImporterBase
             return;
         }
         
-        let keyword = parameters[0].toLowerCase ();
-        parameters.shift ();
+        // let keyword = parameters[0].toLowerCase ();
+        // parameters.shift ();
 
-        if (this.ProcessMeshParameter (keyword, parameters, line)) {
+        if (this.ProcessMeshParameter (parameters, line)) {
             return;
         }
 
-        if (this.ProcessMaterialParameter (keyword, parameters, line)) {
-            return;
-        }
+        // if (this.ProcessMaterialParameter (keyword, parameters, line)) {
+        //     return;
+        // }
     }
     
     AddNewMesh (name)
@@ -111,53 +109,17 @@ OV.ImporterObj = class extends OV.ImporterBase
         this.currentMeshData = meshData.data;
     }
 
-    ProcessMeshParameter (keyword, parameters, line)
+    ProcessMeshParameter (parameters, line)
     {
-        if (keyword === 'g' || keyword === 'o') {
-            if (parameters.length === 0) {
-                return true;
+        if (parameters.length < 3) {
+                return false;
             }
-            let name = OV.NameFromLine (line, keyword.length, '#');
-            this.AddNewMesh (name);
-            return true;
-        } else if (keyword === 'v') {
-            if (parameters.length < 3) {
-                return true;
-            }
-            this.globalVertices.push (new OV.Coord3D (
-                parseFloat (parameters[0]),
-                parseFloat (parameters[1]),
-                parseFloat (parameters[2])
-            ));
-            return true;
-        } else if (keyword === 'vn') {
-            if (parameters.length < 3) {
-                return true;
-            }
-            this.globalNormals.push (new OV.Coord3D (
-                parseFloat (parameters[0]),
-                parseFloat (parameters[1]),
-                parseFloat (parameters[2])
-            ));
-            return true;
-        } else if (keyword === 'vt') {
-            if (parameters.length < 2) {
-                return true;
-            }
-            this.globalUvs.push (new OV.Coord2D (
-                parseFloat (parameters[0]),
-                parseFloat (parameters[1])
-            ));
-            return true;
-        } else if (keyword === 'f') {
-            if (parameters.length < 3) {
-                return true;
-            }
-            this.ProcessFace (parameters);
-            return true;
-        }
-
-        return false;
+        this.globalVertices.push (new OV.Coord3D (
+            parseFloat (parameters[0]),
+            parseFloat (parameters[1]),
+            parseFloat (parameters[2])
+        ));
+        return true;
     }
 
     ProcessMaterialParameter (keyword, parameters, line)

@@ -261,6 +261,7 @@ OV.Website = class
 
     LoadModelFromFileList (files)
     {
+        debugger;
         let importSettings = new OV.ImportSettings ();
         importSettings.defaultColor = this.settings.defaultColor;
         this.modelLoader.LoadFromFileList (files, importSettings);
