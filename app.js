@@ -28,7 +28,7 @@ app.use(session({
   secret: env.get('myprivatekey'),
   resave: true,
   saveUninitialized: true,
-  cookie: { maxAge: 6000000000000000000000,
+  cookie: { maxAge: 1000*60*60*24,
     secure: false // change to true when site is live with https
   }
 }))
