@@ -2,6 +2,7 @@ OV.InitModelLoader = function (modelLoader, callbacks)
 {
     function OpenErrorDialog (importError)
     {
+        // debugger;
         if (importError.code === OV.ImportErrorCode.NoImportableFile) {
             return OV.ShowMessageDialog (
                 'Something went wrong',
@@ -55,6 +56,7 @@ OV.InitModelLoader = function (modelLoader, callbacks)
             callbacks.onRender ();
         },
         onLoadError : (importError) => {
+            debugger;
             progressDialog.Hide ();
             callbacks.onError (importError);
             errorDialog = OpenErrorDialog (importError);

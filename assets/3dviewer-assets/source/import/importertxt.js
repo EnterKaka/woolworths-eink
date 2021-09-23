@@ -57,6 +57,7 @@ OV.ImporterTxt = class extends OV.ImporterBase
     {
         OV.ReadLines (fileContent, (line) => {
             if (!this.WasError ()) {
+                // debugger;
                 this.ProcessLine (line);
             }
         });
@@ -74,16 +75,17 @@ OV.ImporterTxt = class extends OV.ImporterBase
             return;
         }
         
-        // let keyword = parameters[0].toLowerCase ();
-        // parameters.shift ();
+        let keyword = parameters[0].toLowerCase ();
+        parameters.shift ();
 
-        if (this.ProcessMeshParameter (parameters, line)) {
+        if (this.ProcessMeshParameter (keyword, parameters, line)) {
+        // if (this.ProcessMeshParameter ('v', parameters, line)) {
             return;
         }
-
-        // if (this.ProcessMaterialParameter (keyword, parameters, line)) {
-        //     return;
-        // }
+        // debugger;
+        if (this.ProcessMaterialParameter (keyword, parameters, line)) {
+            return;
+        }
     }
     
     AddNewMesh (name)
@@ -94,6 +96,7 @@ OV.ImporterTxt = class extends OV.ImporterBase
             if (name !== null) {
                 mesh.SetName (name);
             }
+            // debugger;
             this.model.AddMesh (mesh);
             meshData = {
                 mesh : mesh,
@@ -109,17 +112,53 @@ OV.ImporterTxt = class extends OV.ImporterBase
         this.currentMeshData = meshData.data;
     }
 
-    ProcessMeshParameter (parameters, line)
+    ProcessMeshParameter (keyword,parameters, line)
     {
-        if (parameters.length < 3) {
-                return false;
+        if (keyword === 'g' || keyword === 'o') {
+            if (parameters.length === 0) {
+                return true;
             }
-        this.globalVertices.push (new OV.Coord3D (
-            parseFloat (parameters[0]),
-            parseFloat (parameters[1]),
-            parseFloat (parameters[2])
-        ));
-        return true;
+            let name = OV.NameFromLine (line, keyword.length, '#');
+            this.AddNewMesh (name);
+            return true;
+        } else if (keyword === 'v') {
+            if (parameters.length < 3) {
+                return true;
+            }
+            this.globalVertices.push (new OV.Coord3D (
+                parseFloat (parameters[0]),
+                parseFloat (parameters[1]),
+                parseFloat (parameters[2])
+            ));
+            // debugger;
+            // this.currentMesh.AddVertex (new OV.Coord3D (parameters[0],parameters[1],parameters[2]));
+            return true;
+        } else if (keyword === 'vn') {
+            if (parameters.length < 3) {
+                return true;
+            }
+            this.globalNormals.push (new OV.Coord3D (
+                parseFloat (parameters[0]),
+                parseFloat (parameters[1]),
+                parseFloat (parameters[2])
+            ));
+            return true;
+        } else if (keyword === 'vt') {
+            if (parameters.length < 2) {
+                return true;
+            }
+            this.globalUvs.push (new OV.Coord2D (
+                parseFloat (parameters[0]),
+                parseFloat (parameters[1])
+            ));
+            return true;
+        } else if (keyword === 'f') {
+            if (parameters.length < 3) {
+                return true;
+            }
+            this.ProcessFace (parameters);
+            return true;
+        }
     }
 
     ProcessMaterialParameter (keyword, parameters, line)
@@ -153,6 +192,7 @@ OV.ImporterTxt = class extends OV.ImporterBase
             
             let material = new OV.Material (OV.MaterialType.Phong);
             let materialName = OV.NameFromLine (line, keyword.length, '#');
+            // debugger;
             let materialIndex = this.model.AddMaterial (material);
             material.name = materialName;
             this.currentMaterial = material;

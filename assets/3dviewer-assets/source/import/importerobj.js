@@ -55,7 +55,6 @@ OV.ImporterObj = class extends OV.ImporterBase
     
     ImportContent (fileContent, onFinish)
     {
-        debugger;
         OV.ReadLines (fileContent, (line) => {
             if (!this.WasError ()) {
                 this.ProcessLine (line);
@@ -66,7 +65,6 @@ OV.ImporterObj = class extends OV.ImporterBase
     
     ProcessLine (line)
     {
-        debugger;
         if (line[0] === '#') {
             return;
         }

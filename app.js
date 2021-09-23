@@ -1,8 +1,13 @@
 var express = require('express');
 var logger = require('morgan');
+var session = require('express-session');
+const cookieParser = require("cookie-parser");
 const mongoose = require('mongoose')
-
+const env = require('config');
 var app = express();
+var flash = require('express-flash');
+var session = require('express-session');
+
 // var expressMongoDb = require('express-mongo-db');
 /**
  * Store database credentials in a separate config.js file
@@ -18,6 +23,15 @@ console.log(config.database.url);
  */ 
 app.set('view engine', 'ejs');
 app.use(express.static(__dirname + '/assets'));
+app.use(cookieParser(env.get('myprivatekey')));
+app.use(session({
+  secret: env.get('myprivatekey'),
+  resave: true,
+  saveUninitialized: true,
+  cookie: { maxAge: 6000000000000000000000,
+    secure: false // change to true when site is live with https
+  }
+}))
 
 /**
  * import routes/index.js
@@ -77,22 +91,16 @@ app.use(methodOverride(function (req, res) {
  * So, we also have to install and use 
  * cookie-parser & session modules
  */ 
-var flash = require('express-flash');
-var cookieParser = require('cookie-parser');
-var session = require('express-session');
 
-app.use(cookieParser('keyboard cat'));
-app.use(session({ 
-	secret: 'keyboard cat',
-	resave: false,
-	saveUninitialized: true,
-	cookie: { maxAge: 60000 }
-}));
 app.use(flash());
 
 app.use('/', index);
 app.use('/users', users);
 app.use('/health', health);
+app.use(function(req, res, next) {
+  console.log('middleware');
+  next();
+})
 
 mongoose
    .connect(config.database.url, { // 'mongodb://127.0.0.1:27017'            process.env.MONGO_URI

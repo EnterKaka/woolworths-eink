@@ -345,6 +345,7 @@ OV.Importer = class
                 let result = new OV.ImportResult ();
                 result.mainFile = mainFile.file.name;
                 result.model = this.model;
+                // console.log(result.model);
                 result.usedFiles = this.usedFiles;
                 result.missingFiles = this.missingFiles;
                 result.upVector = importer.GetUpDirection ();

@@ -16,17 +16,23 @@
   "author": "Jainish Shah",
   "license": "NONE",
   "dependencies": {
+    "bcryptjs": "^2.4.3",
     "body-parser": "^1.18.3",
-    "cookie-parser": "^1.4.3",
+    "config": "^3.3.6",
+    "cookie-parser": "^1.4.5",
     "ejs": "^3.1.6",
     "express": "^4.17.1",
     "express-flash": "0.0.2",
+    "express-joi-validation": "^5.0.0",
     "express-mongo-db": "^1.0.0",
-    "express-session": "^1.15.6",
+    "express-session": "^1.17.2",
     "express-validator": "^3.2.0",
+    "joi": "^17.4.2",
+    "jsonwebtoken": "^8.5.1",
     "method-override": "^2.3.10",
     "mongodb": "^3.6.2",
-    "mongoose": "^6.0.5",
-    "morgan": "^1.10.0"
+    "mongoose": "^6.0.7",
+    "morgan": "^1.10.0",
+    "passport": "^0.4.1"
   }
 }
