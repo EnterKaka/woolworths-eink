@@ -154,15 +154,15 @@
                                 <% } %>	      
                             </div>
                             <div class="table-responsive">
-                                <form action="/members/edit/<%= username %>" method="put">
+                                <form action="/members/edit/<%= username %>" method=post">
                                     <table class="table">
                                       <tr> 
                                         <td>FullName</td>
-                                        <td><input type="text" class="form-control" name="name" placeholder="Enter FullName" value="<%= username %>"/></td>
+                                        <td><input type="text" class="form-control" name="name" placeholder="Enter FullName" value="<%= name %>"/></td>
                                       </tr>
                                       <tr> 
                                           <td>Name</td>
-                                          <td><input type="text" class="form-control" name="username" placeholder="Enter UserName" value="<%= name %>"/></td>
+                                          <td><input type="text" class="form-control" name="username" placeholder="Enter UserName" value="<%= username %>"/></td>
                                       </tr>
                                       <tr> 
                                           <td>Email</td>
@@ -177,7 +177,7 @@
                                         <td><input type="text" class="form-control" name="privilege" placeholder="Enter Privilege" value="<%= privilege %>"/></td>
                                       </tr>
                                     </table>
-                                    <input type="submit" class="btn btn-success btn-min-width mr-1 mb-1" name="submit" style="float: right;"/>
+                                    <input type="submit" class="btn btn-success btn-min-width mr-1 mb-1" style="float: right;"/>
                                     <!-- <input type="hidden" name="_method" value="PUT" /> -->
                                 </form>
                             </div>

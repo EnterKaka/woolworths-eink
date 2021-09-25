@@ -24,9 +24,11 @@ app.get('/add', function(req, res, next){
 	// render to views/pages/members/add.ejs
 	res.render('pages/members/add', {
 		title: 'Add New User',
+		name:'',
 		username: '',
 		email: '',
-		password: ''		
+		password: '',
+		privilege:'Guest'		
 	})
 });
 
@@ -50,10 +52,13 @@ app.post('/add',async function(req, res, next){
 	//find an existing user
 	let user = await Member.findOne({ email: req.body.email });
 	let user1 = await Member.findOne({ username: req.body.username });
-	if (user || user1) return res.status(400).send("User already registered.");
+	if (user || user1)
+	{
+		return res.status(400).send("User already registered.");
+	} 
 	
 	let memberone = new Member({
-	  fullName: req.body.name,
+	  name: req.body.name,
 	  username: req.body.username,
 	  password: req.body.password,
 	  email: req.body.email,
@@ -155,7 +160,7 @@ app.get('/edit/(:usernames)', async function(req, res, next){
 })
 
 // EDIT USER POST ACTION
-app.put('/edit/(:usernames)', async function(req, res, next) {
+app.post('/edit/(:usernames)', async function(req, res, next) {
 	const filter = { username: req.params.usernames };
 	const update = { name: req.body.name,
 		username: req.body.username,

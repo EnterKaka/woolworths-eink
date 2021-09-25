@@ -15,7 +15,7 @@ if(process.env.DATABASE_URL){
 }else if(process.env.DATABASE_NAME && process.env.DATABASE_USER && process.env.DATABASE_PASSWORD && process.env.DATABASE_HOST && process.env.DATABASE_PORT){
 	dbUrl='mongodb://'+ process.env.DATABASE_USER + ':' + process.env.DATABASE_PASSWORD + '@' + process.env.DATABASE_HOST + ':' + process.env.DATABASE_PORT + '/' + process.env.DATABASE_NAME;
 }else {
-    dbUrl='mongodb://localhost:27017/test';
+    dbUrl='mongodb://localhost:27017/OwlEyeStudioWebInterface';
 }
 
 var config = {

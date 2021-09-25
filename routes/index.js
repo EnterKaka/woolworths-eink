@@ -43,8 +43,8 @@ app.get('/logout', function(req, res){
 
 app.post('/login', async function(req, res) {
 	const querySchema = Joi.object({
-		username: Joi.string().required(),
-		password: Joi.string().required()
+		email: Joi.string().required(),
+		pass: Joi.string().required()
 	})
 	// const validator = createValidator();
 	// console.log('validation', validator.query(querySchema));
