@@ -38,8 +38,9 @@ app.use(session({
  * import routes/users.js
  */ 
 var index = require('./routes/index');
-var users = require('./routes/users');
-var health = require('./routes/health');
+// var users = require('./routes/users');
+var members = require('./routes/members');
+// var health = require('./routes/health');
 /**
  * Express Validator Middleware for Form Validation
  */ 
@@ -95,12 +96,9 @@ app.use(methodOverride(function (req, res) {
 app.use(flash());
 
 app.use('/', index);
-app.use('/users', users);
-app.use('/health', health);
-app.use(function(req, res, next) {
-  console.log('middleware');
-  next();
-})
+// app.use('/users', users);
+// app.use('/health', health);
+app.use('/members', members);
 
 mongoose
    .connect(config.database.url, { // 'mongodb://127.0.0.1:27017'            process.env.MONGO_URI

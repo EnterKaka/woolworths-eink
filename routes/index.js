@@ -12,7 +12,8 @@ const config = require("config");
 
 app.get('/', function(req, res) {
 	// render to views/index.ejs template file
-	res.render('welcome', {title: 'Owl Studio Web App'})
+	// res.render('welcome', {title: 'Owl Studio Web App'})
+	res.redirect('/dashboard')
 })
 
 app.get('/dashboard', auth, function(req, res) {
@@ -25,10 +26,10 @@ app.get('/charts', auth, function(req, res) {
 	res.render('pages/charts', {title: 'Owl Studio Web App'})
 })
 
-app.get('/members', auth, function(req, res) {
-	// render to views/index.ejs template file
-	res.render('pages/members', {title: 'Owl Studio Web App'})
-})
+// app.get('/members', auth, function(req, res) {
+// 	// render to views/index.ejs template file
+// 	res.render('pages/members', {title: 'Owl Studio Web App'})
+// })
 
 app.get('/login', function(req, res) {
 	// render to views/index.ejs template file
