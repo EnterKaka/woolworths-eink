@@ -1,225 +1,129 @@
-var express = require('express')
-var app = express()
-var ObjectId = require('mongodb').ObjectId
+var express = require('express');
+var passport = require('passport');
+var app = express();
+var router = express.Router();
+const auth = require("../middleware/auth");
+const User = require('../model/User');
+const Joi = require('joi');
+const { createValidator } = require('express-joi-validation');
+const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
+const config = require("config");
 
 // SHOW LIST OF USERS
-app.get('/', function(req, res, next) {	
+app.get('/', auth, async function(req, res, next) {	
 	// fetch and sort users collection by id in descending order
-	req.db.collection('users').find().sort({"_id": -1}).toArray(function(err, result) {
-		//if (err) return console.log(err)
-		if (err) {
-			req.flash('error', err)
-			res.render('user/list', {
-				title: 'User List', 
-				data: ''
-			})
-		} else {
-			// render to views/user/list.ejs template file
-			res.render('user/list', {
-				title: 'User List', 
-				data: result
-			})
-		}
+    
+	let allmembers = await User.find();
+	res.render('pages/user/list', {
+		data : allmembers,	
 	})
-})
+});
 
 // SHOW ADD USER FORM
-app.get('/add', function(req, res, next){	
-	// render to views/user/add.ejs
-	res.render('user/add', {
-		title: 'Add New User',
-		name: '',
-		age: '',
-		email: ''		
+app.get('/add', auth ,function(req, res, next){	
+	// render to views/pages/members/add.ejs
+	res.render('pages/user/add', {
+		title: 'Add New User - Owl Studio',
+		name:'',
+		email: '',
+		password: '',
+		privilege:'Guest'		
 	})
-})
+});
 
 // ADD NEW USER POST ACTION
-app.post('/add', function(req, res, next){	
-	req.assert('name', 'Name is required').notEmpty()           //Validate name
-	req.assert('age', 'Age is required').notEmpty()             //Validate age
-    req.assert('email', 'A valid email is required').isEmail()  //Validate email
-
-    var errors = req.validationErrors()
-    
-    if( !errors ) {   //No errors were found.  Passed Validation!
-		
-		/********************************************
-		 * Express-validator module
-		 
-		req.body.comment = 'a <span>comment</span>';
-		req.body.username = '   a user    ';
-
-		req.sanitize('comment').escape(); // returns 'a &lt;span&gt;comment&lt;/span&gt;'
-		req.sanitize('username').trim(); // returns 'a user'
-		********************************************/
-		var user = {
-			name: req.sanitize('name').escape().trim(),
-			age: req.sanitize('age').escape().trim(),
-			email: req.sanitize('email').escape().trim()
-		}
-				 
-		req.db.collection('users').insert(user, function(err, result) {
-			if (err) {
-				req.flash('error', err)
-				
-				// render to views/user/add.ejs
-				res.render('user/add', {
-					title: 'Add New User',
-					name: user.name,
-					age: user.age,
-					email: user.email					
-				})
-			} else {				
-				req.flash('success', 'Data added successfully!')
-				
-				// redirect to user list page				
-				res.redirect('/users')
-				
-				// render to views/user/add.ejs
-				/*res.render('user/add', {
-					title: 'Add New User',
-					name: '',
-					age: '',
-					email: ''					
-				})*/
-			}
-		})		
+app.post('/add', auth ,async function(req, res, next){	
+	const querySchema = Joi.object({
+		name: Joi.string().required(),
+		email: Joi.string().email(),
+		pass: Joi.string().required(),
+		privilege: Joi.string().required()
+	})
+	// const validator = createValidator();
+	// console.log('validation', validator.query(querySchema));
+	const { error } = querySchema.validate(req.body);
+	// console.log(error);
+	// if (error) return res.redirect('/members');
+	if(error) {
+		req.flash('error', error);
+		res.render('/user/add');
 	}
-	else {   //Display errors to user
-		var error_msg = ''
-		errors.forEach(function(error) {
-			error_msg += error.msg + '<br>'
-		})				
-		req.flash('error', error_msg)		
-		
-		/**
-		 * Using req.body.name 
-		 * because req.param('name') is deprecated
-		 */ 
-        res.render('user/add', { 
-            title: 'Add New User',
-            name: req.body.name,
-            age: req.body.age,
-            email: req.body.email
-        })
-    }
+	
+	//find an existing user
+	let mail = await User.findOne({ email: req.body.email });
+	if (mail)
+	{
+		return res.status(400).send("User already registered.");
+	} 
+	
+	let v_user = new User({
+	  name: req.body.name,
+	  pass: req.body.pass,
+	  email: req.body.email,
+	  privilege: req.body.privilege,
+	});
+	v_user.pass = await bcrypt.hash(v_user.pass, 10);
+	await v_user.save();
+  
+	// const token = user.generateAuthToken();
+	res.redirect('/user');
 })
 
+
 // SHOW EDIT USER FORM
-app.get('/edit/(:id)', function(req, res, next){
-	var o_id = new ObjectId(req.params.id)
-	req.db.collection('users').find({"_id": o_id}).toArray(function(err, result) {
-		if(err) return console.log(err)
-		
-		// if user not found
-		if (!result) {
-			req.flash('error', 'User not found with id = ' + req.params.id)
-			res.redirect('/users')
-		}
-		else { // if user found
-			// render to views/user/edit.ejs template file
-			res.render('user/edit', {
-				title: 'Edit User', 
-				//data: rows[0],
-				id: result[0]._id,
-				name: result[0].name,
-				age: result[0].age,
-				email: result[0].email					
-			})
-		}
-	})	
+app.get('/edit/(:usernames)', auth, async function(req, res, next){
+	// var o_username = new ObjectId(req.params.usernames)
+	console.log(req.params.usernames);
+	let mem = await Member.findOne({ username: req.params.usernames});
+	console.log(mem);
+
+	res.render('pages/user/edit',{
+		name: mem.name,
+		email: mem.email,
+		password: mem.password,
+		privilege: mem.privilege,
+	})
+	
 })
 
 // EDIT USER POST ACTION
-app.put('/edit/(:id)', function(req, res, next) {
-	req.assert('name', 'Name is required').notEmpty()           //Validate name
-	req.assert('age', 'Age is required').notEmpty()             //Validate age
-    req.assert('email', 'A valid email is required').isEmail()  //Validate email
+app.post('/edit/(:usernames)', auth, async function(req, res, next) {
+	const filter = { username: req.params.usernames };
+	const update = { name: req.body.name,
+		password: req.body.password,
+		email: req.body.email,
+		privilege: req.body.privilege,
+	};
 
-    var errors = req.validationErrors()
-    
-    if( !errors ) {   //No errors were found.  Passed Validation!
-		
-		/********************************************
-		 * Express-validator module
-		 
-		req.body.comment = 'a <span>comment</span>';
-		req.body.username = '   a user    ';
-
-		req.sanitize('comment').escape(); // returns 'a &lt;span&gt;comment&lt;/span&gt;'
-		req.sanitize('username').trim(); // returns 'a user'
-		********************************************/
-		var user = {
-			name: req.sanitize('name').escape().trim(),
-			age: req.sanitize('age').escape().trim(),
-			email: req.sanitize('email').escape().trim()
-		}
-		
-		var o_id = new ObjectId(req.params.id)
-		req.db.collection('users').update({"_id": o_id}, user, function(err, result) {
-			if (err) {
-				req.flash('error', err)
-				
-				// render to views/user/edit.ejs
-				res.render('user/edit', {
-					title: 'Edit User',
-					id: req.params.id,
-					name: req.body.name,
-					age: req.body.age,
-					email: req.body.email
-				})
-			} else {
-				req.flash('success', 'Data updated successfully!')
-				
-				res.redirect('/users')
-				
-				// render to views/user/edit.ejs
-				/*res.render('user/edit', {
-					title: 'Edit User',
-					id: req.params.id,
-					name: req.body.name,
-					age: req.body.age,
-					email: req.body.email
-				})*/
-			}
-		})		
-	}
-	else {   //Display errors to user
-		var error_msg = ''
-		errors.forEach(function(error) {
-			error_msg += error.msg + '<br>'
-		})
-		req.flash('error', error_msg)
-		
-		/**
-		 * Using req.body.name 
-		 * because req.param('name') is deprecated
-		 */ 
-        res.render('user/edit', { 
-            title: 'Edit User',            
-			id: req.params.id, 
-			name: req.body.name,
-			age: req.body.age,
-			email: req.body.email
-        })
-    }
+	let mem = await Member.findOneAndUpdate(filter, update);
+	res.redirect('/user');
 })
 
 // DELETE USER
-app.delete('/delete/(:id)', function(req, res, next) {	
-	var o_id = new ObjectId(req.params.id)
-	req.db.collection('users').remove({"_id": o_id}, function(err, result) {
+app.delete('/delete/(:usernames)', auth, function(req, res, next) {	
+	var o_id = new ObjectId(req.params.usernames )
+	req.db.collection('members').remove({"usernames": o_id}, function(err, result) {
 		if (err) {
 			req.flash('error', err)
 			// redirect to users list page
-			res.redirect('/users')
+			res.redirect('/user')
 		} else {
-			req.flash('success', 'User deleted successfully! id = ' + req.params.id)
+			req.flash('success', 'User deleted successfully! name = ' + req.params.usernames)
 			// redirect to users list page
-			res.redirect('/users')
+			res.redirect('/user')
 		}
 	})	
 })
 
-module.exports = app
+
+
+/** 
+ * We assign app object to module.exports
+ * 
+ * module.exports exposes the app object as a module
+ * 
+ * module.exports should be used to return the object 
+ * when this file is required in another module like app.js
+ */ 
+module.exports = app;
