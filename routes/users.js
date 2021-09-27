@@ -119,12 +119,12 @@ app.get('/delete/(:email)', auth, admin, function(req, res, next) {
 		if (err){
 			req.flash('error', err)
 			// redirect to users list page
-			res.redirect('/user')
+			res.header(400).json({status: 'fail'});
 		}
 		else{
 			req.flash('success', 'User deleted successfully! email = ' + email_addr)
 			// redirect to users list page
-			res.redirect('/user')
+			res.header(200).json({status: 'success'});
 		}
 	});
 })

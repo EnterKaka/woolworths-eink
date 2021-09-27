@@ -114,23 +114,12 @@
                                             <td>
                                               <div style="float:left">
                                                 <a href='/user/edit/<%= member.email %>' class="btn btn-primary btn-min-width mr-1 mb-1">Edit</a> &nbsp;			
-                                                <a href="/user/delete/<%= member.email %>" class="btn btn-danger btn-min-width mr-1 mb-1">Delete</a>
+                                                <a href="javascript: onclick_delete('<%= member.email %>')" class="btn btn-danger btn-min-width mr-1 mb-1">Delete</a>
                                               </div>
                                             </td>
                                           </tr>
                                         <% }) %>
                                       <% } %>
-                                      <!-- <td>Alex</td>
-                                      <td>alb</td>
-                                      <td>mihov@gmail.com</td>
-                                      <td>dsa9ejfd89</td>
-                                      <td>Admin</td>
-                                      <td>
-                                        <div style="float:left">
-                                          <a href='/members/edit/alb' class="btn btn-primary btn-min-width mr-1 mb-1">Edit</a> &nbsp;			
-                                          <a href="/members/delete/alb" class="btn btn-danger btn-min-width mr-1 mb-1">Del</a>
-                                        </div>
-                                      </td> -->
                                     </tbody>
                                 </table>
                             </div>
@@ -146,5 +135,40 @@
     <!-- ////////////////////////////////////////////////////////////////////////////-->
 
     <%- include('../../partials/footer'); %>
+    <script>
+      function onclick_delete(url_del){
+        const swalWithBootstrapButtons = Swal.mixin({
+          customClass: {
+            confirmButton: 'btn btn-success',
+            cancelButton: 'btn btn-danger'
+          },
+          buttonsStyling: false
+        })
+
+        swalWithBootstrapButtons.fire({
+          title: 'Are you sure?',
+          text: "You won't be able to revert this!",
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonText: 'Yes, delete it!',
+          cancelButtonText: 'No, cancel!',
+          reverseButtons: true
+        }).then((result) => {
+          if (result.isConfirmed) {
+            url = '/user/delete/' + url_del;
+            $.get(url, function( data ) {
+              if(data.status === 'success') {
+                swalWithBootstrapButtons.fire(
+                  'Deleted!',
+                  'Your file has been deleted.',
+                  'success'
+                );
+                location.reload();
+              }
+            });
+          }
+        })
+      }
+    </script>
   </body>
 </html>
