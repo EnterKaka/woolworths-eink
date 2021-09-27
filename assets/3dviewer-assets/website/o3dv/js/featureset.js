@@ -1,4 +1,0 @@
-OV.FeatureSet =
-{
-    
-};
