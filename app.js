@@ -6,17 +6,13 @@ const mongoose = require('mongoose')
 const env = require('config');
 var app = express();
 var flash = require('express-flash');
-var session = require('express-session');
-
-// var expressMongoDb = require('express-mongo-db');
+var config = require('./config');
 /**
  * Store database credentials in a separate config.js file
  * Load the file/module and its values
  * For MongoDB, we basically store the connection URL in config file
  */
-var config = require('./config');
-console.log(config.database.url);
-// app.use(expressMongoDb(config.database.url));
+// console.log(config.database.url);
 
 /**
  * setting up the templating view engine

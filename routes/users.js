@@ -1,15 +1,10 @@
 var express = require('express');
-var passport = require('passport');
 var app = express();
-var router = express.Router();
 const auth = require("../middleware/auth");
 const admin = require('../middleware/admin');
 const User = require('../model/User');
 const Joi = require('joi');
-const { createValidator } = require('express-joi-validation');
 const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken');
-const config = require("config");
 
 // SHOW LIST OF USERS
 app.get('/', auth, admin, async function(req, res, next) {	

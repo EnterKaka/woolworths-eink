@@ -1,19 +1,22 @@
 {
-  "name": "express-mongo-crud",
+  "name": "express-threejs-ejs",
   "version": "1.0.0",
-  "description": "Expressjs CRUD application using MongoDB",
+  "description": "Expressjs Three.js application using Mongoose, ejs template",
   "main": "app.js",
   "scripts": {
     "start": "nodemon app.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [
+    "three.js",
+    "express",
+    "ejs",
     "crud",
     "node",
     "mongodb",
-    "express"
+    "mongoose"
   ],
-  "author": "Jainish Shah",
+  "author": "Yatsuka Albert",
   "license": "NONE",
   "dependencies": {
     "bcryptjs": "^2.4.3",
@@ -23,8 +26,6 @@
     "ejs": "^3.1.6",
     "express": "^4.17.1",
     "express-flash": "0.0.2",
-    "express-joi-validation": "^5.0.0",
-    "express-mongo-db": "^1.0.0",
     "express-session": "^1.17.2",
     "express-validator": "^3.2.0",
     "joi": "^17.4.2",
@@ -33,8 +34,6 @@
     "method-override": "^2.3.10",
     "mongodb": "^3.6.2",
     "mongoose": "^6.0.7",
-    "morgan": "^1.10.0",
-    "passport": "^0.4.1",
-    "sweetalert2": "^11.1.7"
+    "morgan": "^1.10.0"
   }
 }

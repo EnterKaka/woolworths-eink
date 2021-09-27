@@ -1,11 +1,8 @@
 var express = require('express');
-var passport = require('passport');
 var app = express();
-var router = express.Router();
 const auth = require("../middleware/auth");
 const User = require('../model/User');
 const Joi = require('joi');
-const { createValidator } = require('express-joi-validation');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const config = require("config");
