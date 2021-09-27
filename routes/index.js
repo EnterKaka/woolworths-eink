@@ -17,7 +17,10 @@ app.get('/', function(req, res) {
 
 app.get('/viewer', auth, function(req, res) {
 	// render to views/index.ejs template file
-	res.render('pages/viewer', {title: '3D Viewer - Owl Studio Web App'})
+	res.render('pages/viewer', {
+		title: '3D Viewer - Owl Studio Web App',
+		priv: req.user.privilege,
+	})
 })
 
 app.get('/login', function(req, res) {
@@ -36,7 +39,6 @@ app.post('/login', async function(req, res) {
 		pass: Joi.string().required()
 	})
 	const { error } = querySchema.validate(req.body);
-	console.log('error', error);
 	if(error) {
 		return res.redirect('/login');
 	}

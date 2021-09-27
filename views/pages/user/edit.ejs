@@ -63,7 +63,7 @@
                                 <% } %>	      
                             </div>
                             <div class="table-responsive">
-                                <form action="/members/edit/<%= name %>" method=post">
+                                <form action="/user/edit/<%= email %>" method='post'>
                                     <table class="table">
                                       <tr> 
                                           <td>Name</td>
@@ -71,11 +71,11 @@
                                       </tr>
                                       <tr> 
                                           <td>Email</td>
-                                          <td><input type="email" class="form-control" name="email" placeholder="Enter Email Address" value="<%= email %>"/></td>
+                                          <td><input type="email" class="form-control" name="email" placeholder="Enter Email Address" value="<%= email %>" readonly="readonly"/></td>
                                       </tr>
                                       <tr> 
                                           <td>Password</td>
-                                          <td><input type="password" class="form-control" name="pass" placeholder="Enter Password" value="<%= pass %>"/></td>
+                                          <td><input type="password" class="form-control" name="pass" placeholder="Enter Password" value=""/></td>
                                       </tr>
                                       <tr> 
                                         <td>Privilege</td>

@@ -3,6 +3,7 @@ var passport = require('passport');
 var app = express();
 var router = express.Router();
 const auth = require("../middleware/auth");
+const admin = require('../middleware/admin');
 const User = require('../model/User');
 const Joi = require('joi');
 const { createValidator } = require('express-joi-validation');
@@ -11,7 +12,7 @@ const jwt = require('jsonwebtoken');
 const config = require("config");
 
 // SHOW LIST OF USERS
-app.get('/', auth, async function(req, res, next) {	
+app.get('/', auth, admin, async function(req, res, next) {	
 	// fetch and sort users collection by id in descending order
     
 	let allmembers = await User.find();
@@ -21,99 +22,109 @@ app.get('/', auth, async function(req, res, next) {
 });
 
 // SHOW ADD USER FORM
-app.get('/add', auth ,function(req, res, next){	
+app.get('/add', auth, admin, function(req, res, next){	
 	// render to views/pages/members/add.ejs
 	res.render('pages/user/add', {
 		title: 'Add New User - Owl Studio',
 		name:'',
 		email: '',
-		password: '',
+		pass: '',
 		privilege:'Guest'		
 	})
 });
 
 // ADD NEW USER POST ACTION
-app.post('/add', auth ,async function(req, res, next){	
+app.post('/add', auth, admin, async function(req, res, next){	
 	const querySchema = Joi.object({
 		name: Joi.string().required(),
 		email: Joi.string().email(),
 		pass: Joi.string().required(),
 		privilege: Joi.string().required()
 	})
-	// const validator = createValidator();
-	// console.log('validation', validator.query(querySchema));
 	const { error } = querySchema.validate(req.body);
-	// console.log(error);
-	// if (error) return res.redirect('/members');
 	if(error) {
 		req.flash('error', error);
-		res.render('/user/add');
+		res.render('pages/user/add');
+	}else{
+		//find an existing user
+		let mail = await User.findOne({ email: req.body.email });
+		if (mail)
+		{
+			req.flash('error', 'Email is already existed in database');
+			res.render('pages/user/add');
+			return;
+		} 
+		
+		let v_user = new User({
+			name: req.body.name,
+			pass: req.body.pass,
+			email: req.body.email,
+			privilege: req.body.privilege,
+		});
+		v_user.pass = await bcrypt.hash(v_user.pass, 10);
+		await v_user.save();
+		res.redirect('/user');
+	
+		// const token = user.generateAuthToken();
 	}
-	
-	//find an existing user
-	let mail = await User.findOne({ email: req.body.email });
-	if (mail)
-	{
-		return res.status(400).send("User already registered.");
-	} 
-	
-	let v_user = new User({
-	  name: req.body.name,
-	  pass: req.body.pass,
-	  email: req.body.email,
-	  privilege: req.body.privilege,
-	});
-	v_user.pass = await bcrypt.hash(v_user.pass, 10);
-	await v_user.save();
-  
-	// const token = user.generateAuthToken();
-	res.redirect('/user');
 })
 
 
 // SHOW EDIT USER FORM
-app.get('/edit/(:usernames)', auth, async function(req, res, next){
-	// var o_username = new ObjectId(req.params.usernames)
-	console.log(req.params.usernames);
-	let mem = await Member.findOne({ username: req.params.usernames});
-	console.log(mem);
-
-	res.render('pages/user/edit',{
-		name: mem.name,
-		email: mem.email,
-		password: mem.password,
-		privilege: mem.privilege,
-	})
-	
+app.get('/edit/(:email)', auth, admin, async function(req, res, next){
+	let mem = await User.findOne({ email: req.params.email});
+	if(mem){
+		res.render('pages/user/edit',{
+			name: mem.name,
+			email: mem.email,
+			pass: mem.pass,
+			privilege: mem.privilege,
+		})
+	}else{
+		res.redirect('/user');
+	}
 })
 
 // EDIT USER POST ACTION
-app.post('/edit/(:usernames)', auth, async function(req, res, next) {
-	const filter = { username: req.params.usernames };
-	const update = { name: req.body.name,
-		password: req.body.password,
-		email: req.body.email,
-		privilege: req.body.privilege,
-	};
-
-	let mem = await Member.findOneAndUpdate(filter, update);
-	res.redirect('/user');
+app.post('/edit/(:email)', auth, admin, async function(req, res, next) {
+	const querySchema = Joi.object({
+		name: Joi.string().required(),
+		email: Joi.string().email(),
+		pass: Joi.string().required(),
+		privilege: Joi.string().required()
+	})
+	const { error } = querySchema.validate(req.body);
+	if(error) {
+		req.flash('error', error);
+		res.redirect('/user/edit/<%- res.params.email %>');
+	}else{
+		let v_user = {
+			name: req.body.name,
+			pass: req.body.pass,
+			email: req.body.email,
+			privilege: req.body.privilege,
+		};
+		v_user.pass = await bcrypt.hash(v_user.pass, 10);
+		let mem = await User.findOneAndUpdate({email: req.params.email}, v_user);
+		return res.redirect('/user')
+	}
 })
 
 // DELETE USER
-app.delete('/delete/(:usernames)', auth, function(req, res, next) {	
-	var o_id = new ObjectId(req.params.usernames )
-	req.db.collection('members').remove({"usernames": o_id}, function(err, result) {
-		if (err) {
+app.get('/delete/(:email)', auth, admin, function(req, res, next) {	
+	var email_addr = req.params.email;
+	User.findOneAndDelete({email: email_addr }, function (err, docs) {
+		if (err){
 			req.flash('error', err)
 			// redirect to users list page
 			res.redirect('/user')
-		} else {
-			req.flash('success', 'User deleted successfully! name = ' + req.params.usernames)
+		}
+		else{
+			req.flash('success', 'User deleted successfully! email = ' + email_addr)
 			// redirect to users list page
 			res.redirect('/user')
 		}
-	})	
+	});
 })
 
 
