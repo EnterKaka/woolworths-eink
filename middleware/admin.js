@@ -9,7 +9,4 @@ module.exports = function(req, res, next) {
     }else{
       res.redirect('/');
     }
-  //get the token from the header if present
-  //if no token found, return response (without going to the next middelware)
-    //if can verify the token, set req.user and pass to next middleware
 };
