@@ -63,6 +63,7 @@ app.post('/add', auth, admin, async function(req, res, next){
 		});
 		v_user.pass = await bcrypt.hash(v_user.pass, 10);
 		await v_user.save();
+		req.flash('success', 'New User is added successfully!');
 		res.redirect('/user');
 	
 		// const token = user.generateAuthToken();
@@ -106,6 +107,7 @@ app.post('/edit/(:email)', auth, admin, async function(req, res, next) {
 		};
 		v_user.pass = await bcrypt.hash(v_user.pass, 10);
 		let mem = await User.findOneAndUpdate({email: req.params.email}, v_user);
+		req.flash('success', 'The User Information has updated successfully');
 		return res.redirect('/user')
 	}
 })

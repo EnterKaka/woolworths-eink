@@ -55,12 +55,30 @@
                                    <br>You can Create, Read, Update, Delete all records of this Table. 
                                 </p>
                                 <% if (messages.error) { %>
-                                  <p style="color:red"><%- messages.error %></p>
+                                  <!-- <p style="color:red"><%- messages.error %></p> -->
+                                  <script>
+                                    $.toast({
+                                    heading: 'Error',
+                                    text: '<%- messages.error %>',
+                                    showHideTransition: 'fade',
+                                    icon: 'error',
+                                    hideAfter: 1500   // in milli seconds
+                                  })
+                                  </script>
                                 <% } %>
                                 
                                 <% if (messages.success) { %>
-                                  <p style="color:green"><%- messages.success %></p>
-                                <% } %>	      
+                                  <!-- <p style="color:green"><%- messages.success %></p> -->
+                                  <script>
+                                    $.toast({
+                                        heading: 'Success',
+                                        text: '<%- messages.success %>',
+                                        showHideTransition: 'slide',
+                                        icon: 'success',
+                                        hideAfter: 1500   // in milli seconds
+                                    })
+                                  </script>
+                                <% } %>	        
                             </div>
                             <div class="table-responsive">
                                 <form action="/user/edit/<%= email %>" method='post'>
