@@ -12,7 +12,6 @@ var config = require('./config');
  * Load the file/module and its values
  * For MongoDB, we basically store the connection URL in config file
  */
-// console.log(config.database.url);
 
 /**
  * setting up the templating view engine
