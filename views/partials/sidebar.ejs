@@ -1,0 +1,34 @@
+<!-- Left Bar -->
+<div class="main-menu menu-fixed menu-light menu-accordion    menu-shadow " data-scroll-to-active="true" data-img="/img/sidebar.jpg">
+    <div class="navbar-header" id="navbar_head_logo">
+      <ul class="nav navbar-nav flex-row">       
+        <li class="nav-item mr-auto"><a class="navbar-brand" href="/"><img class="brand-logo" alt="Chameleon admin logo" src="/img/logo_owl.png"/>
+            <h3 class="brand-text"> &nbsp;SACHTLEBEN <br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;TECHNOLOGY</h3></a></li>
+        <li class="nav-item d-md-none"><a class="nav-link close-navbar"><i class="ft-x"></i></a></li>
+      </ul>
+    </div>
+    <div class="main-menu-content">
+      <ul class="navigation navigation-main" id="main-menu-navigation" data-menu="menu-navigation">
+        <% if( typeof priv !== 'undefined'){ %>
+          <% if(priv.toLowerCase() == 'admin') { %>
+            <li class="nav-item /viewer"><a href="/viewer"><i class="ft-pie-chart"></i><span class="menu-title" data-i18n="">Owl 3D Viewer</span></a>
+            </li>
+          <% } %>
+        <% }else{ %>
+        <li class="nav-item /viewer"><a href="/viewer"><i class="ft-pie-chart"></i><span class="menu-title" data-i18n="">Owl 3D Viewer</span></a>
+        </li>
+        <% } %>
+        <li class="nav-item /user"><a href="/user"><i class="ft-credit-card"></i><span class="menu-title" data-i18n="">Members</span></a>
+        </li>
+      </ul>
+    </div>
+    <div class="navigation-background"></div>
+  </div>
+
+  <!-- <script>
+      $(function(){
+          var pathname = location.pathname;
+          $('.nav-item').removeClass('active');
+          $(`.${pathname}`).addClass('active');
+      })
+  </script> -->
