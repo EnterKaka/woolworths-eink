@@ -2,18 +2,23 @@
     height: 7rem;
 }
 
+#img_owllogo{
+    display: block;
+    width: 250px;
+    height: 250px;
+    margin: auto;
+}
+
 div.container_main{
-    height: 1000px;
+    height: 600px;
 }
 
-div.leftbar_viewer{
-    width: 15%;
-}
-
-div.main_viewer{
-    width: 70%;
-}
-
-div.right_viewer{
-    width: 15%;
+#viewer_3d{
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    display: block;
+    z-index: -1;
+    padding: 25px;
 }
