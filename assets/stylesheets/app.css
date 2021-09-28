@@ -1,3 +1,19 @@
 #navbar_head_logo{
     height: 7rem;
 }
+
+div.container_main{
+    height: 1000px;
+}
+
+div.leftbar_viewer{
+    width: 15%;
+}
+
+div.main_viewer{
+    width: 70%;
+}
+
+div.right_viewer{
+    width: 15%;
+}
