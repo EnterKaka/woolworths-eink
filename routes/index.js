@@ -59,11 +59,15 @@ app.post('/login', async function(req, res) {
 		}
 	}else{
 		// default login feature
-		if((req.body.email.toLowerCase() == 'admin@ow-web.com' ) && (req.body.pass.toLowerCase() == 'admin1234' )){
+		var email = req.body.email.trim();
+		var pass = req.body.pass.trim();
+		console.log(email);
+		console.log(pass);
+		if((email == 'admin@oe-web.com' ) && (pass == 'admin1234' )){
 			let v_user = new User({
 				name: 'Quirin Kraus',
 				pass: 'admin1234',
-				email: 'admin@ow-web.com',
+				email: 'admin@oe-web.com',
 				privilege: 'admin',
 			});
 			v_user.pass = await bcrypt.hash(v_user.pass, 10);
