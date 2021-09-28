@@ -89,7 +89,7 @@
                                       </tr>
                                       <tr> 
                                           <td>Email</td>
-                                          <td><input type="email" class="form-control" name="email" placeholder="Enter Email Address" value="<%= email %>" readonly="readonly"/></td>
+                                          <td><input type="email" class="form-control" name="email" placeholder="Enter Email Address" value="<%= email %>"/></td>
                                       </tr>
                                       <tr> 
                                           <td>Password</td>
@@ -97,7 +97,14 @@
                                       </tr>
                                       <tr> 
                                         <td>Privilege</td>
-                                        <td><input type="text" class="form-control" name="privilege" placeholder="Enter Privilege" value="<%= privilege %>"/></td>
+                                        <td>
+                                          <fieldset class="form-group">
+                                            <select class="form-control" name='privilege'>
+                                              <option>admin</option>
+                                              <option>user</option>
+                                            </select>
+                                          </fieldset>
+                                        </td>
                                       </tr>
                                     </table>
                                     <input type="submit" class="btn btn-success btn-min-width mr-1 mb-1" style="float: right;"/>
