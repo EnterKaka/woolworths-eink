@@ -10,7 +10,7 @@
 }
 
 div.container_main{
-    height: 600px;
+    min-height: 600px;
 }
 
 #viewer_3d{
