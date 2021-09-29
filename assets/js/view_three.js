@@ -45,15 +45,15 @@ function main() {
     var fov = 30;
     var aspect = canvas.clientWidth/canvas.clientHeight;  // the canvas default
     var near = 0.01;
-    var far = 500;
+    var far = 1000;
     camera = new THREE.PerspectiveCamera(fov, aspect, near, far);
-    camera.position.set( 0, 0, 1 );
+    camera.position.set( 20, 20, 0 );
     scene.add(camera);
 
     controls = new OrbitControls(camera, renderer.domElement);
 		controls.addEventListener( 'change', render ); // call this only in static scenes (i.e., if there is no animation loop)
-		controls.minDistance = 0.5;
-		controls.maxDistance = 10;
+		controls.minDistance = 0.1;
+		controls.maxDistance = 100;
 
     // load a resource
     // var loader = new PCDLoader();
@@ -69,7 +69,7 @@ function main() {
 
      var loader = new XYZLoader();
      var points1;
-     loader.load( './3dmodels/model1.xyz', function ( geometry ) {
+     loader.load( './3dmodels/Weissspat_1632872292.txt', function ( geometry ) {
 
       geometry.center();
 
