@@ -4,13 +4,13 @@ import { PCDLoader } from './PCDLoader.js';
 import { XYZLoader } from './XYZLoader.js';
 
 //open file dialog
-function open_model(){
+function btn_open_model(){
     $("#input_model").trigger("click");
 }
 
-$('#input_model').change(modelFileFromPC);
+$('#input_model').change(openModel_Fromlocal);
 
-function modelFileFromPC(e) {
+function openModel_Fromlocal(e) {
     var files = e.target.files;
     if (files.length < 1) {
         alert('select a file...');
@@ -18,21 +18,63 @@ function modelFileFromPC(e) {
     }
     var file = files[0];
     var reader = new FileReader();
-    reader.onload = onFileLoaded;
-    reader.readAsDataURL(file);
+    var model_text;
+    reader.addEventListener("load", () => {
+      // this will then display a text file
+      model_text = reader.result;
+      // console.log(model_text);
+      // parse( model_text );
+
+      var lines = model_text.split( '\n' );
+
+      var vertices = [];
+      var colors = [];
+      var points2;
+      for ( let line of lines ) {
+        line = line.trim();
+        if ( line.charAt( 0 ) === '#' ) continue; // skip comments
+        var lineValues = line.split( /\s+/ );
+        if ( lineValues.length === 3 ) {
+        // XYZ
+        vertices.push( parseFloat( lineValues[ 0 ] ) );
+        vertices.push( parseFloat( lineValues[ 1 ] ) );
+        vertices.push( parseFloat( lineValues[ 2 ] ) );
+        }
+        if ( lineValues.length === 6 ) {
+          // XYZRGB
+          vertices.push( parseFloat( lineValues[ 0 ] ) );
+          vertices.push( parseFloat( lineValues[ 1 ] ) );
+          vertices.push( parseFloat( lineValues[ 2 ] ) );
+
+          colors.push( parseFloat( lineValues[ 3 ] ) / 255 );
+          colors.push( parseFloat( lineValues[ 4 ] ) / 255 );
+          colors.push( parseFloat( lineValues[ 5 ] ) / 255 );
+        }
+      }
+      var geometry1 = new THREE.BufferGeometry();
+      geometry1.setAttribute( 'position', new THREE.Float32BufferAttribute( vertices, 3 ) );
+
+      if ( colors.length > 0 ) {
+        geometry1.setAttribute( 'color', new THREE.Float32BufferAttribute( colors, 3 ) );
+      }
+
+      geometry1.center();
+
+      var vertexColors = ( geometry1.hasAttribute( 'color' ) === true );
+
+      var material = new THREE.PointsMaterial( { size: 0.1, vertexColors: vertexColors } );
+
+      points2 = new THREE.Points( geometry1, material );
+      scene.add( points2 );
+      render();
+    }, false);
+  
+    if (file) {
+      reader.readAsText(file);
+    }
 }
 
-function onFileLoaded (e) {
-    var match = /^data:(.*);base64,(.*)$/.exec(e.target.result);
-    if (match == null) {
-        throw 'Could not parse result'; // should not happen
-    }
-    var mimeType = match[1];
-    var content = match[2];
-    alert(mimeType);
-    alert(content);
-}
-var controls, camera, renderer, scene, canvas;
+var controls, camera, renderer, scene, canvas, parent_canvas;
 //three.js point cloud viewer
 function main() {
     canvas = document.querySelector('#viewer_3d');
@@ -73,32 +115,39 @@ function main() {
 
       geometry.center();
 
-      const vertexColors = ( geometry.hasAttribute( 'color' ) === true );
+      var vertexColors = ( geometry.hasAttribute( 'color' ) === true );
 
-      const material = new THREE.PointsMaterial( { size: 0.1, vertexColors: vertexColors } );
+      var material = new THREE.PointsMaterial( { size: 0.1, vertexColors: vertexColors } );
 
       points1 = new THREE.Points( geometry, material );
-      scene.add( points1 );
+      // scene.add( points1 );
       render();
 
     } );
+    parent_canvas = document.getElementById('main_canvas');
+    $('#btn-openfromLocal').click(function(){
+      btn_open_model();
+    })
 
+    // resize canvas when Toggle fullscreen
+    $('a[data-action="expand"]').on('click',async function(e) {
+      await new Promise(r => setTimeout(r, 10));
+      onWindowResize();
+    });
     window.addEventListener('resize', onWindowResize);
   }
 
-  // function animate() {
-  //   requestAnimationFrame(animate);
-  //   controls.update();
-  //   render();
-  // }
-  
   function onWindowResize(){
-    camera.aspect = canvas.clientWidth/canvas.clientHeight;
+    camera.aspect = parent_canvas.clientWidth/parent_canvas.clientHeight;
     camera.updateProjectionMatrix();
-    renderer.setSize(canvas.clientWidth,canvas.clientHeight);
+    renderer.setSize(parent_canvas.clientWidth,parent_canvas.clientHeight);
   }
 
   function render(){
     renderer.render( scene, camera);
+  }
+
+  function openModelFromMongoDB() {
+    
   }
   main();

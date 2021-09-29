@@ -7,7 +7,7 @@
     <div class="row toolbar">
         &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
         <input name="mymodel" type="file" style="display: none;" accept=".obj, .txt" id="input_model">
-        <button type='button' class="btn btn-icon btn-success mr-1" title='Open model from local pc' onclick="open_model()">
+        <button type='button' class="btn btn-icon btn-success mr-1" title='Open model from local pc' id='btn-openfromLocal'>
             <i class="la la-hdd-o"></i>
         </button>
         <button type='button' class="btn btn-icon btn-info mr-1" title='Open model from mongodb database'>
@@ -24,7 +24,6 @@
         <div class="col-sm-12 col-md-8 col-lg-8 col-xl-8 col-xxl-10" id="main_canvas">
             <!-- <img src='/img/Eule_Grau.png' alt='OWL LOGO' id="img_owllogo">             -->
             <canvas id='viewer_3d'></canvas>
-            <p id='box'></p>
         </div>
         <!-- Right Bar -->
         <div class="col-sm-0 col-md-2 col-lg-2 col-xl-2 col-xxl-1">
