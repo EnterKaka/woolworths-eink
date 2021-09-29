@@ -1,5 +1,7 @@
 import * as THREE from './three.module.js';
 import { OrbitControls } from './OrbitControls.js';
+import { PCDLoader } from './PCDLoader.js';
+
 //open file dialog
 function open_model(){
     $("#input_model").trigger("click");
@@ -29,83 +31,57 @@ function onFileLoaded (e) {
     alert(mimeType);
     alert(content);
 }
-var controls, camera, renderer, scene;
+var controls, camera, renderer, scene, canvas;
 //three.js point cloud viewer
 function main() {
-    const canvas = document.querySelector('#viewer_3d');
-    renderer = new THREE.WebGLRenderer({canvas});
-  
-    const fov = 75;
-    const aspect = 2;  // the canvas default
-    const near = 0.1;
-    const far = 1000;
-    camera = new THREE.PerspectiveCamera(fov, aspect, near, far);
-    camera.position.z = 2;
-    camera.position.set( 400, 200, 0 );
-
-    controls = new OrbitControls(camera, renderer.domElement);
-		controls.listenToKeyEvents( window ); // optional
-
-				//controls.addEventListener( 'change', render ); // call this only in static scenes (i.e., if there is no animation loop)
-
-		controls.enableDamping = true; // an animation loop is required when either damping or auto-rotation are enabled
-		controls.dampingFactor = 0.05;
-
-		controls.screenSpacePanning = false;
-
-		controls.minDistance = 100;
-		controls.maxDistance = 500;
-
-		controls.maxPolarAngle = Math.PI / 2;
-
+    canvas = document.querySelector('#viewer_3d');
+    renderer = new THREE.WebGLRenderer({canvas, antialias: true});
+    renderer.setPixelRatio(window.devicePixelRatio);
+    renderer.setSize(canvas.clientWidth, canvas.clientHeight);
 
     scene = new THREE.Scene();
 
-    var vertices = [];
+    var fov = 30;
+    var aspect = canvas.clientWidth/canvas.clientHeight;  // the canvas default
+    var near = 0.01;
+    var far = 40;
+    camera = new THREE.PerspectiveCamera(fov, aspect, near, far);
+    camera.position.set( 0, 0, 1 );
+    scene.add(camera);
+
+    controls = new OrbitControls(camera, renderer.domElement);
+		controls.addEventListener( 'change', render ); // call this only in static scenes (i.e., if there is no animation loop)
+		controls.minDistance = 0.5;
+		controls.maxDistance = 10;
 
     // load a resource
+    var loader = new PCDLoader();
+    loader.load( '../3dmodels/Zaghetto.pcd', function ( points ) {
+
+      points.geometry.center();
+      points.geometry.rotateX( Math.PI );
+      scene.add( points );
+
+      render();
+
+    } );
     
-    // const loader = new PCDLoader();
-    // loader.load(
-    //   // resource URL
-    //   'pointcloud.pcd',
-    //   // called when the resource is loaded
-    //   function ( mesh ) {
-    //     scene.add( mesh );
-    //   },
-    //   // called when loading is in progresses
-    //   function ( xhr ) {
-    //     console.log( ( xhr.loaded / xhr.total * 100 ) + '% loaded' );
-    //   },
-    //   // called when loading has errors
-    //   function ( error ) {
-    //     console.log( 'An error happened' );
-    //   }
-    // );
-    for ( let i = 0; i < 10000; i ++ ) {
-      var x = THREE.MathUtils.randFloatSpread( 2000 );
-      var y = THREE.MathUtils.randFloatSpread( 2000 );
-      var z = THREE.MathUtils.randFloatSpread( 2000 );
-      vertices.push( x, y, z );
-    }
-    
-    var geometry = new THREE.BufferGeometry();
-    geometry.setAttribute( 'position', new THREE.Float32BufferAttribute( vertices, 3 ) );
-    
-    var material = new THREE.PointsMaterial( { color: 0x00ff00 } );
-    
-    var points = new THREE.Points( geometry, material );
-    
-    scene.add( points );
-    
-    animate();
-    
+    window.addEventListener('resize', onWindowResize);
   }
 
   function animate() {
     requestAnimationFrame(animate);
     controls.update();
-    renderer.render( scene, camera );
+    render();
   }
   
+  function onWindowResize(){
+    camera.aspect = canvas.clientWidth/canvas.clientHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(canvas.clientWidth,canvas.clientHeight);
+  }
+
+  function render(){
+    renderer.render( scene, camera);
+  }
   main();
