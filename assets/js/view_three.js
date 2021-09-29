@@ -63,7 +63,11 @@ function openModel_Fromlocal(e) {
       var vertexColors = ( geometry1.hasAttribute( 'color' ) === true );
 
       var material = new THREE.PointsMaterial( { size: 0.1, vertexColors: vertexColors } );
-
+      
+      while(scene.children.length > 0){ 
+        scene.remove(scene.children[0]); 
+      }
+      
       points2 = new THREE.Points( geometry1, material );
       scene.add( points2 );
       render();
@@ -120,7 +124,7 @@ function main() {
       var material = new THREE.PointsMaterial( { size: 0.1, vertexColors: vertexColors } );
 
       points1 = new THREE.Points( geometry, material );
-      // scene.add( points1 );
+      scene.add( points1 );
       render();
 
     } );
