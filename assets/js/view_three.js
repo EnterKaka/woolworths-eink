@@ -22,55 +22,7 @@ function openModel_Fromlocal(e) {
     reader.addEventListener("load", () => {
       // this will then display a text file
       model_text = reader.result;
-      // console.log(model_text);
-      // parse( model_text );
-
-      var lines = model_text.split( '\n' );
-
-      var vertices = [];
-      var colors = [];
-      var points2;
-      for ( let line of lines ) {
-        line = line.trim();
-        if ( line.charAt( 0 ) === '#' ) continue; // skip comments
-        var lineValues = line.split( /\s+/ );
-        if ( lineValues.length === 3 ) {
-        // XYZ
-        vertices.push( parseFloat( lineValues[ 0 ] ) );
-        vertices.push( parseFloat( lineValues[ 1 ] ) );
-        vertices.push( parseFloat( lineValues[ 2 ] ) );
-        }
-        if ( lineValues.length === 6 ) {
-          // XYZRGB
-          vertices.push( parseFloat( lineValues[ 0 ] ) );
-          vertices.push( parseFloat( lineValues[ 1 ] ) );
-          vertices.push( parseFloat( lineValues[ 2 ] ) );
-
-          colors.push( parseFloat( lineValues[ 3 ] ) / 255 );
-          colors.push( parseFloat( lineValues[ 4 ] ) / 255 );
-          colors.push( parseFloat( lineValues[ 5 ] ) / 255 );
-        }
-      }
-      var geometry1 = new THREE.BufferGeometry();
-      geometry1.setAttribute( 'position', new THREE.Float32BufferAttribute( vertices, 3 ) );
-
-      if ( colors.length > 0 ) {
-        geometry1.setAttribute( 'color', new THREE.Float32BufferAttribute( colors, 3 ) );
-      }
-
-      geometry1.center();
-
-      var vertexColors = ( geometry1.hasAttribute( 'color' ) === true );
-
-      var material = new THREE.PointsMaterial( { size: 0.1, vertexColors: vertexColors } );
-      
-      while(scene.children.length > 0){ 
-        scene.remove(scene.children[0]); 
-      }
-      
-      points2 = new THREE.Points( geometry1, material );
-      scene.add( points2 );
-      render();
+      reloadModelFromData(model_text);
     }, false);
   
     if (file) {
@@ -139,6 +91,68 @@ function main() {
       onWindowResize();
     });
     window.addEventListener('resize', onWindowResize);
+    
+
+
+
+
+    //drag and drop
+    // While dragging the p element, change the color of the output text
+    document.addEventListener("drag", function(event) {
+      document.getElementById("viewer_3d").style.color = "red";
+    });
+
+    // Output some text when finished dragging the p element and reset the opacity
+    document.addEventListener("dragend", function(event) {
+      document.getElementById("viewer_3d").innerHTML = "Finished dragging the p element.";
+      event.target.style.opacity = "1";
+    });
+
+    /* Events fired on the drop target */
+
+    // When the draggable p element enters the droptarget, change the DIVS's border style
+    document.addEventListener("dragenter", function(event) {
+      if ( event.target.className == "3dviewer" ) {
+        event.target.style.border = "3px dotted red";
+      }
+    });
+
+    // By default, data/elements cannot be dropped in other elements. To allow a drop, we must prevent the default handling of the element
+    document.addEventListener("dragover", function(event) {
+      event.preventDefault();
+    });
+
+    // When the draggable p element leaves the droptarget, reset the DIVS's border style
+    document.addEventListener("dragleave", function(event) {
+      if ( event.target.className == "3dviewer" ) {
+        event.target.style.border = "";
+      }
+    });
+
+    /* On drop - Prevent the browser default handling of the data (default is open as link on drop)
+      Reset the color of the output text and DIV's border color
+      Get the dragged data with the dataTransfer.getData() method
+      The dragged data is the id of the dragged element ("drag1")
+      Append the dragged element into the drop element
+    */
+    document.addEventListener("drop", function(event) {
+      event.preventDefault();
+      if ( event.target.className == "3dviewer" ) {
+        document.getElementById("viewer_3d").style.color = "";
+        event.target.style.border = "";
+        var file = event.dataTransfer.files[0];
+        var reader = new FileReader();
+        reader.onload = function(ev) {
+            var model_text = ev.target.result;
+            reloadModelFromData(model_text);
+          };
+
+        reader.readAsText(file);
+      }
+});
+
+
+    // $('#viewer_3d').ondrop = ondrop_modelload;
   }
 
   function onWindowResize(){
@@ -153,5 +167,54 @@ function main() {
 
   function openModelFromMongoDB() {
     
+  }
+
+  function reloadModelFromData(params) {
+    var lines = params.split( '\n' );
+
+    var vertices = [];
+    var colors = [];
+    var points2;
+    for ( let line of lines ) {
+      line = line.trim();
+      if ( line.charAt( 0 ) === '#' ) continue; // skip comments
+      var lineValues = line.split( /\s+/ );
+      if ( lineValues.length === 3 ) {
+      // XYZ
+      vertices.push( parseFloat( lineValues[ 0 ] ) );
+      vertices.push( parseFloat( lineValues[ 1 ] ) );
+      vertices.push( parseFloat( lineValues[ 2 ] ) );
+      }
+      if ( lineValues.length === 6 ) {
+        // XYZRGB
+        vertices.push( parseFloat( lineValues[ 0 ] ) );
+        vertices.push( parseFloat( lineValues[ 1 ] ) );
+        vertices.push( parseFloat( lineValues[ 2 ] ) );
+
+        colors.push( parseFloat( lineValues[ 3 ] ) / 255 );
+        colors.push( parseFloat( lineValues[ 4 ] ) / 255 );
+        colors.push( parseFloat( lineValues[ 5 ] ) / 255 );
+      }
+    }
+    var geometry1 = new THREE.BufferGeometry();
+    geometry1.setAttribute( 'position', new THREE.Float32BufferAttribute( vertices, 3 ) );
+
+    if ( colors.length > 0 ) {
+      geometry1.setAttribute( 'color', new THREE.Float32BufferAttribute( colors, 3 ) );
+    }
+
+    geometry1.center();
+
+    var vertexColors = ( geometry1.hasAttribute( 'color' ) === true );
+
+    var material = new THREE.PointsMaterial( { size: 0.1, vertexColors: vertexColors } );
+    
+    while(scene.children.length > 0){ 
+      scene.remove(scene.children[0]); 
+    }
+    
+    points2 = new THREE.Points( geometry1, material );
+    scene.add( points2 );
+    render();
   }
   main();
