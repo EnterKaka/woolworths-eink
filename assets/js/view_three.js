@@ -1,6 +1,7 @@
 import * as THREE from './three.module.js';
 import { OrbitControls } from './OrbitControls.js';
 import { PCDLoader } from './PCDLoader.js';
+import { XYZLoader } from './XYZLoader.js';
 
 //open file dialog
 function open_model(){
@@ -44,7 +45,7 @@ function main() {
     var fov = 30;
     var aspect = canvas.clientWidth/canvas.clientHeight;  // the canvas default
     var near = 0.01;
-    var far = 40;
+    var far = 500;
     camera = new THREE.PerspectiveCamera(fov, aspect, near, far);
     camera.position.set( 0, 0, 1 );
     scene.add(camera);
@@ -55,25 +56,41 @@ function main() {
 		controls.maxDistance = 10;
 
     // load a resource
-    var loader = new PCDLoader();
-    loader.load( '../3dmodels/Zaghetto.pcd', function ( points ) {
+    // var loader = new PCDLoader();
+    // loader.load( '../3dmodels/Zaghetto.pcd', function ( points ) {
 
-      points.geometry.center();
-      points.geometry.rotateX( Math.PI );
-      scene.add( points );
+    //   points.geometry.center();
+    //   points.geometry.rotateX( Math.PI );
+    //   scene.add( points );
 
+    //   // render();
+
+    // } );
+
+     var loader = new XYZLoader();
+     var points1;
+     loader.load( './3dmodels/model1.xyz', function ( geometry ) {
+
+      geometry.center();
+
+      const vertexColors = ( geometry.hasAttribute( 'color' ) === true );
+
+      const material = new THREE.PointsMaterial( { size: 0.1, vertexColors: vertexColors } );
+
+      points1 = new THREE.Points( geometry, material );
+      scene.add( points1 );
       render();
 
     } );
-    
+
     window.addEventListener('resize', onWindowResize);
   }
 
-  function animate() {
-    requestAnimationFrame(animate);
-    controls.update();
-    render();
-  }
+  // function animate() {
+  //   requestAnimationFrame(animate);
+  //   controls.update();
+  //   render();
+  // }
   
   function onWindowResize(){
     camera.aspect = canvas.clientWidth/canvas.clientHeight;
