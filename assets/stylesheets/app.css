@@ -1,18 +1,22 @@
+/*Sidebar Logo height fix*/
 #navbar_head_logo{
     height: 7rem;
 }
 
+/* 
 #img_owllogo{
     display: block;
     width: 250px;
     height: 250px;
     margin: auto;
-}
+} */
 
+/*3d viewer min height*/
 div.container_main{
     min-height: 600px;
 }
 
+/*Canvas necessary setting*/
 #viewer_3d{
     left: 0;
     top: 0;

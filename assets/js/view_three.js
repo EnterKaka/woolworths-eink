@@ -40,12 +40,13 @@ function main() {
 
     scene = new THREE.Scene();
 
-    var fov = 30;
+    var fov = 60;
     var aspect = canvas.clientWidth/canvas.clientHeight;  // the canvas default
     var near = 0.01;
     var far = 1000;
     camera = new THREE.PerspectiveCamera(fov, aspect, near, far);
-    camera.position.set( 20, 20, 0 );
+    camera.position.set( 0, -20, 6 );
+    camera.lookAt(0,0,0);
     scene.add(camera);
 
     controls = new OrbitControls(camera, renderer.domElement);
@@ -149,10 +150,7 @@ function main() {
 
         reader.readAsText(file);
       }
-});
-
-
-    // $('#viewer_3d').ondrop = ondrop_modelload;
+    });
   }
 
   function onWindowResize(){
@@ -217,4 +215,6 @@ function main() {
     scene.add( points2 );
     render();
   }
+
+  //main load
   main();
