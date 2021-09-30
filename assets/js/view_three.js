@@ -65,22 +65,32 @@ function main() {
     //   // render();
 
     // } );
+    var points1, pointcloud;
+    
+    var loader = new XYZLoader();
+    var tempvaluetag = document.getElementById('pointcloud');
+    if(tempvaluetag){
+      pointcloud = tempvaluetag.value;
+      pointcloud = JSON.parse(pointcloud);
+      // console.log(pointcloud);
+      reloadModelFromJSONData('AeraOfInterest',pointcloud);
 
-     var loader = new XYZLoader();
-     var points1;
-     loader.load( './3dmodels/Weissspat_1632872292.txt', function ( geometry ) {
-      $('#modelpath').html('Weissspat_1632872292.txt');
-      geometry.center();
+    }else{
+      loader.load( './3dmodels/Weissspat_1632872292.txt', function ( geometry ) {
+        $('#modelpath').html('Weissspat_1632872292.txt');
+        geometry.center();
 
-      var vertexColors = ( geometry.hasAttribute( 'color' ) === true );
+        var vertexColors = ( geometry.hasAttribute( 'color' ) === true );
 
-      var material = new THREE.PointsMaterial( { size: 0.1, vertexColors: vertexColors } );
+        var material = new THREE.PointsMaterial( { size: 0.1, vertexColors: vertexColors } );
 
-      points1 = new THREE.Points( geometry, material );
-      scene.add( points1 );
-      render();
+        points1 = new THREE.Points( geometry, material );
+        scene.add( points1 );
+        render();
 
-    } );
+      } );
+    }
+    
     parent_canvas = document.getElementById('main_canvas');
     $('#btn-openfromLocal').click(function(){
       btn_open_model();
@@ -191,6 +201,40 @@ function main() {
         colors.push( parseFloat( lineValues[ 5 ] ) / 255 );
       }
     }
+    var geometry1 = new THREE.BufferGeometry();
+    geometry1.setAttribute( 'position', new THREE.Float32BufferAttribute( vertices, 3 ) );
+
+    if ( colors.length > 0 ) {
+      geometry1.setAttribute( 'color', new THREE.Float32BufferAttribute( colors, 3 ) );
+    }
+
+    geometry1.center();
+
+    var vertexColors = ( geometry1.hasAttribute( 'color' ) === true );
+
+    var material = new THREE.PointsMaterial( { size: 0.1, vertexColors: vertexColors } );
+    
+    while(scene.children.length > 0){ 
+      scene.remove(scene.children[0]); 
+    }
+    
+    points2 = new THREE.Points( geometry1, material );
+    scene.add( points2 );
+    render();
+  }
+
+  function reloadModelFromJSONData(filename,wholecontent) {
+    $('#modelpath').html(filename);
+    var vertices = [];
+    var colors = [];
+    var points2;
+
+    wholecontent.forEach(function (xyz) {
+      vertices.push( parseFloat( xyz.x ) );
+      vertices.push( parseFloat( xyz.y ) );
+      vertices.push( parseFloat( xyz.z ) );
+    });
+    
     var geometry1 = new THREE.BufferGeometry();
     geometry1.setAttribute( 'position', new THREE.Float32BufferAttribute( vertices, 3 ) );
 

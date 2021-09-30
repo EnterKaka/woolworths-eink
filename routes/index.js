@@ -6,7 +6,6 @@ const Joi = require('joi');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const config = require("config");
-const Model = require('../model/Model');
 
 app.get('/', function(req, res) {
 	// render to views/index.ejs template file
@@ -19,25 +18,6 @@ app.get('/viewer', auth, function(req, res) {
 		title: '3D Viewer - Owl Studio Web App',
 		priv: req.user.privilege,
 		model_data: '',
-	})
-})
-
-app.get('/data',auth, async function(req,res){
-	let modelsdata = await Model.find();
-	// console.log(modelsdata);
-	let sentdata = [];
-	modelsdata.forEach(function(model) {
-		let eachmodeldata = {
-			datetime: model.datetime,
-			name: model.measurement[0].name,
-			mass: model.measurement[0].mass,
-			volume: model.measurement[0].volume,
-		}
-		sentdata.push(eachmodeldata);
-	});
-	res.render('pages/data', {
-		title: 'Model DB - Owl Studio Web App',
-		data: sentdata,
 	})
 })
 

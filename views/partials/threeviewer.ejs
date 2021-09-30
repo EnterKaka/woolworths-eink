@@ -5,6 +5,9 @@
         <button type='button' class="btn btn-icon btn-success mr-1" title='Open model from local pc' id='btn-openfromLocal'>
             <i class="la la-hdd-o"></i>
         </button>
+        <% if(messages.pointcloud){ %>
+        <input type="hidden" id="pointcloud" value='<%- messages.pointcloud %>'>
+        <% } %>
         <h2 id='modelpath'>filename</h2>
     </div>
     <div class="row container_main">
@@ -15,3 +18,6 @@
         </div>
     </div>
 </div>
+<script type="text/javascript">
+    
+</script>
