@@ -26,3 +26,7 @@ div.container_main{
     z-index: -1;
     padding: 15px;
 }
+
+div.table-padding-set{
+    padding: 25px;
+}

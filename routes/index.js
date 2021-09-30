@@ -6,6 +6,7 @@ const Joi = require('joi');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const config = require("config");
+const Model = require('../model/Model');
 
 app.get('/', function(req, res) {
 	// render to views/index.ejs template file
@@ -18,6 +19,21 @@ app.get('/viewer', auth, function(req, res) {
 		title: '3D Viewer - Owl Studio Web App',
 		priv: req.user.privilege,
 		model_data: '',
+	})
+})
+
+app.get('/data',auth, async function(req,res){
+	let modelsdata = await Model.findOne({datetime: '14.09.2021 17:03:37'});
+	console.log(modelsdata);
+	let sentdata = {
+		datetime: modelsdata.datetime,
+		name: modelsdata.measurement.name,
+		mass: modelsdata.measurement.mass,
+		volume: ''
+	};
+	res.render('pages/data', {
+		title: 'Model DB - Owl Studio Web App',
+		data:'',
 	})
 })
 
