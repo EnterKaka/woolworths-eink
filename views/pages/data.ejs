@@ -84,14 +84,18 @@
                                 <div class="table-responsive">
                                     <table class="table table-striped">
                                         <colgroup>
-                                        <col style="width: 35%;">
-                                        <col style="width: 35%;">
-                                        <col style="width: 30%;">
+                                        <col style="width: 20%;">
+                                        <col style="width: 20%;">
+                                        <col style="width: 20%;">
+                                        <col style="width: 20%;">
+                                        <col style="width: 20%;">
                                         </colgroup>
                                         <thead class="thead-dark">
                                             <tr>
                                                 <th scope="col">Name</th>
                                                 <th scope="col">DateTime</th>
+                                                <th scope="col">Mass</th>
+                                                <th scope="col">Volume</th>
                                                 <th scope="col">#</th>
                                             </tr>
                                         </thead>
@@ -99,11 +103,13 @@
                                         <% if (data) { %>
                                             <% data.forEach(function(member){ %>
                                             <tr>
-                                                <td><%= member.name %></td>
+                                                <td><%= member.measurement.name %></td>
                                                 <td><%= member.datetime %></td>
+                                                <td><%= member.measurement.mass %></td>
+                                                <td><%= member.measurement.volume %></td>
                                                 <td>
                                                 <div style="float:left">
-                                                    <a href='/user/edit/<%= member.email %>' class="btn btn-primary btn-min-width mr-1 mb-1">Edit</a> &nbsp;			
+                                                    <a href='/data/edit/<%= member.email %>' class="btn btn-primary btn-min-width mr-1 mb-1">Edit</a> &nbsp;			
                                                     <a href="javascript: onclick_delete('<%= member.email %>')" class="btn btn-danger btn-min-width mr-1 mb-1">Delete</a>
                                                 </div>
                                                 </td>
