@@ -22,7 +22,7 @@ function openModel_Fromlocal(e) {
     reader.addEventListener("load", () => {
       // this will then display a text file
       model_text = reader.result;
-      reloadModelFromData(model_text);
+      reloadModelFromData(file.name,model_text);
     }, false);
   
     if (file) {
@@ -69,7 +69,7 @@ function main() {
      var loader = new XYZLoader();
      var points1;
      loader.load( './3dmodels/Weissspat_1632872292.txt', function ( geometry ) {
-
+      $('#modelpath').html('Weissspat_1632872292.txt');
       geometry.center();
 
       var vertexColors = ( geometry.hasAttribute( 'color' ) === true );
@@ -145,7 +145,7 @@ function main() {
         var reader = new FileReader();
         reader.onload = function(ev) {
             var model_text = ev.target.result;
-            reloadModelFromData(model_text);
+            reloadModelFromData(file.name,model_text);
           };
 
         reader.readAsText(file);
@@ -156,19 +156,16 @@ function main() {
   function onWindowResize(){
     camera.aspect = parent_canvas.clientWidth/parent_canvas.clientHeight;
     camera.updateProjectionMatrix();
-    renderer.setSize(parent_canvas.clientWidth,parent_canvas.clientHeight);
+    renderer.setSize((parent_canvas.clientWidth-30),parent_canvas.clientHeight);
   }
 
   function render(){
     renderer.render( scene, camera);
   }
 
-  function openModelFromMongoDB() {
-    
-  }
-
-  function reloadModelFromData(params) {
-    var lines = params.split( '\n' );
+  function reloadModelFromData(filename,wholecontent) {
+    $('#modelpath').html(filename);
+    var lines = wholecontent.split( '\n' );
 
     var vertices = [];
     var colors = [];

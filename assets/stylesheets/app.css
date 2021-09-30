@@ -13,7 +13,7 @@
 
 /*3d viewer min height*/
 div.container_main{
-    min-height: 600px;
+    min-height: 700px;
 }
 
 /*Canvas necessary setting*/
@@ -24,5 +24,5 @@ div.container_main{
     height: 100%;
     display: block;
     z-index: -1;
-    padding: 25px;
+    padding: 15px;
 }
