@@ -4,7 +4,7 @@ var Schema = mongoose.Schema;
 
 var ModelSchema = new Schema({
 	datetime: String,
-	measurement: Array,
+	measurement: [],
 	modifeod: String,
 	name: String,
 });

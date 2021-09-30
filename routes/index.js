@@ -24,17 +24,20 @@ app.get('/viewer', auth, function(req, res) {
 
 app.get('/data',auth, async function(req,res){
 	let modelsdata = await Model.find();
-	console.log(modelsdata);
-	// let sentdata = {
-	// 	datetime: modelsdata.datetime,
-	// 	name: modelsdata.measurement.name,
-	// 	mass: modelsdata.measurement.mass,
-	// 	volume: modelsdata.measurement.volume,
-	// 	pointcloud: modelsdata.measurement
-	// };
+	// console.log(modelsdata);
+	let sentdata = [];
+	modelsdata.forEach(function(model) {
+		let eachmodeldata = {
+			datetime: model.datetime,
+			name: model.measurement[0].name,
+			mass: model.measurement[0].mass,
+			volume: model.measurement[0].volume,
+		}
+		sentdata.push(eachmodeldata);
+	});
 	res.render('pages/data', {
 		title: 'Model DB - Owl Studio Web App',
-		data: modelsdata,
+		data: sentdata,
 	})
 })
 
