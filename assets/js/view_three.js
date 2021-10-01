@@ -39,7 +39,7 @@ function main() {
     renderer.setSize(canvas.clientWidth, canvas.clientHeight);
 
     scene = new THREE.Scene();
-    var gridHelper = new  THREE.GridHelper( 10, 20, 0x888888, 0x444444);
+    var gridHelper = new  THREE.GridHelper( 100, 200, 0x888888, 0x444444);
     scene.add(gridHelper);
 
     var fov = 60;
