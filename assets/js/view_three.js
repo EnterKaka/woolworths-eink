@@ -39,8 +39,25 @@ function main() {
     renderer.setSize(canvas.clientWidth, canvas.clientHeight);
 
     scene = new THREE.Scene();
-    var gridHelper = new  THREE.GridHelper( 100, 200, 0x888888, 0x444444);
-    scene.add(gridHelper);
+    //scene background color
+    // scene.background = new THREE.Color( 0xffffff );
+    //set axis
+    var axes = new THREE.AxisHelper(20);
+    scene.add(axes);
+    //set grid helper
+    var gridXZ = new THREE.GridHelper(0, 0);
+    gridXZ.setColors(new THREE.Color(0x006600), new THREE.Color(0x006600));
+    scene.add(gridXZ);
+
+    var gridXY = new THREE.GridHelper(30, 60);
+    gridXY.rotation.x = Math.PI / 2;
+    gridXY.setColors(new THREE.Color(0x000066), new THREE.Color(0x000066));
+    scene.add(gridXY);
+
+    var gridYZ = new THREE.GridHelper(30, 60);
+    gridYZ.rotation.z = Math.PI / 2;
+    gridYZ.setColors(new THREE.Color(0x660000), new THREE.Color(0x660000));
+    // scene.add(gridYZ);
 
     var fov = 60;
     var aspect = canvas.clientWidth/canvas.clientHeight;  // the canvas default
@@ -64,7 +81,7 @@ function main() {
     //   points.geometry.rotateX( Math.PI );
     //   scene.add( points );
 
-    //   // render();
+    //   render();
 
     // } );
     var points1, pointcloud;
@@ -74,7 +91,6 @@ function main() {
     if(tempvaluetag){
       pointcloud = tempvaluetag.value;
       pointcloud = JSON.parse(pointcloud);
-      // console.log(pointcloud);
       reloadModelFromJSONData('AeraOfInterest',pointcloud);
 
     }else{
@@ -191,6 +207,13 @@ function main() {
       vertices.push( parseFloat( lineValues[ 0 ] ) );
       vertices.push( parseFloat( lineValues[ 1 ] ) );
       vertices.push( parseFloat( lineValues[ 2 ] ) );
+
+      //set rgb from xyz
+      colors.push(255);
+      colors.push(255);
+      let zvalue = parseFloat( lineValues[2]);
+      let zcolor = (1 - Math.abs(zvalue))*255/1;
+      colors.push(zcolor);
       }
       if ( lineValues.length === 6 ) {
         // XYZRGB
@@ -219,7 +242,24 @@ function main() {
     while(scene.children.length > 0){ 
       scene.remove(scene.children[0]); 
     }
-    
+    //draw axis
+    var axes = new THREE.AxisHelper(20);
+    scene.add(axes);
+    //set grid helper
+    var gridXZ = new THREE.GridHelper(0, 0);
+    gridXZ.setColors(new THREE.Color(0x006600), new THREE.Color(0x006600));
+    scene.add(gridXZ);
+
+    var gridXY = new THREE.GridHelper(30, 60);
+    gridXY.rotation.x = Math.PI / 2;
+    gridXY.setColors(new THREE.Color(0x000066), new THREE.Color(0x000066));
+    scene.add(gridXY);
+
+    var gridYZ = new THREE.GridHelper(30, 60);
+    gridYZ.rotation.z = Math.PI / 2;
+    gridYZ.setColors(new THREE.Color(0x660000), new THREE.Color(0x660000));
+    // scene.add(gridYZ);
+
     points2 = new THREE.Points( geometry1, material );
     scene.add( points2 );
     render();
@@ -235,6 +275,13 @@ function main() {
       vertices.push( parseFloat( xyz.x ) );
       vertices.push( parseFloat( xyz.y ) );
       vertices.push( parseFloat( xyz.z ) );
+      
+      //set color from xyz
+      colors.push(255);
+      colors.push(255);
+      let zvalue = parseFloat( xyz.z);
+      let zcolor = (1 - Math.abs(zvalue))*255/1;
+      colors.push(zcolor);
     });
     
     var geometry1 = new THREE.BufferGeometry();
@@ -254,6 +301,24 @@ function main() {
       scene.remove(scene.children[0]); 
     }
     
+    //draw axis
+    var axes = new THREE.AxisHelper(20);
+    scene.add(axes);
+    //set grid helper
+    var gridXZ = new THREE.GridHelper(0, 0);
+    gridXZ.setColors(new THREE.Color(0x006600), new THREE.Color(0x006600));
+    scene.add(gridXZ);
+
+    var gridXY = new THREE.GridHelper(30, 60);
+    gridXY.rotation.x = Math.PI / 2;
+    gridXY.setColors(new THREE.Color(0x000066), new THREE.Color(0x000066));
+    scene.add(gridXY);
+
+    var gridYZ = new THREE.GridHelper(30, 60);
+    gridYZ.rotation.z = Math.PI / 2;
+    gridYZ.setColors(new THREE.Color(0x660000), new THREE.Color(0x660000));
+    // scene.add(gridYZ);
+
     points2 = new THREE.Points( geometry1, material );
     scene.add( points2 );
     render();

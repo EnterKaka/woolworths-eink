@@ -64,6 +64,12 @@ class XYZLoader extends Loader {
 				vertices.push( parseFloat( lineValues[ 1 ] ) );
 				vertices.push( parseFloat( lineValues[ 2 ] ) );
 
+				//set color from xyz
+				colors.push(255);
+				colors.push(255);
+				let zvalue = parseFloat( parseFloat( lineValues[2]) );
+				let zcolor = (1 - Math.abs(zvalue))*255/1;
+				colors.push(zcolor);
 			}
 
 			if ( lineValues.length === 6 ) {
