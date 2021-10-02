@@ -72,6 +72,9 @@ function main() {
 		controls.addEventListener( 'change', render ); // call this only in static scenes (i.e., if there is no animation loop)
 		controls.minDistance = 0.1;
 		controls.maxDistance = 100;
+    controls.enableRotate = true;
+    controls.maxPolarAngle = Infinity;
+    // controls.maxPolarAngle(Math.PI);
 
     // load a resource
     // var loader = new PCDLoader();
