@@ -52,7 +52,23 @@
                         <div class="card-content collapse show">
                             <div class="card-body">
                                 <p>This is Owl Studio Model Table.
-                                   <br>You can load history and view 3d models. 
+                                    <br>You can load history and view 3d models.
+                                    <form class='row db-collection-select' >
+                                      <div class="col-md-4">
+                                        <h5>Database Name</h5>&nbsp;&nbsp;
+                                        <small class="text-muted">eg.<i>OwlEyeStudioWebInterface</i></small>
+                                        <input type="text" name='db-name' class="form-control" id="placeholderInput" placeholder="Enter Database Name" value="<%- dbname %>">
+                                      </div>
+                                      <div class="col-md-4">
+                                        <h5>Collection Name</h5>&nbsp;&nbsp;
+                                        <small class="text-muted">eg.<i>models</i></small>
+                                        <input type="text" name='collection-name' class="form-control" id="placeholderInput1" placeholder="Enter Collection Name" value="<%- collectionname %>">
+                                      </div>
+                                      <div class='col-md-4'>
+                                        <br><br>
+                                        <input type="button" class="btn btn-success btn-min-width mr-1 mb-1" value='Get Data' style="float: bottom" onclick="onclick_get()">
+                                      </div>
+                                    </form>
                                 </p>
                                 <% if (messages.error) { %>
                                   <!-- <p style="color:red"><%- messages.error %></p> -->
@@ -130,6 +146,6 @@
     <!-- ////////////////////////////////////////////////////////////////////////////-->
 
     <%- include('../partials/footer'); %>
-    <script src="/js/alert_ajax.js" type="text/javascript"></script>
+    <script src="/js/alert_getmodelfromdb.js" type="text/javascript"></script>
   </body>
 </html>

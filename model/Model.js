@@ -1,4 +1,3 @@
-const { string } = require('joi');
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 

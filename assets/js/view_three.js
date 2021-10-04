@@ -1,7 +1,8 @@
 import * as THREE from './three.module.js';
-import { OrbitControls } from './OrbitControls.js';
-import { PCDLoader } from './PCDLoader.js';
+// import { OrbitControls } from './OrbitControls.js';
+// import { PCDLoader } from './PCDLoader.js';
 import { XYZLoader } from './XYZLoader.js';
+import { TrackballControls } from './TrackballControls.js';
 
 //open file dialog
 function btn_open_model(){
@@ -42,21 +43,21 @@ function main() {
     //scene background color
     // scene.background = new THREE.Color( 0xffffff );
     //set axis
-    var axes = new THREE.AxisHelper(20);
+    var axes = new THREE.AxesHelper(20);
     scene.add(axes);
     //set grid helper
     var gridXZ = new THREE.GridHelper(0, 0);
-    gridXZ.setColors(new THREE.Color(0x006600), new THREE.Color(0x006600));
+    // gridXZ.setColors(new THREE.Color(0x006600), new THREE.Color(0x006600));
     scene.add(gridXZ);
 
     var gridXY = new THREE.GridHelper(30, 60);
     gridXY.rotation.x = Math.PI / 2;
-    gridXY.setColors(new THREE.Color(0x000066), new THREE.Color(0x000066));
+    // gridXY.setColors(new THREE.Color(0x000066), new THREE.Color(0x000066));
     scene.add(gridXY);
 
     var gridYZ = new THREE.GridHelper(30, 60);
     gridYZ.rotation.z = Math.PI / 2;
-    gridYZ.setColors(new THREE.Color(0x660000), new THREE.Color(0x660000));
+    // gridYZ.setColors(new THREE.Color(0x660000), new THREE.Color(0x660000));
     // scene.add(gridYZ);
 
     var fov = 60;
@@ -68,14 +69,18 @@ function main() {
     camera.lookAt(0,0,0);
     scene.add(camera);
 
-    controls = new OrbitControls(camera, renderer.domElement);
-		controls.addEventListener( 'change', render ); // call this only in static scenes (i.e., if there is no animation loop)
-		controls.minDistance = 0.1;
-		controls.maxDistance = 100;
-    controls.enableRotate = true;
-    controls.maxPolarAngle = Infinity;
+    // controls = new OrbitControls(camera, renderer.domElement);
+		// controls.addEventListener( 'change', render ); // call this only in static scenes (i.e., if there is no animation loop)
+		// controls.minDistance = 0.1;
+		// controls.maxDistance = 100;
+    // controls.enableRotate = true;
+    // controls.maxPolarAngle = Infinity;
     // controls.maxPolarAngle(Math.PI);
-
+    controls = new TrackballControls(camera, renderer.domElement);
+    controls.rotateSpeed = 1.0;
+    controls.zoomSpeed = 1.2;
+    controls.panSpeed = 0.8;
+    controls.keys = [ 'keyA', 'keyS', 'keyD' ];
     // load a resource
     // var loader = new PCDLoader();
     // loader.load( '../3dmodels/Zaghetto.pcd', function ( points ) {
@@ -188,10 +193,21 @@ function main() {
     camera.aspect = parent_canvas.clientWidth/parent_canvas.clientHeight;
     camera.updateProjectionMatrix();
     renderer.setSize((parent_canvas.clientWidth-30),parent_canvas.clientHeight);
+    controls.handleResize();
   }
 
   function render(){
     renderer.render( scene, camera);
+  }
+
+  function animate(){
+    requestAnimationFrame( animate );
+
+    controls.update();
+
+    // stats.update();
+
+    render();
   }
 
   function reloadModelFromData(filename,wholecontent) {
@@ -246,7 +262,7 @@ function main() {
       scene.remove(scene.children[0]); 
     }
     //draw axis
-    var axes = new THREE.AxisHelper(20);
+    var axes = new THREE.AxesHelper(20);
     scene.add(axes);
     //set grid helper
     var gridXZ = new THREE.GridHelper(0, 0);
@@ -305,7 +321,7 @@ function main() {
     }
     
     //draw axis
-    var axes = new THREE.AxisHelper(20);
+    var axes = new THREE.AxesHelper(20);
     scene.add(axes);
     //set grid helper
     var gridXZ = new THREE.GridHelper(0, 0);
@@ -329,3 +345,5 @@ function main() {
 
   //main load
   main();
+
+  animate();
