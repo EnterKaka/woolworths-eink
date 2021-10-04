@@ -38,64 +38,104 @@ app.get('/view/(:datetime)', async function(req, res, next) {
 app.post('/get', async function(req, res, next) {
 	let dbname = req.body.dbname;
 	let collectionname = req.body.collectionname;
-	let db_uri = 'mongodb://localhost:27017/' + dbname;
 	const client = new MongoClient('mongodb://localhost:27017/', { useUnifiedTopology: true });
-	client
-	.connect()
-	.then(
-	client =>
-		client
-		.db(dbname)
-		.collection(collectionname)// Returns a promise that will resolve to the list of the collections
-	)
-	.then(conn => console.log("Collections", conn.db))
-	.finally(() => client.close());
-
-	mongoose
-   .connect(db_uri, { // 'mongodb://127.0.0.1:27017'            process.env.MONGO_URI
-        useNewUrlParser: true,
-        useUnifiedTopology: true,
-    })
-    .then(() => {
-		var ModelSchema = new Schema({
-			datetime: String,
-			measurement: [],
-			modifeod: String,
-			name: String,
-		});
-		try{
-			var data = mongoose.model(collectionname, ModelSchema);
-			data.find(function(err, docs){
-				if(err){
-					console.log('error');
-					console.error(error)
-					//  process.exit(1)
-					req.flash('error', error)
-					// redirect to users list page
-					res.header(400).json({status: 'fail'});
-				}else{
-					console.log('success get data',docs);
-					req.flash('success', 'Data loaded successfully! DB = ' + dbname)
-					// redirect to users list page
-					res.header(200).json({status: 'success'});
-				}
-			});
-		}catch(error){
-			console.log("mongodb model error ========");
-			console.error(error)
-			//  process.exit(1)
-			req.flash('error', error)
-			// redirect to users list page
-			res.header(400).json({status: 'fail'});
+	
+	console.log(dbname, collectionname);
+	async function run() {
+		try {
+			await client.connect();
+			const database = client.db(dbname);
+			const datas = database.collection(collectionname);
+			// query for movies that have a runtime less than 15 minutes
+			const cursor = datas.find({});
+			let sentdata = [];
+			// print a message if no documents were found
+			if ((await cursor.count()) === 0) {
+				console.log("No documents found!");
+		   		//  process.exit(1)
+		   		req.flash('error', 'No existed');
+		   		// redirect to users list page
+		   		res.header(400).json({status: 'fail'});
+			}else{
+				// replace console.dir with your callback to access individual elements
+				await cursor.forEach(function(model) {
+					let eachmodeldata = {
+						datetime: model.datetime,
+						name: model.measurement[0].name,
+						mass: model.measurement[0].mass,
+						volume: model.measurement[0].volume,
+					}
+					sentdata.push(eachmodeldata);
+				});
+				console.log('success get data');
+				console.log(sentdata);
+				req.flash('success', 'Data loaded successfully! DB = ' + dbname)
+				// redirect to users list page
+				res.header(200).json({
+					status: 'success',
+					data: sentdata 
+				});
+			}
+		} finally {
+			await client.close();
 		}
-    }).catch((err) => {
-         console.log("mongodb connect error ========");
-         console.error(err)
-        //  process.exit(1)
-		req.flash('error', err)
-		// redirect to users list page
-		res.header(400).json({status: 'fail'});
-    });
+	}
+	run().catch(
+		(err) => {
+			console.log("mongodb connect error ========");
+			console.error(err)
+		   	//  process.exit(1)
+		   	req.flash('error', err)
+		   	// redirect to users list page
+		   	res.header(400).json({status: 'fail'});}
+	);
+
+
+// 	mongoose
+//    .connect(db_uri, { // 'mongodb://127.0.0.1:27017'            process.env.MONGO_URI
+//         useNewUrlParser: true,
+//         useUnifiedTopology: true,
+//     })
+//     .then(() => {
+// 		var ModelSchema = new Schema({
+// 			datetime: String,
+// 			measurement: [],
+// 			modifeod: String,
+// 			name: String,
+// 		});
+// 		try{
+// 			var data = mongoose.model(collectionname, ModelSchema);
+// 			data.find(function(err, docs){
+// 				if(err){
+// 					console.log('error');
+// 					console.error(error)
+// 					//  process.exit(1)
+// 					req.flash('error', error)
+// 					// redirect to users list page
+// 					res.header(400).json({status: 'fail'});
+// 				}else{
+// 					console.log('success get data',docs);
+// 					req.flash('success', 'Data loaded successfully! DB = ' + dbname)
+// 					// redirect to users list page
+// 					res.header(200).json({status: 'success'});
+// 				}
+// 			});
+// 		}catch(error){
+// 			console.log("mongodb model error ========");
+// 			console.error(error)
+// 			//  process.exit(1)
+// 			req.flash('error', error)
+// 			// redirect to users list page
+// 			res.header(400).json({status: 'fail'});
+// 		}
+//     }).catch((err) => {
+//          console.log("mongodb connect error ========");
+//          console.error(err)
+//         //  process.exit(1)
+// 		req.flash('error', err)
+// 		// redirect to users list page
+// 		res.header(400).json({status: 'fail'});
+//     });
 });
 
 module.exports = app;
