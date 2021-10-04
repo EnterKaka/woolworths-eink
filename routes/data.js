@@ -1,9 +1,7 @@
 var express = require('express');
 var app = express();
 const Model = require('../model/Model');
-const mongoose = require('mongoose');
 const MongoClient = require("mongodb").MongoClient;
-var Schema = mongoose.Schema;
 
 // SHOW LIST OF USERS
 app.get('/', async function(req, res, next) {
@@ -89,53 +87,6 @@ app.post('/get', async function(req, res, next) {
 		   	// redirect to users list page
 		   	res.header(400).json({status: 'fail'});}
 	);
-
-
-// 	mongoose
-//    .connect(db_uri, { // 'mongodb://127.0.0.1:27017'            process.env.MONGO_URI
-//         useNewUrlParser: true,
-//         useUnifiedTopology: true,
-//     })
-//     .then(() => {
-// 		var ModelSchema = new Schema({
-// 			datetime: String,
-// 			measurement: [],
-// 			modifeod: String,
-// 			name: String,
-// 		});
-// 		try{
-// 			var data = mongoose.model(collectionname, ModelSchema);
-// 			data.find(function(err, docs){
-// 				if(err){
-// 					console.log('error');
-// 					console.error(error)
-// 					//  process.exit(1)
-// 					req.flash('error', error)
-// 					// redirect to users list page
-// 					res.header(400).json({status: 'fail'});
-// 				}else{
-// 					console.log('success get data',docs);
-// 					req.flash('success', 'Data loaded successfully! DB = ' + dbname)
-// 					// redirect to users list page
-// 					res.header(200).json({status: 'success'});
-// 				}
-// 			});
-// 		}catch(error){
-// 			console.log("mongodb model error ========");
-// 			console.error(error)
-// 			//  process.exit(1)
-// 			req.flash('error', error)
-// 			// redirect to users list page
-// 			res.header(400).json({status: 'fail'});
-// 		}
-//     }).catch((err) => {
-//          console.log("mongodb connect error ========");
-//          console.error(err)
-//         //  process.exit(1)
-// 		req.flash('error', err)
-// 		// redirect to users list page
-// 		res.header(400).json({status: 'fail'});
-//     });
 });
 
 module.exports = app;
