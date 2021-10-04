@@ -76,9 +76,9 @@ function main() {
     
     //new rotate 360 control
     controls = new TrackballControls(camera, renderer.domElement);
-    controls.rotateSpeed = 1.0;
+    controls.rotateSpeed = 3.0;
     controls.zoomSpeed = 1.2;
-    controls.panSpeed = 0.8;
+    controls.panSpeed = 1.8;
     controls.keys = [ 'keyA', 'keyS', 'keyD' ];
 
     // load a resource pcd file load
