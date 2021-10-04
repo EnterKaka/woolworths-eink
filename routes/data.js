@@ -1,11 +1,12 @@
 var express = require('express');
 var app = express();
 const Model = require('../model/Model');
-const mongoose = require('mongoose')
+const mongoose = require('mongoose');
+const MongoClient = require("mongodb").MongoClient;
 var Schema = mongoose.Schema;
 
 // SHOW LIST OF USERS
-app.get('/', async function(req, res, next) {	
+app.get('/', async function(req, res, next) {
 	let modelsdata = await Model.find();
 	let sentdata = [];
 	modelsdata.forEach(function(model) {
@@ -38,29 +39,55 @@ app.post('/get', async function(req, res, next) {
 	let dbname = req.body.dbname;
 	let collectionname = req.body.collectionname;
 	let db_uri = 'mongodb://localhost:27017/' + dbname;
+	const client = new MongoClient('mongodb://localhost:27017/', { useUnifiedTopology: true });
+	client
+	.connect()
+	.then(
+	client =>
+		client
+		.db(dbname)
+		.collection(collectionname)// Returns a promise that will resolve to the list of the collections
+	)
+	.then(conn => console.log("Collections", conn.db))
+	.finally(() => client.close());
+
 	mongoose
    .connect(db_uri, { // 'mongodb://127.0.0.1:27017'            process.env.MONGO_URI
         useNewUrlParser: true,
         useUnifiedTopology: true,
     })
     .then(() => {
-        console.log('connected to db', db_uri);
-
 		var ModelSchema = new Schema({
 			datetime: String,
 			measurement: [],
 			modifeod: String,
 			name: String,
 		});
-		
-		var data = mongoose.model(collectionname, ModelSchema);
-		let modeldata = data.find();
-		console.log(modeldata);
-
-
-		req.flash('success', 'Data loaded successfully! DB = ' + dbname)
-		// redirect to users list page
-		res.header(200).json({status: 'success'});
+		try{
+			var data = mongoose.model(collectionname, ModelSchema);
+			data.find(function(err, docs){
+				if(err){
+					console.log('error');
+					console.error(error)
+					//  process.exit(1)
+					req.flash('error', error)
+					// redirect to users list page
+					res.header(400).json({status: 'fail'});
+				}else{
+					console.log('success get data',docs);
+					req.flash('success', 'Data loaded successfully! DB = ' + dbname)
+					// redirect to users list page
+					res.header(200).json({status: 'success'});
+				}
+			});
+		}catch(error){
+			console.log("mongodb model error ========");
+			console.error(error)
+			//  process.exit(1)
+			req.flash('error', error)
+			// redirect to users list page
+			res.header(400).json({status: 'fail'});
+		}
     }).catch((err) => {
          console.log("mongodb connect error ========");
          console.error(err)
@@ -68,7 +95,7 @@ app.post('/get', async function(req, res, next) {
 		req.flash('error', err)
 		// redirect to users list page
 		res.header(400).json({status: 'fail'});
-    })
+    });
 });
 
 module.exports = app;

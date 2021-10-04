@@ -43,22 +43,18 @@ function main() {
     //scene background color
     // scene.background = new THREE.Color( 0xffffff );
     //set axis
-    var axes = new THREE.AxesHelper(20);
-    scene.add(axes);
-    //set grid helper
-    var gridXZ = new THREE.GridHelper(0, 0);
-    // gridXZ.setColors(new THREE.Color(0x006600), new THREE.Color(0x006600));
-    scene.add(gridXZ);
+    // var axes = new THREE.AxesHelper(20);
+    // scene.add(axes);
+    // //set grid helper
+    // var gridXZ = new THREE.GridHelper(0, 0);
+    // scene.add(gridXZ);
 
-    var gridXY = new THREE.GridHelper(30, 60);
-    gridXY.rotation.x = Math.PI / 2;
-    // gridXY.setColors(new THREE.Color(0x000066), new THREE.Color(0x000066));
-    scene.add(gridXY);
+    // var gridXY = new THREE.GridHelper(30, 60);
+    // gridXY.rotation.x = Math.PI / 2;
+    // scene.add(gridXY);
 
-    var gridYZ = new THREE.GridHelper(30, 60);
-    gridYZ.rotation.z = Math.PI / 2;
-    // gridYZ.setColors(new THREE.Color(0x660000), new THREE.Color(0x660000));
-    // scene.add(gridYZ);
+    // var gridYZ = new THREE.GridHelper(30, 60);
+    // gridYZ.rotation.z = Math.PI / 2;
 
     var fov = 60;
     var aspect = canvas.clientWidth/canvas.clientHeight;  // the canvas default
@@ -264,22 +260,18 @@ function main() {
       scene.remove(scene.children[0]); 
     }
     //draw axis
-    var axes = new THREE.AxesHelper(20);
-    scene.add(axes);
-    //set grid helper
-    var gridXZ = new THREE.GridHelper(0, 0);
-    // gridXZ.setColors(new THREE.Color(0x006600), new THREE.Color(0x006600));
-    scene.add(gridXZ);
+    // var axes = new THREE.AxesHelper(20);
+    // scene.add(axes);
+    // //set grid helper
+    // var gridXZ = new THREE.GridHelper(0, 0);
+    // scene.add(gridXZ);
 
-    var gridXY = new THREE.GridHelper(30, 60);
-    gridXY.rotation.x = Math.PI / 2;
-    // gridXY.setColors(new THREE.Color(0x000066), new THREE.Color(0x000066));
-    scene.add(gridXY);
+    // var gridXY = new THREE.GridHelper(30, 60);
+    // gridXY.rotation.x = Math.PI / 2;
+    // scene.add(gridXY);
 
-    var gridYZ = new THREE.GridHelper(30, 60);
-    gridYZ.rotation.z = Math.PI / 2;
-    // gridYZ.setColors(new THREE.Color(0x660000), new THREE.Color(0x660000));
-    // scene.add(gridYZ);
+    // var gridYZ = new THREE.GridHelper(30, 60);
+    // gridYZ.rotation.z = Math.PI / 2;
 
     points2 = new THREE.Points( geometry1, material );
     scene.add( points2 );
@@ -328,22 +320,18 @@ function main() {
     }
     
     //draw axis
-    var axes = new THREE.AxesHelper(20);
-    scene.add(axes);
-    //set grid helper
-    var gridXZ = new THREE.GridHelper(0, 0);
-    // gridXZ.setColors(new THREE.Color(0x006600), new THREE.Color(0x006600));
-    scene.add(gridXZ);
+    // var axes = new THREE.AxesHelper(20);
+    // scene.add(axes);
+    // //set grid helper
+    // var gridXZ = new THREE.GridHelper(0, 0);
+    // scene.add(gridXZ);
 
-    var gridXY = new THREE.GridHelper(30, 60);
-    gridXY.rotation.x = Math.PI / 2;
-    // gridXY.setColors(new THREE.Color(0x000066), new THREE.Color(0x000066));
-    scene.add(gridXY);
+    // var gridXY = new THREE.GridHelper(30, 60);
+    // gridXY.rotation.x = Math.PI / 2;
+    // scene.add(gridXY);
 
-    var gridYZ = new THREE.GridHelper(30, 60);
-    gridYZ.rotation.z = Math.PI / 2;
-    // gridYZ.setColors(new THREE.Color(0x660000), new THREE.Color(0x660000));
-    // scene.add(gridYZ);
+    // var gridYZ = new THREE.GridHelper(30, 60);
+    // gridYZ.rotation.z = Math.PI / 2;
 
     points2 = new THREE.Points( geometry1, material );
     scene.add( points2 );

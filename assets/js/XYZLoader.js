@@ -9,8 +9,8 @@ var highValue, lowValue;
 
 //This function is setting function that set global min and max color map.
 function init_highlow(){
-	highValue = {red: 255, green:255, blue:0};
-	lowValue = {red: 0, green:204, blue:255};
+	highValue = {red: 255, green:0, blue:0};
+	lowValue = {red: 0, green:0, blue:255};
 }
 
 class XYZLoader extends Loader {
