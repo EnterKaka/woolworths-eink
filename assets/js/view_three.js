@@ -1,7 +1,7 @@
 import * as THREE from './three.module.js';
 // import { OrbitControls } from './OrbitControls.js';
 // import { PCDLoader } from './PCDLoader.js';
-import { XYZLoader } from './XYZLoader.js';
+import { XYZLoader, getminmaxhegiht, getrgb, init_highlow } from './XYZLoader.js';
 import { TrackballControls } from './TrackballControls.js';
 
 //open file dialog
@@ -68,7 +68,8 @@ function main() {
     camera.position.set( 0, -20, 6 );
     camera.lookAt(0,0,0);
     scene.add(camera);
-
+    
+    //natural rotate control
     // controls = new OrbitControls(camera, renderer.domElement);
 		// controls.addEventListener( 'change', render ); // call this only in static scenes (i.e., if there is no animation loop)
 		// controls.minDistance = 0.1;
@@ -76,24 +77,27 @@ function main() {
     // controls.enableRotate = true;
     // controls.maxPolarAngle = Infinity;
     // controls.maxPolarAngle(Math.PI);
+    
+    //new rotate 360 control
     controls = new TrackballControls(camera, renderer.domElement);
     controls.rotateSpeed = 1.0;
     controls.zoomSpeed = 1.2;
     controls.panSpeed = 0.8;
     controls.keys = [ 'keyA', 'keyS', 'keyD' ];
-    // load a resource
+
+    // load a resource pcd file load
     // var loader = new PCDLoader();
     // loader.load( '../3dmodels/Zaghetto.pcd', function ( points ) {
 
-    //   points.geometry.center();
-    //   points.geometry.rotateX( Math.PI );
-    //   scene.add( points );
+    // points.geometry.center();
+    // points.geometry.rotateX( Math.PI );
+    // scene.add( points );
 
-    //   render();
+    // render();
 
     // } );
+
     var points1, pointcloud;
-    
     var loader = new XYZLoader();
     var tempvaluetag = document.getElementById('pointcloud');
     if(tempvaluetag){
@@ -213,10 +217,15 @@ function main() {
   function reloadModelFromData(filename,wholecontent) {
     $('#modelpath').html(filename);
     var lines = wholecontent.split( '\n' );
-
+    getminmaxhegiht(lines);
     var vertices = [];
     var colors = [];
     var points2;
+
+    var values = getminmaxhegiht(lines);
+    var min = values[0];
+    var max = values[1];
+
     for ( let line of lines ) {
       line = line.trim();
       if ( line.charAt( 0 ) === '#' ) continue; // skip comments
@@ -226,23 +235,16 @@ function main() {
       vertices.push( parseFloat( lineValues[ 0 ] ) );
       vertices.push( parseFloat( lineValues[ 1 ] ) );
       vertices.push( parseFloat( lineValues[ 2 ] ) );
-
+      
+      let zvalue = parseFloat( lineValues[ 2 ] );
       //set rgb from xyz
-      colors.push(255);
-      colors.push(255);
-      let zvalue = parseFloat( lineValues[2]);
-      let zcolor = (1 - Math.abs(zvalue))*255/1;
-      colors.push(zcolor);
-      }
-      if ( lineValues.length === 6 ) {
-        // XYZRGB
-        vertices.push( parseFloat( lineValues[ 0 ] ) );
-        vertices.push( parseFloat( lineValues[ 1 ] ) );
-        vertices.push( parseFloat( lineValues[ 2 ] ) );
-
-        colors.push( parseFloat( lineValues[ 3 ] ) / 255 );
-        colors.push( parseFloat( lineValues[ 4 ] ) / 255 );
-        colors.push( parseFloat( lineValues[ 5 ] ) / 255 );
+      let k=(zvalue - min)/(max - min);
+      let rgb = getrgb(k);
+      console.log(rgb);
+      //set color from xyz
+      colors.push(rgb[0]);
+      colors.push(rgb[1]);
+      colors.push(rgb[2]);
       }
     }
     var geometry1 = new THREE.BufferGeometry();
@@ -266,17 +268,17 @@ function main() {
     scene.add(axes);
     //set grid helper
     var gridXZ = new THREE.GridHelper(0, 0);
-    gridXZ.setColors(new THREE.Color(0x006600), new THREE.Color(0x006600));
+    // gridXZ.setColors(new THREE.Color(0x006600), new THREE.Color(0x006600));
     scene.add(gridXZ);
 
     var gridXY = new THREE.GridHelper(30, 60);
     gridXY.rotation.x = Math.PI / 2;
-    gridXY.setColors(new THREE.Color(0x000066), new THREE.Color(0x000066));
+    // gridXY.setColors(new THREE.Color(0x000066), new THREE.Color(0x000066));
     scene.add(gridXY);
 
     var gridYZ = new THREE.GridHelper(30, 60);
     gridYZ.rotation.z = Math.PI / 2;
-    gridYZ.setColors(new THREE.Color(0x660000), new THREE.Color(0x660000));
+    // gridYZ.setColors(new THREE.Color(0x660000), new THREE.Color(0x660000));
     // scene.add(gridYZ);
 
     points2 = new THREE.Points( geometry1, material );
@@ -290,17 +292,22 @@ function main() {
     var colors = [];
     var points2;
 
+    var values = getminmaxheightfromjson(wholecontent);
+    var min = values[0];
+    var max = values[1];
+
     wholecontent.forEach(function (xyz) {
       vertices.push( parseFloat( xyz.x ) );
       vertices.push( parseFloat( xyz.y ) );
       vertices.push( parseFloat( xyz.z ) );
       
+      let zvalue = parseFloat( xyz.z );
+      let k = (zvalue - min)/(max - min);
+      let rgb = getrgb(k);
       //set color from xyz
-      colors.push(255);
-      colors.push(255);
-      let zvalue = parseFloat( xyz.z);
-      let zcolor = (1 - Math.abs(zvalue))*255/1;
-      colors.push(zcolor);
+      colors.push(rgb[0]);
+      colors.push(rgb[1]);
+      colors.push(rgb[2]);
     });
     
     var geometry1 = new THREE.BufferGeometry();
@@ -325,17 +332,17 @@ function main() {
     scene.add(axes);
     //set grid helper
     var gridXZ = new THREE.GridHelper(0, 0);
-    gridXZ.setColors(new THREE.Color(0x006600), new THREE.Color(0x006600));
+    // gridXZ.setColors(new THREE.Color(0x006600), new THREE.Color(0x006600));
     scene.add(gridXZ);
 
     var gridXY = new THREE.GridHelper(30, 60);
     gridXY.rotation.x = Math.PI / 2;
-    gridXY.setColors(new THREE.Color(0x000066), new THREE.Color(0x000066));
+    // gridXY.setColors(new THREE.Color(0x000066), new THREE.Color(0x000066));
     scene.add(gridXY);
 
     var gridYZ = new THREE.GridHelper(30, 60);
     gridYZ.rotation.z = Math.PI / 2;
-    gridYZ.setColors(new THREE.Color(0x660000), new THREE.Color(0x660000));
+    // gridYZ.setColors(new THREE.Color(0x660000), new THREE.Color(0x660000));
     // scene.add(gridYZ);
 
     points2 = new THREE.Points( geometry1, material );
@@ -343,7 +350,52 @@ function main() {
     render();
   }
 
+
+  /*function getminmaxhegiht(lines){
+    var min=Infinity, max=-Infinity, values=[];
+    let zvalue;
+    for ( let line of lines ) {
+      line = line.trim();
+      if ( line.charAt( 0 ) === '#' ) continue; // skip comments
+      var lineValues = line.split( /\s+/ );
+      if ( lineValues.length === 3 ) {
+        zvalue = parseFloat(lineValues[2]);
+        if( min>zvalue){
+          min=zvalue;
+        }
+        if(max<zvalue){
+          max=zvalue;
+        }
+      }
+    }
+    values.push(min);
+    values.push(max);
+    return values;
+  }*/
+
+  function getminmaxheightfromjson(lines){
+    var min=Infinity, max=-Infinity, values=[];
+    let zvalue;
+
+    lines.forEach( function (line) {
+      zvalue = parseFloat(line.z);
+      if( min>zvalue){
+        min=zvalue;
+      }
+      if(max<zvalue){
+        max=zvalue;
+      }
+    });
+
+    values.push(min);
+    values.push(max);
+    return values;
+  }
+
   //main load
+
+  init_highlow();
+
   main();
 
   animate();
