@@ -99,7 +99,8 @@ function main() {
     if(tempvaluetag){
       pointcloud = tempvaluetag.value;
       pointcloud = JSON.parse(pointcloud);
-      reloadModelFromJSONData('AeraOfInterest',pointcloud);
+      let modelname = '';
+      reloadModelFromJSONData(modelname,pointcloud);
 
     }else{
       loader.load( './3dmodels/Weissspat_1632872292.txt', function ( geometry ) {
@@ -211,6 +212,7 @@ function main() {
   }
 
   function reloadModelFromData(filename,wholecontent) {
+    console.log('localdata');
     $('#modelpath').html(filename);
     var lines = wholecontent.split( '\n' );
     getminmaxhegiht(lines);
@@ -279,7 +281,8 @@ function main() {
   }
 
   function reloadModelFromJSONData(filename,wholecontent) {
-    $('#modelpath').html(filename);
+    console.log('jsondata');
+    // $('#modelpath').html(filename);
     var vertices = [];
     var colors = [];
     var points2;

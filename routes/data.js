@@ -1,33 +1,67 @@
 var express = require('express');
 var app = express();
-const Model = require('../model/Model');
 const MongoClient = require("mongodb").MongoClient;
 
-var dbname, collectionname;
+var dbname = 'OwlEyeStudioWebInterface' , collectionname = 'models';
 
 // SHOW LIST OF USERS
 app.get('/', async function(req, res, next) {
-	let modelsdata = await Model.find();
-	let sentdata = [];
-	modelsdata.forEach(function(model) {
-		let eachmodeldata = {
-			datetime: model.datetime,
-			name: model.measurement[0].name,
-			mass: model.measurement[0].mass,
-			volume: model.measurement[0].volume,
+	const client = new MongoClient('mongodb://localhost:27017/', { useUnifiedTopology: true });
+	
+	console.log('/data/--------',dbname, collectionname);
+	async function run() {
+		try {
+			await client.connect();
+			const database = client.db(dbname);
+			const datas = database.collection(collectionname);
+			// query for movies that have a runtime less than 15 minutes
+			const cursor = datas.find({});
+			let sentdata = [];
+			// print a message if no documents were found
+			if ((await cursor.count()) === 0) {
+				console.log("No documents found!");
+		   		//  process.exit(1)
+		   		req.flash('error', 'No existed');
+		   		// redirect to users list page
+		   		res.header(400).json({status: 'fail'});
+			}else{
+				// replace console.dir with your callback to access individual elements
+				await cursor.forEach(function(model) {
+					let eachmodeldata = {
+						datetime: model.datetime,
+						name: model.measurement[0].name,
+						mass: model.measurement[0].mass,
+						volume: model.measurement[0].volume,
+					}
+					sentdata.push(eachmodeldata);
+				});
+				console.log('/data/-----',dbname, collectionname);
+				res.render('pages/data', {
+					title: 'Model DB - Owl Studio Web App',
+					dbname: dbname,
+					collectionname: collectionname,
+					data: sentdata,
+				});
+			}
+		} finally {
+			await client.close();
 		}
-		sentdata.push(eachmodeldata);
-	});
-
-	dbname = 'OwlEyeStudioWebInterface';
-	collectionname = 'models';
-	console.log('/data/-----',dbname, collectionname);
-	res.render('pages/data', {
-		title: 'Model DB - Owl Studio Web App',
-		dbname: dbname,
-		collectionname: collectionname,
-		data: sentdata,
-	});
+	}
+	run().catch(
+		(err) => {
+			console.log("mongodb connect error ========");
+			console.error(err)
+		   	//  process.exit(1)
+		   	req.flash('error', err)
+		   	// redirect to users list page
+		   	res.render('pages/data', {
+				title: 'Model DB - Owl Studio Web App',
+				dbname: dbname,
+				collectionname: collectionname,
+				data: sentdata,
+			});
+		}
+	);
 });
 
 app.get('/view/(:datetime)', async function(req, res, next) {
@@ -52,6 +86,7 @@ app.get('/view/(:datetime)', async function(req, res, next) {
 				var pcl = cursor.measurement[0].pointcloud;
 				console.log('point cloud ========================');
 				req.flash("pointcloud", JSON.stringify(pcl));
+				req.flash('pcl_name', cursor.measurement[0].name)
 				res.redirect('/viewer');
 			}else{
 				console.log("No documents found!");

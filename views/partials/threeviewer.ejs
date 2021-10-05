@@ -8,7 +8,11 @@
         <% if(messages.pointcloud){ %>
         <input type="hidden" id="pointcloud" value='<%- messages.pointcloud %>'>
         <% } %>
-        <h2 id='modelpath'>filename</h2>
+        <% if(messages.pcl_name){ %>
+            <h2 id='modelpath'><%= messages.pcl_name %></h2>
+        <% }else{ %>
+            <h2 id='modelpath'>filename</h2>
+        <% } %>
     </div>
     <div class="row container_main">
         <!-- Center 3D Viewer -->
@@ -18,6 +22,3 @@
         </div>
     </div>
 </div>
-<script type="text/javascript">
-    
-</script>
