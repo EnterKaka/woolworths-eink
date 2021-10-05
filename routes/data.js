@@ -3,9 +3,11 @@ var app = express();
 const MongoClient = require("mongodb").MongoClient;
 var ObjectId = require('mongoose').Types.ObjectId;
 var dbname = 'OwlEyeStudioWebInterface' , collectionname = 'models';
+const auth = require("../middleware/auth");
+const admin = require('../middleware/admin');
 
 // SHOW LIST OF USERS
-app.get('/', async function(req, res, next) {
+app.get('/', auth, async function(req, res, next) {
 	const client = new MongoClient('mongodb://localhost:27017/', { useUnifiedTopology: true });
 	
 	console.log('/data/--------',dbname, collectionname);
@@ -67,7 +69,7 @@ app.get('/', async function(req, res, next) {
 	);
 });
 
-app.get('/view/(:_id)', async function(req, res, next) {
+app.get('/view/(:_id)', auth, async function(req, res, next) {
 	// let model = await Model.findOne({datetime: req.params.datetime})
 	const client = new MongoClient('mongodb://localhost:27017/', { useUnifiedTopology: true });
 
@@ -115,7 +117,7 @@ app.get('/view/(:_id)', async function(req, res, next) {
 	
 });
 
-app.post('/get', async function(req, res, next) {
+app.post('/get', auth, async function(req, res, next) {
 	dbname = req.body.dbname;
 	collectionname = req.body.collectionname;
 	const client = new MongoClient('mongodb://localhost:27017/', { useUnifiedTopology: true });

@@ -35,6 +35,7 @@ app.use(session({
 var index = require('./routes/index');
 var user = require('./routes/users');
 var data = require('./routes/data');
+var setting = require('./routes/setting');
 /**
  * Express Validator Middleware for Form Validation
  */ 
@@ -92,6 +93,7 @@ app.use(flash());
 app.use('/', index);
 app.use('/user', user);
 app.use('/data', data);
+app.use('/setting', setting);
 
 mongoose
    .connect(config.database.url, { // 'mongodb://127.0.0.1:27017'            process.env.MONGO_URI

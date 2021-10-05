@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html class="loading" lang="en" data-textdirection="ltr">
+  <head>
+    <%- include('../../partials/head'); %>
+  </head>
+  <body class="vertical-layout vertical-menu 2-columns   menu-expanded fixed-navbar" data-open="click" data-menu="vertical-menu" data-color="bg-gradient-x-purple-blue" data-col="2-columns">
+    <!-- fixed-top-->
+    <%- include('../../partials/header'); %>
+    <!-- ////////////////////////////////////////////////////////////////////////////-->
+    <%- include('../../partials/sidebar'); %>
+
+    <div class="app-content content">
+      <div class="content-wrapper">
+        <div class="content-wrapper-before">
+          
+        </div>
+        <div class="content-header row">
+          <div class="content-header-left col-md-4 col-12 mb-2">
+            <h3 class="content-header-title">Tables</h3>
+          </div>
+          <div class="content-header-right col-md-8 col-12">
+            <div class="breadcrumbs-top float-md-right">
+              <div class="breadcrumb-wrapper mr-1">
+                <ol class="breadcrumb">
+                  <li class="breadcrumb-item"><a href="/">Home</a>
+                  </li>
+                  <li class="breadcrumb-item active">Tables
+                  </li>
+                </ol>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="content-body">
+        
+            <!-- Table head options start -->
+            <div class="row">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <h4 class="card-title">Owl Studio Setting Table</h4>
+                            <a class="heading-elements-toggle"><i class="la la-ellipsis-v font-medium-3"></i></a>
+                            <div class="heading-elements">
+                                <ul class="list-inline mb-0">
+                                    <li><a data-action="collapse"><i class="ft-minus"></i></a></li>
+                                    <li><a data-action="reload"><i class="ft-rotate-cw"></i></a></li>
+                                    <li><a data-action="expand"><i class="ft-maximize"></i></a></li>
+                                    <li><a data-action="close"><i class="ft-x"></i></a></li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="card-content collapse show">
+                            <div class="card-body">
+                                <p>This is Owl Studio Setting Table.
+                                   <br>You can Create new setting or Edit/Delete existing settings. 
+                                </p>
+                                <% if (messages.error) { %>
+                                  <!-- <p style="color:red"><%- messages.error %></p> -->
+                                  <script>
+                                    $.toast({
+                                    heading: 'Error',
+                                    text: '<%- messages.error %>',
+                                    showHideTransition: 'fade',
+                                    icon: 'error',
+                                    hideAfter: 1500   // in milli seconds
+                                  })
+                                  </script>
+                                <% } %>
+                                
+                                <% if (messages.success) { %>
+                                  <!-- <p style="color:green"><%- messages.success %></p> -->
+                                  <script>
+                                    $.toast({
+                                        heading: 'Success',
+                                        text: '<%- messages.success %>',
+                                        showHideTransition: 'slide',
+                                        icon: 'success',
+                                        hideAfter: 1500   // in milli seconds
+                                    })
+                                  </script>
+                                <% } %>	      
+                            </div>
+                            <a href="/setting/add" class="btn btn-success btn-min-width mr-1 mb-1" style="float : right;">Add</a>
+                            <div class='table-padding-set'>
+                                <div class="table-responsive">
+                                    <table class="table table-striped">
+                                        <colgroup>
+                                          <col style="width: 30%;">
+                                          <col style="width: 30%;">
+                                          <col style="width: 40%;">
+                                        </colgroup>
+                                        <thead class="thead-dark">
+                                            <tr>
+                                                <th scope="col">Database</th>
+                                                <th scope="col">Collection</th>
+                                                <th scope="col">#</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                          <% if (data) { %>
+                                            <% data.forEach(function(member){ %>
+                                              <tr>
+                                                <td><%= member.dbname %></td>
+                                                <td><%= member.collectionname %></td>
+                                                <td>
+                                                  <div style="float:left">
+                                                    <a href='/setting/edit/<%= member._id %>' class="btn btn-primary btn-min-width mr-1 mb-1">Edit</a> &nbsp;			
+                                                    <a href="javascript: onclick_deletesetting('<%= member._id %>')" class="btn btn-danger btn-min-width mr-1 mb-1">Delete</a>
+                                                  </div>
+                                                </td>
+                                              </tr>
+                                            <% }) %>
+                                          <% } %>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Table head options end -->
+
+        </div>
+      </div>
+    </div>
+    <!-- ////////////////////////////////////////////////////////////////////////////-->
+
+    <%- include('../../partials/footer'); %>
+    <script src="/js/alert_ajax.js" type="text/javascript"></script>
+  </body>
+</html>

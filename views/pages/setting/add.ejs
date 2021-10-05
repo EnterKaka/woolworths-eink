@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html class="loading" lang="en" data-textdirection="ltr">
+  <head>
+    <%- include('../../partials/head'); %>
+  </head>
+  <body class="vertical-layout vertical-menu 2-columns   menu-expanded fixed-navbar" data-open="click" data-menu="vertical-menu" data-color="bg-gradient-x-purple-blue" data-col="2-columns">
+    <!-- fixed-top-->
+    <%- include('../../partials/header'); %>
+    <!-- ////////////////////////////////////////////////////////////////////////////-->
+    <%- include('../../partials/sidebar'); %>
+    
+
+    <div class="app-content content">
+      <div class="content-wrapper">
+        <div class="content-wrapper-before">
+          
+        </div>
+        <div class="content-header row">
+          <div class="content-header-left col-md-4 col-12 mb-2">
+            <h3 class="content-header-title">Tables</h3>
+          </div>
+          <div class="content-header-right col-md-8 col-12">
+            <div class="breadcrumbs-top float-md-right">
+              <div class="breadcrumb-wrapper mr-1">
+                <ol class="breadcrumb">
+                  <li class="breadcrumb-item"><a href="/">Home</a>
+                  </li>
+                  <li class="breadcrumb-item active">Tables
+                  </li>
+                </ol>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="content-body">
+        
+            <!-- Table head options start -->
+            <div class="row">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <h4 class="card-title">Owl Studio Setting Table</h4>
+                            <a class="heading-elements-toggle"><i class="la la-ellipsis-v font-medium-3"></i></a>
+                            <div class="heading-elements">
+                                <ul class="list-inline mb-0">
+                                    <li><a data-action="collapse"><i class="ft-minus"></i></a></li>
+                                    <li><a data-action="reload"><i class="ft-rotate-cw"></i></a></li>
+                                    <li><a data-action="expand"><i class="ft-maximize"></i></a></li>
+                                    <li><a data-action="close"><i class="ft-x"></i></a></li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="card-content collapse show">
+                            <div class="card-body">
+                                <p>This is Owl Studio Setting Table.
+                                   <br>You can Create, Read, Update, Delete all records of this Table. 
+                                </p>
+                                <% if (messages.error) { %>
+                                  <!-- <p style="color:red"><%- messages.error %></p> -->
+                                  <script>
+                                    $.toast({
+                                    heading: 'Error',
+                                    text: '<%- messages.error %>',
+                                    showHideTransition: 'fade',
+                                    icon: 'error',
+                                    hideAfter: 1500   // in milli seconds
+                                  })
+                                  </script>
+                                <% } %>
+                                
+                                <% if (messages.success) { %>
+                                  <!-- <p style="color:green"><%- messages.success %></p> -->
+                                  <script>
+                                    $.toast({
+                                        heading: 'Success',
+                                        text: '<%- messages.success %>',
+                                        showHideTransition: 'slide',
+                                        icon: 'success',
+                                        hideAfter: 1500   // in milli seconds
+                                    })
+                                  </script>
+                                <% } %>	        
+                            </div>
+                            <div class="table-responsive">
+                                <form action="/setting/add" method="post">
+                                    <table class="table">
+                                        <tr> 
+                                            <td>Database Name</td>
+                                            <td><input type="text" class="form-control" name="dbname" placeholder="Enter Database UserName" /></td>
+                                        </tr>
+                                        <tr> 
+                                            <td>Collection Name</td>
+                                            <td><input type="text" class="form-control" name="collectionname" placeholder="Enter Collection Name" /></td>
+                                        </tr>
+                                        <tr> 
+                                            <td></td>
+                                            <td><input type="submit" value="Add" class="btn btn-success btn-min-width mr-1 mb-1"/></td>
+                                        </tr>
+                                    </table>
+                                    <!-- <input type="hidden" name="_method" value="PUT" /> -->
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Table head options end -->
+
+        </div>
+      </div>
+    </div>
+    <!-- ////////////////////////////////////////////////////////////////////////////-->
+    <%- include('../../partials/footer'); %>
+  </body>
+</html>
