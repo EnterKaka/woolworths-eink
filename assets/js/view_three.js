@@ -1,8 +1,8 @@
 import * as THREE from './three.module.js';
-// import { OrbitControls } from './OrbitControls.js';
+import { OrbitControls } from './OrbitControls.js';
 // import { PCDLoader } from './PCDLoader.js';
 import { XYZLoader, getminmaxhegiht, getrgb, init_highlow } from './XYZLoader.js';
-import { TrackballControls } from './TrackballControls.js';
+// import { TrackballControls } from './TrackballControls.js';
 
 //open file dialog
 function btn_open_model(){
@@ -66,20 +66,20 @@ function main() {
     scene.add(camera);
     
     //natural rotate control
-    // controls = new OrbitControls(camera, renderer.domElement);
-		// controls.addEventListener( 'change', render ); // call this only in static scenes (i.e., if there is no animation loop)
-		// controls.minDistance = 0.1;
-		// controls.maxDistance = 100;
-    // controls.enableRotate = true;
-    // controls.maxPolarAngle = Infinity;
+    controls = new OrbitControls(camera, renderer.domElement);
+		controls.addEventListener( 'change', render ); // call this only in static scenes (i.e., if there is no animation loop)
+		controls.minDistance = 0.1;
+		controls.maxDistance = 100;
+    controls.enableRotate = true;
+    controls.maxPolarAngle = Infinity;
     // controls.maxPolarAngle(Math.PI);
     
     //new rotate 360 control
-    controls = new TrackballControls(camera, renderer.domElement);
-    controls.rotateSpeed = 3.8;
-    controls.zoomSpeed = 1.2;
-    controls.panSpeed = 1.8;
-    controls.keys = [ 'keyA', 'keyS', 'keyD' ];
+    // controls = new TrackballControls(camera, renderer.domElement);
+    // controls.rotateSpeed = 3.8;
+    // controls.zoomSpeed = 1.2;
+    // controls.panSpeed = 1.8;
+    // controls.keys = [ 'keyA', 'keyS', 'keyD' ];
 
     // load a resource pcd file load
     // var loader = new PCDLoader();
@@ -388,4 +388,4 @@ function main() {
 
   main();
 
-  animate();
+  // animate();
