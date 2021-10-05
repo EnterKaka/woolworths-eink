@@ -101,15 +101,17 @@
                                     <table class="table table-striped">
                                         <colgroup>
                                         <col style="width: 20%;">
+                                        <col style="width: 15%;">
+                                        <col style="width: 10%;">
                                         <col style="width: 20%;">
                                         <col style="width: 20%;">
-                                        <col style="width: 20%;">
-                                        <col style="width: 20%;">
+                                        <col style="width: 15%;">
                                         </colgroup>
                                         <thead class="thead-dark">
                                             <tr>
                                                 <th scope="col">Name</th>
-                                                <th scope="col">DateTime</th>
+                                                <th scope="col">Date</th>
+                                                <th scope="col">Time</th>
                                                 <th scope="col">Mass</th>
                                                 <th scope="col">Volume</th>
                                                 <th scope="col">#</th>
@@ -120,7 +122,8 @@
                                             <% data.forEach(function(member){ %>
                                             <tr>
                                                 <td><%= member.name %></td>
-                                                <td><%= member.datetime %></td>
+                                                <td><%= member.date %></td>
+                                                <td><%= member.time %></td>
                                                 <td><%= member.mass %></td>
                                                 <td><%= member.volume %></td>
                                                 <td>

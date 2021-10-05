@@ -33,7 +33,8 @@ function onclick_get(){
               sentdata.forEach(element => {
                 let onerow = '<tr>'+
                 '<td>' + element.name + '</td>'+
-                '<td>' + element.datetime + '</td>'+
+                '<td>' + element.date + '</td>'+
+                '<td>' + element.time + '</td>'+
                 '<td>' + element.mass + '</td>'+
                 '<td>' + element.volume + '</td>'+
                 '<td>'+

@@ -27,9 +27,11 @@ app.get('/', async function(req, res, next) {
 			}else{
 				// replace console.dir with your callback to access individual elements
 				await cursor.forEach(function(model) {
+					let splitdata = model.datetime.split(' ');
 					let eachmodeldata = {
 						_id: model._id,
-						datetime: model.datetime,
+						date: splitdata[0],
+						time: splitdata[1],
 						name: model.measurement[0].name,
 						mass: model.measurement[0].mass,
 						volume: model.measurement[0].volume,
@@ -137,9 +139,11 @@ app.post('/get', async function(req, res, next) {
 			}else{
 				// replace console.dir with your callback to access individual elements
 				await cursor.forEach(function(model) {
+					let splitdata = model.datetime.split(' ');
 					let eachmodeldata = {
 						_id: model._id,
-						datetime: model.datetime,
+						date: splitdata[0],
+						time: splitdata[1],
 						name: model.measurement[0].name,
 						mass: model.measurement[0].mass,
 						volume: model.measurement[0].volume,
