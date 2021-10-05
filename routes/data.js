@@ -1,7 +1,7 @@
 var express = require('express');
 var app = express();
 const MongoClient = require("mongodb").MongoClient;
-
+var ObjectId = require('mongoose').Types.ObjectId;
 var dbname = 'OwlEyeStudioWebInterface' , collectionname = 'models';
 
 // SHOW LIST OF USERS
@@ -28,6 +28,7 @@ app.get('/', async function(req, res, next) {
 				// replace console.dir with your callback to access individual elements
 				await cursor.forEach(function(model) {
 					let eachmodeldata = {
+						_id: model._id,
 						datetime: model.datetime,
 						name: model.measurement[0].name,
 						mass: model.measurement[0].mass,
@@ -64,18 +65,18 @@ app.get('/', async function(req, res, next) {
 	);
 });
 
-app.get('/view/(:datetime)', async function(req, res, next) {
+app.get('/view/(:_id)', async function(req, res, next) {
 	// let model = await Model.findOne({datetime: req.params.datetime})
 	const client = new MongoClient('mongodb://localhost:27017/', { useUnifiedTopology: true });
 
-	console.log('/data/view/datetime--------',dbname, collectionname);
+	console.log('/data/view/_id--------',dbname, collectionname);
 	async function run() {
 		try {
 			await client.connect();
 			const database = client.db(dbname);
 			const datas = database.collection(collectionname);
 			// query for movies that have a runtime less than 15 minutes
-			const cursor = await datas.findOne({datetime: req.params.datetime});
+			const cursor = await datas.findOne({_id: new ObjectId(req.params._id) });
 			console.log(cursor);
 			// print a message if no documents were found
 			if (cursor) {
@@ -137,6 +138,7 @@ app.post('/get', async function(req, res, next) {
 				// replace console.dir with your callback to access individual elements
 				await cursor.forEach(function(model) {
 					let eachmodeldata = {
+						_id: model._id,
 						datetime: model.datetime,
 						name: model.measurement[0].name,
 						mass: model.measurement[0].mass,
