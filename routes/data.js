@@ -4,12 +4,41 @@ const MongoClient = require("mongodb").MongoClient;
 var ObjectId = require('mongoose').Types.ObjectId;
 var dbname = 'OwlEyeStudioWebInterface' , collectionname = 'models';
 const auth = require("../middleware/auth");
-const admin = require('../middleware/admin');
+const Setting = require('../model/Setting');
 
 // SHOW LIST OF USERS
 app.get('/', auth, async function(req, res, next) {
 	const client = new MongoClient('mongodb://localhost:27017/', { useUnifiedTopology: true });
-	
+	let allmembers = await Setting.find();
+	var dbs = [], collections = [];
+	let found = false;
+	allmembers.forEach( function(mem){
+		let db = mem.dbname;
+		let col = mem.collectionname;
+		found = false;
+		for (var i = 0; i < dbs.length && !found; i++) {
+			if (dbs[i] === db) {
+			  found = true;
+			  break;
+			}
+		}
+		if(!found){
+			dbs.push(db);
+		}
+
+		found = false;
+		for (var i = 0; i < collections.length && !found; i++) {
+			if (collections[i] === col) {
+			  found = true;
+			  break;
+			}
+		}
+		if(!found){
+			collections.push(col);
+		}
+	});
+	console.log(dbs, collections);
+
 	console.log('/data/--------',dbname, collectionname);
 	async function run() {
 		try {
@@ -46,6 +75,8 @@ app.get('/', auth, async function(req, res, next) {
 					dbname: dbname,
 					collectionname: collectionname,
 					data: sentdata,
+					dbs: dbs,
+					collections: collections
 				});
 			}
 		} finally {
@@ -121,7 +152,23 @@ app.post('/get', auth, async function(req, res, next) {
 	dbname = req.body.dbname;
 	collectionname = req.body.collectionname;
 	const client = new MongoClient('mongodb://localhost:27017/', { useUnifiedTopology: true });
-	
+	let allmembers = await Setting.find();
+	let dbs = [], collections = [];
+	allmembers.forEach( function(mem){
+		let db = mem.dbname;
+		let col = mem.collectionname;
+		if(dbs.find(db)){
+
+		}else{
+			dbs.push(db);
+		}
+		if(collections.find(col)){
+
+		}else{
+			collections.push(col);
+		}
+	});
+
 	console.log('/data/get/--------',dbname, collectionname);
 	async function run() {
 		try {
@@ -177,6 +224,8 @@ app.post('/get', auth, async function(req, res, next) {
 				dbname: dbname,
 				collectionname: collectionname,
 				data: sentdata,
+				dbs:dbs,
+				collections: collections,
 			});
 		}
 	);

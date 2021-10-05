@@ -57,12 +57,38 @@
                                       <div class="col-md-4">
                                         <h5>Database Name</h5>&nbsp;&nbsp;
                                         <small class="text-muted">eg.<i>OwlEyeStudioWebInterface</i></small>
-                                        <input type="text" name='db-name' class="form-control" id="placeholderInput" placeholder="Enter Database Name" value="<%- dbname %>">
+                                        <!-- <input type="text" name='db-name' class="form-control" id="placeholderInput" placeholder="Enter Database Name" value="<%- dbname %>"> -->
+                                        <fieldset class='formgroup'>
+                                          <select classs='custom-select' id='placeholderInput'>
+                                            <% var x = 0%>
+                                            <% dbs.forEach( function (member){ %>
+                                              <% if(x == 0){ %>
+                                                <option selected><%= member %></option>
+                                              <% } else { %>
+                                                <option value="<%= x %>"><%= member %></option>
+                                              <% } %>
+                                              <% x = x + 1;%>
+                                            <% }); %>
+                                          </select>
+                                        </fieldset>
                                       </div>
                                       <div class="col-md-4">
                                         <h5>Collection Name</h5>&nbsp;&nbsp;
                                         <small class="text-muted">eg.<i>models</i></small>
-                                        <input type="text" name='collection-name' class="form-control" id="placeholderInput1" placeholder="Enter Collection Name" value="<%- collectionname %>">
+                                        <!-- <input type="text" name='collection-name' class="form-control" id="placeholderInput1" placeholder="Enter Collection Name" value="<%- collectionname %>"> -->
+                                        <fieldset class='formgroup'>
+                                          <select classs='custom-select' id='placeholderInput1'>
+                                            <% var x = 0%>
+                                            <% collections.forEach( function (member){ %>
+                                              <% if(x == 0){ %>
+                                                <option selected><%= member %></option>
+                                              <% } else { %>
+                                                <option value="<%= x %>"><%= member %></option>
+                                              <% } %>
+                                              <% x = x + 1;%>
+                                            <% }); %>
+                                          </select>
+                                        </fieldset>
                                       </div>
                                       <div class='col-md-4'>
                                         <br><br>
