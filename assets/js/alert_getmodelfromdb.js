@@ -47,7 +47,6 @@ function onclick_get(){
               });
               tabletag.html(tableinnerhtml);
             }
-            console.log(sentdata);
             swalWithBootstrapButtons.fire(
               'Got it!',
               'Your db is updated.',

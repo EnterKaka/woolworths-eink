@@ -13,8 +13,8 @@ app.get('/', auth, async function(req, res, next) {
 	var dbs = [], collections = [];
 	let found = false;
 	allmembers.forEach( function(mem){
-		let db = mem.dbname;
-		let col = mem.collectionname;
+		let db = mem.dbname.trim();
+		let col = mem.collectionname.trim();
 		found = false;
 		for (var i = 0; i < dbs.length && !found; i++) {
 			if (dbs[i] === db) {
@@ -155,16 +155,27 @@ app.post('/get', auth, async function(req, res, next) {
 	let allmembers = await Setting.find();
 	let dbs = [], collections = [];
 	allmembers.forEach( function(mem){
-		let db = mem.dbname;
-		let col = mem.collectionname;
-		if(dbs.find(db)){
-
-		}else{
+		let db = mem.dbname.trim();
+		let col = mem.collectionname.trim();
+		found = false;
+		for (var i = 0; i < dbs.length && !found; i++) {
+			if (dbs[i] === db) {
+			  found = true;
+			  break;
+			}
+		}
+		if(!found){
 			dbs.push(db);
 		}
-		if(collections.find(col)){
 
-		}else{
+		found = false;
+		for (var i = 0; i < collections.length && !found; i++) {
+			if (collections[i] === col) {
+			  found = true;
+			  break;
+			}
+		}
+		if(!found){
 			collections.push(col);
 		}
 	});
@@ -223,7 +234,7 @@ app.post('/get', auth, async function(req, res, next) {
 				title: 'Model DB - Owl Studio Web App',
 				dbname: dbname,
 				collectionname: collectionname,
-				data: sentdata,
+				data: [],
 				dbs:dbs,
 				collections: collections,
 			});
