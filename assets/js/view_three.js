@@ -238,7 +238,6 @@ function main() {
       //set rgb from xyz
       let k=(zvalue - min)/(max - min);
       let rgb = getrgb(k);
-      console.log(rgb);
       //set color from xyz
       colors.push(rgb[0]);
       colors.push(rgb[1]);

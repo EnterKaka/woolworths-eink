@@ -77,7 +77,7 @@ app.get('/view/(:_id)', async function(req, res, next) {
 			const datas = database.collection(collectionname);
 			// query for movies that have a runtime less than 15 minutes
 			const cursor = await datas.findOne({_id: new ObjectId(req.params._id) });
-			console.log(cursor);
+			// console.log(cursor);
 			// print a message if no documents were found
 			if (cursor) {
 				// replace console.dir with your callback to access individual elements
@@ -147,7 +147,7 @@ app.post('/get', async function(req, res, next) {
 					sentdata.push(eachmodeldata);
 				});
 				console.log('success get data');
-				console.log(sentdata);
+				// console.log(sentdata);
 				req.flash('success', 'Data loaded successfully! DB = ' + dbname)
 				// redirect to users list page
 				res.header(200).json({

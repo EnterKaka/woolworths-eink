@@ -38,7 +38,7 @@ function onclick_get(){
                 '<td>' + element.volume + '</td>'+
                 '<td>'+
                 '<div style="float:left">'+
-                '<a href="/data/view/' + element.datetime + '" class="btn btn-primary btn-min-width mr-1 mb-1">View</a>' +	
+                '<a href="/data/view/' + element._id + '" class="btn btn-primary btn-min-width mr-1 mb-1">View</a>' +	
                 '</div>'+
                 '</td>'+
                 '</tr>';
