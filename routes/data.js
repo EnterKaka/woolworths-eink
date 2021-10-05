@@ -55,7 +55,6 @@ app.get('/view/(:datetime)', async function(req, res, next) {
 				res.redirect('/viewer');
 			}else{
 				console.log("No documents found!");
-		   		//  process.exit(1)
 		   		req.flash('error', 'No existed');
 		   		// redirect to users list page
 		   		res.redirect('/data/');
