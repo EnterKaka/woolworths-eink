@@ -2,9 +2,10 @@ var express = require('express');
 var app = express();
 const MongoClient = require("mongodb").MongoClient;
 var ObjectId = require('mongoose').Types.ObjectId;
-var dbname = 'OwlEyeStudioWebInterface' , collectionname = 'models';
 const auth = require("../middleware/auth");
 const Setting = require('../model/Setting');
+
+var dbname = 'OwlEyeStudioWebInterface' , collectionname = 'models';
 
 // SHOW LIST OF USERS
 app.get('/', auth, async function(req, res, next) {
@@ -40,6 +41,10 @@ app.get('/', auth, async function(req, res, next) {
 	console.log(dbs, collections);
 
 	console.log('/data/--------',dbname, collectionname);
+	//session dbname and collection name save
+	req.session.dbname = dbname;
+	req.session.collectionname = collectionname;
+
 	async function run() {
 		try {
 			await client.connect();
@@ -151,6 +156,11 @@ app.get('/view/(:_id)', auth, async function(req, res, next) {
 app.post('/get', auth, async function(req, res, next) {
 	dbname = req.body.dbname;
 	collectionname = req.body.collectionname;
+
+	//session dbname and collection name save
+	req.session.dbname = dbname;
+	req.session.collectionname = collectionname;
+	
 	const client = new MongoClient('mongodb://localhost:27017/', { useUnifiedTopology: true });
 	let allmembers = await Setting.find();
 	let dbs = [], collections = [];

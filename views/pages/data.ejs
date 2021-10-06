@@ -60,7 +60,11 @@
                                         <fieldset class='formgroup'>
                                           <select class='custom-select' id='placeholderInput'>
                                             <% dbs.forEach( function (member){ %>
+                                              <% if(dbname == member){ %>
+                                                <option value="<%= member %>" selected><%= member %></option>
+                                              <% } else { %>
                                                 <option value="<%= member %>"><%= member %></option>
+                                              <% } %>
                                             <% }); %>
                                           </select>
                                         </fieldset>
@@ -71,7 +75,11 @@
                                         <fieldset class='formgroup'>
                                           <select class='custom-select' id='placeholderInput1'>
                                             <% collections.forEach( function (member){ %>
+                                              <% if(collectionname == member){ %>
+                                                <option value="<%= member %>" selected><%= member %></option>
+                                              <% } else { %>
                                                 <option value="<%= member %>"><%= member %></option>
+                                              <% } %>
                                             <% }); %>
                                           </select>
                                         </fieldset>
