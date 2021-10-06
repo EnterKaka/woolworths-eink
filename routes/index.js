@@ -21,6 +21,13 @@ app.get('/viewer', auth, function(req, res) {
 	})
 })
 
+app.get('/dashboard', auth, function(req, res) {
+	// render to views/index.ejs template file
+	res.render('pages/dashboard', {
+		title: 'Dashboard - Owl Studio Web App',
+	});
+})
+
 app.get('/login', function(req, res) {
 	// render to views/index.ejs template file
 	res.render('pages/login', {title: 'Login - Owl Studio Web App'})

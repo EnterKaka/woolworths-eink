@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html class="loading" lang="en" data-textdirection="ltr">
+    <head>
+        <%- include('../partials/head'); %>
+        <link rel="stylesheet" type="text/css" href="theme-assets/vendors/css/charts/chartist.css">
+        <link rel="stylesheet" type="text/css" href="theme-assets/css/pages/dashboard-ecommerce.css">
+    </head>
+    <body class="vertical-layout vertical-menu 2-columns   menu-expanded fixed-navbar" data-open="click" data-menu="vertical-menu" data-color="bg-gradient-x-purple-blue" data-col="2-columns">
+    <!-- fixed-top-->
+        <%- include('../partials/header'); %>
+        <!-- ////////////////////////////////////////////////////////////////////////////-->
+        <%- include('../partials/sidebar'); %>
+
+        <div class="app-content content">
+            <div class="content-wrapper">
+                <div class="content-wrapper-before"></div>
+                <div class="content-header row"></div>
+                <div class="content-body">
+                    <!-- Chart -->
+                    <div class="row match-height">
+                        <div class="col-12">
+                            <div class="">
+                                <div id="gradient-line-chart1" class="height-250 GradientlineShadow1"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Chart -->
+
+                    <!-- eCommerce statistic -->
+                    <div class="row">
+                        <div class="col-xl-4 col-lg-6 col-md-12">
+                            <div class="card pull-up ecom-card-1 bg-white">
+                                <div class="card-content ecom-card2 height-180">
+                                    <h5 class="text-muted danger position-absolute p-1">Progress Stats</h5>
+                                    <div>
+                                        <i class="ft-pie-chart danger font-large-1 float-right p-1"></i>
+                                    </div>
+                                    <div class="progress-stats-container ct-golden-section height-75 position-relative pt-3  ">
+                                        <div id="progress-stats-bar-chart"></div>
+                                        <div id="progress-stats-line-chart" class="progress-stats-shadow"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xl-4 col-lg-6 col-md-12">
+                            <div class="card pull-up ecom-card-1 bg-white">
+                                <div class="card-content ecom-card2 height-180">
+                                    <h5 class="text-muted info position-absolute p-1">Activity Stats</h5>
+                                    <div>
+                                        <i class="ft-activity info font-large-1 float-right p-1"></i>
+                                    </div>
+                                    <div class="progress-stats-container ct-golden-section height-75 position-relative pt-3">
+                                        <div id="progress-stats-bar-chart1"></div>
+                                        <div id="progress-stats-line-chart1" class="progress-stats-shadow"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xl-4 col-lg-12">
+                            <div class="card pull-up ecom-card-1 bg-white">
+                                <div class="card-content ecom-card2 height-180">
+                                    <h5 class="text-muted warning position-absolute p-1">Sales Stats</h5>
+                                    <div>
+                                        <i class="ft-shopping-cart warning font-large-1 float-right p-1"></i>
+                                    </div>
+                                    <div class="progress-stats-container ct-golden-section height-75 position-relative pt-3">
+                                        <div id="progress-stats-bar-chart2"></div>
+                                        <div id="progress-stats-line-chart2" class="progress-stats-shadow"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!--/ eCommerce statistic -->
+                
+                    <!-- line chart section start -->
+                    <section id="chartjs-line-charts">
+                        <!-- Line Chart -->
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h4 class="card-title">Simple Line Chart</h4>
+                                        <a class="heading-elements-toggle"><i class="la la-ellipsis-v font-medium-3"></i></a>
+                                        <div class="heading-elements">
+                                            <ul class="list-inline mb-0">
+                                                <li><a data-action="collapse"><i class="ft-minus"></i></a></li>
+                                                <li><a data-action="reload"><i class="ft-rotate-cw"></i></a></li>
+                                                <li><a data-action="expand"><i class="ft-maximize"></i></a></li>
+                                                <li><a data-action="close"><i class="ft-x"></i></a></li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                    <div class="card-content collapse show">
+                                        <div class="card-body chartjs">
+                                                <div class="height-500">
+                                            <canvas id="line-chart"></canvas>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </section>
+                    <!-- // line chart section end -->
+
+                </div>
+            </div>
+        </div>
+        <!-- ////////////////////////////////////////////////////////////////////////////-->
+
+        <%- include('../partials/footer'); %>
+        <script src="/theme-assets/vendors/js/charts/chartist.min.js" type="text/javascript"></script>
+        <script src="/theme-assets/js/scripts/pages/dashboard-lite.js" type="text/javascript"></script>
+
+        <script src="/theme-assets/vendors/js/charts/chart.min.js" type="text/javascript"></script>
+        <script src="/theme-assets/js/scripts/charts/chartjs/line/line.js" type="text/javascript"></script>
+
+        <script src="/js/alert_getmodelfromdb.js" type="text/javascript"></script>
+    </body>
+</html>
