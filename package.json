@@ -34,6 +34,7 @@
     "method-override": "^2.3.10",
     "mongodb": "^3.6.2",
     "mongoose": "^6.0.7",
-    "morgan": "^1.10.0"
+    "morgan": "^1.10.0",
+    "three": "^0.132.2"
   }
 }

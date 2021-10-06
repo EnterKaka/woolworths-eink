@@ -1,0 +1,24 @@
+<div>
+    <div class="row toolbar">
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        <input name="mymodel" type="file" style="display: none;" accept=".obj, .txt" id="input_model">
+        <button type='button' class="btn btn-icon btn-success mr-1" title='Open model from local pc' id='btn-openfromLocal'>
+            <i class="la la-hdd-o"></i>
+        </button>
+        <% if(messages.pointcloud){ %>
+        <input type="hidden" id="pointcloud" value='<%- messages.pointcloud %>'>
+        <% } %>
+        <% if(messages.pcl_name){ %>
+            <h2 id='modelpath'><%= messages.pcl_name %></h2>
+        <% }else{ %>
+            <h2 id='modelpath'>filename</h2>
+        <% } %>
+    </div>
+    <div class="row container_main">
+        <!-- Center 3D Viewer -->
+        <div class="col-sm-12 col-md-12 col-lg-12 col-xl-12 col-xxl-12" id="main_canvas">
+            <!-- <img src='/img/Eule_Grau.png' alt='OWL LOGO' id="img_owllogo">             -->
+            <canvas id='viewer_3d' class='3dviewer'></canvas>
+        </div>
+    </div>
+</div>

@@ -8,6 +8,7 @@
     <%- include('../../partials/header'); %>
     <!-- ////////////////////////////////////////////////////////////////////////////-->
     <%- include('../../partials/sidebar'); %>
+    
 
     <div class="app-content content">
       <div class="content-wrapper">
@@ -38,7 +39,7 @@
                 <div class="col-12">
                     <div class="card">
                         <div class="card-header">
-                            <h4 class="card-title">Owl Studio Member Table</h4>
+                            <h4 class="card-title">Owl Studio Setting Table</h4>
                             <a class="heading-elements-toggle"><i class="la la-ellipsis-v font-medium-3"></i></a>
                             <div class="heading-elements">
                                 <ul class="list-inline mb-0">
@@ -51,8 +52,8 @@
                         </div>
                         <div class="card-content collapse show">
                             <div class="card-body">
-                                <p>This is Owl Studio Member Table.
-                                   <br>You can Create new users or Edit/Delete existing users. 
+                                <p>This is Owl Studio Setting Table.
+                                   <br>You can Create, Read, Update, Delete all records of this Table. 
                                 </p>
                                 <% if (messages.error) { %>
                                   <!-- <p style="color:red"><%- messages.error %></p> -->
@@ -78,52 +79,26 @@
                                         hideAfter: 1500   // in milli seconds
                                     })
                                   </script>
-                                <% } %>	      
+                                <% } %>	        
                             </div>
-                            <a href="/user/add" class="btn btn-success btn-min-width mr-1 mb-1" style="float : right;">Add</a>
-                            <div class='table-padding-set'>
-                                <div class="table-responsive">
-                                    <table class="table table-striped">
-                                        <colgroup>
-                                          <col style="width: 15%;">
-                                          <col style="width: 15%;">
-                                          <col style="width: 25%;max-width: 200px;">
-                                          <col style="width: 15%;">
-                                          <col style="width: 30%;">
-                                        </colgroup>
-                                        <thead class="thead-dark">
-                                            <tr>
-                                                <th scope="col">Name</th>
-                                                <th scope="col">Email</th>
-                                                <th scope="col">Password</th>
-                                                <th scope="col">Privilege</th>
-                                                <th scope="col">#</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                          <% if (data) { %>
-                                            <% data.forEach(function(member){ %>
-                                              <tr>
-                                                <td><%= member.name %></td>
-                                                <td><%= member.email %></td>
-                                                <td>
-                                                  <div style="max-width: 200px; text-overflow: ellipsis;overflow: hidden;white-space: nowrap;">
-                                                  <%= member.pass %>
-                                                  </div>
-                                                </td>
-                                                <td><%= member.privilege %></td>
-                                                <td>
-                                                  <div style="float:left">
-                                                    <a href='/user/edit/<%= member.email %>' class="btn btn-primary btn-min-width mr-1 mb-1">Edit</a> &nbsp;			
-                                                    <a href="javascript: onclick_delete('<%= member.email %>')" class="btn btn-danger btn-min-width mr-1 mb-1">Delete</a>
-                                                  </div>
-                                                </td>
-                                              </tr>
-                                            <% }) %>
-                                          <% } %>
-                                        </tbody>
+                            <div class="table-responsive">
+                                <form action="/setting/add" method="post">
+                                    <table class="table">
+                                        <tr> 
+                                            <td>Database Name</td>
+                                            <td><input type="text" class="form-control" name="dbname" placeholder="Enter Database UserName" /></td>
+                                        </tr>
+                                        <tr> 
+                                            <td>Collection Name</td>
+                                            <td><input type="text" class="form-control" name="collectionname" placeholder="Enter Collection Name" /></td>
+                                        </tr>
+                                        <tr> 
+                                            <td></td>
+                                            <td><input type="submit" value="Add" class="btn btn-success btn-min-width mr-1 mb-1"/></td>
+                                        </tr>
                                     </table>
-                                </div>
+                                    <!-- <input type="hidden" name="_method" value="PUT" /> -->
+                                </form>
                             </div>
                         </div>
                     </div>
@@ -135,8 +110,6 @@
       </div>
     </div>
     <!-- ////////////////////////////////////////////////////////////////////////////-->
-
     <%- include('../../partials/footer'); %>
-    <script src="/js/alert_ajax.js" type="text/javascript"></script>
   </body>
 </html>

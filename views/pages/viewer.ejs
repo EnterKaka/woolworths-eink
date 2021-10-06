@@ -3,7 +3,6 @@
   <head>
     <%- include('../partials/head'); %>
     <!-- BEGIN Three.js Load -->
-    <script src="/js/three.js"></script>
     <!-- END Three.js Load -->
 </head>
   <body class="vertical-layout vertical-menu 2-columns   menu-expanded fixed-navbar" data-open="click" data-menu="vertical-menu" data-color="bg-gradient-x-purple-blue" data-col="2-columns">
@@ -18,7 +17,7 @@
       <div class="content-wrapper-before"></div>
       <div class="content-header row">
         <div class="content-header-left col-md-4 col-12 mb-2">
-          <h3 class="content-header-title">Owl Online 3D Viewer</h3>
+          <h3 class="content-header-title">Owl Eye Viewer</h3>
         </div>
         <div class="content-header-right col-md-8 col-12">
           <div class="breadcrumbs-top float-md-right">
@@ -39,9 +38,9 @@
         <section id="basic-buttons">
         <div class="row">
             <div class="col-lg-12 col-md-12">
-                <div class="card">
+                <div class="card" id="canvas-container">
                     <div class="card-header">
-                        <h4 class="card-title">OWL 3D WEB APP</h4>
+                        <!-- <h4 class="card-title">OWL 3D WEB APP</h4> -->
                         <a class="heading-elements-toggle"><i class="la la-ellipsis font-medium-3"></i></a>
                         <div class="heading-elements">
                             <ul class="list-inline mb-0">
@@ -51,10 +50,10 @@
                                 <li><a data-action="close"><i class="ft-x"></i></a></li>
                             </ul>
                         </div>
-                    </div>
+                      </div>
                     <div class="card-content collapse show">
                         <div class="card-body">
-                            <p class="card-subtitle">You can load *.txt, *.obj files from owl windows app.</p>
+                            <!-- <p class="card-subtitle">You can load *.txt, *.obj files from owl windows app.</p> -->
                             <div class="form-group">
                                 <!-- basic viewer -->
                                 <%- include('../partials/threeviewer'); %>
@@ -75,6 +74,7 @@
   
 <!-- page content end -->
 <%- include('../partials/footer'); %>
+<script type="module" src="/js/view_three.js"></script>
 <!-- page footer -->
 
 </body>
