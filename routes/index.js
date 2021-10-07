@@ -6,6 +6,7 @@ const Joi = require('joi');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const config = require("config");
+const MongoClient = require("mongodb").MongoClient;
 
 app.get('/', function(req, res) {
 	// render to views/index.ejs template file
@@ -14,11 +15,94 @@ app.get('/', function(req, res) {
 
 app.get('/viewer', auth, function(req, res) {
 	// render to views/index.ejs template file
+	
 	res.render('pages/viewer', {
 		title: '3D Viewer - Owl Studio Web App',
 		priv: req.user.privilege,
 		model_data: '',
 	})
+})
+
+app.get('/dashboard', auth, function(req, res) {
+	// render to views/index.ejs template file
+	console.log('/dashboard----------');
+	if(req.session.dbname)
+		console.log(req.session.dbname, req.session.collectionname);
+	else{
+		req.session.dbname = 'OwlEyeStudioWebInterface';
+		req.session.collectionname = 'models';
+	}
+
+	//This is all models that seperated with name.
+	var allmodels = [];
+
+	const client = new MongoClient('mongodb://localhost:27017/', { useUnifiedTopology: true });
+	async function run() {
+		try {
+			await client.connect();
+			const database = client.db(req.session.dbname);
+			const datas = database.collection(req.session.collectionname);
+			// query for movies that have a runtime less than 15 minutes
+			const cursor = datas.find({});
+			// print a message if no documents were found
+			if ((await cursor.count()) === 0) {
+				console.log("No documents found!");
+		   		//  process.exit(1)
+		   		req.flash('error', 'No existed');
+		   		// redirect to users list page
+		   		res.header(400).json({status: 'fail'});
+			}else{
+				// replace console.dir with your callback to access individual elements
+				await cursor.forEach(function(model) {
+					let modelname = model.measurement[0].name;
+					let eachmodeldata = {
+						_id: model._id,
+						datetime: model.datetime,
+						mass: model.measurement[0].mass,
+						volume: model.measurement[0].volume,
+					}
+					let stored = false;
+					for(const element of allmodels){
+						if(element.name === modelname){
+							element.log.push(eachmodeldata);
+							stored = true;
+							break;
+						}
+					}
+					
+					if(stored == false){
+						let temp_model = {
+							name: modelname,
+							log: [],
+						}
+						temp_model.log.push(eachmodeldata);
+						allmodels.push(temp_model);
+					}
+					
+				});
+				//sucess
+				console.log(allmodels.log[0].mass);
+				res.render('pages/dashboard', {
+					title: 'Dashboard - Owl Studio Web App',
+				});
+			}
+		} finally {
+			await client.close();
+		}
+	}
+	run().catch(
+		(err) => {
+			console.log("mongodb connect error ========");
+			console.error(err)
+		   	req.flash('error', err)
+		   	// redirect to users list page
+		   	res.render('pages/dashboard', {
+				title: 'Model DB - Owl Studio Web App',
+			});
+		}
+	);
+
+	
 })
 
 app.get('/login', function(req, res) {
