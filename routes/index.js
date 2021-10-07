@@ -13,12 +13,12 @@ app.get('/', function(req, res) {
 	res.redirect('/viewer')
 })
 
-app.get('/viewer', auth, function(req, res) {
+app.get('/viewer', function(req, res) {
 	// render to views/index.ejs template file
 	
 	res.render('pages/viewer', {
 		title: '3D Viewer - Owl Studio Web App',
-		priv: req.user.privilege,
+		// priv: req.user.privilege,
 		model_data: '',
 	})
 })
@@ -105,10 +105,10 @@ app.get('/dashboard', auth, function(req, res) {
 	
 })
 
-app.get('/login', function(req, res) {
-	// render to views/index.ejs template file
-	res.render('pages/login', {title: 'Login - Owl Studio Web App'})
-})
+// app.get('/login', function(req, res) {
+// 	// render to views/index.ejs template file
+// 	res.render('pages/login', {title: 'Login - Owl Studio Web App'})
+// })
 
 app.get('/logout', function(req, res){
 	req.session.destroy();
