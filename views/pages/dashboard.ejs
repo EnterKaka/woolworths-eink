@@ -76,32 +76,60 @@
                     <!-- line chart section start -->
                     <section id="chartjs-line-charts">
                         <!-- Line Chart -->
-                        <div class="row">
-                            <div class="col-12">
-                                <div class="card">
-                                    <div class="card-header">
-                                        <h4 class="card-title">Simple Line Chart</h4>
-                                        <a class="heading-elements-toggle"><i class="la la-ellipsis-v font-medium-3"></i></a>
-                                        <div class="heading-elements">
-                                            <ul class="list-inline mb-0">
-                                                <li><a data-action="collapse"><i class="ft-minus"></i></a></li>
-                                                <li><a data-action="reload"><i class="ft-rotate-cw"></i></a></li>
-                                                <li><a data-action="expand"><i class="ft-maximize"></i></a></li>
-                                                <li><a data-action="close"><i class="ft-x"></i></a></li>
-                                            </ul>
-                                        </div>
-                                    </div>
-                                    <div class="card-content collapse show">
-                                        <div class="card-body chartjs">
-                                                <div class="height-500">
-                                            <canvas id="line-chart"></canvas>
+                        <% if(names) { %>
+                            <input type="hidden" id="input-names" value='<%- names %>'>
+                        <% } %>
+                        <% if(data) { %>
+                            <% for(const element of data) { %>
+                                <div class="row">
+                                    <div class="col-12">
+                                        <div class="card">
+                                            <div class="card-header">
+                                                <h4 class="card-title"><%= element.name %></h4>
+                                                <a class="heading-elements-toggle"><i class="la la-ellipsis-v font-medium-3"></i></a>
+                                                <div class="heading-elements">
+                                                    <ul class="list-inline mb-0">
+                                                        <li><a data-action="collapse"><i class="ft-minus"></i></a></li>
+                                                        <li><a data-action="reload"><i class="ft-rotate-cw"></i></a></li>
+                                                        <li><a data-action="expand"><i class="ft-maximize"></i></a></li>
+                                                        <li><a data-action="close"><i class="ft-x"></i></a></li>
+                                                    </ul>
+                                                </div>
+                                            </div>
+                                            <div class="card-content collapse show">
+                                                <div class="card-body chartjs">
+                                                    <div class="height-500">
+                                                    <canvas id="<%= 'canvas-model-' + element.name %>"></canvas>
+                                                    </div>
+                                                    <div>
+                                                        <div class="row" style="margin-top: 20px; margin-bottom: 15px; margin-left: -5px;">
+                                                            <div class="col-md-5 col-sm-12 col-12 col-lg-4 col-xl-3">
+                                                                From&nbsp;<input type="datetime-local" id='<%= "fromtime-"+element.name %>'>
+                                                            </div>
+                                                            <div class="col-md-5 col-sm-12 col-12 col-lg-4 col-xl-3">
+                                                                To&nbsp;<input type="datetime-local" id='<%= "totime-"+element.name %>'>
+                                                            </div>
+                                                            <div class="col-md-1 col-sm-1 col-12 col-lg-1 col-xl-1">
+                                                                <button class="btn btn-sm btn-dark" id='<%= "btn-"+element.name %>'>Update</button>
+                                                            </div>
+                                                        </div>
+                                                        <!-- model data -->
+                                                        <input type="hidden" id="<%= 'input-model-' + element.name %>" value='<%= JSON.stringify(element) %>'>
+                                                        &Tab;<h4 class='info'>Model Information&nbsp;:&nbsp;<%= element.name %></h4><br>
+                                                        <dl class='row'><dt class="col-4"> 1.Last Measurement DateTime&nbsp;:</dt><dd class="col-8" id='<%= "lm-datetime-"+element.name %>'></dd></dl>
+                                                        <dl class='row'><dt class="col-4"> 2.Last Measurement Volume&nbsp;:</dt><dd class="col-8" id='<%= "lm-volume-"+element.name %>'></dd></dl>
+                                                        <dl class='row'><dt class="col-4"> 3.Last Measurement Mass&nbsp;:</dt><dd class="col-8" id='<%= "lm-mass-"+element.name %>'></dd></dl>
+                                                        <dl class='row'><dt class="col-4"> 4.Last Measurement Density&nbsp;:</dt><dd class="col-8" id='<%= "lm-density-"+element.name %>'></dd></dl>
+                                                        <dl class='row'><dt class="col-4"> 5.Average Volume&nbsp;:</dt><dd class="col-8" id='<%= "lm-averagevolume-"+element.name %>'></dd></dl>
+                                                        <input type="hidden" id="<%= 'input-modelid-' + element.name %>">
+                                                    </div>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
-                        </div>
-
+                            <% } %>
+                        <% } %>
                     </section>
                     <!-- // line chart section end -->
 
@@ -109,14 +137,13 @@
             </div>
         </div>
         <!-- ////////////////////////////////////////////////////////////////////////////-->
-
         <%- include('../partials/footer'); %>
         <script src="/theme-assets/vendors/js/charts/chartist.min.js" type="text/javascript"></script>
         <script src="/theme-assets/js/scripts/pages/dashboard-lite.js" type="text/javascript"></script>
 
         <script src="/theme-assets/vendors/js/charts/chart.min.js" type="text/javascript"></script>
-        <script src="/theme-assets/js/scripts/charts/chartjs/line/line.js" type="text/javascript"></script>
-
+        <script src="/js/chart.js" type="text/javascript"></script>
+        
         <script src="/js/alert_getmodelfromdb.js" type="text/javascript"></script>
     </body>
 </html>

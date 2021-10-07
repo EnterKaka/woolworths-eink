@@ -77,11 +77,11 @@ app.get('/', auth, async function(req, res, next) {
 				console.log('/data/-----',dbname, collectionname);
 				res.render('pages/data', {
 					title: 'Model DB - Owl Studio Web App',
-					dbname: dbname,
-					collectionname: collectionname,
+					dbname: dbname,//seleted db
+					collectionname: collectionname,//selected collection
 					data: sentdata,
-					dbs: dbs,
-					collections: collections
+					dbs: dbs,//db list
+					collections: collections//collection list
 				});
 			}
 		} finally {
