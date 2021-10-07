@@ -85,7 +85,7 @@
                                     <div class="col-12">
                                         <div class="card">
                                             <div class="card-header">
-                                                <h4 class="card-title"><%= element.name %></h4>
+                                                <h4 class="card-title"></h4>
                                                 <a class="heading-elements-toggle"><i class="la la-ellipsis-v font-medium-3"></i></a>
                                                 <div class="heading-elements">
                                                     <ul class="list-inline mb-0">
@@ -116,11 +116,23 @@
                                                         <!-- model data -->
                                                         <input type="hidden" id="<%= 'input-model-' + element.name %>" value='<%= JSON.stringify(element) %>'>
                                                         &Tab;<h4 class='info'>Model Information&nbsp;:&nbsp;<%= element.name %></h4><br>
-                                                        <dl class='row'><dt class="col-4"> 1.Last Measurement DateTime&nbsp;:</dt><dd class="col-8" id='<%= "lm-datetime-"+element.name %>'></dd></dl>
+                                                        <div class="row">
+                                                            <div class="col-md-12 col-lg-6">
+                                                                <dl class='row'><dt class="col-6"> 1.Last Measurement Date&nbsp;:</dt><dd class="col-6" id='<%= "lm-date-"+element.name %>'></dd></dl>
+                                                                <dl class='row'><dt class="col-6"> 2.Last Measurement Time&nbsp;:</dt><dd class="col-6" id='<%= "lm-time-"+element.name %>'></dd></dl>
+                                                                <dl class='row'><dt class="col-6"> 3.Last Measurement Volume&nbsp;:</dt><dd class="col-6" id='<%= "lm-volume-"+element.name %>'></dd></dl>
+                                                            </div>
+                                                            <div class="col-md-12 col-lg-6">
+                                                                <dl class='row'><dt class="col-6"> 4.Last Measurement Mass&nbsp;:</dt><dd class="col-6" id='<%= "lm-mass-"+element.name %>'></dd></dl>
+                                                                <dl class='row'><dt class="col-6"> 5.Last Measurement Density&nbsp;:</dt><dd class="col-6" id='<%= "lm-density-"+element.name %>'></dd></dl>
+                                                                <dl class='row'><dt class="col-6"> 6.Average Volume&nbsp;:</dt><dd class="col-6" id='<%= "lm-averagevolume-"+element.name %>'></dd></dl>
+                                                            </div>
+                                                        </div>
+                                                        <!-- <dl class='row'><dt class="col-4"> 1.Last Measurement DateTime&nbsp;:</dt><dd class="col-8" id='<%= "lm-datetime-"+element.name %>'></dd></dl>
                                                         <dl class='row'><dt class="col-4"> 2.Last Measurement Volume&nbsp;:</dt><dd class="col-8" id='<%= "lm-volume-"+element.name %>'></dd></dl>
                                                         <dl class='row'><dt class="col-4"> 3.Last Measurement Mass&nbsp;:</dt><dd class="col-8" id='<%= "lm-mass-"+element.name %>'></dd></dl>
                                                         <dl class='row'><dt class="col-4"> 4.Last Measurement Density&nbsp;:</dt><dd class="col-8" id='<%= "lm-density-"+element.name %>'></dd></dl>
-                                                        <dl class='row'><dt class="col-4"> 5.Average Volume&nbsp;:</dt><dd class="col-8" id='<%= "lm-averagevolume-"+element.name %>'></dd></dl>
+                                                        <dl class='row'><dt class="col-4"> 5.Average Volume&nbsp;:</dt><dd class="col-8" id='<%= "lm-averagevolume-"+element.name %>'></dd></dl> -->
                                                         <input type="hidden" id="<%= 'input-modelid-' + element.name %>">
                                                     </div>
                                                 </div>
