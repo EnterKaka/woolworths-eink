@@ -157,6 +157,6 @@ cron.schedule('* * * * *', async () => {
 			collections.push(col);
 		}
 	});
-	io.emit('broad message', { dbdata: dbs, coldata: collections });
+	io.emit('broad message', { data: 'dbs, coldata: collections' });
 });
 

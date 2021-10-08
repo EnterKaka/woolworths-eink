@@ -32,7 +32,7 @@ function drawChart(ctx,data,ft,tt){
                 },
                 scaleLabel: {
                     display: true,
-                    labelString: 'Measurement Date Time'
+                    labelString: 'Time'
                 },
                 offset: 60,
                 position: 'end',
@@ -49,7 +49,7 @@ function drawChart(ctx,data,ft,tt){
                 },
                 scaleLabel: {
                     display: true,
-                    labelString: 'Volume'
+                    labelString: 'Volume in m3'
                 }
             }]
         },
