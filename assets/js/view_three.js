@@ -316,8 +316,8 @@ function main() {
 
     var material = new THREE.PointsMaterial( { size: 0.1, vertexColors: vertexColors } );
     
-    while(scene.children.length > 0){ 
-      scene.remove(scene.children[0]); 
+    while(group.children.length > 0){ 
+      group.remove(group.children[0]); 
     }
     //draw axis
     // var axes = new THREE.AxesHelper(20);
@@ -334,7 +334,8 @@ function main() {
     // gridYZ.rotation.z = Math.PI / 2;
 
     points2 = new THREE.Points( geometry1, material );
-    scene.add( points2 );
+    group.add( points2 );
+    // scene.add( points2 );
     render();
   }
 
@@ -376,8 +377,8 @@ function main() {
 
     var material = new THREE.PointsMaterial( { size: 0.1, vertexColors: vertexColors } );
     
-    while(scene.children.length > 0){ 
-      scene.remove(scene.children[0]); 
+    while(group.children.length > 0){ 
+      group.remove(group.children[0]); 
     }
     
     //draw axis
