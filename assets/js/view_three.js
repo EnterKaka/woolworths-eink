@@ -31,7 +31,7 @@ function openModel_Fromlocal(e) {
     }
 }
 
-var controls, camera, renderer, scene, canvas, parent_canvas;
+var controls, camera, renderer, scene, canvas, parent_canvas, group;
 //three.js point cloud viewer
 function main() {
     canvas = document.querySelector('#viewer_3d');
@@ -116,7 +116,7 @@ function main() {
     // render();
 
     // } );
-    var group = new THREE.Object3D();
+    group = new THREE.Object3D();
     var points1, pointcloud;
     var loader = new XYZLoader();
     var tempvaluetag = document.getElementById('pointcloud');
@@ -243,7 +243,7 @@ function main() {
     }
 
     function rotateScene(deltaX, deltaY) {
-      //console.log(deltaX, deltaY)
+      console.log(deltaX, deltaY)
         group.rotation.z += deltaX / 100;
         group.rotation.x += deltaY / 100;
     } 
@@ -338,7 +338,7 @@ function main() {
     render();
   }
 
-  function reloadModelFromJSONData(filename,wholecontent) {
+  async function reloadModelFromJSONData(filename,wholecontent) {
     //console.log('jsondata');
     // $('#modelpath').html(filename);
     var vertices = [];
@@ -395,7 +395,8 @@ function main() {
     // gridYZ.rotation.z = Math.PI / 2;
 
     points2 = new THREE.Points( geometry1, material );
-    scene.add( points2 );
+    group.add( points2 );
+    // scene.add( points2 );
     render();
   }
 
