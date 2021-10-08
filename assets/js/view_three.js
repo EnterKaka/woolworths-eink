@@ -124,8 +124,8 @@ function main() {
       reloadModelFromJSONData(modelname,pointcloud);
 
     }else{
-      loader.load( './3dmodels/Weissspat_1632872292.txt', function ( geometry ) {
-        $('#modelpath').html('Weissspat_1632872292.txt');
+      loader.load( './3dmodels/owleyeweb.txt', function ( geometry ) {
+        $('#modelpath').html('owleyeweb.txt');
         geometry.center();
 
         var vertexColors = ( geometry.hasAttribute( 'color' ) === true );
