@@ -18,15 +18,15 @@ var config = require('./config');
  */ 
 app.set('view engine', 'ejs');
 app.use(express.static(__dirname + '/assets'));
-// app.use(cookieParser(env.get('myprivatekey')));
-// app.use(session({
-//   secret: env.get('myprivatekey'),
-//   resave: true,
-//   saveUninitialized: true,
-//   cookie: { maxAge: 1000*60*60*24,
-//     secure: false // change to true when site is live with https
-//   }
-// }))
+app.use(cookieParser(env.get('myprivatekey')));
+app.use(session({
+  secret: env.get('myprivatekey'),
+  resave: true,
+  saveUninitialized: true,
+  cookie: { maxAge: 1000*60*60*24,
+    secure: false // change to true when site is live with https
+  }
+}))
 
 /**
  * import routes/index.js
@@ -40,7 +40,7 @@ var setting = require('./routes/setting');
  * Express Validator Middleware for Form Validation
  */ 
 var expressValidator = require('express-validator');
-// app.use(expressValidator());
+app.use(expressValidator());
 
 /**
  * body-parser module is used to read HTTP POST data
@@ -88,7 +88,7 @@ app.use(methodOverride(function (req, res) {
  * cookie-parser & session modules
  */ 
 
-// app.use(flash());
+app.use(flash());
 
 app.use('/', index);
 app.use('/user', user);

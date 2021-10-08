@@ -5,7 +5,14 @@
         <button type='button' class="btn btn-icon btn-success mr-1" title='Open model from local pc' id='btn-openfromLocal'>
             <i class="la la-hdd-o"></i>
         </button>
-       
+        <% if(messages.pointcloud){ %>
+        <input type="hidden" id="pointcloud" value='<%- messages.pointcloud %>'>
+        <% } %>
+        <% if(messages.pcl_name){ %>
+            <h2 id='modelpath'><%= messages.pcl_name %></h2>
+        <% }else{ %>
+            <h2 id='modelpath'>filename</h2>
+        <% } %>
     </div>
     <div class="row container_main">
         <!-- Center 3D Viewer -->

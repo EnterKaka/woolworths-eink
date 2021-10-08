@@ -13,12 +13,12 @@ app.get('/', function(req, res) {
 	res.redirect('/viewer')
 })
 
-app.get('/viewer', function(req, res) {
+app.get('/viewer', auth, function(req, res) {
 	// render to views/index.ejs template file
 	
 	res.render('pages/viewer', {
 		title: '3D Viewer - Owl Studio Web App',
-		// priv: req.user.privilege,
+		priv: req.user.privilege,
 		model_data: '',
 	})
 })
@@ -105,10 +105,10 @@ app.get('/dashboard', auth, function(req, res) {
 	
 })
 
-// app.get('/login', function(req, res) {
-// 	// render to views/index.ejs template file
-// 	res.render('pages/login', {title: 'Login - Owl Studio Web App'})
-// })
+app.get('/login', function(req, res) {
+	// render to views/index.ejs template file
+	res.render('pages/login', {title: 'Login - Owl Studio Web App'})
+})
 
 app.get('/logout', function(req, res){
 	req.session.destroy();
@@ -143,28 +143,28 @@ app.post('/login', async function(req, res) {
 		}
 	}else{
 		// default login feature
-		// var email = req.body.email.trim();
-		// var pass = req.body.pass.trim();
-		// if((email == 'admin@oe-web.com' ) && (pass == 'admin1234' )){
-		// 	let v_user = new User({
-		// 		name: 'Quirin Kraus',
-		// 		pass: 'admin1234',
-		// 		email: 'admin@oe-web.com',
-		// 		privilege: 'admin',
-		// 	});
-		// 	v_user.pass = await bcrypt.hash(v_user.pass, 10);
-		// 	await v_user.save();
-		// 	let user1 = await User.findOne({ email: req.body.email });
-		// 	let token = jwt.sign({...user1}, config.get("myprivatekey"));
-		// 	req.session.accessToken = token;
-		// 	await req.session.save();
-		// 	res.redirect('/viewer');
-		// }
-		// for (const key in req.body) {
-		// 	if (Object.hasOwnProperty.call(req.body, key)) {
-		// 		req.flash(key, req.body[key])
-		// 	}
-		// }
+		var email = req.body.email.trim();
+		var pass = req.body.pass.trim();
+		if((email == 'admin@oe-web.com' ) && (pass == 'admin1234' )){
+			let v_user = new User({
+				name: 'Quirin Kraus',
+				pass: 'admin1234',
+				email: 'admin@oe-web.com',
+				privilege: 'admin',
+			});
+			v_user.pass = await bcrypt.hash(v_user.pass, 10);
+			await v_user.save();
+			let user1 = await User.findOne({ email: req.body.email });
+			let token = jwt.sign({...user1}, config.get("myprivatekey"));
+			req.session.accessToken = token;
+			await req.session.save();
+			res.redirect('/viewer');
+		}
+		for (const key in req.body) {
+			if (Object.hasOwnProperty.call(req.body, key)) {
+				req.flash(key, req.body[key])
+			}
+		}
 		req.flash('error', 'Email is not registered');
 		res.render('pages/login', {title: '3D Viewer - Owl Studio Web App'});
 	}
