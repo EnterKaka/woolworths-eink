@@ -2,7 +2,7 @@ import * as THREE from './three.module.js';
 import { OrbitControls } from './OrbitControls.js';
 // import { PCDLoader } from './PCDLoader.js';
 import { XYZLoader, getminmaxhegiht, getrgb, init_highlow } from './XYZLoader.js';
-// import { TrackballControls } from './TrackballControls.js';
+import { TrackballControls } from './TrackballControls.js';
 
 //open file dialog
 function btn_open_model(){
@@ -31,21 +31,41 @@ function openModel_Fromlocal(e) {
     }
 }
 
-var controls, camera, renderer, scene, canvas, parent_canvas;
+var controls, camera, renderer, scene, canvas, parent_canvas, group;
 //three.js point cloud viewer
 function main() {
     canvas = document.querySelector('#viewer_3d');
+
+    var mouseDown = false,
+        mouseX = 0,
+        mouseY = 0;
+
+    canvas.addEventListener('mousemove', function (e) {
+      //console.log('move')
+        onMouseMove(e);
+    }, false);
+    canvas.addEventListener('mousedown', function (e) {
+      //console.log('down')
+      if(e.button == 0) {
+        onMouseDown(e);
+      }
+    }, false);
+    canvas.addEventListener('mouseup', function (e) {
+      //console.log('up')
+        onMouseUp(e);
+    }, false);
+
     renderer = new THREE.WebGLRenderer({canvas, antialias: true});
     renderer.setPixelRatio(window.devicePixelRatio);
     renderer.setSize(canvas.clientWidth, canvas.clientHeight);
 
     scene = new THREE.Scene();
     //scene background color
-    // scene.background = new THREE.Color( 0xffffff );
-    //set axis
+    // scene.background = new THREE.Color( 0x333333 );
+    // //set axis
     // var axes = new THREE.AxesHelper(20);
     // scene.add(axes);
-    // //set grid helper
+    // // //set grid helper
     // var gridXZ = new THREE.GridHelper(0, 0);
     // scene.add(gridXZ);
 
@@ -67,11 +87,14 @@ function main() {
     
     //natural rotate control
     controls = new OrbitControls(camera, renderer.domElement);
-		controls.addEventListener( 'change', render ); // call this only in static scenes (i.e., if there is no animation loop)
+		// controls.addEventListener( 'change', render ); // call this only in static scenes (i.e., if there is no animation loop)
 		controls.minDistance = 0.1;
 		controls.maxDistance = 100;
     controls.enableRotate = true;
     controls.maxPolarAngle = Infinity;
+    controls.enableRotate = false;
+    // controls.autoRotate = true
+    controls.enableDamping = true;
     // controls.maxPolarAngle(Math.PI);
     
     //new rotate 360 control
@@ -80,6 +103,7 @@ function main() {
     // controls.zoomSpeed = 1.2;
     // controls.panSpeed = 1.8;
     // controls.keys = [ 'keyA', 'keyS', 'keyD' ];
+    // controls.noRotate = true;
 
     // load a resource pcd file load
     // var loader = new PCDLoader();
@@ -92,7 +116,7 @@ function main() {
     // render();
 
     // } );
-
+    group = new THREE.Object3D();
     var points1, pointcloud;
     var loader = new XYZLoader();
     var tempvaluetag = document.getElementById('pointcloud');
@@ -112,11 +136,12 @@ function main() {
         var material = new THREE.PointsMaterial( { size: 0.1, vertexColors: vertexColors } );
 
         points1 = new THREE.Points( geometry, material );
-        scene.add( points1 );
+        group.add( points1 );
         render();
 
       } );
     }
+    scene.add(group);
     
     parent_canvas = document.getElementById('main_canvas');
     $('#btn-openfromLocal').click(function(){
@@ -188,6 +213,40 @@ function main() {
         reader.readAsText(file);
       }
     });
+
+    function onMouseMove(evt) {
+        if (!mouseDown) {
+            return;
+        }
+        evt.preventDefault();
+
+        var deltaX = evt.clientX - mouseX,
+            deltaY = evt.clientY - mouseY;
+        mouseX = evt.clientX;
+        mouseY = evt.clientY;
+        //console.log('moved')
+        rotateScene(deltaX, deltaY);
+    }
+
+    function onMouseDown(evt) {
+        evt.preventDefault();
+
+        mouseDown = true;
+        mouseX = evt.clientX;
+        mouseY = evt.clientY;
+    }
+
+    function onMouseUp(evt) {
+        evt.preventDefault();
+
+        mouseDown = false;
+    }
+
+    function rotateScene(deltaX, deltaY) {
+      console.log(deltaX, deltaY)
+        group.rotation.z += deltaX / 100;
+        group.rotation.x += deltaY / 100;
+    } 
   }
 
   function onWindowResize(){
@@ -212,7 +271,7 @@ function main() {
   }
 
   function reloadModelFromData(filename,wholecontent) {
-    console.log('localdata');
+    //console.log('localdata');
     $('#modelpath').html(filename);
     var lines = wholecontent.split( '\n' );
     getminmaxhegiht(lines);
@@ -257,8 +316,8 @@ function main() {
 
     var material = new THREE.PointsMaterial( { size: 0.1, vertexColors: vertexColors } );
     
-    while(scene.children.length > 0){ 
-      scene.remove(scene.children[0]); 
+    while(group.children.length > 0){ 
+      group.remove(group.children[0]); 
     }
     //draw axis
     // var axes = new THREE.AxesHelper(20);
@@ -275,12 +334,13 @@ function main() {
     // gridYZ.rotation.z = Math.PI / 2;
 
     points2 = new THREE.Points( geometry1, material );
-    scene.add( points2 );
+    group.add( points2 );
+    // scene.add( points2 );
     render();
   }
 
-  function reloadModelFromJSONData(filename,wholecontent) {
-    console.log('jsondata');
+  async function reloadModelFromJSONData(filename,wholecontent) {
+    //console.log('jsondata');
     // $('#modelpath').html(filename);
     var vertices = [];
     var colors = [];
@@ -317,8 +377,8 @@ function main() {
 
     var material = new THREE.PointsMaterial( { size: 0.1, vertexColors: vertexColors } );
     
-    while(scene.children.length > 0){ 
-      scene.remove(scene.children[0]); 
+    while(group.children.length > 0){ 
+      group.remove(group.children[0]); 
     }
     
     //draw axis
@@ -336,7 +396,8 @@ function main() {
     // gridYZ.rotation.z = Math.PI / 2;
 
     points2 = new THREE.Points( geometry1, material );
-    scene.add( points2 );
+    group.add( points2 );
+    // scene.add( points2 );
     render();
   }
 
@@ -388,4 +449,4 @@ function main() {
 
   main();
 
-  // animate();
+  animate();
