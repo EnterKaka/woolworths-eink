@@ -7,6 +7,7 @@ const env = require('config');
 var app = express();
 var flash = require('express-flash');
 var config = require('./config');
+
 /**
  * Store database credentials in a separate config.js file
  * Load the file/module and its values
@@ -109,5 +110,6 @@ mongoose
          console.log("mongodb connect error ========");
          console.error(err)
          process.exit(1)
-    })
+    });
+
 

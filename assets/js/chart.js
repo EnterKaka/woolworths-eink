@@ -209,14 +209,12 @@ function makeChartDataFromModelSets(data){
     dens = parseFloat(mass) / parseFloat(vol);
     fromtime.setMinutes(fromtime.getMinutes() - fromtime.getTimezoneOffset());
     totime.setMinutes(totime.getMinutes() - totime.getTimezoneOffset());
-    return [labels, eachdata,lastdatetime[0],lastdatetime[1],vol,mass,dens,totalvols/cnt,_id, fromtime.toISOString().slice(0,19), totime.toISOString().slice(0,19)];
+    return [labels, eachdata,lastdatetime[0],lastdatetime[1],vol.toFixed(2),mass.toFixed(2),dens.toFixed(2),
+    (totalvols/cnt).toFixed(2),_id, fromtime.toISOString().slice(0,19), totime.toISOString().slice(0,19)];
 }
 
 function makeChartDataFromModelSetsWithRange(data,ft,tt){
     let labels = [], eachdata = [];
-    // alert(JSON.stringify(data));
-    // alert(ft.toISOString());
-    // alert(tt.toISOString());
     for(const element of data.log){
         lastdatetime = element.datetime;
         var tmpdate = makedefaultDate(lastdatetime);
