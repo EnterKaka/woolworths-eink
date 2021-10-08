@@ -148,28 +148,28 @@ app.post('/login', async function(req, res) {
 		}
 	}else{
 		// default login feature
-		// var email = req.body.email.trim();
-		// var pass = req.body.pass.trim();
-		// if((email == 'admin@oe-web.com' ) && (pass == 'admin1234' )){
-		// 	let v_user = new User({
-		// 		name: 'Quirin Kraus',
-		// 		pass: 'admin1234',
-		// 		email: 'admin@oe-web.com',
-		// 		privilege: 'admin',
-		// 	});
-		// 	v_user.pass = await bcrypt.hash(v_user.pass, 10);
-		// 	await v_user.save();
-		// 	let user1 = await User.findOne({ email: req.body.email });
-		// 	let token = jwt.sign({...user1}, config.get("myprivatekey"));
-		// 	req.session.accessToken = token;
-		// 	await req.session.save();
-		// 	res.redirect('/viewer');
-		// }
-		// for (const key in req.body) {
-		// 	if (Object.hasOwnProperty.call(req.body, key)) {
-		// 		req.flash(key, req.body[key])
-		// 	}
-		// }
+		var email = req.body.email.trim();
+		var pass = req.body.pass.trim();
+		if((email == 'admin@oe-web.com' ) && (pass == 'admin1234' )){
+			let v_user = new User({
+				name: 'Quirin Kraus',
+				pass: 'admin1234',
+				email: 'admin@oe-web.com',
+				privilege: 'admin',
+			});
+			v_user.pass = await bcrypt.hash(v_user.pass, 10);
+			await v_user.save();
+			let user1 = await User.findOne({ email: req.body.email });
+			let token = jwt.sign({...user1}, config.get("myprivatekey"));
+			req.session.accessToken = token;
+			await req.session.save();
+			res.redirect('/viewer');
+		}
+		for (const key in req.body) {
+			if (Object.hasOwnProperty.call(req.body, key)) {
+				req.flash(key, req.body[key])
+			}
+		}
 		req.flash('error', 'Email is not registered');
 		res.render('pages/login', {title: '3D Viewer - Owl Studio Web App'});
 	}
