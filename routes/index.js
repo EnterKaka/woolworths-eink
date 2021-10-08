@@ -7,9 +7,7 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const config = require("config");
 const MongoClient = require("mongodb").MongoClient;
-const cron = require('node-cron');
-const { Server } = require("socket.io");
-// const io = new Server(server);
+
 
 app.get('/', function(req, res) {
 	// render to views/index.ejs template file
@@ -175,9 +173,6 @@ app.post('/login', async function(req, res) {
 	}
 });
 
-cron.schedule('* * * * *', () => {
-	console.log("Mongdb Scan Task is running every minute " + new Date())
-});
 
 /** 
  * We assign app object to module.exports

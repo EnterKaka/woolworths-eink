@@ -245,3 +245,10 @@ function makedefaultDateString(ruledate){
     truedate = ruledate.toLocaleDateString().replace('/','-') + 'T' + ruledate.toLocaleTimeString().slice(0,8);
     return truedate;
 }
+
+//socket
+var socket = io();
+// socket.emit('broad message', 'Hello Hello hello');
+socket.on('broad message', function(msg) {
+    console.log(msg);
+});
