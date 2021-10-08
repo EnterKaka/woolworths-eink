@@ -41,17 +41,14 @@ function main() {
         mouseY = 0;
 
     canvas.addEventListener('mousemove', function (e) {
-      //console.log('move')
         onMouseMove(e);
     }, false);
     canvas.addEventListener('mousedown', function (e) {
-      //console.log('down')
       if(e.button == 0) {
         onMouseDown(e);
       }
     }, false);
     canvas.addEventListener('mouseup', function (e) {
-      //console.log('up')
         onMouseUp(e);
     }, false);
 
@@ -224,7 +221,6 @@ function main() {
             deltaY = evt.clientY - mouseY;
         mouseX = evt.clientX;
         mouseY = evt.clientY;
-        //console.log('moved')
         rotateScene(deltaX, deltaY);
     }
 
@@ -243,7 +239,6 @@ function main() {
     }
 
     function rotateScene(deltaX, deltaY) {
-      console.log(deltaX, deltaY)
         group.rotation.z += deltaX / 100;
         group.rotation.x += deltaY / 100;
     } 
@@ -271,7 +266,6 @@ function main() {
   }
 
   function reloadModelFromData(filename,wholecontent) {
-    //console.log('localdata');
     $('#modelpath').html(filename);
     var lines = wholecontent.split( '\n' );
     getminmaxhegiht(lines);
@@ -340,8 +334,6 @@ function main() {
   }
 
   async function reloadModelFromJSONData(filename,wholecontent) {
-    //console.log('jsondata');
-    // $('#modelpath').html(filename);
     var vertices = [];
     var colors = [];
     var points2;

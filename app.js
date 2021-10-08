@@ -126,7 +126,7 @@ mongoose
 
 
     
-cron.schedule('* * * * *', () => {
+cron.schedule('* * * * *', async () => {
 	console.log("Mongdb Scan Task is running every minute " + new Date());
   const client = new MongoClient('mongodb://localhost:27017/', { useUnifiedTopology: true });
 	let allmembers = await Setting.find();
@@ -157,6 +157,6 @@ cron.schedule('* * * * *', () => {
 			collections.push(col);
 		}
 	});
-	io.emit('broad message', { dbdata: 'some value' });
+	io.emit('broad message', { dbdata: dbs, coldata: collections });
 });
 

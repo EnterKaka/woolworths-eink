@@ -7,7 +7,7 @@ for(const name of names){
     let ctx = document.getElementById(canvasname);
     let data = document.getElementById(inputname).value;
     data = JSON.parse(data);
-    console.log(ctx, data);
+    // console.log(ctx, data);
     drawChart(ctx, data);
 }
 
@@ -61,7 +61,7 @@ function drawChart(ctx,data,ft,tt){
     if(!ft){
         // Chart Data
         var tempdata = makeChartDataFromModelSets(data);
-        console.log(tempdata);
+        // console.log(tempdata);
         var chartData = {
             labels: tempdata[0],
             datasets: [{
