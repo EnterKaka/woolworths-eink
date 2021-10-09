@@ -69,11 +69,7 @@
                     <!-- line chart section start -->
                     <section id="chartjs-line-charts">
                         <!-- Line Chart -->
-                        <% if(names) { %>
-                            <input type="hidden" id="input-names" value='<%- names %>'>
-                            <input type="hidden" id="input-dbname" value='<%- dbname %>'>
-                            <input type="hidden" id="input-collectionname" value='<%- collectionname %>'>
-                        <% } %>
+                        
                         <% if(data) { %>
                             <% for(const element of data) { %>
                                 <div class="row">
@@ -104,8 +100,11 @@
                                                             <div class="col-md-5 col-sm-12 col-12 col-lg-5 col-xl-4">
                                                                 To&nbsp;<input type="datetime-local" id='<%= "totime-"+element.name %>'>
                                                             </div>
-                                                            <div class="col-md-1 col-sm-1 col-12 col-lg-1 col-xl-1">
+                                                            <div class="col-md-1 col-sm-12 col-12 col-lg-1 col-xl-1">
                                                                 <button class="btn btn-sm btn-dark" id='<%= "btn-"+element.name %>'>Update</button>
+                                                            </div>
+                                                            <div class="col-md-1 col-sm-12 col-12 col-lg-1 col-xl-1">
+                                                                <button class="btn btn-sm btn-dark" id='<%= "btn-export"+element.name %>'>Export</button>
                                                             </div>
                                                         </div>
                                                         <!-- model data -->
@@ -123,11 +122,6 @@
                                                                 <dl class='row'><dt class="col-6"> 6 .Average Volume&nbsp;:</dt><dd class="col-6" id='<%= "lm-averagevolume-"+element.name %>'></dd></dl>
                                                             </div>
                                                         </div>
-                                                        <!-- <dl class='row'><dt class="col-4"> 1.Last Measurement DateTime&nbsp;:</dt><dd class="col-8" id='<%= "lm-datetime-"+element.name %>'></dd></dl>
-                                                        <dl class='row'><dt class="col-4"> 2.Last Measurement Volume&nbsp;:</dt><dd class="col-8" id='<%= "lm-volume-"+element.name %>'></dd></dl>
-                                                        <dl class='row'><dt class="col-4"> 3.Last Measurement Mass&nbsp;:</dt><dd class="col-8" id='<%= "lm-mass-"+element.name %>'></dd></dl>
-                                                        <dl class='row'><dt class="col-4"> 4.Last Measurement Density&nbsp;:</dt><dd class="col-8" id='<%= "lm-density-"+element.name %>'></dd></dl>
-                                                        <dl class='row'><dt class="col-4"> 5.Average Volume&nbsp;:</dt><dd class="col-8" id='<%= "lm-averagevolume-"+element.name %>'></dd></dl> -->
                                                         <input type="hidden" id="<%= 'input-modelid-' + element.name %>">
                                                     </div>
                                                 </div>
@@ -136,6 +130,11 @@
                                     </div>
                                 </div>
                             <% } %>
+                        <% } %>
+                        <% if(names) { %>
+                            <input type="hidden" id="input-names" value='<%- names %>'>
+                            <input type="hidden" id="input-dbname" value='<%- dbname %>'>
+                            <input type="hidden" id="input-collectionname" value='<%- collectionname %>'>
                         <% } %>
                     </section>
                     <!-- // line chart section end -->

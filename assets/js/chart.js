@@ -58,7 +58,7 @@ function drawChart(ctx,data,ft,tt){
                 },
                 scaleLabel: {
                     display: true,
-                    labelString: 'Volume in m3'
+                    labelString: 'Volume in m**3'
                 }
             }]
         },
@@ -293,6 +293,81 @@ function init_socket(){
             newdetectlist = detectnewmodelnamelist(originaldata, namelist);
             if(newdetectlist.length > 0){
                 // console.log('new detected model -----', newdetectlist);
+                var parenttag = document.getElementById('chartjs-line-charts');
+                var newhtml = '&nbsp;';
+                for(const element of newdetectlist){
+                    newhtml = newhtml +  '&nbsp;' +
+                    + '<div class="row">' 
+                    + '<div class="col-12">'
+                    + '<div class="card">'
+                    + '<div class="card-header">'
+                    + '<h4 class="card-title"></h4>'
+                    + '<a class="heading-elements-toggle"><i class="la la-ellipsis-v font-medium-3"></i></a>'
+                    + '<div class="heading-elements">'
+                    + '<ul class="list-inline mb-0">'
+                    + '<li><a data-action="collapse"><i class="ft-minus"></i></a></li>'
+                    + '<li><a data-action="reload"><i class="ft-rotate-cw"></i></a></li>'
+                    + '<li><a data-action="expand"><i class="ft-maximize"></i></a></li>'
+                    + '<li><a data-action="close"><i class="ft-x"></i></a></li>'
+                    + '</ul>'
+                    + '</div>'
+                    + '</div>'
+                    + '<div class="card-content collapse show">'
+                    + '<div class="card-body chartjs">'
+                    + '<div class="height-500">'
+                    + '<canvas id="canvas-model-' + element + '"></canvas>'
+                    + '</div>'
+                    + '<div>'
+                    + '<div class="row" style="margin-top: 20px; margin-bottom: 15px; margin-left: -5px;">'
+                    + '<div class="col-md-5 col-sm-12 col-12 col-lg-5 col-xl-4">'
+                    + 'From&nbsp;<input type="datetime-local" id="fromtime-' + element + '">'
+                    + '</div>'
+                    + '<div class="col-md-5 col-sm-12 col-12 col-lg-5 col-xl-4">'
+                    + 'To&nbsp;<input type="datetime-local" id="totime-' + element + '">'
+                    + '</div>'
+                    + '<div class="col-md-1 col-sm-1 col-12 col-lg-1 col-xl-1">'
+                    + '<button class="btn btn-sm btn-dark" id="btn-' + element + '">Update</button>'
+                    + '</div>'
+                    + '</div>'
+                    + '<!-- model data -->'
+                    + '<input type="hidden" id="input-model-' + element + '" value >'
+                    + '&Tab;<h4 class="info">Model Information&nbsp;:&nbsp;<%= element.name %></h4><br>'
+                    + '<div class="row">'
+                    + '<div class="col-md-12 col-lg-6">'
+                    + '<dl class="row"><dt class="col-6"> 1 .Last Measurement Date&nbsp;:</dt><dd class="col-6" id="lm-date-' + element + '" ></dd></dl>'
+                    + '<dl class="row"><dt class="col-6"> 2 .Last Measurement Time&nbsp;:</dt><dd class="col-6" id="lm-time-' + element + '" ></dd></dl>'
+                    + '<dl class="row"><dt class="col-6"> 3 .Last Measurement Volume&nbsp;:</dt><dd class="col-6" id="lm-volume-' + element + '" ></dd></dl>'
+                    + '</div>'
+                    + '<div class="col-md-12 col-lg-6">'
+                    + '<dl class="row"><dt class="col-6"> 4 .Last Measurement Mass&nbsp;:</dt><dd class="col-6" id="lm-mass-' + element + '" ></dd></dl>'
+                    + '<dl class="row"><dt class="col-6"> 5 .Last Measurement Density&nbsp;:</dt><dd class="col-6" id="lm-density-' + element + '" ></dd></dl>'
+                    + '<dl class="row"><dt class="col-6"> 6 .Average Volume&nbsp;:</dt><dd class="col-6" id="lm-averagevolume-' + element + '" ></dd></dl>'
+                    + '</div>'
+                    + '</div>'
+                    + '<input type="hidden" id="input-modelid-' + element + '">'
+                    + '</div>'
+                    + '</div>'
+                    + '</div>'
+                    + '</div>'
+                    + '</div>'
+                    + '</div>';
+                }
+                if(newhtml){
+                    // console.log(newhtml);
+                    // parenttag.innerHTML = newhtml+ parenttag.innerHTML;
+                    location.reload();
+                    // for(const name of namelist){
+                    //     let canvasname = 'canvas-model-' + name;
+                    //     let inputname = 'input-model-' + name;
+                    //     let ctx = document.getElementById(canvasname);
+                    //     let data = document.getElementById(inputname).value;
+                    //     if(data){
+                    //         data = JSON.parse(data);
+                    //     }
+                    //     // console.log(ctx, data);
+                    //     drawupgradablechart(ctx, name, data, realdata);
+                    // }
+                }
             }else{
                 // console.log('new detected model is not existed');
                 for(const name of originaldata){
