@@ -87,6 +87,8 @@ app.get('/dashboard', auth, function(req, res) {
 					title: 'Dashboard - Owl Studio Web App',
 					data: allmodels,
 					names: allnames,
+					dbname: req.session.dbname,
+					collectionname: req.session.collectionname,
 				});
 			}
 		} finally {

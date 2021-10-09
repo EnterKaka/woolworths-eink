@@ -78,6 +78,8 @@
                         <!-- Line Chart -->
                         <% if(names) { %>
                             <input type="hidden" id="input-names" value='<%- names %>'>
+                            <input type="hidden" id="input-dbname" value='<%- dbname %>'>
+                            <input type="hidden" id="input-collectionname" value='<%- collectionname %>'>
                         <% } %>
                         <% if(data) { %>
                             <% for(const element of data) { %>

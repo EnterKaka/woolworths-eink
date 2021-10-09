@@ -12,6 +12,7 @@ const cron = require('node-cron');
 const http = require('http').Server(app);
 const io = require('socket.io')(http);
 
+
 /**
  * Store database credentials in a separate config.js file
  * Load the file/module and its values
@@ -124,39 +125,49 @@ mongoose
          process.exit(1)
     });
 
-
+    //all models scan and broadcast to all 
+const Settings = require('./model/Setting');
+const MongoClient = require("mongodb").MongoClient;
+var ObjectId = require('mongoose').Types.ObjectId;
     
-cron.schedule('* * * * *', async () => {
+cron.schedule('*/10 * * * * *', function () {
 	console.log("Mongdb Scan Task is running every minute " + new Date());
   const client = new MongoClient('mongodb://localhost:27017/', { useUnifiedTopology: true });
-	let allmembers = await Setting.find();
-	var dbs = [], collections = [];
-	let found = false;
-	allmembers.forEach( function(mem){
-		let db = mem.dbname.trim();
-		let col = mem.collectionname.trim();
-		found = false;
-		for (var i = 0; i < dbs.length && !found; i++) {
-			if (dbs[i] === db) {
-			  found = true;
-			  break;
-			}
-		}
-		if(!found){
-			dbs.push(db);
-		}
+	var alldatas = [];
+  Settings.find({}, function (err, docs) {
+    // docs is an array
+    if(docs){
+      docs.forEach( function(mem){
+        let db = mem.dbname.trim();
+        let col = mem.collectionname.trim();
+        client.connect((err) => {
+          var workdb = client.db(db);
+          var datas = workdb.collection(col);
+			    const cursor = datas.find({}).toArray(function(err, result) {
+            if (err) {
+              throw err;
+            }
+            // console.log(result);
+            var fulldata = result;
+            var jsontype = {
+              modelname: db,
+              collectionname: col,
+              datas: fulldata
+            };
 
-		found = false;
-		for (var i = 0; i < collections.length && !found; i++) {
-			if (collections[i] === col) {
-			  found = true;
-			  break;
-			}
-		}
-		if(!found){
-			collections.push(col);
-		}
-	});
-	io.emit('broad message', { data: 'aaa aaa' });
+	          io.emit('broad message', {data: jsontype});
+
+            // alldatas.push(jsontype);
+            client.close();
+          // console.log(alldatas);
+
+          });
+        });
+        
+      });
+     
+    }
+  });
+	// io.emit('broad message', 'sdddsds');
 });
 

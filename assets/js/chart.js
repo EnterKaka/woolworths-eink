@@ -1,3 +1,4 @@
+
 let names = document.getElementById('input-names').value;
 names = names.split(',');
 
@@ -136,7 +137,7 @@ function drawChart(ctx,data,ft,tt){
             let ctx = document.getElementById(canvasname);
             let data = document.getElementById(inputname).value;
             data = JSON.parse(data);
-            console.log(ctx, data);
+            // console.log(ctx, data);
             drawChart(ctx, data,inputft, inputtt);
         }
         //ondblclick listener
@@ -152,7 +153,7 @@ function drawChart(ctx,data,ft,tt){
         // alert('sss');
         // Chart Data
         var tempdata = makeChartDataFromModelSetsWithRange(data,ft,tt);
-        console.log(tempdata);
+        // console.log(tempdata);
         var chartData = {
             labels: tempdata[0],
             datasets: [{
@@ -194,7 +195,6 @@ function makeChartDataFromModelSets(data){
         cnt = cnt+1;
         totalvols = totalvols + parseFloat(vol);
         _id = element._id;
-
         var tmpdate = makedefaultDate(lastdatetime);
         tmpdate = new Date(tmpdate);
         if(fromtime > tmpdate){
@@ -219,7 +219,7 @@ function makeChartDataFromModelSetsWithRange(data,ft,tt){
         lastdatetime = element.datetime;
         var tmpdate = makedefaultDate(lastdatetime);
         tmpdate = new Date(tmpdate);
-        console.log(ft.toISOString(),tmpdate.toISOString(),tt.toISOString());
+        // console.log(ft.toISOString(),tmpdate.toISOString(),tt.toISOString());
         if(ft <= tmpdate){
             if(tt >= tmpdate){
                 labels.push(lastdatetime);
@@ -250,5 +250,135 @@ function makedefaultDateString(ruledate){
 var socket = io();
 // socket.emit('broad message', 'Hello Hello hello');
 socket.on('broad message', function(msg) {
-    console.log(msg);
+    // console.log(msg);
+    var dbname = document.getElementById('input-dbname').value;
+    var collectionname = document.getElementById('input-collectionname').value;
+
+    if((msg.data.modelname === dbname) && (msg.data.collectionname === collectionname)){
+        realdata = msg.data.datas;
+        // console.log('new socket full data ----',realdata);
+        var namelist = makenamelist(realdata);
+        var originaldata, newdetectlist;
+        originaldata = document.getElementById('input-names').value;
+        originaldata = originaldata.split(',');
+        // console.log('original data ---', originaldata);
+        // console.log('new data ---', namelist);
+        newdetectlist = detectnewmodelnamelist(originaldata, namelist);
+        if(newdetectlist.length > 0){
+            // console.log('new detected model -----', newdetectlist);
+        }else{
+            // console.log('new detected model is not existed');
+            for(const name of originaldata){
+                let canvasname = 'canvas-model-' + name;
+                let inputname = 'input-model-' + name;
+                let ctx = document.getElementById(canvasname);
+                let data = document.getElementById(inputname).value;
+                if(data){
+                    data = JSON.parse(data);
+                }
+                // console.log(ctx, data);
+                drawupgradablechart(ctx, name, data, realdata);
+            }
+            
+        }
+    }
 });
+
+
+//make model name list in specific collection of specific database from data lists
+function makenamelist(datas){
+    var namelist = [];
+    for(const element of datas){
+        var modelname = element.measurement[0].name;
+        var contains = false;
+        for(const elementj of namelist){
+            if(elementj === modelname){
+                contains = true;
+                break;
+            }
+        }
+        if(!contains) namelist.push(modelname);
+    }
+    return namelist;
+}
+
+//detect new model from socket.io data between original data
+function detectnewmodelnamelist(originallist,newlist){
+    var detectlist = [];
+    for(const element of newlist){
+        var contains = false;
+        for(const elementj of originallist){
+            if(elementj == element){
+                contains = true;
+                break;
+            }
+        }
+        if(!contains){
+            detectlist.push(element);
+        }
+    }
+    return detectlist;
+}
+
+//make new model list from new data stream
+function drawupgradablechart(ctx, modelname, originaldata, newdata){
+    // console.log(ctx, modelname, originaldata, newdata);
+    var upgradabledatalist = [];
+    for(const element of newdata){
+        if(modelname === element.measurement[0].name){
+            var new_id, contains = false;
+            new_id = element._id;
+            if(originaldata){
+                for(const elementj of originaldata.log){
+                    var old_id;
+                    old_id = elementj._id;
+                    if(old_id === new_id){
+                        contains = true;
+                        break;
+                    }
+                }
+                if(!contains){
+                    upgradabledatalist.push(element);
+                }
+            }else{
+                upgradabledatalist.push(element);
+            }
+            
+        }
+    } 
+    if(upgradabledatalist.length > 0){
+        // console.log('upgrade ready---');
+        var temp_originaldata;
+        upgradabledatalist = makeusefuldatafromnative(upgradabledatalist);
+        if(originaldata){
+            temp_originaldata = originaldata;
+            temp_originaldata.log = temp_originaldata.log.concat(upgradabledatalist);    
+        }else{
+            temp_originaldata = {
+                name: modelname,
+                log: upgradabledatalist,
+            }
+        }
+        // console.log(temp_originaldata);
+        drawChart(ctx,temp_originaldata);
+        //write new data to input tag
+        var inputtag = 'input-model-' + modelname;
+        document.getElementById(inputtag).value = JSON.stringify(temp_originaldata);
+    }else{
+        // console.log('no upgradable list---');
+    }
+}
+
+function makeusefuldatafromnative(nativedata){
+    var usefuldata = [];
+    for(const element of nativedata){
+        var jsondata = {
+            _id: element._id,
+            datetime: element.datetime,
+            mass: element.measurement[0].mass,
+            volume: element.measurement[0].volume
+        }
+        usefuldata.push(jsondata);
+    }
+    return usefuldata;
+}

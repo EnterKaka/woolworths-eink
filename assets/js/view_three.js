@@ -248,7 +248,7 @@ function main() {
     camera.aspect = parent_canvas.clientWidth/parent_canvas.clientHeight;
     camera.updateProjectionMatrix();
     renderer.setSize((parent_canvas.clientWidth-30),parent_canvas.clientHeight);
-    controls.handleResize();
+    // controls.handleResize();
   }
 
   function render(){
