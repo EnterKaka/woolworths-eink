@@ -153,6 +153,49 @@ app.get('/view/(:_id)', auth, async function(req, res, next) {
 	
 });
 
+app.post('/view/(:id)', auth, async function(req, res, next) {
+	var id = req.params.id;
+	console.log('dblclk-----get model id-----', id, dbname, collectionname);
+	// let model = await Model.findOne({datetime: req.params.datetime})
+	const client = new MongoClient('mongodb://localhost:27017/', { useUnifiedTopology: true });
+	async function run() {
+		try {
+			await client.connect();
+			const database = client.db(dbname);
+			const datas = database.collection(collectionname);
+			// query for movies that have a runtime less than 15 minutes
+			const cursor = await datas.findOne({_id: new ObjectId(id) });
+			// console.log(cursor);
+			// print a message if no documents were found
+			if (cursor) {
+				// replace console.dir with your callback to access individual elements
+				var pcl = cursor.measurement[0].pointcloud;
+				res.header(200).json({
+					status: 'sucess',
+					data: pcl,
+					name: cursor.measurement[0].name,
+				});
+			}else{
+				res.header(400).json({
+					status: 'fail',
+					data: 'no model'
+				});
+			}
+		} finally {
+			await client.close();
+		}
+	}
+	run().catch(
+		(err) => {
+			res.header(400).json({
+				status: 'fail',
+				error: err,
+			});
+		}
+	);
+	
+});
+
 app.post('/get', auth, async function(req, res, next) {
 	dbname = req.body.dbname;
 	collectionname = req.body.collectionname;

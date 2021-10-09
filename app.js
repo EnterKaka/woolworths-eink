@@ -130,7 +130,7 @@ const Settings = require('./model/Setting');
 const MongoClient = require("mongodb").MongoClient;
 var ObjectId = require('mongoose').Types.ObjectId;
     
-cron.schedule('*/10 * * * * *', function () {
+cron.schedule('* * * * *', function () {
 	console.log("Mongdb Scan Task is running every minute " + new Date());
   const client = new MongoClient('mongodb://localhost:27017/', { useUnifiedTopology: true });
 	var alldatas = [];

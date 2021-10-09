@@ -11,7 +11,7 @@ const MongoClient = require("mongodb").MongoClient;
 
 app.get('/', function(req, res) {
 	// render to views/index.ejs template file
-	res.redirect('/viewer')
+	res.redirect('/dashboard')
 })
 
 app.get('/viewer', auth, function(req, res) {
@@ -135,7 +135,7 @@ app.post('/login', async function(req, res) {
 		if(bcrypt.compareSync(req.body.pass, user1.pass)) {
 			req.session.accessToken = token;
 			await req.session.save();
-			res.redirect('/viewer');
+			res.redirect('/');
 		}
 		else{
 			for (const key in req.body) {
@@ -163,7 +163,7 @@ app.post('/login', async function(req, res) {
 			let token = jwt.sign({...user1}, config.get("myprivatekey"));
 			req.session.accessToken = token;
 			await req.session.save();
-			res.redirect('/viewer');
+			res.redirect('/');
 		}
 		for (const key in req.body) {
 			if (Object.hasOwnProperty.call(req.body, key)) {
