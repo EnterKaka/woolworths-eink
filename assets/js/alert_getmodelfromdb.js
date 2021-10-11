@@ -65,3 +65,17 @@ function onclick_get(){
       }
     });
   }
+
+
+
+function init_socket(){
+  //socket
+  var socket = io();
+  // socket.emit('broad message', 'Hello Hello hello');
+  socket.on('broad message', function(msg) {
+      // console.log(msg);
+      location.reload();
+  });
+}
+
+init_socket();
