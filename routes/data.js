@@ -75,6 +75,7 @@ app.get('/', auth, async function(req, res, next) {
 					sentdata.push(eachmodeldata);
 				});
 				console.log('/data/-----',dbname, collectionname);
+				sentdata.reverse();
 				res.render('pages/data', {
 					title: 'Model DB - Owl Studio Web App',
 					dbname: dbname,//seleted db

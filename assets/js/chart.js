@@ -24,48 +24,105 @@ function drawChart(ctx,data,ft,tt){
     //draw chart
         // initialize chart option
         var chartOptions = {
-        responsive: true,
-        maintainAspectRatio: false,
-        legend: {
-            position: 'bottom',
-        },
-        hover: {
-            mode: 'label'
-        },
-        scales: {
-            xAxes: [{
-                display: true,
-                gridLines: {
-                    color: "#f3f3f3",
-                    drawTicks: false,
+            //last setting
+            // responsive: true,
+            // maintainAspectRatio: false,
+            // legend: {
+            //     position: 'bottom',
+            // },
+            // hover: {
+            //     mode: 'label'
+            // },
+            responsive: true,
+            interaction: {
+                intersect: false,
+                mode: 'index',
+            },
+            plugins: {
+                legend: {
+                    position: 'top',
                 },
-                scaleLabel: {
+                title: {
                     display: true,
-                    labelString: 'Time'
+                    text: data.name,
+                    color: '#0040ff',
+                    font: {
+                        family: 'Comic Sans MS',
+                        size: 25,
+                        lineHeight: 1.2,
+                    },
                 },
-                offset: 60,
-                position: 'end',
-                labelOffset: {
-                    x: 0,
-                    y: 15
-                  },
-            }],
-            yAxes: [{
-                display: true,
-                gridLines: {
-                    color: "#f3f3f3",
-                    drawTicks: false,
-                },
-                scaleLabel: {
-                    display: true,
-                    labelString: 'Volume in m**3'
+                tooltip: {
+                    position: 'nearest',
                 }
-            }]
+            },
+            scales: {
+            //last setting
+            // xAxes: [{    
+            //     display: true,
+            //     gridLines: {
+            //         color: "#f3f3f3",
+            //         drawTicks: false,
+            //     },
+            //     scaleLabel: {
+            //         display: true,
+            //         labelString: 'Time'
+            //     },
+            //     offset: 60,
+            //     position: 'end',
+            //     labelOffset: {
+            //         x: 0,
+            //         y: 15
+            //       },
+            // }],
+            // yAxes: [{
+            //     display: true,
+            //     gridLines: {
+            //         color: "#f3f3f3",
+            //         drawTicks: false,
+            //     },
+            //     scaleLabel: {
+            //         display: true,
+            //         labelString: 'Volume in m**3'
+            //     }
+            // }]
+
+            //new 
+            x: {
+                display: true,
+                title: {
+                  display: true,
+                  text: 'Time',
+                  color: '#911',
+                  font: {
+                    family: 'Comic Sans MS',
+                    size: 20,
+                    weight: 'bold',
+                    lineHeight: 1.2,
+                  },
+                  padding: {top: 20, left: 0, right: 0, bottom: 0}
+                }
+              },
+              y: {
+                display: true,
+                title: {
+                  display: true,
+                  text: 'Volume in m3',
+                  color: '#191',
+                  font: {
+                    family: 'Times',
+                    size: 20,
+                    style: 'normal',
+                    lineHeight: 1.2
+                  },
+                  padding: {top: 20, left: 0, right: 0, bottom: 0}
+                }
+              }
         },
-        title: {
-            display: true,
-            text: data.name,
-        }
+            // title: {
+            //     display: true,
+            //     text: data.name,
+            // }
     };
     if(!ft){
         // Chart Data
@@ -153,12 +210,16 @@ function drawChart(ctx,data,ft,tt){
         ctx.addEventListener("dblclick", function() {
             //go to 3d viewer with last id
             var this_canvas = $(this).attr('id');
+            var this_id = this_canvas;
             this_canvas = this_canvas.split('-');
             var this_canvas_modelname = 'input-modelid-' + this_canvas.slice(-1);
             this_canvas_modelname = document.getElementById(this_canvas_modelname).value
             // location.href = "/data/view/" + this_canvas;
             load3dmodelwithidonlocal(this_canvas.slice(-1),this_canvas_modelname);
             location.href = '#canvas-container';
+            //for current item get
+            var ctx = document.getElementById(this_id);
+            console.log(ctx.chart.options.plugins.tooltip);
         });
     }else{
         // Chart Data
