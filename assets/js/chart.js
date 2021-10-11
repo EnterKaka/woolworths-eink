@@ -53,6 +53,7 @@ function drawChart(ctx,data,ft,tt){
                     },
                 },
                 tooltip: {
+                    usePointStyle: true,
                     position: 'nearest',
                 }
             },

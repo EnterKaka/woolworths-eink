@@ -120,9 +120,9 @@ mongoose
       });
     })
     .catch((err) => {
-         console.log("mongodb connect error ========");
-         console.error(err)
-         process.exit(1)
+      console.log("mongodb connect error ========");
+      console.error(err)
+      process.exit(1)
     });
 
     //all models scan and broadcast to all 
@@ -143,7 +143,7 @@ cron.schedule('* * * * *', function () {
         client.connect((err) => {
           var workdb = client.db(db);
           var datas = workdb.collection(col);
-			    const cursor = datas.find({}).toArray(function(err, result) {
+			    const cursor = datas.find({}).sort([['datetime', -1]]).toArray(function(err, result) {
             if (err) {
               throw err;
             }

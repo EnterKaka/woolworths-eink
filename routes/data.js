@@ -51,7 +51,7 @@ app.get('/', auth, async function(req, res, next) {
 			const database = client.db(dbname);
 			const datas = database.collection(collectionname);
 			// query for movies that have a runtime less than 15 minutes
-			const cursor = datas.find({});
+			const cursor = datas.find({}).sort([['datetime', -1]]);
 			let sentdata = [];
 			// print a message if no documents were found
 			if ((await cursor.count()) === 0) {
@@ -75,7 +75,6 @@ app.get('/', auth, async function(req, res, next) {
 					sentdata.push(eachmodeldata);
 				});
 				console.log('/data/-----',dbname, collectionname);
-				sentdata.reverse();
 				res.render('pages/data', {
 					title: 'Model DB - Owl Studio Web App',
 					dbname: dbname,//seleted db
@@ -165,7 +164,7 @@ app.post('/view/(:id)', auth, async function(req, res, next) {
 			const database = client.db(dbname);
 			const datas = database.collection(collectionname);
 			// query for movies that have a runtime less than 15 minutes
-			const cursor = await datas.findOne({_id: new ObjectId(id) });
+			const cursor = await datas.findOne({_id: new ObjectId(id) }).sort([['datetime', -1]]);
 			// console.log(cursor);
 			// print a message if no documents were found
 			if (cursor) {
@@ -241,7 +240,7 @@ app.post('/get', auth, async function(req, res, next) {
 			const database = client.db(dbname);
 			const datas = database.collection(collectionname);
 			// query for movies that have a runtime less than 15 minutes
-			const cursor = datas.find({});
+			const cursor = datas.find({}).sort([['datetime', -1]]);;
 			let sentdata = [];
 			// print a message if no documents were found
 			if ((await cursor.count()) === 0) {
