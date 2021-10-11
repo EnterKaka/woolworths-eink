@@ -7,11 +7,6 @@ const env = require('config');
 var app = express();
 var flash = require('express-flash');
 var config = require('./config');
-
-const cron = require('node-cron');
-const http = require('http').Server(app);
-const io = require('socket.io')(http);
-
 /**
  * Store database credentials in a separate config.js file
  * Load the file/module and its values
@@ -100,63 +95,19 @@ app.use('/user', user);
 app.use('/data', data);
 app.use('/setting', setting);
 
-
-io.on('connection', (socket) => {
-  socket.on('broad message', msg => {
-    io.emit('broad message', msg);
-  });
-});
-
 mongoose
-    .connect(config.database.url, { // 'mongodb://127.0.0.1:27017'            process.env.MONGO_URI
+   .connect(config.database.url, { // 'mongodb://127.0.0.1:27017'            process.env.MONGO_URI
         useNewUrlParser: true,
         useUnifiedTopology: true,
     })
     .then(() => {
-      console.log('connected to db');
-      http.listen(3000, "0.0.0.0", () => {
-        console.log(`Socket.IO server running at http://localhost:3000/`);
+        console.log('connected to db');
+        app.listen(3000, function(){
+        console.log('Server running at port 3000: http://127.0.0.1:3000')
       });
-    })
-    .catch((err) => {
+    }).catch((err) => {
          console.log("mongodb connect error ========");
          console.error(err)
          process.exit(1)
-    });
-
-
-    
-cron.schedule('* * * * *', async () => {
-	console.log("Mongdb Scan Task is running every minute " + new Date());
-  const client = new MongoClient('mongodb://localhost:27017/', { useUnifiedTopology: true });
-	let allmembers = await Setting.find();
-	var dbs = [], collections = [];
-	let found = false;
-	allmembers.forEach( function(mem){
-		let db = mem.dbname.trim();
-		let col = mem.collectionname.trim();
-		found = false;
-		for (var i = 0; i < dbs.length && !found; i++) {
-			if (dbs[i] === db) {
-			  found = true;
-			  break;
-			}
-		}
-		if(!found){
-			dbs.push(db);
-		}
-
-		found = false;
-		for (var i = 0; i < collections.length && !found; i++) {
-			if (collections[i] === col) {
-			  found = true;
-			  break;
-			}
-		}
-		if(!found){
-			collections.push(col);
-		}
-	});
-	io.emit('broad message', { dbdata: dbs, coldata: collections });
-});
+    })
 

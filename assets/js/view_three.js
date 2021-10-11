@@ -1,7 +1,12 @@
 import * as THREE from './three.module.js';
 import { OrbitControls } from './OrbitControls.js';
+import { OBJLoader } from './OBJLoader.js';
+import Delaunator from './delaunator.js';
+import * as dat from './dat.js';
+
+
 // import { PCDLoader } from './PCDLoader.js';
-import { XYZLoader, getminmaxhegiht, getrgb, init_highlow } from './XYZLoader.js';
+import { XYZLoader, getminmaxhegiht, getminmaxhegihtfromarray, getrgb, init_highlow } from './XYZLoader.js';
 import { TrackballControls } from './TrackballControls.js';
 
 //open file dialog
@@ -18,12 +23,18 @@ function openModel_Fromlocal(e) {
         return;
     }
     var file = files[0];
+
     var reader = new FileReader();
     var model_text;
     reader.addEventListener("load", () => {
       // this will then display a text file
       model_text = reader.result;
-      reloadModelFromData(file.name,model_text);
+      if(file.name.split('.').pop()=='obj'){
+        reloadModelFromObjData(file.name,model_text)   
+      }
+      else{
+        reloadModelFromData(file.name,model_text);
+      }
     }, false);
   
     if (file) {
@@ -33,6 +44,7 @@ function openModel_Fromlocal(e) {
 
 var controls, camera, renderer, scene, canvas, parent_canvas, group;
 //three.js point cloud viewer
+
 function main() {
     canvas = document.querySelector('#viewer_3d');
 
@@ -41,14 +53,17 @@ function main() {
         mouseY = 0;
 
     canvas.addEventListener('mousemove', function (e) {
+      //console.log('move')
         onMouseMove(e);
     }, false);
     canvas.addEventListener('mousedown', function (e) {
+      //console.log('down')
       if(e.button == 0) {
         onMouseDown(e);
       }
     }, false);
     canvas.addEventListener('mouseup', function (e) {
+      //console.log('up')
         onMouseUp(e);
     }, false);
 
@@ -58,7 +73,14 @@ function main() {
 
     scene = new THREE.Scene();
     //scene background color
-    // scene.background = new THREE.Color( 0x333333 );
+    scene.background = new THREE.Color( 0x111111 );
+
+
+    var light = new THREE.DirectionalLight(0xffffff, 1.5);
+    // light.position.setScalar(100);
+    light.position.set( 0, 20, -26 );
+    scene.add(light);
+    scene.add(new THREE.AmbientLight(0xffffff, 0.5));
     // //set axis
     // var axes = new THREE.AxesHelper(20);
     // scene.add(axes);
@@ -79,19 +101,20 @@ function main() {
     var far = 1000;
     camera = new THREE.PerspectiveCamera(fov, aspect, near, far);
     camera.position.set( 0, -20, 6 );
+    // camera.position.setScalar(15);
     camera.lookAt(0,0,0);
     scene.add(camera);
     
     //natural rotate control
     controls = new OrbitControls(camera, renderer.domElement);
 		// controls.addEventListener( 'change', render ); // call this only in static scenes (i.e., if there is no animation loop)
-		controls.minDistance = 0.1;
-		controls.maxDistance = 100;
-    controls.enableRotate = true;
-    controls.maxPolarAngle = Infinity;
+		// controls.minDistance = 0.1;
+		// controls.maxDistance = 100;
+    // controls.enableRotate = true;
+    // controls.maxPolarAngle = Infinity;
     controls.enableRotate = false;
     // controls.autoRotate = true
-    controls.enableDamping = true;
+    // controls.enableDamping = true;
     // controls.maxPolarAngle(Math.PI);
     
     //new rotate 360 control
@@ -115,27 +138,17 @@ function main() {
     // } );
     group = new THREE.Object3D();
     var points1, pointcloud;
-    var loader = new XYZLoader();
+    const loader = new THREE.FileLoader();
     var tempvaluetag = document.getElementById('pointcloud');
     if(tempvaluetag){
       pointcloud = tempvaluetag.value;
       pointcloud = JSON.parse(pointcloud);
       let modelname = '';
       reloadModelFromJSONData(modelname,pointcloud);
-
     }else{
-      loader.load( './3dmodels/Weissspat_1632872292.txt', function ( geometry ) {
-        $('#modelpath').html('Weissspat_1632872292.txt');
-        geometry.center();
-
-        var vertexColors = ( geometry.hasAttribute( 'color' ) === true );
-
-        var material = new THREE.PointsMaterial( { size: 0.1, vertexColors: vertexColors } );
-
-        points1 = new THREE.Points( geometry, material );
-        group.add( points1 );
-        render();
-
+      loader.load( './3dmodels/Weissspat_1632872292.txt', function ( text ) {
+        // $('#modelpath').html('Weissspat_1632872292.txt');
+        reloadModelFromData('Weissspat_1632872292.txt',text);
       } );
     }
     scene.add(group);
@@ -203,9 +216,14 @@ function main() {
         var file = event.dataTransfer.files[0];
         var reader = new FileReader();
         reader.onload = function(ev) {
-            var model_text = ev.target.result;
+          var model_text = ev.target.result;
+          if(file.name.split('.').pop()=='obj'){
+            reloadModelFromObjData(file.name,model_text)   
+          }
+          else{
             reloadModelFromData(file.name,model_text);
-          };
+          }
+        };
 
         reader.readAsText(file);
       }
@@ -221,6 +239,7 @@ function main() {
             deltaY = evt.clientY - mouseY;
         mouseX = evt.clientX;
         mouseY = evt.clientY;
+        //console.log('moved')
         rotateScene(deltaX, deltaY);
     }
 
@@ -239,6 +258,7 @@ function main() {
     }
 
     function rotateScene(deltaX, deltaY) {
+      // console.log(deltaX, deltaY)
         group.rotation.z += deltaX / 100;
         group.rotation.x += deltaY / 100;
     } 
@@ -248,7 +268,7 @@ function main() {
     camera.aspect = parent_canvas.clientWidth/parent_canvas.clientHeight;
     camera.updateProjectionMatrix();
     renderer.setSize((parent_canvas.clientWidth-30),parent_canvas.clientHeight);
-    controls.handleResize();
+    // controls.handleResize();
   }
 
   function render(){
@@ -257,22 +277,24 @@ function main() {
 
   function animate(){
     requestAnimationFrame( animate );
-
     controls.update();
-
     // stats.update();
-
     render();
   }
 
+  function customTriangulate(points3d){
+    
+  }
+
   function reloadModelFromData(filename,wholecontent) {
+    //console.log('localdata');
     $('#modelpath').html(filename);
     var lines = wholecontent.split( '\n' );
     getminmaxhegiht(lines);
     var vertices = [];
     var colors = [];
     var points2;
-
+    var points3d = [];
     var values = getminmaxhegiht(lines);
     var min = values[0];
     var max = values[1];
@@ -283,10 +305,10 @@ function main() {
       var lineValues = line.split( /\s+/ );
       if ( lineValues.length === 3 ) {
       // XYZ
-      vertices.push( parseFloat( lineValues[ 0 ] ) );
-      vertices.push( parseFloat( lineValues[ 1 ] ) );
-      vertices.push( parseFloat( lineValues[ 2 ] ) );
-      
+      points3d.push(new THREE.Vector3(parseFloat(lineValues[ 0 ]), parseFloat(lineValues[ 1 ]), parseFloat(lineValues[ 2 ])));
+      // vertices.push(parseFloat(lineValues[ 0 ]));
+      // vertices.push(parseFloat(lineValues[ 1 ]));
+      // vertices.push(parseFloat(lineValues[ 2 ]));
       let zvalue = parseFloat( lineValues[ 2 ] );
       //set rgb from xyz
       let k=(zvalue - min)/(max - min);
@@ -297,21 +319,91 @@ function main() {
       colors.push(rgb[2]);
       }
     }
-    var geometry1 = new THREE.BufferGeometry();
-    geometry1.setAttribute( 'position', new THREE.Float32BufferAttribute( vertices, 3 ) );
+    var geometry1 = new THREE.BufferGeometry().setFromPoints(points3d);    
+    // var geometry1 = new THREE.BufferGeometry();
 
+    // geometry1.setAttribute( 'position', new THREE.Float32BufferAttribute( vertices, 3 ) );
     if ( colors.length > 0 ) {
       geometry1.setAttribute( 'color', new THREE.Float32BufferAttribute( colors, 3 ) );
     }
 
     geometry1.center();
 
-    var vertexColors = ( geometry1.hasAttribute( 'color' ) === true );
+    // var vertexColors = ( geometry1.hasAttribute( 'color' ) === true );
 
-    var material = new THREE.PointsMaterial( { size: 0.1, vertexColors: vertexColors } );
+    var material = new THREE.PointsMaterial( { size: 0.1, vertexColors: heightmapColor(), color: pointcolor() } );
+    // var material = new THREE.PointsMaterial( { size: 0.1, color: pointcolor() } );
     
     while(group.children.length > 0){ 
-      group.remove(group.children[0]); 
+      group.clear(); 
+    }
+    //draw axis
+    // var axes = new THREE.AxesHelper(20);
+    // scene.add(axes);
+    // //set grid helper
+    // var gridXZ = new THREE.GridHelper(0, 0);
+    // scene.add(gridXZ);
+
+    // var gridXY = new THREE.GridHelper(30, 60);
+    // gridXY.rotation.x = Math.PI / 2;
+    // scene.add(gridXY);
+
+    // var gridYZ = new THREE.GridHelper(30, 60);
+    // gridYZ.rotation.z = Math.PI / 2;
+
+    points2 = new THREE.Points( geometry1, material );
+    
+    group.add( points2 );
+    
+    //Delaunay
+    // triangulate x, z
+    var indexDelaunay = Delaunator.from(
+      points3d.map(v => {
+        return [v.x, v.y];
+      })
+    );
+    console.log(indexDelaunay);
+    var meshIndex = []; // delaunay index => three.js index
+    for (let i = 0; i < indexDelaunay.triangles.length; i++){
+      meshIndex.push(indexDelaunay.triangles[i]);
+    }
+
+    geometry1.setIndex(meshIndex); // add three.js index to the existing geometry
+    geometry1.computeVertexNormals();
+    var mesh = new THREE.Mesh(
+      geometry1, // re-use the existing geometry
+      new THREE.MeshLambertMaterial({ color: delaunycolor(), wireframe: true })
+    );
+    mesh.visible = delauny();
+    group.add(mesh);
+
+    // var gui = new dat.GUI();
+    // gui.add(mesh.material, "wireframe");
+    ////////////
+    render();
+  }
+
+  function reloadModelFromObjData(filename,wholecontent) {
+    //console.log('localdata');
+    $('#modelpath').html(filename);
+    
+    var geometry1 = new THREE.BufferGeometry();
+    var loader = new OBJLoader();
+    var points2;
+    var colors = [];
+
+    geometry1.copy( loader.parse(wholecontent).children[0].geometry );
+    geometry1.center();
+
+
+    // var vertexColors = ( geometry1.hasAttribute( 'color' ) === true );
+    // var material = new THREE.PointsMaterial( { size: 0.1, vertexColors: vertexColors } );    
+    
+    var material = new THREE.PointsMaterial( { size: 0.1, color: pointcolor() } );
+
+    
+    while(group.children.length > 0){ 
+      group.clear(); 
     }
     //draw axis
     // var axes = new THREE.AxesHelper(20);
@@ -329,23 +421,72 @@ function main() {
 
     points2 = new THREE.Points( geometry1, material );
     group.add( points2 );
-    // scene.add( points2 );
+    // var geo = loader.parse(wholecontent);
+    // console.log(geo)
+    // geo.children[0].material.wireframe = true;
+    group.add( geo );
+    var points = geometry1.attributes.position.array;
+    var index = -1;
+    var dparam = [];
+    var values = getminmaxhegihtfromarray(points);
+    var min = values[0];
+    var max = values[1];
+    for(var i=0;i<points.length;i+=3){
+      dparam.push( [points[i], points[i+1]] );
+
+      let zvalue = parseFloat( points[ i+2 ] );
+      //set rgb from xyz
+      let k=(zvalue - min)/(max - min);
+      let rgb = getrgb(k);
+      //set color from xyz
+      colors.push(rgb[0]);
+      colors.push(rgb[1]);
+      colors.push(rgb[2]);
+    }
+    if ( colors.length > 0 ) {
+      geometry1.setAttribute( 'color', new THREE.Float32BufferAttribute( colors, 3 ) );
+      material.vertexColors = heightmapColor();
+      material.needsUpdate = true;
+    }
+
+    //Delaunay
+    // triangulate x, z
+    var indexDelaunay = Delaunator.from(
+      dparam
+    );
+
+    var meshIndex = []; // delaunay index => three.js index
+    for (let i = 0; i < indexDelaunay.triangles.length; i++){
+      meshIndex.push(indexDelaunay.triangles[i]);
+    }
+
+    geometry1.setIndex(meshIndex); // add three.js index to the existing geometry
+    geometry1.computeVertexNormals();
+    var mesh = new THREE.Mesh(
+      geometry1, // re-use the existing geometry
+      new THREE.MeshLambertMaterial({ color: delaunycolor(), wireframe: true })
+    );
+    mesh.visible = delauny();
+    group.add(mesh);
     render();
   }
 
-  async function reloadModelFromJSONData(filename,wholecontent) {
+  function reloadModelFromJSONData(filename,wholecontent) {
+    //console.log('jsondata');
+    // $('#modelpath').html(filename);
     var vertices = [];
     var colors = [];
     var points2;
-
+    var points3d = [];
     var values = getminmaxheightfromjson(wholecontent);
     var min = values[0];
     var max = values[1];
 
     wholecontent.forEach(function (xyz) {
-      vertices.push( parseFloat( xyz.x ) );
-      vertices.push( parseFloat( xyz.y ) );
-      vertices.push( parseFloat( xyz.z ) );
+      points3d.push(new THREE.Vector3(parseFloat(xyz.x), parseFloat(xyz.y), parseFloat(xyz.z)));
+      // vertices.push( parseFloat( xyz.x ) );
+      // vertices.push( parseFloat( xyz.y ) );
+      // vertices.push( parseFloat( xyz.z ) );
       
       let zvalue = parseFloat( xyz.z );
       let k = (zvalue - min)/(max - min);
@@ -356,21 +497,23 @@ function main() {
       colors.push(rgb[2]);
     });
     
-    var geometry1 = new THREE.BufferGeometry();
-    geometry1.setAttribute( 'position', new THREE.Float32BufferAttribute( vertices, 3 ) );
+    var geometry1 = new THREE.BufferGeometry().setFromPoints(points3d);    
+    // var geometry1 = new THREE.BufferGeometry();
 
+    // geometry1.setAttribute( 'position', new THREE.Float32BufferAttribute( vertices, 3 ) );
     if ( colors.length > 0 ) {
       geometry1.setAttribute( 'color', new THREE.Float32BufferAttribute( colors, 3 ) );
     }
 
     geometry1.center();
 
-    var vertexColors = ( geometry1.hasAttribute( 'color' ) === true );
+    // var vertexColors = ( geometry1.hasAttribute( 'color' ) === true );
+    var material = new THREE.PointsMaterial( { size: 0.1, vertexColors: heightmapColor(), color: pointcolor() } );
+    // var material = new THREE.PointsMaterial( { size: 0.1, color: pointcolor() } );
 
-    var material = new THREE.PointsMaterial( { size: 0.1, vertexColors: vertexColors } );
     
     while(group.children.length > 0){ 
-      group.remove(group.children[0]); 
+      group.clear(); 
     }
     
     //draw axis
@@ -389,10 +532,33 @@ function main() {
 
     points2 = new THREE.Points( geometry1, material );
     group.add( points2 );
-    // scene.add( points2 );
+
+    //Delaunay
+    // triangulate x, z
+    var indexDelaunay = Delaunator.from(
+      points3d.map(v => {
+        return [v.x, v.y];
+      })
+    );
+    
+    var meshIndex = []; // delaunay index => three.js index
+    for (let i = 0; i < indexDelaunay.triangles.length; i++){
+      meshIndex.push(indexDelaunay.triangles[i]);
+    }
+
+    geometry1.setIndex(meshIndex); // add three.js index to the existing geometry
+    geometry1.computeVertexNormals();
+    var mesh = new THREE.Mesh(
+      geometry1, // re-use the existing geometry
+      new THREE.MeshLambertMaterial({ color: delaunycolor(), wireframe: true })
+    );
+    mesh.visible = delauny();
+    group.add(mesh);
+
+    // var gui = new dat.GUI();
+    // gui.add(mesh.material, "wireframe");
     render();
   }
-
 
   /*function getminmaxhegiht(lines){
     var min=Infinity, max=-Infinity, values=[];
@@ -438,7 +604,59 @@ function main() {
   //main load
 
   init_highlow();
-
   main();
-
   animate();
+
+
+
+
+
+//tool control
+function pointcolor(){
+  return document.getElementById( 'pointcolor' ).value;
+}
+function delaunycolor(){
+  return document.getElementById( 'delaunycolor' ).value;
+}
+function delauny(){
+  return document.getElementById('delauny').checked;
+}
+function heightmapColor(){
+  return document.getElementById('heightmapColor').checked;
+}
+
+const Pointcolors = document.getElementById( 'pointcolor' );
+Pointcolors.addEventListener( 'input', function () {
+  group.children[0].material.color.set( this.value );
+} );
+
+const Delaunycolors = document.getElementById( 'delaunycolor' );
+Delaunycolors.addEventListener( 'input', function () {
+  group.children[1].material.color.set( this.value );
+} );
+
+document.getElementById('delaunyDiv').addEventListener('click', function(){
+  var two = document.getElementById('delauny');
+  if(!two.checked){
+    group.children[1].visible=false;
+  }
+  else{
+    group.children[1].visible=true;
+  };
+
+});
+
+document.getElementById('heightmapColorDiv').addEventListener('click', function(){
+  var two = document.getElementById('heightmapColor');
+  if(!two.checked){
+  console.log(group)
+    group.children[0].material.vertexColors=false;
+    group.children[0].material.needsUpdate = true;
+  }
+  else{
+    console.log(group)
+    group.children[0].material.vertexColors=true;
+    group.children[0].material.needsUpdate = true;
+  };
+
+});

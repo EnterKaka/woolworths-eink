@@ -21,13 +21,13 @@ class XYZLoader extends Loader {
 	load( url, onLoad, onProgress, onError ) {
 
 		const scope = this;
-
+		console.log(this.manager)
 		const loader = new FileLoader( this.manager );
 		loader.setPath( this.path );
 		loader.setRequestHeader( this.requestHeader );
 		loader.setWithCredentials( this.withCredentials );
 		loader.load( url, function ( text ) {
-
+console.log(text)
 			try {
 
 				onLoad( scope.parse( text ) );
@@ -113,7 +113,7 @@ function getminmaxhegiht(lines){
       line = line.trim();
       if ( line.charAt( 0 ) === '#' ) continue; // skip comments
       var lineValues = line.split( /\s+/ );
-      if ( lineValues.length === 3 ) {
+      if ( lineValues.length === 3) {
         zvalue = parseFloat(lineValues[2]);
         if( min>zvalue){
           min=zvalue;
@@ -121,6 +121,25 @@ function getminmaxhegiht(lines){
         if(max<zvalue){
           max=zvalue;
         }
+      }
+    }
+    values.push(min);
+    values.push(max);
+    return values;
+  }
+
+  function getminmaxhegihtfromarray(lines){
+    var min=Infinity, max=-Infinity, values=[];
+    let zvalue;
+    for ( var i=0;i<lines.length;i+=3 ) {
+      
+      var lineValues = [lines[i],lines[i+1],lines[i+2]];
+      zvalue = parseFloat(lineValues[2]);
+      if( min>zvalue){
+        min=zvalue;
+      }
+      if(max<zvalue){
+        max=zvalue;
       }
     }
     values.push(min);
@@ -155,4 +174,4 @@ function getminmaxhegiht(lines){
 	return [ r, g , b ];
   }
 
-export { XYZLoader, getminmaxhegiht, getrgb, init_highlow };
+export { XYZLoader, getminmaxhegiht,getminmaxhegihtfromarray, getrgb, init_highlow };

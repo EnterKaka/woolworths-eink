@@ -118,15 +118,15 @@
                             </div>
                             <div class="table-padding-set">
                                 <div class="table-responsive">
-                                    <table class="table table-striped">
-                                        <colgroup>
+                                    <table class="table">
+                                        <!-- <colgroup>
                                         <col style="width: 20%;">
                                         <col style="width: 15%;">
                                         <col style="width: 10%;">
                                         <col style="width: 20%;">
                                         <col style="width: 20%;">
                                         <col style="width: 15%;">
-                                        </colgroup>
+                                        </colgroup> -->
                                         <thead class="thead-dark">
                                             <tr>
                                                 <th scope="col">Name</th>
@@ -147,8 +147,15 @@
                                                 <td><%= member.mass %></td>
                                                 <td><%= member.volume %></td>
                                                 <td>
-                                                <div style="float:left">
-                                                    <a href='/data/view/<%= member._id %>' class="btn btn-primary btn-min-width mr-1 mb-1">View</a>			                                                </div>
+                                                  
+                                                  <div style="float:left">
+                                                    <a href='/data/view/<%= member._id %>' class="btn btn-primary btn-min-width mr-1 mb-1">View</a>			
+                                                  </div>
+                                                 
+                                                  <div style="float:left">
+                                                    <a href='/data/edit/<%= member._id %>' class="btn btn-primary btn-min-width mr-1 mb-1">Edit</a>     
+                                                  </div>
+                                                
                                                 </td>
                                             </tr>
                                             <% }) %>

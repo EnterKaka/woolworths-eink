@@ -77,11 +77,11 @@ app.get('/', auth, async function(req, res, next) {
 				console.log('/data/-----',dbname, collectionname);
 				res.render('pages/data', {
 					title: 'Model DB - Owl Studio Web App',
-					dbname: dbname,//seleted db
-					collectionname: collectionname,//selected collection
+					dbname: dbname,
+					collectionname: collectionname,
 					data: sentdata,
-					dbs: dbs,//db list
-					collections: collections//collection list
+					dbs: dbs,
+					collections: collections
 				});
 			}
 		} finally {
@@ -129,6 +129,54 @@ app.get('/view/(:_id)', auth, async function(req, res, next) {
 				req.flash("pointcloud", JSON.stringify(pcl));
 				req.flash('pcl_name', cursor.measurement[0].name)
 				res.redirect('/viewer');
+			}else{
+				console.log("No documents found!");
+		   		req.flash('error', 'No existed');
+		   		// redirect to users list page
+		   		res.redirect('/data/');
+			}
+		} finally {
+			await client.close();
+		}
+	}
+	run().catch(
+		(err) => {
+			console.log("mongodb connect error ========");
+			console.error(err)
+		   	//  process.exit(1)
+		   	req.flash('error', err)
+		   	// redirect to users list page
+		   	res.redirect('/data/');
+		}
+	);
+
+	
+});
+
+app.get('/edit/(:_id)', auth, async function(req, res, next) {
+	// let model = await Model.findOne({datetime: req.params.datetime})
+	const client = new MongoClient('mongodb://localhost:27017/', { useUnifiedTopology: true });
+
+	console.log('/data/edit/_id--------',dbname, collectionname);
+	async function run() {
+		try {
+			await client.connect();
+			const database = client.db(dbname);
+			const datas = database.collection(collectionname);
+			// query for movies that have a runtime less than 15 minutes
+			const cursor = await datas.findOne({_id: new ObjectId(req.params._id) });
+			// console.log(cursor);
+			// print a message if no documents were found
+			if (cursor) {
+				// replace console.dir with your callback to access individual elements
+				console.log('success get data');
+				req.flash('success', 'Data loaded successfully! DB = ' + dbname)
+				// redirect to users list page
+				var pcl = cursor.measurement[0].pointcloud;
+				console.log('point cloud ========================');
+				req.flash("pointcloud", JSON.stringify(pcl));
+				req.flash('pcl_name', cursor.measurement[0].name)
+				res.redirect('/editer');
 			}else{
 				console.log("No documents found!");
 		   		req.flash('error', 'No existed');

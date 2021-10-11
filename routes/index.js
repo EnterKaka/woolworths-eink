@@ -8,10 +8,9 @@ const jwt = require('jsonwebtoken');
 const config = require("config");
 const MongoClient = require("mongodb").MongoClient;
 
-
 app.get('/', function(req, res) {
 	// render to views/index.ejs template file
-	res.redirect('/viewer')
+	res.redirect('/editer')
 })
 
 app.get('/viewer', auth, function(req, res) {
@@ -19,6 +18,16 @@ app.get('/viewer', auth, function(req, res) {
 	
 	res.render('pages/viewer', {
 		title: '3D Viewer - Owl Studio Web App',
+		priv: req.user.privilege,
+		model_data: '',
+	})
+})
+
+app.get('/editer', auth, function(req, res) {
+	// render to views/index.ejs template file
+	
+	res.render('pages/editer', {
+		title: 'Owl Eye 3D Editor',
 		priv: req.user.privilege,
 		model_data: '',
 	})
@@ -36,7 +45,7 @@ app.get('/dashboard', auth, function(req, res) {
 
 	//This is all models that seperated with name.
 	var allmodels = [];
-	var allnames = [];
+
 	const client = new MongoClient('mongodb://localhost:27017/', { useUnifiedTopology: true });
 	async function run() {
 		try {
@@ -78,15 +87,13 @@ app.get('/dashboard', auth, function(req, res) {
 						}
 						temp_model.log.push(eachmodeldata);
 						allmodels.push(temp_model);
-						allnames.push(modelname);
 					}
 					
 				});
 				//sucess
+				console.log(allmodels.log[0].mass);
 				res.render('pages/dashboard', {
 					title: 'Dashboard - Owl Studio Web App',
-					data: allmodels,
-					names: allnames,
 				});
 			}
 		} finally {
@@ -133,7 +140,7 @@ app.post('/login', async function(req, res) {
 		if(bcrypt.compareSync(req.body.pass, user1.pass)) {
 			req.session.accessToken = token;
 			await req.session.save();
-			res.redirect('/viewer');
+			res.redirect('/editer');
 		}
 		else{
 			for (const key in req.body) {
