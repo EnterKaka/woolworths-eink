@@ -4,7 +4,13 @@ import { XYZLoader, getminmaxhegiht, getrgb, init_highlow } from './XYZLoader.js
 
 var controls, camera, renderer, scene, canvas, parent_canvas, group;
 
+// chart global list
+var chartlist, chartnamelist;
+
 function init_chart(){
+    chartlist = [];
+    chartnamelist = [];
+
     let names = document.getElementById('input-names').value;
     names = names.split(',');
 
@@ -22,8 +28,8 @@ function init_chart(){
 
 function drawChart(ctx,data,ft,tt){
     //draw chart
-        // initialize chart option
-        var chartOptions = {
+    // initialize chart option
+    var chartOptions = {
             //last setting
             // responsive: true,
             // maintainAspectRatio: false,
@@ -33,92 +39,92 @@ function drawChart(ctx,data,ft,tt){
             // hover: {
             //     mode: 'label'
             // },
-            responsive: true,
-            interaction: {
-                intersect: false,
-                mode: 'index',
+        responsive: true,
+        interaction: {
+            intersect: false,
+            mode: 'index',
+        },
+        plugins: {
+            legend: {
+                position: 'top',
             },
-            plugins: {
-                legend: {
-                    position: 'top',
+            title: {
+                display: true,
+                text: data.name,
+                // color: '#0040ff',
+                font: {
+                    family: 'Comfortaa',
+                    size: 25,
+                    lineHeight: 1.2,
                 },
-                title: {
-                    display: true,
-                    text: data.name,
-                    color: '#0040ff',
-                    font: {
-                        family: 'Comfortaa',
-                        size: 25,
-                        lineHeight: 1.2,
-                    },
-                },
-                tooltip: {
-                    usePointStyle: true,
-                    position: 'nearest',
-                }
             },
-            scales: {
-            //last setting
-            // xAxes: [{    
-            //     display: true,
-            //     gridLines: {
-            //         color: "#f3f3f3",
-            //         drawTicks: false,
-            //     },
-            //     scaleLabel: {
-            //         display: true,
-            //         labelString: 'Time'
-            //     },
-            //     offset: 60,
-            //     position: 'end',
-            //     labelOffset: {
-            //         x: 0,
-            //         y: 15
-            //       },
-            // }],
-            // yAxes: [{
-            //     display: true,
-            //     gridLines: {
-            //         color: "#f3f3f3",
-            //         drawTicks: false,
-            //     },
-            //     scaleLabel: {
-            //         display: true,
-            //         labelString: 'Volume in m**3'
-            //     }
-            // }]
+            tooltip: {
+                usePointStyle: true,
+                position: 'nearest',
+            }
+        },
+        scales: {
+        //last setting
+        // xAxes: [{    
+        //     display: true,
+        //     gridLines: {
+        //         color: "#f3f3f3",
+        //         drawTicks: false,
+        //     },
+        //     scaleLabel: {
+        //         display: true,
+        //         labelString: 'Time'
+        //     },
+        //     offset: 60,
+        //     position: 'end',
+        //     labelOffset: {
+        //         x: 0,
+        //         y: 15
+        //       },
+        // }],
+        // yAxes: [{
+        //     display: true,
+        //     gridLines: {
+        //         color: "#f3f3f3",
+        //         drawTicks: false,
+        //     },
+        //     scaleLabel: {
+        //         display: true,
+        //         labelString: 'Volume in m**3'
+        //     }
+        // }]
 
-            //new 
+        //new 
             x: {
                 display: true,
                 title: {
-                  display: true,
-                  text: 'Time',
-                  color: '#911',
-                  font: {
+                    display: true,
+                    text: 'Time',
+                    // color: '#911',
+                    font: {
                     family: 'Comic Sans MS',
                     size: 20,
                     weight: 'bold',
                     lineHeight: 1.2,
-                  },
-                  padding: {top: 20, left: 0, right: 0, bottom: 0}
+                    },
+                    padding: {top: 20, left: 0, right: 0, bottom: 0}
                 }
-              },
-              y: {
+            },
+            y: {
                 display: true,
                 title: {
-                  display: true,
-                  text: 'Volume in m3',
-                  color: '#191',
-                  font: {
+                    display: true,
+                    text: 'Volume in m3',
+                    // color: '#191',
+                    font: {
                     family: 'Times',
                     size: 20,
                     style: 'normal',
                     lineHeight: 1.2
-                  },
-                  padding: {top: 20, left: 0, right: 0, bottom: 0}
+                    },
+                    padding: {top: 20, left: 0, right: 0, bottom: 0}
                 }
-              }
+            }
         },
             // title: {
             //     display: true,
@@ -128,7 +134,6 @@ function drawChart(ctx,data,ft,tt){
     if(!ft){
         // Chart Data
         var tempdata = makeChartDataFromModelSets(data);
-        // console.log(tempdata);
         var chartData = {
             labels: tempdata[0],
             datasets: [{
@@ -154,6 +159,9 @@ function drawChart(ctx,data,ft,tt){
 
         // Create the chart
         var lineChart = new Chart(ctx, config);
+        chartlist.push(lineChart);
+        chartnamelist.push(data.name);
+        console.log(lineChart);
 
         //set necessay extra information
         let lm_date = 'lm-date-' + data.name,
@@ -211,16 +219,16 @@ function drawChart(ctx,data,ft,tt){
         ctx.addEventListener("dblclick", function() {
             //go to 3d viewer with last id
             var this_canvas = $(this).attr('id');
-            var this_id = this_canvas;
+            // var this_id = this_canvas;
             this_canvas = this_canvas.split('-');
             var this_canvas_modelname = 'input-modelid-' + this_canvas.slice(-1);
             this_canvas_modelname = document.getElementById(this_canvas_modelname).value
             // location.href = "/data/view/" + this_canvas;
             load3dmodelwithidonlocal(this_canvas.slice(-1),this_canvas_modelname);
-            location.href = '#canvas-container';
+            // location.href = '#canvas-container';
             //for current item get
-            var ctx = document.getElementById(this_id);
-            console.log(ctx.chart.options.plugins.tooltip);
+            // var ctx = document.getElementById(this_id);
+            // console.log(ctx.chart.options.plugins.tooltip);
         });
     }else{
         // Chart Data
@@ -250,7 +258,14 @@ function drawChart(ctx,data,ft,tt){
         };
 
         // Create the chart
-        var lineChart = new Chart(ctx, config);
+        try{
+            ctx.data.datasets = chartData;
+            ctx.update();
+            var lineChart = new Chart(ctx, config);
+        }catch(err){
+            console.log(ctx);
+            console.log(err);
+        }
 
         update_lastidofmodel(data.name, tempdata[2]);
     }
@@ -808,7 +823,6 @@ async function reloadModelFromJSONData(filename,wholecontent) {
     var vertices = [];
     var colors = [];
     var points2;
-
     var values = getminmaxheightfromjson(wholecontent);
     var min = values[0];
     var max = values[1];

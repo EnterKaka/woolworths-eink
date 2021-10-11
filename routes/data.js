@@ -164,7 +164,7 @@ app.post('/view/(:id)', auth, async function(req, res, next) {
 			const database = client.db(dbname);
 			const datas = database.collection(collectionname);
 			// query for movies that have a runtime less than 15 minutes
-			const cursor = await datas.findOne({_id: new ObjectId(id) }).sort([['datetime', -1]]);
+			const cursor = await datas.findOne({_id: new ObjectId(id) });
 			// console.log(cursor);
 			// print a message if no documents were found
 			if (cursor) {
