@@ -53,7 +53,7 @@ function drawChart(ctx,data,ft,tt){
                 text: data.name,
                 // color: '#0040ff',
                 font: {
-                    family: 'Comfortaa',
+                    family: 'Times',
                     size: 25,
                     lineHeight: 1.2,
                 },
@@ -102,7 +102,7 @@ function drawChart(ctx,data,ft,tt){
                     text: 'Time',
                     // color: '#911',
                     font: {
-                    family: 'Comic Sans MS',
+                    family: 'Times',
                     size: 20,
                     weight: 'bold',
                     lineHeight: 1.2,
@@ -259,6 +259,10 @@ function drawChart(ctx,data,ft,tt){
 
         // Create the chart
         try{
+            var i;
+            for(const element of chartlist){
+                i = 0;
+            }
             ctx.data.datasets = chartData;
             ctx.update();
             var lineChart = new Chart(ctx, config);
