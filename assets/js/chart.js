@@ -158,6 +158,7 @@ function drawChart(ctx,data,ft,tt){
             this_canvas_modelname = document.getElementById(this_canvas_modelname).value
             // location.href = "/data/view/" + this_canvas;
             load3dmodelwithidonlocal(this_canvas.slice(-1),this_canvas_modelname);
+            location.href = '#canvas-container';
         });
     }else{
         // Chart Data

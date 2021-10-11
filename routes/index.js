@@ -54,6 +54,7 @@ app.get('/dashboard', auth, function(req, res) {
 		   		res.header(400).json({status: 'fail'});
 			}else{
 				// replace console.dir with your callback to access individual elements
+				var lastmodelname;//for current item for update
 				await cursor.forEach(function(model) {
 					let modelname = model.measurement[0].name;
 					let eachmodeldata = {
@@ -80,8 +81,9 @@ app.get('/dashboard', auth, function(req, res) {
 						allmodels.push(temp_model);
 						allnames.push(modelname);
 					}
-					
+					lastmodelname = modelname;//for name sort by current datetime
 				});
+				allmodels = makeSortedDatasbytime(lastmodelname, allmodels);
 				//sucess
 				res.render('pages/dashboard', {
 					title: 'Dashboard - Owl Studio Web App',
@@ -148,34 +150,47 @@ app.post('/login', async function(req, res) {
 		}
 	}else{
 		// default login feature
-		var email = req.body.email.trim();
-		var pass = req.body.pass.trim();
-		if((email == 'admin@oe-web.com' ) && (pass == 'admin1234' )){
-			let v_user = new User({
-				name: 'Quirin Kraus',
-				pass: 'admin1234',
-				email: 'admin@oe-web.com',
-				privilege: 'admin',
-			});
-			v_user.pass = await bcrypt.hash(v_user.pass, 10);
-			await v_user.save();
-			let user1 = await User.findOne({ email: req.body.email });
-			let token = jwt.sign({...user1}, config.get("myprivatekey"));
-			req.session.accessToken = token;
-			await req.session.save();
-			res.redirect('/');
-		}
-		for (const key in req.body) {
-			if (Object.hasOwnProperty.call(req.body, key)) {
-				req.flash(key, req.body[key])
-			}
-		}
+		// var email = req.body.email.trim();
+		// var pass = req.body.pass.trim();
+		// if((email == 'admin@oe-web.com' ) && (pass == 'admin1234' )){
+		// 	let v_user = new User({
+		// 		name: 'Quirin Kraus',
+		// 		pass: 'admin1234',
+		// 		email: 'admin@oe-web.com',
+		// 		privilege: 'admin',
+		// 	});
+		// 	v_user.pass = await bcrypt.hash(v_user.pass, 10);
+		// 	await v_user.save();
+		// 	let user1 = await User.findOne({ email: req.body.email });
+		// 	let token = jwt.sign({...user1}, config.get("myprivatekey"));
+		// 	req.session.accessToken = token;
+		// 	await req.session.save();
+		// 	res.redirect('/');
+		// }
+		// for (const key in req.body) {
+		// 	if (Object.hasOwnProperty.call(req.body, key)) {
+		// 		req.flash(key, req.body[key])
+		// 	}
+		// }
 		req.flash('error', 'Email is not registered');
 		res.render('pages/login', {title: '3D Viewer - Owl Studio Web App'});
 	}
 });
 
-
+function makeSortedDatasbytime(lastmodelname, allmodels){
+	var sorteddata = allmodels, tmp_data,i = 0;
+	for(const element of allmodels){
+		if(element.name === lastmodelname){
+			tmp_data = sorteddata.slice(i, i+1);
+			sorteddata.splice(i,1);
+			break;
+		}
+		i = i + 1;
+	}
+	sorteddata = sorteddata.concat(tmp_data);
+	sorteddata.reverse();
+	return sorteddata;
+}
 /** 
  * We assign app object to module.exports
  * 

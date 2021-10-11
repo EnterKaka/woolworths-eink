@@ -38,5 +38,8 @@
     "node-cron": "^3.0.0",
     "socket.io": "^4.2.0",
     "three": "^0.132.2"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.13"
   }
 }

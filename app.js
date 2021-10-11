@@ -147,20 +147,14 @@ cron.schedule('* * * * *', function () {
             if (err) {
               throw err;
             }
-            // console.log(result);
             var fulldata = result;
             var jsontype = {
               modelname: db,
               collectionname: col,
               datas: fulldata
             };
-
 	          io.emit('broad message', {data: jsontype});
-
-            // alldatas.push(jsontype);
             client.close();
-          // console.log(alldatas);
-
           });
         });
         
@@ -168,6 +162,5 @@ cron.schedule('* * * * *', function () {
      
     }
   });
-	// io.emit('broad message', 'sdddsds');
 });
 
