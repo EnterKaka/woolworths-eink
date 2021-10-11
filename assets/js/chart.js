@@ -47,7 +47,7 @@ function drawChart(ctx,data,ft,tt){
                     text: data.name,
                     color: '#0040ff',
                     font: {
-                        family: 'Comic Sans MS',
+                        family: 'Comfortaa',
                         size: 25,
                         lineHeight: 1.2,
                     },
