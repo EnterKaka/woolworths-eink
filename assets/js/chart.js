@@ -32,7 +32,7 @@ function drawChart(ctx,data,ft,tt){
     var chartOptions = {
             //last setting
             // responsive: true,
-            // maintainAspectRatio: false,
+            maintainAspectRatio: false,
             // legend: {
             //     position: 'bottom',
             // },
@@ -46,6 +46,7 @@ function drawChart(ctx,data,ft,tt){
         },
         plugins: {
             legend: {
+                display:false,
                 position: 'top',
             },
             title: {
@@ -229,6 +230,7 @@ function drawChart(ctx,data,ft,tt){
             //for current item get
             // var ctx = document.getElementById(this_id);
             // console.log(ctx.chart.options.plugins.tooltip);
+            window.scrollTo(0,0);
         });
     }else{
         // Chart Data
