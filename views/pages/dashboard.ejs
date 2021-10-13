@@ -94,16 +94,16 @@
                                                     </div>
                                                     <div>
                                                         <div class="row" style="margin-top: 20px; margin-bottom: 15px; margin-left: -5px;">
+                                                            <div class="col-md-1 col-sm-0 col-0 col-lg-1 col-xl-3"></div>
+                                                            <div class="col-md-1 col-sm-12 col-12 col-lg-1 col-xl-1">
+                                                                <button class="btn btn-sm btn-dark" id='<%= "btn-"+element.name %>' style="margin-bottom: 5px;" >Update</button>
+                                                                <button class="btn btn-sm btn-dark" id='<%= "btn-export"+element.name %>' >Export</button>
+                                                            </div>
                                                             <div class="col-md-5 col-sm-12 col-12 col-lg-5 col-xl-4" style="align-self: center;">
                                                                 From&nbsp;<input type="datetime-local" id='<%= "fromtime-"+element.name %>'>
                                                             </div>
                                                             <div class="col-md-5 col-sm-12 col-12 col-lg-5 col-xl-4" style="align-self: center;">
                                                                 To&nbsp;<input type="datetime-local" id='<%= "totime-"+element.name %>'>
-                                                            </div>
-                                                            <div class="col-md-1 col-sm-0 col-0 col-lg-1 col-xl-3"></div>
-                                                            <div class="col-md-1 col-sm-12 col-12 col-lg-1 col-xl-1">
-                                                                <button class="btn btn-sm btn-dark" id='<%= "btn-"+element.name %>' style="margin-bottom: 5px;" >Update</button>
-                                                                <button class="btn btn-sm btn-dark" id='<%= "btn-export"+element.name %>' >Export</button>
                                                             </div>
                                                             <!-- <div class="col-md-1 col-sm-12 col-12 col-lg-1 col-xl-1">
                                                                 <button class="btn btn-sm btn-dark" id='<%= "btn-"+element.name %>'>Update</button>
@@ -159,7 +159,7 @@
 
         <script src="/js/chart.js" type="module"></script>
         <script type="text/javascript">
-            $("#btn-openfromLocal").hide();
+            $("[id^=btn-]").hide();
         </script>
         <!-- <script src="/js/alert_getmodelfromdb.js" type="text/javascript"></script> -->
     </body>
