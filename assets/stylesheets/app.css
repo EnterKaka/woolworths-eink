@@ -30,6 +30,7 @@
 div.table-padding-set{
     padding: 25px;
 }
+
 html {
     scroll-behavior: smooth;
-  }
+}

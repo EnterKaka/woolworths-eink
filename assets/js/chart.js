@@ -121,6 +121,7 @@ function drawChart(ctx,data,ft,tt){
                     family: 'Times',
                     size: 20,
                     style: 'normal',
+                    weight: 'bold',
                     lineHeight: 1.2
                     },
                     padding: {top: 20, left: 0, right: 0, bottom: 0}
