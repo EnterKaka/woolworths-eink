@@ -266,8 +266,9 @@ function drawChart(ctx,data,ft,tt){
             for(const element of chartlist){
                 i = 0;
             }
-            ctx.data.datasets = chartData;
-            ctx.update();
+            console.log(ctx);
+            // ctx.data.datasets = chartData;
+            // ctx.update();
             var lineChart = new Chart(ctx, config);
         }catch(err){
             console.log(ctx);
