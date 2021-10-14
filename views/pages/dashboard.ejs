@@ -99,11 +99,11 @@
                                                                 <button class="btn btn-sm btn-dark" id='<%= "btn-"+element.name %>' style="margin-bottom: 5px;" >Update</button>
                                                                 <button class="btn btn-sm btn-dark" id='<%= "btn-export"+element.name %>' >Export</button>
                                                             </div>
-                                                            <div class="col-md-5 col-sm-12 col-12 col-lg-5 col-xl-4" style="align-self: center;text-align: right;">
-                                                                From&nbsp;<input type="datetime-local" id='<%= "fromtime-"+element.name %>'>
+                                                            <div class="col-md-10 col-sm-12 col-12 col-lg-10 col-xl-8" style="align-self: center;text-align: right;">
+                                                                From&nbsp;&nbsp;&nbsp;<input type="datetime-local" id='<%= "fromtime-"+element.name %>'><br><br>
+                                                                To&nbsp;&nbsp;&nbsp;<input type="datetime-local" id='<%= "totime-"+element.name %>'>
                                                             </div>
-                                                            <div class="col-md-5 col-sm-12 col-12 col-lg-5 col-xl-4" style="align-self: center;text-align: right;">
-                                                                To&nbsp;<input type="datetime-local" id='<%= "totime-"+element.name %>'>
+                                                            <!-- <div class="col-md-5 col-sm-12 col-12 col-lg-5 col-xl-4" style="align-self: center;text-align: right;"> -->
                                                             </div>
                                                             <!-- <div class="col-md-1 col-sm-12 col-12 col-lg-1 col-xl-1">
                                                                 <button class="btn btn-sm btn-dark" id='<%= "btn-"+element.name %>'>Update</button>
@@ -117,14 +117,14 @@
                                                         &Tab;<h4 class='info'>Model Information&nbsp;:&nbsp;<%= element.name %></h4><br>
                                                         <div class="row">
                                                             <div class="col-md-12 col-lg-6">
-                                                                <dl class='row'><dt class="col-6"> 1 .Last Measurement Date&nbsp;:</dt><dd class="col-6" id='<%= "lm-date-"+element.name %>'></dd></dl>
-                                                                <dl class='row'><dt class="col-6"> 2 .Last Measurement Time&nbsp;:</dt><dd class="col-6" id='<%= "lm-time-"+element.name %>'></dd></dl>
-                                                                <dl class='row'><dt class="col-6"> 3 .Last Measurement Volume&nbsp;:</dt><dd class="col-6" id='<%= "lm-volume-"+element.name %>'></dd></dl>
+                                                                <dl class='row'><dt class="col-6"> 1. Last Measurement Date&nbsp;:</dt><dd class="col-6" id='<%= "lm-date-"+element.name %>'></dd></dl>
+                                                                <dl class='row'><dt class="col-6"> 2. Last Measurement Time&nbsp;:</dt><dd class="col-6" id='<%= "lm-time-"+element.name %>'></dd></dl>
+                                                                <dl class='row'><dt class="col-6"> 3. Last Measurement Volume&nbsp;:</dt><dd class="col-6" id='<%= "lm-volume-"+element.name %>'></dd></dl>
                                                             </div>
                                                             <div class="col-md-12 col-lg-6">
-                                                                <dl class='row'><dt class="col-6"> 4 .Last Measurement Mass&nbsp;:</dt><dd class="col-6" id='<%= "lm-mass-"+element.name %>'></dd></dl>
-                                                                <dl class='row'><dt class="col-6"> 5 .Last Measurement Density&nbsp;:</dt><dd class="col-6" id='<%= "lm-density-"+element.name %>'></dd></dl>
-                                                                <dl class='row'><dt class="col-6"> 6 .Average Volume&nbsp;:</dt><dd class="col-6" id='<%= "lm-averagevolume-"+element.name %>'></dd></dl>
+                                                                <dl class='row'><dt class="col-6"> 4. Last Measurement Mass&nbsp;:</dt><dd class="col-6" id='<%= "lm-mass-"+element.name %>'></dd></dl>
+                                                                <dl class='row'><dt class="col-6"> 5. Last Measurement Density&nbsp;:</dt><dd class="col-6" id='<%= "lm-density-"+element.name %>'></dd></dl>
+                                                                <dl class='row'><dt class="col-6"> 6. Average Volume&nbsp;:</dt><dd class="col-6" id='<%= "lm-averagevolume-"+element.name %>'></dd></dl>
                                                             </div>
                                                         </div>
                                                         <input type="hidden" id="<%= 'input-modelid-' + element.name %>">

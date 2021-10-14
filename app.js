@@ -130,37 +130,36 @@ const Settings = require('./model/Setting');
 const MongoClient = require("mongodb").MongoClient;
 var ObjectId = require('mongoose').Types.ObjectId;
     
-cron.schedule('* * * * *', function () {
-	console.log("Mongdb Scan Task is running every minute " + new Date());
-  const client = new MongoClient('mongodb://localhost:27017/', { useUnifiedTopology: true });
-	var alldatas = [];
-  Settings.find({}, function (err, docs) {
-    // docs is an array
-    if(docs){
-      docs.forEach( function(mem){
-        let db = mem.dbname.trim();
-        let col = mem.collectionname.trim();
-        client.connect((err) => {
-          var workdb = client.db(db);
-          var datas = workdb.collection(col);
-			    const cursor = datas.find({}).sort([['datetime', -1]]).toArray(function(err, result) {
-            if (err) {
-              throw err;
-            }
-            var fulldata = result;
-            var jsontype = {
-              modelname: db,
-              collectionname: col,
-              datas: fulldata
-            };
-	          io.emit('broad message', {data: jsontype});
-            client.close();
-          });
-        });
-        
-      });
+// cron.schedule('* * * * *', function () {
+// 	console.log("Mongdb Scan Task is running every minute " + new Date());
+//   const client = new MongoClient('mongodb://localhost:27017/', { useUnifiedTopology: true });
+// 	var alldatas = [];
+//   Settings.find({}, function (err, docs) {
+//     // docs is an array
+//     if(docs){
+//       docs.forEach( function(mem){
+//         let db = mem.dbname.trim();
+//         let col = mem.collectionname.trim();
+//         client.connect((err) => {
+//           var workdb = client.db(db);
+//           var datas = workdb.collection(col);
+// 			    const cursor = datas.find({}).sort([['datetime', -1]]).toArray(function(err, result) {
+//             if (err) {
+//               throw err;
+//             }
+//             var fulldata = result;
+//             var jsontype = {
+//               modelname: db,
+//               collectionname: col,
+//               datas: fulldata
+//             };
+// 	          io.emit('broad message', {data: jsontype});
+//             client.close();
+//           });
+//         });
+//       });
      
-    }
-  });
-});
+//     }
+//   });
+// });
 

@@ -127,7 +127,7 @@ app.get('/view/(:_id)', auth, async function(req, res, next) {
 				var pcl = cursor.measurement[0].pointcloud;
 				console.log('point cloud ========================');
 				req.flash("pointcloud", JSON.stringify(pcl));
-				req.flash('pcl_name', cursor.measurement[0].name)
+				req.flash('pcl_name', cursor.measurement[0].name);
 				res.redirect('/viewer');
 			}else{
 				console.log("No documents found!");
