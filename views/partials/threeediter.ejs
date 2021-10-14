@@ -1,40 +1,5 @@
 <div>
-    <div class="row toolbar ml-2 mr-2">
-         
-        <input name="mymodel" type="file" style="display: none;" accept=".obj, .txt" id="input_model">
-        <button type='button' class="btn btn-icon btn-success mr-1 mb-1" title='Open model from local pc' id='btn-openfromLocal'>
-            <i class="ft-upload"></i>
-        </button>
-        <button type='button' class="btn btn-icon btn-success mr-1 mb-1" title='Open model from local pc' id='btn-point'>
-            <i class="ft-edit-2"></i>
-        </button>
-        <button type='button' class="btn btn-icon btn-success mr-1 mb-1" title='Open model from local pc' id='btn-polygon'>
-            <i class="ft-octagon"></i>
-        </button>
-        <button type='button' class="btn btn-icon btn-success mr-1 mb-1" title='Open model from local pc' id='btn-pencil'>
-            <i class="ft-edit-3"></i>
-        </button>
-        <input type="color" value="#87CEEB" style="background: #5ed84f;height: 41px;width:60px;padding: 5px;" class="form-control mr-1 mb-1" id="pointcolor">
-        <input type="color" value="#800080" style="background: #5ed84f;height: 41px;width:60px;padding: 5px;" class="form-control mr-1 mb-1" id="delaunycolor">
-        <div id="delaunyDiv" class="form-group pb-0 mb-1" style="padding-top: 3px; padding-left:10px; margin-bottom:0px;">
-          <input type="checkbox" id="delauny" class="switchery" data-color="success" data-secondary-color="success"  data-switchery="true" style="display: none;">
-          <label for="delauny" class="font-medium-2 text-bold-600">delauny</label>
-        </div>
-        <div id="heightmapColorDiv" class="form-group pb-0 mb-1" style="padding-top: 3px; padding-left:10px; margin-bottom:0px; flex-grow:20;">
-          <input type="checkbox" id="heightmapColor" checked class="switchery" data-color="success" data-secondary-color="success"  data-switchery="true" style="display: none;">
-          <label for="heightmapColor" class="font-medium-2 text-bold-600" style="">heightmapColor</label>
-        </div>
-        <button type='button' style="float:right;" class="btn btn-icon btn-primary mr-1 mb-1" title='Open model from local pc' id='btn-save'>
-            <i class="ft-save"></i>
-        </button>
-        <button type='button' style="float:right;" class="btn btn-icon btn-primary mb-1" title='Open model from local pc' id='btn-download'>
-            <i class="ft-download"></i>
-        </button>
-        <% if(messages.pointcloud){ %>
-        <input type="hidden" id="pointcloud" value='<%- messages.pointcloud %>'>
-        <% } %>
-        
-    </div>
+    
     <div class="row container_main">
         <!-- Center 3D Viewer -->
         <div class="col-sm-12 col-md-12 col-lg-12 col-xl-12 col-xxl-12" id="main_canvas">

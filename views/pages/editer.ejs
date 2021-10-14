@@ -1,92 +1,216 @@
 <!DOCTYPE html>
 <html class="loading" lang="en" data-textdirection="ltr">
-  <head>
-    <%- include('../partials/head'); %>
+
+<head>
+  <%- include('../partials/head'); %>
     <!-- BEGIN Three.js Load -->
     <!-- END Three.js Load -->
+    <style>
+      label.font-medium-2.text-bold-600 {
+        margin-bottom: 0px !important;
+      }
+    </style>
 </head>
-  <body class="vertical-layout vertical-menu 2-columns   menu-expanded fixed-navbar" data-open="click" data-menu="vertical-menu" data-color="bg-gradient-x-purple-blue" data-col="2-columns">
-    <!-- fixed-top-->
-    <%- include('../partials/header'); %>
+
+<body class="vertical-layout vertical-menu 2-columns   menu-expanded fixed-navbar" data-open="click"
+  data-menu="vertical-menu" data-color="bg-gradient-x-purple-blue" data-col="2-columns">
+  <!-- fixed-top-->
+  <%- include('../partials/header'); %>
     <!-- ////////////////////////////////////////////////////////////////////////////-->
     <%- include('../partials/sidebar'); %>
 
-  <!-- dashboard -->
-  <div class="app-content content">
-    <div class="content-wrapper">
-      <div class="content-wrapper-before"></div>
-      <div class="content-header row">
-        <div class="content-header-left col-md-4 col-12 mb-2">
-          <h3 class="content-header-title">Owl Eye 3D Editor</h3>
-        </div>
-        <div class="content-header-right col-md-8 col-12">
-          <div class="breadcrumbs-top float-md-right">
-            <div class="breadcrumb-wrapper mr-1">
-              <ol class="breadcrumb">
-                <li class="breadcrumb-item"><a href="/">Home</a>
-                </li>
-                <li class="breadcrumb-item active">3D editer
-                </li>
-              </ol>
+      <!-- dashboard -->
+      <div class="app-content content">
+        <div class="content-wrapper">
+          <div class="content-wrapper-before"></div>
+          <div class="content-header row">
+            <div class="content-header-left col-md-4 col-12 mb-2">
+              <h3 class="content-header-title">Owl Eye 3D Editor</h3>
+            </div>
+            <div class="content-header-right col-md-8 col-12">
+              <div class="breadcrumbs-top float-md-right">
+                <div class="breadcrumb-wrapper mr-1">
+                  <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="/">Home</a>
+                    </li>
+                    <li class="breadcrumb-item active">3D editer
+                    </li>
+                  </ol>
+                </div>
+              </div>
             </div>
           </div>
-        </div>
-      </div>
 
-      <div class="content-body">
-      <!-- Basic Buttons start -->
-        <section id="basic-buttons">
-        <div class="row">
-            <div class="col-lg-12 col-md-12">
-                <div class="card" id="canvas-container">
+          <div class="content-body">
+            <!-- Basic Buttons start -->
+            <section id="basic-buttons">
+              <div class="row">
+                <div class="col-lg-12 col-md-12">
+                  <div class="card" id="canvas-container">
                     <div class="card-header">
-                         <% if(messages.pcl_name){ %>
-            <h4 class="card-title" id='modelpath'><%= messages.pcl_name %></h2>
-        <% }else{ %>
-            <h4 class="card-title" id='modelpath'>filename</h4>
-        <% } %> 
-                        <a class="heading-elements-toggle"><i class="la la-ellipsis-v font-medium-3"></i></a>
-                        <div class="heading-elements">
-                            <ul class="list-inline mb-0">
-                                <li><a data-action="collapse"><i class="ft-minus"></i></a></li>
-                                <li><a data-action="reload"><i class="ft-rotate-cw"></i></a></li>
-                                <li><a data-action="expand"><i class="ft-maximize"></i></a></li>
-                                <li><a data-action="close"><i class="ft-x"></i></a></li>
-                            </ul>
+                      <% if(messages.pcl_name){ %>
+                        <h4 class="card-title" id='modelpath'>
+                          <%= messages.pcl_name %>
+                            </h2>
+                            <% }else{ %>
+                              <h4 class="card-title" id='modelpath'>filename</h4>
+                              <% } %>
+                                <a class="heading-elements-toggle"><i class="la la-ellipsis-v font-medium-3"></i></a>
+                                <div class="heading-elements">
+                                  <ul class="list-inline mb-0">
+                                    <li><a data-action="collapse"><i class="ft-minus"></i></a></li>
+                                    <li><a data-action="reload"><i class="ft-rotate-cw"></i></a></li>
+                                    <li><a data-action="expand"><i class="ft-maximize"></i></a></li>
+                                    <li><a data-action="close"><i class="ft-x"></i></a></li>
+                                  </ul>
+                                </div>
+                    </div>
+                    <div class="card-content collapse show">
+
+
+
+                      <div class="card-body">
+                        <ul class="nav nav-tabs">
+                          <li class="nav-item">
+                            <a class="nav-link active" id="baseIcon-tab4" data-toggle="tab" aria-controls="tabIcon4"
+                              href="#tabIcon4" aria-expanded="true" data-nsfw-filter-status="swf"><i
+                                class="ft-aperture mr-1"></i> File</a>
+                          </li>
+                          <li class="nav-item">
+                            <a class="nav-link" id="baseIcon-tab1" data-toggle="tab" aria-controls="tabIcon1"
+                              href="#tabIcon1" aria-expanded="false" data-nsfw-filter-status="swf"><i
+                                class="ft-aperture mr-1"></i> View</a>
+                          </li>
+                          <li class="nav-item">
+                            <a class="nav-link" id="baseIcon-tab2" data-toggle="tab" aria-controls="tabIcon2"
+                              href="#tabIcon2" aria-expanded="false" data-nsfw-filter-status="swf"><i
+                                class="ft-bell mr-1"></i> Selection</a>
+                          </li>
+                          <li class="nav-item">
+                            <a class="nav-link" id="baseIcon-tab3" data-toggle="tab" aria-controls="tabIcon3"
+                              href="#tabIcon3" aria-expanded="false" data-nsfw-filter-status="swf"><i
+                                class="ft-compass mr-1"></i> Tools</a>
+                          </li>
+                          <!-- <li class="nav-item">
+                            <a class="nav-link disabled" data-nsfw-filter-status="swf"><i class="ft-gitlab"></i> Disabled</a>
+                          </li> -->
+                        </ul>
+                        <div class="tab-content px-1 pt-1">
+                          <div role="tabpanel" class="tab-pane" id="tabIcon1" aria-labelledby="baseIcon-tab1">
+                            <div class="row toolbar">
+                              <!-- <p data-nsfw-filter-status="swf">Oat cake marzipan cake lollipop caramels wafer pie jelly beans. Icing halvah chocolate cake carrot cake. Jelly beans carrot cake marshmallow gingerbread chocolate cake. Gummies cupcake croissant.</p> -->
+                              <input name="mymodel" type="file" style="display: none;" accept=".obj, .txt"
+                                id="input_model">
+                              <button type='button'
+                                class="btn btn-icon btn-outline-success btn-glow round btn-sm mr-1 mb-1"
+                                title='Open model from local pc' id='btn-openfromLocal'>
+                                <i class="ft-upload"></i>
+                              </button>
+                              <input type="color" value="#87CEEB"
+                                style="background: #5ed84f;height: 31px;width:60px;padding: 2px;"
+                                class="form-control mr-1 mb-1" id="pointcolor">
+                              <input type="color" value="#800080"
+                                style="background: #5ed84f;height: 31px;width:60px;padding: 2px;"
+                                class="form-control mr-1 mb-1" id="delaunycolor">
+                              <div id="delaunyDiv" class="form-group pb-0 mb-1"
+                                style="padding-top: 3px; padding-left:10px; margin-bottom:0px;">
+                                <input type="checkbox" data-size="sm" id="delauny" class="switchery"
+                                  data-color="success" data-secondary-color="success" data-switchery="true"
+                                  style="display: none;">
+                                <label for="delauny" class="font-medium-2 text-bold-600">delauny</label>
+                              </div>
+                              <div id="heightmapColorDiv" class="form-group pb-0 mb-1"
+                                style="padding-top: 3px; padding-left:10px; margin-bottom:0px; flex-grow:20;">
+                                <input type="checkbox" data-size="sm" id="heightmapColor" checked class="switchery"
+                                  data-color="success" data-secondary-color="success" data-switchery="true"
+                                  style="display: none;">
+                                <label for="heightmapColor" class="font-medium-2 text-bold-600"
+                                  style="">heightmapColor</label>
+                              </div>
+                            </div>
+                          </div>
+                          <div class="tab-pane" id="tabIcon2" aria-labelledby="baseIcon-tab2">
+                            <!-- <p data-nsfw-filter-status="swf">Sugar plum tootsie roll biscuit caramels. Liquorice brownie
+                              pastry cotton candy oat cake fruitcake jelly chupa chups. Pudding caramels pastry powder
+                              cake soufflé wafer caramels. Jelly-o pie cupcake.</p> -->
+
+                          </div>
+                          <div class="tab-pane" id="tabIcon3" aria-labelledby="baseIcon-tab3">
+                            <div class="row toolbar">
+                              <button type='button'
+                                class="btn btn-icon btn-outline-success btn-glow round btn-sm mr-1 mb-1"
+                                title='Open model from local pc' id='btn-point'>
+                                <i class="ft-edit-2"></i>
+                              </button>
+                              <button type='button'
+                                class="btn btn-icon btn-outline-success btn-glow round btn-sm mr-1 mb-1"
+                                title='Open model from local pc' id='btn-polygon'>
+                                <i class="ft-octagon"></i>
+                              </button>
+                              <button type='button'
+                                class="btn btn-icon btn-outline-success btn-glow round btn-sm mr-1 mb-1"
+                                title='Open model from local pc' id='btn-pencil'>
+                                <i class="ft-edit-3"></i>
+                              </button>
+                            </div>
+                          </div>
+                          <div class="tab-pane active" id="tabIcon4" aria-expanded="true"
+                            aria-labelledby="baseIcon-tab4">
+                            <div class="row toolbar">
+
+                              <button type='button' style="float:right;"
+                                class="btn btn-icon btn-outline-primary btn-glow round btn-sm mr-1 mb-1"
+                                title='Open model from local pc' id='btn-save'>
+                                <i class="ft-save"></i>
+                              </button>
+                              <button type='button' style="float:right;"
+                                class="btn btn-icon btn-outline-primary btn-glow round btn-sm mb-1"
+                                title='Open model from local pc' id='btn-download'>
+                                <i class="ft-download"></i>
+                              </button>
+                              <% if(messages.pointcloud){ %>
+                                <input type="hidden" id="pointcloud" value='<%- messages.pointcloud %>'>
+                                <% } %>
+
+                            </div>
+                          </div>
+                        </div>
+                        <!-- </div>
+
+
+
+                        <div class="card-body"> -->
+                        <!-- <p class="card-subtitle">You can load *.txt, *.obj files from owl windows app.</p> -->
+                        <div class="form-group">
+                          <!-- basic viewer -->
+                          <%- include('../partials/threeediter'); %>
                         </div>
                       </div>
-                    <div class="card-content collapse show">
-                        <div class="card-body">
-                            <!-- <p class="card-subtitle">You can load *.txt, *.obj files from owl windows app.</p> -->
-                            <div class="form-group">
-                                <!-- basic viewer -->
-                                <%- include('../partials/threeediter'); %>
-                            </div>
-                        </div>
                     </div>
+                  </div>
                 </div>
-            </div>
+              </div>
+            </section>
+            <!-- Basic Buttons end -->
+          </div>
+
+
         </div>
-        </section>
-        <!-- Basic Buttons end -->
-        </div>
+      </div>
+      <!-- ////////////////////////////////////////////////////////////////////////////-->
 
+      <!-- page content end -->
+      <%- include('../partials/footer'); %>
+        <script type="module" src="/js/edit_three.js"></script>
+        <script type="module" src="/js/tool_three.js"></script>
+        <script>
+          window.onbeforeunload = function () {
+            return 'Are you really want to perform the action?';
+          }
+        </script>
 
-    </div>
-  </div>
-  <!-- ////////////////////////////////////////////////////////////////////////////-->
-  
-<!-- page content end -->
-<%- include('../partials/footer'); %>
-<script type="module" src="/js/edit_three.js"></script>
-<script type="module" src="/js/tool_three.js"></script>
-<script>
-  window. onbeforeunload = function () {
-    return 'Are you really want to perform the action?';
-  }
-</script>
-
-<!-- page footer -->
+        <!-- page footer -->
 
 </body>
+
 </html>
