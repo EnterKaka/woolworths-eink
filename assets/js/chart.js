@@ -25,6 +25,27 @@ function init_chart(){
     }
 }
 
+function updateGraph (id){
+    let ft = $('#fromtime-' + id).val();
+    ft = new Date(ft);
+    let tt = $('#totime-' + id).val();
+    tt = new Date(tt);
+    let canvasname = 'canvas-model-' + id;
+    let inputname = 'input-model-' + id;
+    let parent = $('#' + canvasname).parent();
+    let ctx = document.getElementById(canvasname);
+    ctx.remove();
+    parent.append('<canvas id="' + canvasname + '" style="height:400px"><canvas>');
+    ctx = document.querySelector('#' + canvasname);
+    ctx = ctx.getContext('2d');
+    let data = document.getElementById(inputname).value;
+    data = JSON.parse(data);
+    console.log(data);
+    // let tempdata = makeChartDataFromModelSetsWithRange(data,ft,tt);
+    console.log(ft,'---------------',tt);
+    drawChart(ctx,data,ft,tt);
+}
+
 
 function drawChart(ctx,data,ft,tt){
     //draw chart
@@ -199,6 +220,12 @@ function drawChart(ctx,data,ft,tt){
         inputtotime.value = tempdata[10];
         update_lastidofmodel(data.name,tempdata[11]);
 
+        inputfromtime.onchange = function () {
+            updateGraph(this.id.substr(this.id.lastIndexOf('fromtime-')+9));
+        }
+        inputtotime.onchange = function () {
+            updateGraph(this.id.substr(this.id.lastIndexOf('totime-')+7));
+        }
         btn.onclick = function () {
             let name = $(this).attr('id');
             name = name.split('-');
