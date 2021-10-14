@@ -41,7 +41,7 @@ function openModel_Fromlocal(e) {
     }
 }
 
-var controls,triangle,plane,pointOnPlane,target,closestPoint, camera, renderer, scene, canvas, parent_canvas, group, marker, mesh, raycaster, mouse, toolstate = 'default';
+var controls,triangle, mouse3, plane,pointOnPlane,target,closestPoint, camera, count = 0,line, positions, renderer, scene, canvas, parent_canvas, group, marker, mesh, raycaster, mouse, toolstate = 'default';
 //three.js point cloud viewer
 
 function main() {
@@ -51,9 +51,11 @@ function main() {
         mouseX = 0,
         mouseY = 0;
     raycaster = new THREE.Raycaster();
-    mouse = new THREE.Vector2();
+    mouse = new THREE.Vector2();    
+    mouse3 = new THREE.Vector2();
+
     triangle = new THREE.Triangle();
-    plane = new THREE.Plane( new THREE.Vector3( 0, 0, 1 ), 0 );
+    plane = new THREE.Plane( new THREE.Vector3( 0, 1, 0 ), 0 );
     pointOnPlane = new THREE.Vector3();
     target = new THREE.Vector3();
     closestPoint = new THREE.Vector3();
@@ -69,7 +71,7 @@ function main() {
 
     //event control
     canvas.addEventListener('mousemove', function (e) {
-      //console.log('move')
+      ////console.log('move')
         onMouseMove(e);
         onDocumentMouseMove(e)
       // switch(toolstate) {
@@ -85,31 +87,31 @@ function main() {
     }, false);
 
     canvas.addEventListener('mousedown', function (e) {
-      //console.log('down')
+      ////console.log('down')
       if(e.button == 0) {
         onMouseDown(e);
       }
     }, false);
 
     canvas.addEventListener('mouseup', function (e) {
-      //console.log('up')
+      ////console.log('up')
         onMouseUp(e);
     }, false);
 
     canvas.addEventListener('click', function (e) {
-      //console.log('click')
+      ////console.log('click')
         onMouseMove(e);
     }, false);
 
     canvas.addEventListener('dblclick', function (e) {
-      //console.log('dblclick')
+      ////console.log('dblclick')
         onMouseMove(e);
     }, false);
 
     canvas.addEventListener('contextmenu', (e) => {
       // e.preventDefault();
-      //console.log('rightclick')
-        //console.log('Success');
+      ////console.log('rightclick')
+        ////console.log('Success');
     }, false);
 
 
@@ -151,6 +153,25 @@ function main() {
     // mesh = new THREE.Mesh( geometry5, material5 );
     // scene.add( mesh );
     scene.add( marker );
+
+
+
+
+    // geometry
+    var geometry3 = new THREE.BufferGeometry();
+    var MAX_POINTS = 500;
+    positions = new Float32Array(MAX_POINTS * 3);
+    geometry3.addAttribute('position', new THREE.BufferAttribute(positions, 3));
+
+    // material
+    var material = new THREE.LineBasicMaterial({
+      color: 0xff0000,
+      linewidth: 2
+    });
+
+    // line
+    line = new THREE.Line(geometry3, material);
+    scene.add(line);
 
 
 
@@ -291,6 +312,16 @@ function main() {
     });
 
     function onMouseMove(evt) {
+
+        mouse3.x = mouse.x;
+        mouse3.y = mouse.y;
+        // mouse3.z = 0;
+        // mouse3.unproject(camera);
+        if( count !== 0 ){
+          updateLine();
+        }
+
+
         if (!mouseDown) {
             return;
         }
@@ -300,20 +331,41 @@ function main() {
             deltaY = evt.clientY - mouseY;
         mouseX = evt.clientX;
         mouseY = evt.clientY;
-        ////console.log('moved')
+        //////console.log('moved')
         rotateScene(deltaX, deltaY);
+
+        
     }
 
     function onDocumentMouseMove(event) {
       // alert([event.clientX,"''",event.clientY,"''" ,canvas.clientWidth,"''",canvas.clientHeight])
         // mouse.x = ( event.clientX / canvas.clientWidth ) * 2 - 1;
         // mouse.y = - ( event.clientY / canvas.clientHeight ) * 2 + 1;
-        console.log(event, {canvas})
+        //console.log(event, {canvas})
         mouse.x = ( event.offsetX / canvas.clientWidth ) * 2 - 1;
         mouse.y = - ( event.offsetY / canvas.clientHeight ) * 2 + 1;
 
-        //console.log(mouse.x, mouse.y)
+        ////console.log(mouse.x, mouse.y)
             
+    }
+
+    function updateLine() {
+      // positions[count * 3 - 3] = pointOnPlane.x;
+      // positions[count * 3 - 2] = pointOnPlane.y;
+      // positions[count * 3 - 1] = pointOnPlane.z;
+      line.geometry.attributes.position.needsUpdate = true;
+    }
+
+    function addPoint(event){
+      //console.log("point nr " + count + ": " + mouse.x + " " + mouse.y + " " + mouse.z);
+      raycaster.setFromCamera( mouse, camera );
+      raycaster.ray.intersectPlane( plane, pointOnPlane );
+      positions[count * 3 + 0] = pointOnPlane.x;
+      positions[count * 3 + 1] = pointOnPlane.y;
+      positions[count * 3 + 2] = pointOnPlane.z;
+      count++;
+      line.geometry.setDrawRange(0, count);
+      updateLine();
     }
 
     function onMouseDown(evt) {
@@ -322,21 +374,28 @@ function main() {
         mouseDown = true;
         mouseX = evt.clientX;
         mouseY = evt.clientY;
+
+        // on first click add an extra point
+        if( count === 0 ){
+            addPoint();
+        }
+        addPoint(evt);
     }
 
     function onMouseUp(evt) {
         evt.preventDefault();
 
         mouseDown = false;
+        
     }
 
     function rotateScene(deltaX, deltaY) {
-      // //console.log(deltaX, deltaY)
-        // group.children[0].geometry.rotation.z += deltaX / 100;
+      // ////console.log(deltaX, deltaY)
+        // group.rotation.z += deltaX / 100;
         // group.rotation.x += deltaY / 100;
         
         group.children[0].geometry.rotateZ(deltaX / 100);
-        group.children[0].geometry.rotateX(deltaY / 100) ;
+        group.children[0].geometry.rotateX(deltaY / 100);
     } 
   }
 
@@ -352,7 +411,7 @@ function main() {
   }
 
   function animate(){
-    //console.log('animate')
+    ////console.log('animate')
     requestAnimationFrame( animate );
     controls.update();
 
@@ -362,41 +421,41 @@ function main() {
     // raycaster.ray.intersectPlane( plane, pointOnPlane );
 
     // marker.position.copy( pointOnPlane );
+    if(group.children[0]){
+      var geometry = group.children[0].geometry;
+      
+      var index = geometry.index;
+      var position = geometry.attributes.position;
+      
+      var minDistance = Infinity;
+      
+      for ( let i = 0, l = index.count; i < l; i ++ ) {
+      
+        var a = index.getX( i );
+        // var b = index.getX( i + 1 );
+        // var c = index.getX( i + 2 );
+        
+        pointOnPlane.fromBufferAttribute( position, a )
+      //   triangle.a.fromBufferAttribute( position, a );
+      //   triangle.b.fromBufferAttribute( position, b );
+      //   triangle.c.fromBufferAttribute( position, c );
+            
+      //   triangle.closestPointToPoint( pointOnPlane, target );
 
-    var geometry = group.children[0].geometry;
-    
-    var index = geometry.index;
-    var position = geometry.attributes.position;
-    
-    var minDistance = Infinity;
-    
-    for ( let i = 0, l = index.count; i < l; i ++ ) {
-    
-      var a = index.getX( i );
-      // var b = index.getX( i + 1 );
-      // var c = index.getX( i + 2 );
-      
-      pointOnPlane.fromBufferAttribute( position, a )
-    //   triangle.a.fromBufferAttribute( position, a );
-    //   triangle.b.fromBufferAttribute( position, b );
-    //   triangle.c.fromBufferAttribute( position, c );
-          
-    //   triangle.closestPointToPoint( pointOnPlane, target );
-
-    raycaster.ray.closestPointToPoint(pointOnPlane, target)
-      var distanceSq = pointOnPlane.distanceToSquared( target );
-      
-      if ( distanceSq < minDistance ) {
-      
-        closestPoint.copy( pointOnPlane );
-        minDistance = distanceSq;
+      raycaster.ray.closestPointToPoint(pointOnPlane, target)
+        var distanceSq = pointOnPlane.distanceToSquared( target );
+        
+        if ( distanceSq < minDistance ) {
+        
+          closestPoint.copy( pointOnPlane );
+          minDistance = distanceSq;
+        
+        }
       
       }
-    
+      // ////console.log(closestPoint)
+      marker.position.copy( closestPoint );
     }
-    // //console.log(closestPoint)
-    marker.position.copy( closestPoint );
-
 
 
     // stats.update();
@@ -408,7 +467,7 @@ function main() {
   }
 
   function reloadModelFromData(filename,wholecontent) {
-    ////console.log('localdata');
+    //////console.log('localdata');
     $('#modelpath').html(filename);
     var lines = wholecontent.split( '\n' );
     getminmaxhegiht(lines);
@@ -448,9 +507,9 @@ function main() {
       geometry1.setAttribute( 'color', new THREE.Float32BufferAttribute( colors, 3 ) );
     }
 
-    var center = new THREE.Vector3();
-    geometry1.computeBoundingBox();
-    geometry1.boundingBox.getCenter(center);
+    // var center = new THREE.Vector3();
+    // geometry1.computeBoundingBox();
+    // geometry1.boundingBox.getCenter(center);
     geometry1.center();
 
     // var vertexColors = ( geometry1.hasAttribute( 'color' ) === true );
@@ -487,7 +546,7 @@ function main() {
         return [v.x, v.y];
       })
     );
-    //console.log(indexDelaunay);
+    ////console.log(indexDelaunay);
     var meshIndex = []; // delaunay index => three.js index
     for (let i = 0; i < indexDelaunay.triangles.length; i++){
       meshIndex.push(indexDelaunay.triangles[i]);
@@ -509,7 +568,7 @@ function main() {
   }
 
   function reloadModelFromObjData(filename,wholecontent) {
-    ////console.log('localdata');
+    //////console.log('localdata');
     $('#modelpath').html(filename);
     
     var geometry1 = new THREE.BufferGeometry();
@@ -547,7 +606,7 @@ function main() {
     points2 = new THREE.Points( geometry1, material );
     group.add( points2 );
     // var geo = loader.parse(wholecontent);
-    // //console.log(geo)
+    // ////console.log(geo)
     // geo.children[0].material.wireframe = true;
     group.add( geo );
     var points = geometry1.attributes.position.array;
@@ -597,7 +656,7 @@ function main() {
   }
 
   function reloadModelFromJSONData(filename,wholecontent) {
-    ////console.log('jsondata');
+    //////console.log('jsondata');
     // $('#modelpath').html(filename);
     var vertices = [];
     var colors = [];
@@ -774,12 +833,12 @@ document.getElementById('delaunyDiv').addEventListener('click', function(){
 document.getElementById('heightmapColorDiv').addEventListener('click', function(){
   var two = document.getElementById('heightmapColor');
   if(!two.checked){
-  //console.log(group)
+  ////console.log(group)
     group.children[0].material.vertexColors=false;
     group.children[0].material.needsUpdate = true;
   }
   else{
-    //console.log(group)
+    ////console.log(group)
     group.children[0].material.vertexColors=true;
     group.children[0].material.needsUpdate = true;
   };
