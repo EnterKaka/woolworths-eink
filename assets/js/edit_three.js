@@ -893,15 +893,16 @@ function main() {
 
 
 
-    selectedPoints = new Float32Array(geometry1.index.count *3);
+    selectedPoints = new Float32Array(geometry1.index.count * 30);
     console.log(points3d.length)
     var geometry3 = new THREE.BufferGeometry();
     geometry3.addAttribute('position', new THREE.BufferAttribute(selectedPoints, 3));
     geometry3.setDrawRange(0, 0)
     var material3 = new THREE.PointsMaterial({
-      color: 0xff0000,
-      size: 0.3
+      color: selectedcolor(),
+      size: selectedsize()
     });
+    console.log(material)
     selectedGroup = new THREE.Points(geometry3, material3);
     group.add(selectedGroup);
 
@@ -1152,6 +1153,12 @@ function main() {
 
 
 //tool control
+function selectedcolor(){
+  return document.getElementById( 'selectedcolor' ).value;
+}
+function selectedsize(){
+  return document.getElementById( 'vol' ).value;
+}
 function pointcolor(){
   return document.getElementById( 'pointcolor' ).value;
 }
@@ -1164,6 +1171,26 @@ function delauny(){
 function heightmapColor(){
   return document.getElementById('heightmapColor').checked;
 }
+
+const SelectedSize = document.getElementById( 'vol' );
+SelectedSize.addEventListener( 'input', function () {
+  setSelectedSize(this.value)
+} );
+
+function setSelectedSize(c){
+  group.children[2].material.size = c ;
+  group.children[2].material.needsUpdate = true;
+}
+
+const SelectedColor = document.getElementById( 'selectedcolor' );
+SelectedColor.addEventListener( 'input', function () {
+  setSelectedColor(this.value)
+} );
+
+function setSelectedColor(c){
+  group.children[2].material.color.set( c );
+}
+
 
 const Pointcolors = document.getElementById( 'pointcolor' );
 Pointcolors.addEventListener( 'input', function () {
