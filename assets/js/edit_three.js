@@ -43,7 +43,8 @@ function openModel_Fromlocal(e) {
 
 var controls, triangle, mouse3, plane,pointOnPlane,target,closestPoint, canvas2;
 var camera, count = 0,line, positions, renderer, scene, canvas, parent_canvas;
-var group, marker, mesh, raycaster, mouse, toolstate = 'default',lookatP={x:0,y:0,z:0};
+var group, marker, mesh, raycaster, mouse, toolstate = 'move',lookatP={x:0,y:0,z:0};
+var selectedPoints, selectedGroup;
 //three.js point cloud viewer
 
 function main() {
@@ -77,31 +78,41 @@ function main() {
       ////console.log('move')
         onMouseMove(e);
         onDocumentMouseMove(e)
-      // switch(toolstate) {
-      //   case 'default':
-      //     // code block
-      //     break;
-      //   case y:
-      //     // code block
-      //     break;
-      //   default:
-      //     // code block
-      // }
+      switch(toolstate) {
+        case 'move':
+          // code block
+          break;
+        case 'point':
+          // code block
+          break;
+        default:
+          // code block
+      }
     }, false);
 
     canvas2.addEventListener('mousedown', function (e) {
-      ////console.log('down')
-      if(e.button == 0) {
-        onMouseDown(e);
-      }
-      if(e.button ==2){
-        onMouseRightDown(e)
+      console.log('down')
+      
+      switch(toolstate) {
+        case 'move':
+          if(e.button == 0) {
+            onMouseDown(e);
+          }
+          if(e.button ==2){
+            onMouseRightDown(e)
+          }
+          break;
+        case 'point':
+          onAddPoint(e)
+          break;
+        default:
+          // code block
       }
       
     }, false);
 
     canvas2.addEventListener('mouseup', function (e) {
-      ////console.log('up')
+      console.log('up')
       if(e.button == 0) {
         onMouseUp(e);
       }
@@ -170,26 +181,29 @@ function main() {
     // var material5 = new THREE.MeshNormalMaterial();
     // mesh = new THREE.Mesh( geometry5, material5 );
     // scene.add( mesh );
-    scene.add( marker );
+    // scene.add( marker );
 
 
 
 
     // geometry
-    var geometry3 = new THREE.BufferGeometry();
-    var MAX_POINTS = 500;
-    positions = new Float32Array(MAX_POINTS * 3);
-    geometry3.addAttribute('position', new THREE.BufferAttribute(positions, 3));
+    // var MAX_POINTS = 10;
+    // positions = new Float32Array(MAX_POINTS * 3);    
+    // // positions.push(parseFloat(0),parseFloat(0),parseFloat(0));
+    // // var geometry3 = new THREE.BufferGeometry().setFromPoints(positions);
+    // var geometry3 = new THREE.BufferGeometry();
 
-    // material
-    var material = new THREE.LineBasicMaterial({
-      color: 0xff0000,
-      linewidth: 2
-    });
+    // geometry3.addAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
 
-    // line
-    line = new THREE.Line(geometry3, material);
-    scene.add(line);
+    // // material
+    // var material = new THREE.LineBasicMaterial({
+    //   color: 0xff0000,
+    //   linewidth: 2
+    // });
+
+    // // line
+    // line = new THREE.Line(geometry3, material);
+    // scene.add(line);
 
 
 
@@ -343,9 +357,10 @@ function main() {
       //console.log("point nr " + count + ": " + mouse.x + " " + mouse.y + " " + mouse.z);
       raycaster.setFromCamera( mouse, camera );
       raycaster.ray.intersectPlane( plane, pointOnPlane );
-      positions[count * 3 + 0] = pointOnPlane.x;
-      positions[count * 3 + 1] = pointOnPlane.y;
-      positions[count * 3 + 2] = pointOnPlane.z;
+      // positions[count * 3 + 0] = pointOnPlane.x;
+      // positions[count * 3 + 1] = pointOnPlane.y;
+      // positions[count * 3 + 2] = pointOnPlane.z;
+      positions.push(parseFloat(pointOnPlane.x),parseFloat(pointOnPlane.y),parseFloat(pointOnPlane.z))
       count++;
       line.geometry.setDrawRange(0, count);
       updateLine();
@@ -357,9 +372,9 @@ function main() {
         mouse3.y = mouse.y;
         // mouse3.z = 0;
         // mouse3.unproject(camera);
-        if( count !== 0 ){
-          updateLine();
-        }
+        // if( count !== 0 ){
+        //   updateLine();
+        // }
 
 
         if (mouseDown) {
@@ -396,20 +411,18 @@ function main() {
     }
 
     function onMouseDown(evt) {
+      console.log('onmousedown')
         evt.preventDefault();
 
         mouseDown = true;
         mouseX = evt.clientX;
         mouseY = evt.clientY;
 
-        // on first click add an extra point
-        if( count === 0 ){
-            addPoint();
-        }
-        addPoint(evt);
+        
     }
 
     function onMouseUp(evt) {
+      console.log('onmouseup')
         evt.preventDefault();
 
         mouseDown = false;
@@ -510,6 +523,14 @@ function main() {
 
 
 
+    
+
+
+    // stats.update();
+    render();
+  }
+
+  function onAddPoint(evt){
     raycaster.setFromCamera( mouse, camera );
     // raycaster.ray.intersectPlane( plane, pointOnPlane );
 
@@ -535,7 +556,7 @@ function main() {
             
       //   triangle.closestPointToPoint( pointOnPlane, target );
 
-      raycaster.ray.closestPointToPoint(pointOnPlane, target)
+        raycaster.ray.closestPointToPoint(pointOnPlane, target)
         var distanceSq = pointOnPlane.distanceToSquared( target );
         
         if ( distanceSq < minDistance ) {
@@ -547,12 +568,25 @@ function main() {
       
       }
       // ////console.log(closestPoint)
-      marker.position.copy( closestPoint );
+      if(evt.shiftKey){
+        selectedPoints[count*3+0] = closestPoint.x;
+        selectedPoints[count*3+1] = closestPoint.y;
+        selectedPoints[count*3+2] = closestPoint.z;
+        count ++;
+      }
+      else{
+        selectedPoints[0] = closestPoint.x;
+        selectedPoints[1] = closestPoint.y;
+        selectedPoints[2] = closestPoint.z;
+        count = 1;
+      }
+      selectedGroup.geometry.setDrawRange(0, count);
+      console.log(count,closestPoint)
+      selectedGroup.geometry.attributes.position.needsUpdate = true;
+      // marker.position.copy( closestPoint );
+      // on first click add an extra point
+      
     }
-
-
-    // stats.update();
-    render();
   }
 
   function customTriangulate(points3d){
@@ -592,6 +626,9 @@ function main() {
       colors.push(rgb[2]);
       }
     }
+    
+
+
     var geometry1 = new THREE.BufferGeometry().setFromPoints(points3d);    
     // var geometry1 = new THREE.BufferGeometry();
 
@@ -607,12 +644,20 @@ function main() {
 
     // var vertexColors = ( geometry1.hasAttribute( 'color' ) === true );
 
-    var material = new THREE.PointsMaterial( { size: 0.1, vertexColors: heightmapColor(), color: pointcolor() } );
+    var material;
+    if(heightmapColor()){
+      document.getElementById( 'pointcolor' ).disabled = true;
+      material = new THREE.PointsMaterial( { size: 0.1, vertexColors: true, color: "#ffffff" } );
+    }
+    else
+      material = new THREE.PointsMaterial( { size: 0.1, vertexColors: false, color: pointcolor() } );
     // var material = new THREE.PointsMaterial( { size: 0.1, color: pointcolor() } );
     
     while(group.children.length > 0){ 
       group.clear(); 
     }
+
+
     //draw axis
     // var axes = new THREE.AxesHelper(20);
     // scene.add(axes);
@@ -654,6 +699,24 @@ function main() {
     mesh.visible = delauny();
     group.add(mesh);
 
+
+
+
+
+
+
+    selectedPoints = new Float32Array(points3d.length * 3);
+    console.log(points3d.length)
+    var geometry3 = new THREE.BufferGeometry();
+    geometry3.addAttribute('position', new THREE.BufferAttribute(selectedPoints, 3));
+    geometry3.setDrawRange(0, 0)
+    var material3 = new THREE.PointsMaterial({
+      color: 0xff0000,
+      size: 0.3
+    });
+    selectedGroup = new THREE.Points(geometry3, material3);
+    group.add(selectedGroup);
+
     // var gui = new dat.GUI();
     // gui.add(mesh.material, "wireframe");
     ////////////
@@ -676,7 +739,13 @@ function main() {
     // var vertexColors = ( geometry1.hasAttribute( 'color' ) === true );
     // var material = new THREE.PointsMaterial( { size: 0.1, vertexColors: vertexColors } );    
     
-    var material = new THREE.PointsMaterial( { size: 0.1, color: pointcolor() } );
+    var material;
+    if(heightmapColor()){
+      document.getElementById( 'pointcolor' ).disabled = true;
+      material = new THREE.PointsMaterial( { size: 0.1, vertexColors: true, color: "#ffffff" } );
+    }
+    else
+      material = new THREE.PointsMaterial( { size: 0.1, vertexColors: false, color: pointcolor() } );
 
     
     while(group.children.length > 0){ 
@@ -785,7 +854,13 @@ function main() {
     // geometry1.center();
 
     // var vertexColors = ( geometry1.hasAttribute( 'color' ) === true );
-    var material = new THREE.PointsMaterial( { size: 0.1, vertexColors: heightmapColor(), color: pointcolor() } );
+    var material;
+    if(heightmapColor()){
+      document.getElementById( 'pointcolor' ).disabled = true;
+      material = new THREE.PointsMaterial( { size: 0.1, vertexColors: true, color: "#ffffff" } );
+    }
+    else
+      material = new THREE.PointsMaterial( { size: 0.1, vertexColors: false, color: pointcolor() } );
     // var material = new THREE.PointsMaterial( { size: 0.1, color: pointcolor() } );
 
     
@@ -952,4 +1027,27 @@ document.getElementById('heightmapColorDiv').addEventListener('click', function(
     group.children[0].material.needsUpdate = true;
   };
 
+});
+
+function setToolState(tool){
+  document.getElementById('btn-'+toolstate).classList.remove('active')
+  toolstate = tool;
+  document.getElementById('btn-'+toolstate).classList.add('active')
+  // console.log({btn:document.getElementById('btn-'+tool)})
+}
+
+document.getElementById('btn-move').addEventListener('click', function(){
+  setToolState('move')
+});
+
+document.getElementById('btn-point').addEventListener('click', function(){
+  setToolState('point')
+});
+
+document.getElementById('btn-polygon').addEventListener('click', function(){
+  setToolState('polygon')
+});
+
+document.getElementById('btn-pencil').addEventListener('click', function(){
+  setToolState('pencil')
 });

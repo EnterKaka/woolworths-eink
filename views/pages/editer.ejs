@@ -126,8 +126,11 @@
                           <div class="tab-pane" id="tabIcon2" aria-labelledby="baseIcon-tab2">
                             <div class="row toolbar">
                               <input type="color" value="#87CEEB"
-                                  style="background: #5ed84f;height: 31px;width:60px;padding: 2px;"
+                                  style="background: #6967ce;height: 31px;width:60px;padding: 2px;"
                                   class="form-control mr-1 mb-1" id="selectedcolor">
+                              <input type="color" value="#ff0000"
+                                  style="background: #6967ce;height: 31px;width:60px;padding: 2px;"
+                                  class="form-control mr-1 mb-1" id="polygoncolor">
                               <div id="selectedsize" class="form-group pb-0 mb-1"
                                   style="height: 31px;width: 60px; padding-left:10px;padding-top: 7px; margin-bottom:0px;">
                                 <input type="range" class="mr-1 " id="vol" name="vol" min="0" max="50">
@@ -136,6 +139,11 @@
                           </div>
                           <div class="tab-pane" id="tabIcon3" aria-labelledby="baseIcon-tab3">
                             <div class="row toolbar">
+                              <button type='button'
+                                class="btn btn-icon btn-outline-success btn-glow round active btn-sm mr-1 mb-1"
+                                title='Open model from local pc' id='btn-move'>
+                                <i class="ft-move"></i>
+                              </button>
                               <button type='button'
                                 class="btn btn-icon btn-outline-success btn-glow round btn-sm mr-1 mb-1"
                                 title='Open model from local pc' id='btn-point'>
