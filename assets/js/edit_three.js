@@ -41,13 +41,16 @@ function openModel_Fromlocal(e) {
     }
 }
 
-var controls,triangle, mouse3, plane,pointOnPlane,target,closestPoint, camera, count = 0,line, positions, renderer, scene, canvas, parent_canvas, group, marker, mesh, raycaster, mouse, toolstate = 'default';
+var controls, triangle, mouse3, plane,pointOnPlane,target,closestPoint, canvas2;
+var camera, count = 0,line, positions, renderer, scene, canvas, parent_canvas;
+var group, marker, mesh, raycaster, mouse, toolstate = 'default',lookatP={x:0,y:0,z:0};
 //three.js point cloud viewer
 
 function main() {
     canvas = document.querySelector('#viewer_3d');
+    canvas2 = document.getElementById('tool_2d');
 
-    var mouseDown = false,
+    var mouseDown = false,mouseRightDown = false,
         mouseX = 0,
         mouseY = 0;
     raycaster = new THREE.Raycaster();
@@ -70,7 +73,7 @@ function main() {
 
 
     //event control
-    canvas.addEventListener('mousemove', function (e) {
+    canvas2.addEventListener('mousemove', function (e) {
       ////console.log('move')
         onMouseMove(e);
         onDocumentMouseMove(e)
@@ -86,33 +89,48 @@ function main() {
       // }
     }, false);
 
-    canvas.addEventListener('mousedown', function (e) {
+    canvas2.addEventListener('mousedown', function (e) {
       ////console.log('down')
       if(e.button == 0) {
         onMouseDown(e);
       }
+      if(e.button ==2){
+        onMouseRightDown(e)
+      }
+      
     }, false);
 
-    canvas.addEventListener('mouseup', function (e) {
+    canvas2.addEventListener('mouseup', function (e) {
       ////console.log('up')
+      if(e.button == 0) {
         onMouseUp(e);
+      }
+      else if(e.button == 2){
+        onMouseRightUp(e)
+      }
     }, false);
 
-    canvas.addEventListener('click', function (e) {
+    canvas2.addEventListener('click', function (e) {
       ////console.log('click')
         onMouseMove(e);
     }, false);
 
-    canvas.addEventListener('dblclick', function (e) {
+    canvas2.addEventListener('dblclick', function (e) {
       ////console.log('dblclick')
         onMouseMove(e);
     }, false);
 
-    canvas.addEventListener('contextmenu', (e) => {
+    canvas2.addEventListener('contextmenu', (e) => {
       // e.preventDefault();
       ////console.log('rightclick')
-        ////console.log('Success');
+        console.log('Success');
+      if(e.button == 2){
+        console.log('rightclicked')
+        onMouseRightUp(e)
+      }
     }, false);
+
+    canvas2.addEventListener( 'mousewheel', onDocumentMouseWheel, false );
 
 
     //render, scene
@@ -188,13 +206,13 @@ function main() {
     scene.add(camera);
     
     //natural rotate control
-    controls = new OrbitControls(camera, renderer.domElement);
+    // controls = new OrbitControls(camera, renderer.domElement);
 		// controls.addEventListener( 'change', render ); // call this only in static scenes (i.e., if there is no animation loop)
 		// controls.minDistance = 0.1;
 		// controls.maxDistance = 100;
     // controls.enableRotate = true;
     // controls.maxPolarAngle = Infinity;
-    controls.enableRotate = false;
+    // controls.enableRotate = false;
     // controls.autoRotate = true
     // controls.enableDamping = true;
     // controls.maxPolarAngle(Math.PI);
@@ -311,48 +329,13 @@ function main() {
       }
     });
 
-    function onMouseMove(evt) {
-
-        mouse3.x = mouse.x;
-        mouse3.y = mouse.y;
-        // mouse3.z = 0;
-        // mouse3.unproject(camera);
-        if( count !== 0 ){
-          updateLine();
-        }
-
-
-        if (!mouseDown) {
-            return;
-        }
-        evt.preventDefault();
-
-        var deltaX = evt.clientX - mouseX,
-            deltaY = evt.clientY - mouseY;
-        mouseX = evt.clientX;
-        mouseY = evt.clientY;
-        //////console.log('moved')
-        rotateScene(deltaX, deltaY);
-
-        
-    }
-
-    function onDocumentMouseMove(event) {
-      // alert([event.clientX,"''",event.clientY,"''" ,canvas.clientWidth,"''",canvas.clientHeight])
-        // mouse.x = ( event.clientX / canvas.clientWidth ) * 2 - 1;
-        // mouse.y = - ( event.clientY / canvas.clientHeight ) * 2 + 1;
-        //console.log(event, {canvas})
-        mouse.x = ( event.offsetX / canvas.clientWidth ) * 2 - 1;
-        mouse.y = - ( event.offsetY / canvas.clientHeight ) * 2 + 1;
-
-        ////console.log(mouse.x, mouse.y)
-            
-    }
 
     function updateLine() {
-      // positions[count * 3 - 3] = pointOnPlane.x;
-      // positions[count * 3 - 2] = pointOnPlane.y;
-      // positions[count * 3 - 1] = pointOnPlane.z;
+      raycaster.setFromCamera( mouse, camera );
+      raycaster.ray.intersectPlane( plane, pointOnPlane );
+      positions[count * 3 - 3] = pointOnPlane.x;
+      positions[count * 3 - 2] = pointOnPlane.y;
+      positions[count * 3 - 1] = pointOnPlane.z;
       line.geometry.attributes.position.needsUpdate = true;
     }
 
@@ -366,6 +349,50 @@ function main() {
       count++;
       line.geometry.setDrawRange(0, count);
       updateLine();
+    }
+
+    function onMouseMove(evt) {
+        evt.preventDefault();
+        mouse3.x = mouse.x;
+        mouse3.y = mouse.y;
+        // mouse3.z = 0;
+        // mouse3.unproject(camera);
+        if( count !== 0 ){
+          updateLine();
+        }
+
+
+        if (mouseDown) {
+          console.log('mousedownmove')
+            var deltaX = evt.clientX - mouseX,
+            deltaY = evt.clientY - mouseY;
+            mouseX = evt.clientX;
+            mouseY = evt.clientY;
+            //////console.log('moved')
+            rotateScene(deltaX, deltaY);
+        }
+        else if(mouseRightDown){
+          console.log('mouserightdown')
+            var deltaX = evt.clientX - mouseX,
+            deltaY = evt.clientY - mouseY;
+            mouseX = evt.clientX;
+            mouseY = evt.clientY;
+            cameraMove(deltaX, deltaY)
+        }
+
+    }
+
+    function onDocumentMouseMove(event) {
+      console.log('ondocumentmousemove')
+      // alert([event.clientX,"''",event.clientY,"''" ,canvas.clientWidth,"''",canvas.clientHeight])
+        // mouse.x = ( event.clientX / canvas.clientWidth ) * 2 - 1;
+        // mouse.y = - ( event.clientY / canvas.clientHeight ) * 2 + 1;
+        //console.log(event, {canvas})
+        mouse.x = ( event.offsetX / canvas.clientWidth ) * 2 - 1;
+        mouse.y = - ( event.offsetY / canvas.clientHeight ) * 2 + 1;
+
+        ////console.log(mouse.x, mouse.y)
+            
     }
 
     function onMouseDown(evt) {
@@ -389,14 +416,58 @@ function main() {
         
     }
 
+    function onMouseRightDown(evt) {
+        evt.preventDefault();
+        console.log('down')
+        mouseRightDown = true;
+        mouseX = evt.clientX;
+        mouseY = evt.clientY;
+        
+    }
+
+    function onMouseRightUp(evt) {
+        evt.preventDefault();
+        console.log('down')
+        mouseRightDown = false;
+        
+    }
+
+    function onDocumentMouseWheel( event ) {
+      console.log('ondocumentmousewheel')
+        event.preventDefault();
+        camera.position.y -= event.deltaY / 100;        
+        camera.position.z += event.deltaY / 100 * 3 / 10;
+        lookatP.y -= event.deltaY / 100;        
+        lookatP.z += event.deltaY / 100 * 3 / 10;
+
+        camera.lookAt(lookatP.x,lookatP.y,lookatP.z);
+        // camera.fov -= event.wheelDeltaY * 0.05;
+        // camera.aspect = ;
+        // camera.near = ;
+        // camera.far = ;
+        // camera.updateProjectionMatrix();
+
+    }
+
     function rotateScene(deltaX, deltaY) {
-      // ////console.log(deltaX, deltaY)
+      console.log('rotatescene')
         // group.rotation.z += deltaX / 100;
         // group.rotation.x += deltaY / 100;
         
         group.children[0].geometry.rotateZ(deltaX / 100);
         group.children[0].geometry.rotateX(deltaY / 100);
     } 
+
+    function cameraMove(deltaX, deltaY) {
+      if(mouseRightDown){
+        console.log('cameramove')
+        camera.position.x -= deltaX / 50;        
+        camera.position.z += deltaY / 50;
+        lookatP.x -= deltaX / 50;        
+        lookatP.z += deltaY / 50;
+        camera.lookAt(lookatP.x,lookatP.y,lookatP.z);
+      }
+    }
   }
 
   function onWindowResize(){
@@ -408,12 +479,23 @@ function main() {
 
   function render(){
     renderer.render( scene, camera);
+
+var c = document.getElementById("tool_2d");
+c.height = canvas.clientHeight;
+c.width = canvas.clientWidth;
+var ctx = c.getContext("2d");
+ctx.strokeStyle = "#ff0000";
+ctx.beginPath();
+ctx.moveTo(0, 0);
+ctx.lineTo(300, 150);
+ctx.stroke();
+    
   }
 
   function animate(){
     ////console.log('animate')
     requestAnimationFrame( animate );
-    controls.update();
+    // controls.update();
 
 
 

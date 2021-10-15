@@ -27,6 +27,16 @@ div.container_main{
     /*padding: 15px;*/
 }
 
+.dviewer{
+    left: 0;
+    top: 0;
+    width: calc(100% - 30px);
+    margin-left: 15px;
+    height: 100%;
+    display: block;
+    position: absolute;  
+}
+
 div.table-padding-set{
     padding: 25px;
 }

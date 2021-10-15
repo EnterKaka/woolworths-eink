@@ -99,13 +99,7 @@
                           <div role="tabpanel" class="tab-pane" id="tabIcon1" aria-labelledby="baseIcon-tab1">
                             <div class="row toolbar">
                               <!-- <p data-nsfw-filter-status="swf">Oat cake marzipan cake lollipop caramels wafer pie jelly beans. Icing halvah chocolate cake carrot cake. Jelly beans carrot cake marshmallow gingerbread chocolate cake. Gummies cupcake croissant.</p> -->
-                              <input name="mymodel" type="file" style="display: none;" accept=".obj, .txt"
-                                id="input_model">
-                              <button type='button'
-                                class="btn btn-icon btn-outline-success btn-glow round btn-sm mr-1 mb-1"
-                                title='Open model from local pc' id='btn-openfromLocal'>
-                                <i class="ft-upload"></i>
-                              </button>
+                              
                               <input type="color" value="#87CEEB"
                                 style="background: #5ed84f;height: 31px;width:60px;padding: 2px;"
                                 class="form-control mr-1 mb-1" id="pointcolor">
@@ -130,10 +124,15 @@
                             </div>
                           </div>
                           <div class="tab-pane" id="tabIcon2" aria-labelledby="baseIcon-tab2">
-                            <!-- <p data-nsfw-filter-status="swf">Sugar plum tootsie roll biscuit caramels. Liquorice brownie
-                              pastry cotton candy oat cake fruitcake jelly chupa chups. Pudding caramels pastry powder
-                              cake soufflé wafer caramels. Jelly-o pie cupcake.</p> -->
-
+                            <div class="row toolbar">
+                              <input type="color" value="#87CEEB"
+                                  style="background: #5ed84f;height: 31px;width:60px;padding: 2px;"
+                                  class="form-control mr-1 mb-1" id="selectedcolor">
+                              <div id="selectedsize" class="form-group pb-0 mb-1"
+                                  style="height: 31px;width: 60px; padding-left:10px;padding-top: 7px; margin-bottom:0px;">
+                                <input type="range" class="mr-1 " id="vol" name="vol" min="0" max="50">
+                              </div>
+                            </div>
                           </div>
                           <div class="tab-pane" id="tabIcon3" aria-labelledby="baseIcon-tab3">
                             <div class="row toolbar">
@@ -157,7 +156,13 @@
                           <div class="tab-pane active" id="tabIcon4" aria-expanded="true"
                             aria-labelledby="baseIcon-tab4">
                             <div class="row toolbar">
-
+                              <input name="mymodel" type="file" style="display: none;" accept=".obj, .txt"
+                                id="input_model">
+                              <button type='button'
+                                class="btn btn-icon btn-outline-primary btn-glow round btn-sm mr-1 mb-1"
+                                title='Open model from local pc' id='btn-openfromLocal'>
+                                <i class="ft-upload"></i>
+                              </button>
                               <button type='button' style="float:right;"
                                 class="btn btn-icon btn-outline-primary btn-glow round btn-sm mr-1 mb-1"
                                 title='Open model from local pc' id='btn-save'>
