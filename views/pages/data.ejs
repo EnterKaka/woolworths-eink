@@ -8,6 +8,17 @@
     <%- include('../partials/header'); %>
     <!-- ////////////////////////////////////////////////////////////////////////////-->
     <%- include('../partials/sidebar'); %>
+    <% if(loadedData === ''){ %>
+      <script>
+          $.toast({
+              heading: 'Please Load Data From Database',
+              text: 'Click Get Data Button',
+              showHideTransition: 'slide',
+              icon: 'success',
+              hideAfter: 5000   // in milli seconds
+          })
+      </script>
+  <%}%>
 
     <div class="app-content content">
       <div class="content-wrapper">
@@ -51,45 +62,16 @@
                         </div>
                         <div class="card-content collapse show">
                             <div class="card-body">
-                                <p>This is Owl Studio Model Table.
-                                    <br>You can load history and view 3d models.
-                                    <form class='row db-collection-select' >
-                                      <div class="col-md-4">
-                                        <h5>Database Name</h5>&nbsp;&nbsp;
-                                        <small class="text-muted">eg.<i>OwlEyeStudioWebInterface</i></small>
-                                        <fieldset class='formgroup'>
-                                          <select class='custom-select' id='placeholderInput'>
-                                            <% dbs.forEach( function (member){ %>
-                                              <% if(dbname == member){ %>
-                                                <option value="<%= member %>" selected><%= member %></option>
-                                              <% } else { %>
-                                                <option value="<%= member %>"><%= member %></option>
-                                              <% } %>
-                                            <% }); %>
-                                          </select>
-                                        </fieldset>
-                                      </div>
-                                      <div class="col-md-4">
-                                        <h5>Collection Name</h5>&nbsp;&nbsp;
-                                        <small class="text-muted">eg.<i>models</i></small>
-                                        <fieldset class='formgroup'>
-                                          <select class='custom-select' id='placeholderInput1'>
-                                            <% collections.forEach( function (member){ %>
-                                              <% if(collectionname == member){ %>
-                                                <option value="<%= member %>" selected><%= member %></option>
-                                              <% } else { %>
-                                                <option value="<%= member %>"><%= member %></option>
-                                              <% } %>
-                                            <% }); %>
-                                          </select>
-                                        </fieldset>
-                                      </div>
-                                      <div class='col-md-4'>
-                                        <br><br>
-                                        <input type="button" class="btn btn-success btn-min-width mr-1 mb-1" value='Get Data' style="float: bottom" onclick="onclick_get()">
-                                      </div>
-                                    </form>
-                                </p>
+                                <div class="row">
+                                  <div class="col-md-9">
+                                    <p>This is Owl Studio Model Table.
+                                        <br>You can load history and view 3d models.
+                                    </p>
+                                  </div>
+                                  <div class="col-md-3">
+                                    <input type="button" class="btn btn-success btn-min-width mr-1 mb-1" value='Get Data' style="float: bottom" onclick="onclick_get()">
+                                  </div>
+                                </div>
                                 <% if (messages.error) { %>
                                   <!-- <p style="color:red"><%- messages.error %></p> -->
                                   <script>

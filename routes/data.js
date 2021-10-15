@@ -9,83 +9,55 @@ var dbname = 'OwlEyeStudioWebInterface' , collectionname = 'models';
 
 // SHOW LIST OF USERS
 app.get('/', auth, async function(req, res, next) {
-	const client = new MongoClient('mongodb://localhost:27017/', { useUnifiedTopology: true });
-	let allmembers = await Setting.find();
-	var dbs = [], collections = [];
-	let found = false;
-	allmembers.forEach( function(mem){
-		let db = mem.dbname.trim();
-		let col = mem.collectionname.trim();
-		found = false;
-		for (var i = 0; i < dbs.length && !found; i++) {
-			if (dbs[i] === db) {
-			  found = true;
-			  break;
-			}
-		}
-		if(!found){
-			dbs.push(db);
-		}
+	
+	// console.log("*********** data ************")
 
-		found = false;
-		for (var i = 0; i < collections.length && !found; i++) {
-			if (collections[i] === col) {
-			  found = true;
-			  break;
-			}
-		}
-		if(!found){
-			collections.push(col);
-		}
-	});
-	console.log(dbs, collections);
-
-	console.log('/data/--------',dbname, collectionname);
-	//session dbname and collection name save
-	req.session.dbname = dbname;
-	req.session.collectionname = collectionname;
+	// /* get all collections */
+	// const client = new MongoClient('mongodb://localhost:27017/', { useUnifiedTopology: true, useNewUrlParser: true, connectTimeoutMS: 30000 , keepAlive: 1});
+	// let allmembers = await Setting.find();
 
 	async function run() {
 		try {
-			await client.connect();
-			const database = client.db(dbname);
-			const datas = database.collection(collectionname);
-			// query for movies that have a runtime less than 15 minutes
-			const cursor = datas.find({}).sort([['datetime', -1]]);
-			let sentdata = [];
+			// await client.connect();
+			// let sentdata = [];
+			
+			// /* connect all collections */
+			// for(let mem of allmembers){
+			// 	/* get cursor */
+			// 	let db = mem.dbname.trim();
+			// 	let col = mem.collectionname.trim();
+			// 	const database = client.db(db);
+			// 	const datas = database.collection(col);
+			// 	const cursor = datas.find({}).sort([['datetime', -1]]);
+
+			// 	await cursor.forEach(function(model) {
+			// 		let splitdata = model.datetime.split(' ');
+			// 		let eachmodeldata = {
+			// 			_id: model._id,
+			// 			date: splitdata[0],
+			// 			time: splitdata[1],
+			// 			name: model.measurement[0].name,
+			// 			mass: model.measurement[0].mass,
+			// 			volume: model.measurement[0].volume,
+			// 		}
+			// 		sentdata.push(eachmodeldata);
+			// 	});
+			// };
 			// print a message if no documents were found
-			if ((await cursor.count()) === 0) {
-				console.log("No documents found!");
-		   		//  process.exit(1)
-		   		req.flash('error', 'No existed');
-		   		// redirect to users list page
-		   		res.header(400).json({status: 'fail'});
-			}else{
-				// replace console.dir with your callback to access individual elements
-				await cursor.forEach(function(model) {
-					let splitdata = model.datetime.split(' ');
-					let eachmodeldata = {
-						_id: model._id,
-						date: splitdata[0],
-						time: splitdata[1],
-						name: model.measurement[0].name,
-						mass: model.measurement[0].mass,
-						volume: model.measurement[0].volume,
-					}
-					sentdata.push(eachmodeldata);
-				});
-				console.log('/data/-----',dbname, collectionname);
+			// if (sentdata.length === 0) {
+			// 	console.log("No documents found!");
+			// 	req.flash('error', 'No existed');
+			// 	res.header(400).json({status: 'fail'});
+			// }else{
 				res.render('pages/data', {
 					title: 'Model DB - Owl Studio Web App',
-					dbname: dbname,//seleted db
-					collectionname: collectionname,//selected collection
-					data: sentdata,
-					dbs: dbs,//db list
-					collections: collections//collection list
+					loadedData:loadedData,
+					data: (loadedData === '')?[]:loadedData,
+					// data: sentdata,
 				});
-			}
+			// }
 		} finally {
-			await client.close();
+			// await client.close();
 		}
 	}
 	run().catch(
@@ -97,9 +69,8 @@ app.get('/', auth, async function(req, res, next) {
 		   	// redirect to users list page
 		   	res.render('pages/data', {
 				title: 'Model DB - Owl Studio Web App',
-				dbname: dbname,
-				collectionname: collectionname,
-				data: sentdata,
+				// data: sentdata,
+				data: [],
 			});
 		}
 	);
@@ -197,60 +168,26 @@ app.post('/view/(:id)', auth, async function(req, res, next) {
 });
 
 app.post('/get', auth, async function(req, res, next) {
-	dbname = req.body.dbname;
-	collectionname = req.body.collectionname;
+		
+	console.log("*********** data **** get ********")
 
-	//session dbname and collection name save
-	req.session.dbname = dbname;
-	req.session.collectionname = collectionname;
-	
-	const client = new MongoClient('mongodb://localhost:27017/', { useUnifiedTopology: true });
+	/* get all collections */
+	const client = new MongoClient('mongodb://localhost:27017/', { useUnifiedTopology: true, useNewUrlParser: true, connectTimeoutMS: 30000 , keepAlive: 1});
 	let allmembers = await Setting.find();
-	let dbs = [], collections = [];
-	allmembers.forEach( function(mem){
-		let db = mem.dbname.trim();
-		let col = mem.collectionname.trim();
-		found = false;
-		for (var i = 0; i < dbs.length && !found; i++) {
-			if (dbs[i] === db) {
-			  found = true;
-			  break;
-			}
-		}
-		if(!found){
-			dbs.push(db);
-		}
 
-		found = false;
-		for (var i = 0; i < collections.length && !found; i++) {
-			if (collections[i] === col) {
-			  found = true;
-			  break;
-			}
-		}
-		if(!found){
-			collections.push(col);
-		}
-	});
-
-	console.log('/data/get/--------',dbname, collectionname);
 	async function run() {
 		try {
 			await client.connect();
-			const database = client.db(dbname);
-			const datas = database.collection(collectionname);
-			// query for movies that have a runtime less than 15 minutes
-			const cursor = datas.find({}).sort([['datetime', -1]]);;
 			let sentdata = [];
-			// print a message if no documents were found
-			if ((await cursor.count()) === 0) {
-				console.log("No documents found!");
-		   		//  process.exit(1)
-		   		req.flash('error', 'No existed');
-		   		// redirect to users list page
-		   		res.header(400).json({status: 'fail'});
-			}else{
-				// replace console.dir with your callback to access individual elements
+			/* connect all collections */
+			for(let mem of allmembers){
+				/* get cursor */
+				let db = mem.dbname.trim();
+				let col = mem.collectionname.trim();
+				const database = client.db(db);
+				const datas = database.collection(col);
+				const cursor = datas.find({}).sort([['datetime', -1]]);
+
 				await cursor.forEach(function(model) {
 					let splitdata = model.datetime.split(' ');
 					let eachmodeldata = {
@@ -263,13 +200,18 @@ app.post('/get', auth, async function(req, res, next) {
 					}
 					sentdata.push(eachmodeldata);
 				});
-				console.log('success get data');
-				// console.log(sentdata);
-				req.flash('success', 'Data loaded successfully! DB = ' + dbname)
-				// redirect to users list page
+			};
+			// print a message if no documents were found
+			if (sentdata.length === 0) {
+				console.log("No documents found!");
+				req.flash('error', 'No existed');
+				res.header(400).json({status: 'fail'});
+			}else{
+				loadedData = sentdata;
 				res.header(200).json({
 					status: 'success',
-					data: sentdata 
+					loadedData:loadedData,
+					data: sentdata,
 				});
 			}
 		} finally {
@@ -285,11 +227,8 @@ app.post('/get', auth, async function(req, res, next) {
 		   	// redirect to users list page
 		   	res.render('pages/data', {
 				title: 'Model DB - Owl Studio Web App',
-				dbname: dbname,
-				collectionname: collectionname,
+				// data: sentdata,
 				data: [],
-				dbs:dbs,
-				collections: collections,
 			});
 		}
 	);

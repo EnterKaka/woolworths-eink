@@ -1,6 +1,4 @@
 function onclick_get(){
-    let db_name = document.getElementById('placeholderInput').value;
-    let collection_name = document.getElementById('placeholderInput1').value;
     const swalWithBootstrapButtons = Swal.mixin({
       customClass: {
         confirmButton: 'btn btn-success',
@@ -20,11 +18,9 @@ function onclick_get(){
     }).then((result) => {
       if (result.isConfirmed) {
         $('#table_main_data').html('');
-        url = '/data/get/';
-        $.post(url, {
-          dbname : db_name,
-          collectionname: collection_name,
-        }, function( data ) {
+        url = '/data/get';
+        $.post(url, function( data ) {
+          console.log(data);
           if(data.status === 'success') {
             let sentdata = data.data;
             let tabletag = $('#table_main_data');

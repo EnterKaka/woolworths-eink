@@ -15,7 +15,9 @@
 div.container_main{
     min-height: 700px;
 }
-
+.btn{
+    margin: auto 20px;
+}
 /*Canvas necessary setting*/
 #viewer_3d{
     left: 0;

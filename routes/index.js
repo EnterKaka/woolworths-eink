@@ -26,6 +26,7 @@ app.get('/viewer', auth, function(req, res) {
 
 app.get('/dashboard', auth, function(req, res) {
 	// render to views/index.ejs template file
+
 	console.log('/dashboard----------');
 	if(req.session.dbname)
 		console.log(req.session.dbname, req.session.collectionname);
@@ -88,6 +89,7 @@ app.get('/dashboard', auth, function(req, res) {
 				res.render('pages/dashboard', {
 					title: 'Dashboard - Owl Studio Web App',
 					data: allmodels,
+					loadedData: loadedData,
 					names: allnames,
 					dbname: req.session.dbname,
 					collectionname: req.session.collectionname,
@@ -119,6 +121,7 @@ app.get('/login', function(req, res) {
 
 app.get('/logout', function(req, res){
 	req.session.destroy();
+	loadedData = '';
 	return res.redirect('/');
 })
 
