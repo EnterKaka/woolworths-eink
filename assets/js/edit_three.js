@@ -44,16 +44,18 @@ function openModel_Fromlocal(e) {
 var controls, triangle, mouse3, plane,pointOnPlane,target,closestPoint, canvas2;
 var camera, count = 0,line, positions, renderer, scene, canvas, parent_canvas;
 var group, marker, mesh, raycaster, mouse, toolstate = 'move',lookatP={x:0,y:0,z:0};
-var selectedPoints, selectedGroup;
+var selectedPoints, selectedGroup, polygon=[], drawing=true;
+var mouseDown, mouseRightDown, mouseX, mouseY;
 //three.js point cloud viewer
 
 function main() {
     canvas = document.querySelector('#viewer_3d');
     canvas2 = document.getElementById('tool_2d');
 
-    var mouseDown = false,mouseRightDown = false,
-        mouseX = 0,
-        mouseY = 0;
+    mouseDown = false;
+    mouseRightDown = false;
+    mouseX = 0;
+    mouseY = 0;
     raycaster = new THREE.Raycaster();
     mouse = new THREE.Vector2();    
     mouse3 = new THREE.Vector2();
@@ -76,14 +78,19 @@ function main() {
     //event control
     canvas2.addEventListener('mousemove', function (e) {
       ////console.log('move')
-        onMouseMove(e);
-        onDocumentMouseMove(e)
+        
       switch(toolstate) {
         case 'move':
+          onMouseMove(e);
+          onDocumentMouseMove(e)
           // code block
           break;
         case 'point':
+          onDocumentMouseMove(e)
           // code block
+          break;
+        case 'pencil':
+          drawPencil(e)
           break;
         default:
           // code block
@@ -92,18 +99,24 @@ function main() {
 
     canvas2.addEventListener('mousedown', function (e) {
       console.log('down')
-      
+      if(e.button == 0) {
+        onMouseDown(e);
+      }
+      if(e.button ==2){
+        onMouseRightDown(e)
+      }
       switch(toolstate) {
         case 'move':
-          if(e.button == 0) {
-            onMouseDown(e);
-          }
-          if(e.button ==2){
-            onMouseRightDown(e)
-          }
+        
           break;
         case 'point':
           onAddPoint(e)
+          break;
+        case 'polygon':
+          drawPolygon(e)
+          break;
+        case 'pencil':
+          startPencil(e)
           break;
         default:
           // code block
@@ -119,6 +132,11 @@ function main() {
       else if(e.button == 2){
         onMouseRightUp(e)
       }
+      switch(toolstate){
+        case 'pencil':
+          finishdraw(e)
+          break;
+      }
     }, false);
 
     canvas2.addEventListener('click', function (e) {
@@ -128,7 +146,12 @@ function main() {
 
     canvas2.addEventListener('dblclick', function (e) {
       ////console.log('dblclick')
-        onMouseMove(e);
+      switch(toolstate){
+        case 'polygon':
+          finishdraw(e)
+          break;
+
+      }
     }, false);
 
     canvas2.addEventListener('contextmenu', (e) => {
@@ -141,7 +164,10 @@ function main() {
       }
     }, false);
 
-    canvas2.addEventListener( 'mousewheel', onDocumentMouseWheel, false );
+    canvas2.addEventListener( 'mousewheel', (e) =>{
+      if(toolstate === 'move') 
+        onDocumentMouseWheel(e);
+    }, false );
 
 
     //render, scene
@@ -497,23 +523,17 @@ function main() {
     c.height = canvas.clientHeight;
     c.width = canvas.clientWidth;
     var ctx = c.getContext("2d");
-    ctx.strokeStyle = "#ff0000";
-    ctx.beginPath();
-    ctx.moveTo(10, 10);
-    ctx.lineTo(300, 10);
-    ctx.lineTo(300, 150);
-    ctx.lineTo(10, 150);
-    ctx.closePath();
-    ctx.stroke();
+    ctx.clearRect(0, 0, c.width, c.height);
+    if(polygon.length!==0){
 
-    ctx.beginPath();
-    ctx.moveTo(110, 110);
-    ctx.lineTo(400, 110);
-    ctx.lineTo(400, 250);
-    ctx.lineTo(110, 250);
-    ctx.closePath();
-    ctx.stroke();
-    
+      ctx.strokeStyle = "#ff0000";
+      ctx.beginPath();
+      ctx.moveTo(polygon[0][0], polygon[0][1]);
+      for(var i=1;i<polygon.length;i++) ctx.lineTo(polygon[i][0], polygon[i][1]);
+      console.log(drawing)
+      if(!drawing)ctx.closePath();
+      ctx.stroke();
+    }
   }
 
   function animate(){
@@ -531,6 +551,7 @@ function main() {
   }
 
   function onAddPoint(evt){
+    console.log('onaddpoint')
     raycaster.setFromCamera( mouse, camera );
     // raycaster.ray.intersectPlane( plane, pointOnPlane );
 
@@ -587,6 +608,34 @@ function main() {
       // on first click add an extra point
       
     }
+  }
+
+  function drawPolygon(evt){
+    if(!drawing){
+      polygon = [];
+      drawing = true;
+    } 
+    polygon.push([evt.offsetX,evt.offsetY])
+
+  }
+
+  function drawPencil(evt){
+    
+    if(mouseDown)
+      polygon.push([evt.offsetX,evt.offsetY])
+  }
+
+  function startPencil(evt){
+    if(!drawing){
+      polygon = [];
+      console.log('formated')
+      drawing = true;
+    }
+  }
+
+  function finishdraw(evt){
+    console.log('finishing...')
+    drawing = false;
   }
 
   function customTriangulate(points3d){
@@ -1045,6 +1094,9 @@ document.getElementById('btn-point').addEventListener('click', function(){
 });
 
 document.getElementById('btn-polygon').addEventListener('click', function(){
+  if(toolstate !== "polygon"){
+    polygon = []
+  }
   setToolState('polygon')
 });
 
