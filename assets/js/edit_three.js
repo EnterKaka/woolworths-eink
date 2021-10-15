@@ -57,7 +57,7 @@ function main() {
     mouseX = 0;
     mouseY = 0;
     raycaster = new THREE.Raycaster();
-    mouse = new THREE.Vector2();    
+    mouse = new THREE.Vector2();
     mouse3 = new THREE.Vector2();
 
     triangle = new THREE.Triangle();
@@ -101,9 +101,41 @@ function main() {
       console.log('down')
       if(e.button == 0) {
         onMouseDown(e);
+        switch(toolstate) {
+          case 'move':
+          
+            break;
+          case 'point':
+            onAddPoint(e)
+            break;
+          case 'polygon':
+            drawPolygon(e)
+            break;
+          case 'pencil':
+            startPencil(e)
+            break;
+          default:
+            // code block
+        }
       }
       if(e.button ==2){
         onMouseRightDown(e)
+        switch(toolstate) {
+          case 'move':
+          
+            break;
+          case 'point':
+            onAddPoint(e)
+            break;
+          case 'polygon':
+            drawPolygon(e)
+            break;
+          case 'pencil':
+            startPencil(e)
+            break;
+          default:
+            // code block
+        }
       }
       switch(toolstate) {
         case 'move':
@@ -128,15 +160,16 @@ function main() {
       console.log('up')
       if(e.button == 0) {
         onMouseUp(e);
+        switch(toolstate){
+          case 'pencil':
+            finishdraw(e)
+            break;
+        }
       }
       else if(e.button == 2){
         onMouseRightUp(e)
       }
-      switch(toolstate){
-        case 'pencil':
-          finishdraw(e)
-          break;
-      }
+      
     }, false);
 
     canvas2.addEventListener('click', function (e) {
@@ -495,6 +528,8 @@ function main() {
         
         group.children[0].geometry.rotateZ(deltaX / 100);
         group.children[0].geometry.rotateX(deltaY / 100);
+        group.children[2].geometry.rotateZ(deltaX / 100);
+        group.children[2].geometry.rotateX(deltaY / 100);
     } 
 
     function cameraMove(deltaX, deltaY) {
@@ -523,10 +558,10 @@ function main() {
     c.height = canvas.clientHeight;
     c.width = canvas.clientWidth;
     var ctx = c.getContext("2d");
+    ctx.lineWidth = 5;
     ctx.clearRect(0, 0, c.width, c.height);
     if(polygon.length!==0){
-
-      ctx.strokeStyle = "#ff0000";
+      ctx.strokeStyle = document.getElementById("polygoncolor").value;
       ctx.beginPath();
       ctx.moveTo(polygon[0][0], polygon[0][1]);
       for(var i=1;i<polygon.length;i++) ctx.lineTo(polygon[i][0], polygon[i][1]);
@@ -633,10 +668,114 @@ function main() {
     }
   }
 
+  function isInside(point, vs) {
+      var x = point.x,
+          y = point.z;
+
+      var inside = false;
+      for (var i = 0, j = vs.length - 1; i < vs.length; j = i++) {
+          var xi = vs[i].x,
+              yi = vs[i].z;
+          var xj = vs[j].x,
+              yj = vs[j].z;
+
+          var intersect = ((yi > y) != (yj > y)) &&
+              (x < (xj - xi) * (y - yi) / (yj - yi) + xi);
+          if (intersect) inside = !inside;
+      }
+
+      return inside;
+  }
+
+  function asd(){
+
+  }
+
   function finishdraw(evt){
     console.log('finishing...')
     drawing = false;
-  }
+    if(polygon.length>2){
+      var origin = new THREE.Vector3(parseFloat(camera.position.x),parseFloat(camera.position.y),parseFloat(camera.position.z))
+      
+      var vs=[];
+      for(var i= 0; i<polygon.length;i++){
+        var mouse = new THREE.Vector2()
+        mouse.x = ( polygon[i][0] / canvas.clientWidth ) * 2 - 1;
+        mouse.y = - ( polygon[i][1] / canvas.clientHeight ) * 2 + 1;
+        raycaster.setFromCamera( mouse, camera );
+        raycaster.ray.intersectPlane( plane, pointOnPlane );
+        vs.push({x:pointOnPlane.x,z:pointOnPlane.z})
+      }
+
+      var geometry = group.children[0].geometry;
+      var index = geometry.index;
+      var position = geometry.attributes.position;
+      if(!evt.shiftKey) count = 0;
+      for ( let i = 0, l = index.count; i < l; i ++ ) {
+        var a = index.getX( i );
+        var direct = new THREE.Vector3()
+        direct.fromBufferAttribute( position, a )
+        // var mouse = THREE.Vector2()
+        // var ray=new THREE.Ray( new THREE.Vector3().copy(direct),new THREE.Vector3().copy(camera.position).normalize())
+        // raycaster.set( new THREE.Vector3().copy(direct),new THREE.Vector3().copy(camera.position));
+        raycaster.set( camera.position,new THREE.Vector3().copy(direct).sub( camera.position ).normalize());
+        // ray.intersectPlane( plane, pointOnPlane );
+        raycaster.ray.intersectPlane( plane, pointOnPlane );
+        if(isInside(pointOnPlane, vs)){
+          selectedPoints[count*3+0] = direct.x;
+          selectedPoints[count*3+1] = direct.y;
+          selectedPoints[count*3+2] = direct.z;
+          count ++;
+        }
+      }
+ 
+        selectedGroup.geometry.setDrawRange(0, count);
+        console.log(count,closestPoint)
+        selectedGroup.geometry.attributes.position.needsUpdate = true;
+        // var minDistance = Infinity;
+
+        
+        // var b = index.getX( i + 1 );
+        // var c = index.getX( i + 2 );
+        
+        
+      //   triangle.a.fromBufferAttribute( position, a );
+      //   triangle.b.fromBufferAttribute( position, b );
+      //   triangle.c.fromBufferAttribute( position, c );
+            
+      //   triangle.closestPointToPoint( pointOnPlane, target );
+
+        // raycaster.ray.closestPointToPoint(pointOnPlane, target)
+        // var distanceSq = pointOnPlane.distanceToSquared( target );
+        
+        // if ( distanceSq < minDistance ) {
+        
+        //   closestPoint.copy( pointOnPlane );
+        //   minDistance = distanceSq;
+        
+        // }
+      
+      }
+      // ////console.log(closestPoint)
+      // if(evt.shiftKey){
+      //   selectedPoints[count*3+0] = closestPoint.x;
+      //   selectedPoints[count*3+1] = closestPoint.y;
+      //   selectedPoints[count*3+2] = closestPoint.z;
+      //   count ++;
+      // }
+      // else{
+      //   selectedPoints[0] = closestPoint.x;
+      //   selectedPoints[1] = closestPoint.y;
+      //   selectedPoints[2] = closestPoint.z;
+      //   count = 1;
+      // }
+      // selectedGroup.geometry.setDrawRange(0, count);
+      // console.log(count,closestPoint)
+      // selectedGroup.geometry.attributes.position.needsUpdate = true;
+      // marker.position.copy( closestPoint );
+      // on first click add an extra point
+      
+    }
 
   function customTriangulate(points3d){
     
@@ -754,7 +893,7 @@ function main() {
 
 
 
-    selectedPoints = new Float32Array(points3d.length * 3);
+    selectedPoints = new Float32Array(geometry1.index.count *3);
     console.log(points3d.length)
     var geometry3 = new THREE.BufferGeometry();
     geometry3.addAttribute('position', new THREE.BufferAttribute(selectedPoints, 3));
@@ -1086,17 +1225,19 @@ function setToolState(tool){
 }
 
 document.getElementById('btn-move').addEventListener('click', function(){
+  polygon = [];
   setToolState('move')
 });
 
 document.getElementById('btn-point').addEventListener('click', function(){
+  polygon = [];
   setToolState('point')
 });
 
 document.getElementById('btn-polygon').addEventListener('click', function(){
-  if(toolstate !== "polygon"){
-    polygon = []
-  }
+  // if(toolstate !== "polygon"){
+  //   polygon = []
+  // }
   setToolState('polygon')
 });
 
