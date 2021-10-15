@@ -186,7 +186,8 @@ app.post('/get', auth, async function(req, res, next) {
 				let col = mem.collectionname.trim();
 				const database = client.db(db);
 				const datas = database.collection(col);
-				const cursor = datas.find({}).sort([['datetime', -1]]);
+				// const cursor = datas.find({}).sort([['datetime', -1]]);
+				const cursor = datas.aggregate([{$sort:{'datetime':-1}}],{allowDiskUse: true});
 
 				await cursor.forEach(function(model) {
 					let splitdata = model.datetime.split(' ');
