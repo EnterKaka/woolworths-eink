@@ -37,3 +37,29 @@ div.table-padding-set{
 html {
     scroll-behavior: smooth;
 }
+
+#DataTables_Table_0_wrapper{
+    width: 100%;
+}
+
+div#DataTables_Table_0_length{
+    width: 200px;
+}
+
+#DataTables_Table_0_length label,#DataTables_Table_0_filter label{
+    display: flex;
+    flex-direction: revert;
+    align-items: center;
+}
+#DataTables_Table_0_length select{
+    margin: 0px 20px;
+}
+
+#DataTables_Table_0_filter{
+    float: right;
+}
+
+#DataTables_Table_0_filter input{
+    width: 150px;
+    margin-left: 10px;
+}
