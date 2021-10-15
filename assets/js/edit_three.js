@@ -480,15 +480,26 @@ function main() {
   function render(){
     renderer.render( scene, camera);
 
-var c = document.getElementById("tool_2d");
-c.height = canvas.clientHeight;
-c.width = canvas.clientWidth;
-var ctx = c.getContext("2d");
-ctx.strokeStyle = "#ff0000";
-ctx.beginPath();
-ctx.moveTo(0, 0);
-ctx.lineTo(300, 150);
-ctx.stroke();
+    var c = document.getElementById("tool_2d");
+    c.height = canvas.clientHeight;
+    c.width = canvas.clientWidth;
+    var ctx = c.getContext("2d");
+    ctx.strokeStyle = "#ff0000";
+    ctx.beginPath();
+    ctx.moveTo(10, 10);
+    ctx.lineTo(300, 10);
+    ctx.lineTo(300, 150);
+    ctx.lineTo(10, 150);
+    ctx.closePath();
+    ctx.stroke();
+
+    ctx.beginPath();
+    ctx.moveTo(110, 110);
+    ctx.lineTo(400, 110);
+    ctx.lineTo(400, 250);
+    ctx.lineTo(110, 250);
+    ctx.closePath();
+    ctx.stroke();
     
   }
 
@@ -893,20 +904,31 @@ function heightmapColor(){
 
 const Pointcolors = document.getElementById( 'pointcolor' );
 Pointcolors.addEventListener( 'input', function () {
-  group.children[0].material.color.set( this.value );
+  setPointColor(this.value)
 } );
+
+function setPointColor(c){
+  group.children[0].material.color.set( c );
+}
+
 
 const Delaunycolors = document.getElementById( 'delaunycolor' );
 Delaunycolors.addEventListener( 'input', function () {
-  group.children[1].material.color.set( this.value );
+  setDelaunyColor(this.value)
 } );
+
+function setDelaunyColor(c){
+  group.children[1].material.color.set( c );
+}
 
 document.getElementById('delaunyDiv').addEventListener('click', function(){
   var two = document.getElementById('delauny');
   if(!two.checked){
+    
     group.children[1].visible=false;
   }
   else{
+   
     group.children[1].visible=true;
   };
 
@@ -916,11 +938,16 @@ document.getElementById('heightmapColorDiv').addEventListener('click', function(
   var two = document.getElementById('heightmapColor');
   if(!two.checked){
   ////console.log(group)
+  document.getElementById( 'pointcolor' ).disabled = false;
+  setPointColor(pointcolor())
+  
     group.children[0].material.vertexColors=false;
     group.children[0].material.needsUpdate = true;
   }
   else{
     ////console.log(group)
+     document.getElementById( 'pointcolor' ).disabled = true;
+    setPointColor("#ffffff")
     group.children[0].material.vertexColors=true;
     group.children[0].material.needsUpdate = true;
   };
