@@ -42,6 +42,7 @@ var index = require('./routes/index');
 var user = require('./routes/users');
 var data = require('./routes/data');
 var setting = require('./routes/setting');
+var database_ei = require('./routes/database');
 /**
  * Express Validator Middleware for Form Validation
  */ 
@@ -100,6 +101,7 @@ app.use('/', index);
 app.use('/user', user);
 app.use('/data', data);
 app.use('/setting', setting);
+app.use('/database', database_ei);
 
 
 io.on('connection', (socket) => {
