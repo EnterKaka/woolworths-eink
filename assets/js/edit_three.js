@@ -619,9 +619,9 @@ function main() {
       //   triangle.c.fromBufferAttribute( position, c );
             
       //   triangle.closestPointToPoint( pointOnPlane, target );
-
-        raycaster.ray.closestPointToPoint(pointOnPlane, target)
-        var distanceSq = pointOnPlane.distanceToSquared( target );
+         
+        raycaster.ray.closestPointToPoint(new THREE.Vector3().copy(pointOnPlane).applyEuler(group.rotation), target)
+        var distanceSq = new THREE.Vector3().copy(pointOnPlane).applyEuler(group.rotation).distanceToSquared( target );
         
         if ( distanceSq < minDistance ) {
         
@@ -651,6 +651,7 @@ function main() {
       // on first click add an extra point
       
     }
+    render()
   }
 
   function drawPolygon(evt){
@@ -728,7 +729,7 @@ function main() {
         // var mouse = THREE.Vector2()
         // var ray=new THREE.Ray( new THREE.Vector3().copy(direct),new THREE.Vector3().copy(camera.position).normalize())
         // raycaster.set( new THREE.Vector3().copy(direct),new THREE.Vector3().copy(camera.position));
-        raycaster.set( camera.position,new THREE.Vector3().copy(direct).sub( camera.position ).normalize());
+        raycaster.set( camera.position,new THREE.Vector3().copy(direct).applyEuler(group.rotation).sub( camera.position ).normalize());
         // ray.intersectPlane( plane, pointOnPlane );
         raycaster.ray.intersectPlane( plane, pointOnPlane );
         if(isInside(pointOnPlane, vs)){
