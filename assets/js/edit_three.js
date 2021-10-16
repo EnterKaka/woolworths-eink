@@ -120,39 +120,39 @@ function main() {
       }
       if(e.button ==2){
         onMouseRightDown(e)
-        switch(toolstate) {
-          case 'move':
+        // switch(toolstate) {
+        //   case 'move':
           
-            break;
-          case 'point':
-            onAddPoint(e)
-            break;
-          case 'polygon':
-            drawPolygon(e)
-            break;
-          case 'pencil':
-            startPencil(e)
-            break;
-          default:
-            // code block
-        }
+        //     break;
+        //   case 'point':
+        //     onAddPoint(e)
+        //     break;
+        //   case 'polygon':
+        //     drawPolygon(e)
+        //     break;
+        //   case 'pencil':
+        //     startPencil(e)
+        //     break;
+        //   default:
+        //     // code block
+        // }
       }
-      switch(toolstate) {
-        case 'move':
+      // switch(toolstate) {
+      //   case 'move':
         
-          break;
-        case 'point':
-          onAddPoint(e)
-          break;
-        case 'polygon':
-          drawPolygon(e)
-          break;
-        case 'pencil':
-          startPencil(e)
-          break;
-        default:
-          // code block
-      }
+      //     break;
+      //   case 'point':
+      //     onAddPoint(e)
+      //     break;
+      //   case 'polygon':
+      //     drawPolygon(e)
+      //     break;
+      //   case 'pencil':
+      //     startPencil(e)
+      //     break;
+      //   default:
+      //     // code block
+      // }
       
     }, false);
 
@@ -427,8 +427,8 @@ function main() {
 
     function onMouseMove(evt) {
         evt.preventDefault();
-        mouse3.x = mouse.x;
-        mouse3.y = mouse.y;
+        // mouse3.x = mouse.x;
+        // mouse3.y = mouse.y;
         // mouse3.z = 0;
         // mouse3.unproject(camera);
         // if( count !== 0 ){
@@ -1003,6 +1003,22 @@ function main() {
     );
     mesh.visible = delauny();
     group.add(mesh);
+
+
+
+
+    selectedPoints = new Float32Array(geometry1.index.count * 30);
+    console.log(points3d.length)
+    var geometry3 = new THREE.BufferGeometry();
+    geometry3.addAttribute('position', new THREE.BufferAttribute(selectedPoints, 3));
+    geometry3.setDrawRange(0, 0)
+    var material3 = new THREE.PointsMaterial({
+      color: selectedcolor(),
+      size: selectedsize()
+    });
+    console.log(material)
+    selectedGroup = new THREE.Points(geometry3, material3);
+    group.add(selectedGroup);
     render();
   }
 
@@ -1098,6 +1114,23 @@ function main() {
 
     // var gui = new dat.GUI();
     // gui.add(mesh.material, "wireframe");
+
+
+
+
+
+    selectedPoints = new Float32Array(geometry1.index.count * 30);
+    console.log(points3d.length)
+    var geometry3 = new THREE.BufferGeometry();
+    geometry3.addAttribute('position', new THREE.BufferAttribute(selectedPoints, 3));
+    geometry3.setDrawRange(0, 0)
+    var material3 = new THREE.PointsMaterial({
+      color: selectedcolor(),
+      size: selectedsize()
+    });
+    console.log(material)
+    selectedGroup = new THREE.Points(geometry3, material3);
+    group.add(selectedGroup);
     render();
   }
 
