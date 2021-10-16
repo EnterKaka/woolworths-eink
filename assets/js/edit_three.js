@@ -922,7 +922,7 @@ function main() {
     var colors = [];
 
     geometry1.copy( loader.parse(wholecontent).children[0].geometry );
-    // geometry1.center();
+    geometry1.center();
 
 
     // var vertexColors = ( geometry1.hasAttribute( 'color' ) === true );
@@ -1056,7 +1056,7 @@ function main() {
       geometry1.setAttribute( 'color', new THREE.Float32BufferAttribute( colors, 3 ) );
     }
 
-    // geometry1.center();
+    geometry1.center();
 
     // var vertexColors = ( geometry1.hasAttribute( 'color' ) === true );
     var material;
