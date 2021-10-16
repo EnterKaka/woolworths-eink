@@ -562,6 +562,10 @@ function main() {
   function render(){
     renderer.render( scene, camera);
 
+    
+  }
+
+  function polygonRender(){
     var c = document.getElementById("tool_2d");
     c.height = canvas.clientHeight;
     c.width = canvas.clientWidth;
@@ -600,55 +604,109 @@ function main() {
 
     // marker.position.copy( pointOnPlane );
     if(group.children[0]){
-      var geometry = group.children[0].geometry;
+      if(evt.ctrlKey && count>0){
+        var geometry = selectedGroup.geometry;
       
-      var index = geometry.index;
-      var position = geometry.attributes.position;
-      
-      var minDistance = Infinity;
-      
-      for ( let i = 0, l = index.count; i < l; i ++ ) {
-      
-        var a = index.getX( i );
-        // var b = index.getX( i + 1 );
-        // var c = index.getX( i + 2 );
-        
-        pointOnPlane.fromBufferAttribute( position, a )
-      //   triangle.a.fromBufferAttribute( position, a );
-      //   triangle.b.fromBufferAttribute( position, b );
-      //   triangle.c.fromBufferAttribute( position, c );
-            
-      //   triangle.closestPointToPoint( pointOnPlane, target );
          
-        raycaster.ray.closestPointToPoint(new THREE.Vector3().copy(pointOnPlane).applyEuler(group.rotation), target)
-        var distanceSq = new THREE.Vector3().copy(pointOnPlane).applyEuler(group.rotation).distanceToSquared( target );
+        var position = geometry.attributes.position;
         
-        if ( distanceSq < minDistance ) {
+        var minDistance = Infinity;
+        var dind = 0;
+        var lop = count;
+        count = 0;
+        for ( let i = 0; i < lop; i ++ ) {
         
-          closestPoint.copy( pointOnPlane );
-          minDistance = distanceSq;
+           
+          // var b = index.getX( i + 1 );
+          // var c = index.getX( i + 2 );
+          
+          pointOnPlane.copy( new THREE.Vector3(position.array[i*3],position.array[i*3+1],position.array[i*3+2]) )
+        //   triangle.a.fromBufferAttribute( position, a );
+        //   triangle.b.fromBufferAttribute( position, b );
+        //   triangle.c.fromBufferAttribute( position, c );
+              
+        //   triangle.closestPointToPoint( pointOnPlane, target );
+           
+          raycaster.ray.closestPointToPoint(new THREE.Vector3().copy(pointOnPlane).applyEuler(group.rotation), target)
+          var distanceSq = new THREE.Vector3().copy(pointOnPlane).applyEuler(group.rotation).distanceToSquared( target );
+          
+          if ( distanceSq < minDistance ) {
+            // closestPoint.copy( pointOnPlane );
+            minDistance = distanceSq;
+            dind = i;
+          }
         
         }
-      
-      }
-      // ////console.log(closestPoint)
-      if(evt.shiftKey){
-        selectedPoints[count*3+0] = closestPoint.x;
-        selectedPoints[count*3+1] = closestPoint.y;
-        selectedPoints[count*3+2] = closestPoint.z;
-        count ++;
+        // ////console.log(closestPoint)
+        var newpoints = [...selectedPoints];
+        for(var i=0;i<lop;i++){
+          if(i!==dind){
+            selectedPoints[count*3+0] = newpoints[i*3];
+            selectedPoints[count*3+1] = newpoints[i*3+1];
+            selectedPoints[count*3+2] = newpoints[i*3+2];
+            count ++;
+          }
+        }
+         
+        selectedGroup.geometry.setDrawRange(0, count);
+        console.log(count,closestPoint)
+        selectedGroup.geometry.attributes.position.needsUpdate = true;
+        // marker.position.copy( closestPoint );
+        // on first click add an extra point
+        
       }
       else{
-        selectedPoints[0] = closestPoint.x;
-        selectedPoints[1] = closestPoint.y;
-        selectedPoints[2] = closestPoint.z;
-        count = 1;
+        var geometry = group.children[0].geometry;
+      
+        var index = geometry.index;
+        var position = geometry.attributes.position;
+        
+        var minDistance = Infinity;
+        
+        for ( let i = 0, l = index.count; i < l; i ++ ) {
+        
+          var a = index.getX( i );
+          // var b = index.getX( i + 1 );
+          // var c = index.getX( i + 2 );
+          
+          pointOnPlane.fromBufferAttribute( position, a )
+        //   triangle.a.fromBufferAttribute( position, a );
+        //   triangle.b.fromBufferAttribute( position, b );
+        //   triangle.c.fromBufferAttribute( position, c );
+              
+        //   triangle.closestPointToPoint( pointOnPlane, target );
+           
+          raycaster.ray.closestPointToPoint(new THREE.Vector3().copy(pointOnPlane).applyEuler(group.rotation), target)
+          var distanceSq = new THREE.Vector3().copy(pointOnPlane).applyEuler(group.rotation).distanceToSquared( target );
+          
+          if ( distanceSq < minDistance ) {
+          
+            closestPoint.copy( pointOnPlane );
+            minDistance = distanceSq;
+          
+          }
+        
+        }
+        // ////console.log(closestPoint)
+        if(evt.shiftKey){
+          selectedPoints[count*3+0] = closestPoint.x;
+          selectedPoints[count*3+1] = closestPoint.y;
+          selectedPoints[count*3+2] = closestPoint.z;
+          count ++;
+        }
+        else{
+          selectedPoints[0] = closestPoint.x;
+          selectedPoints[1] = closestPoint.y;
+          selectedPoints[2] = closestPoint.z;
+          count = 1;
+        }
+        selectedGroup.geometry.setDrawRange(0, count);
+        console.log(count,closestPoint)
+        selectedGroup.geometry.attributes.position.needsUpdate = true;
+        // marker.position.copy( closestPoint );
+        // on first click add an extra point
       }
-      selectedGroup.geometry.setDrawRange(0, count);
-      console.log(count,closestPoint)
-      selectedGroup.geometry.attributes.position.needsUpdate = true;
-      // marker.position.copy( closestPoint );
-      // on first click add an extra point
+      
       
     }
     render()
@@ -660,14 +718,14 @@ function main() {
       drawing = true;
     } 
     polygon.push([evt.offsetX,evt.offsetY])
-    render()
+    polygonRender()
   }
 
   function drawPencil(evt){
     
     if(mouseDown)
       polygon.push([evt.offsetX,evt.offsetY])
-    render()
+    polygonRender()
   }
 
   function startPencil(evt){
@@ -676,7 +734,7 @@ function main() {
       console.log('formated')
       drawing = true;
     }
-    render()
+    polygonRender()
   }
 
   function isInside(point, vs) {
@@ -718,27 +776,54 @@ function main() {
         vs.push({x:pointOnPlane.x,z:pointOnPlane.z})
       }
 
-      var geometry = group.children[0].geometry;
-      var index = geometry.index;
-      var position = geometry.attributes.position;
-      if(!evt.shiftKey) count = 0;
-      for ( let i = 0, l = index.count; i < l; i ++ ) {
-        var a = index.getX( i );
-        var direct = new THREE.Vector3()
-        direct.fromBufferAttribute( position, a )
-        // var mouse = THREE.Vector2()
-        // var ray=new THREE.Ray( new THREE.Vector3().copy(direct),new THREE.Vector3().copy(camera.position).normalize())
-        // raycaster.set( new THREE.Vector3().copy(direct),new THREE.Vector3().copy(camera.position));
-        raycaster.set( camera.position,new THREE.Vector3().copy(direct).applyEuler(group.rotation).sub( camera.position ).normalize());
-        // ray.intersectPlane( plane, pointOnPlane );
-        raycaster.ray.intersectPlane( plane, pointOnPlane );
-        if(isInside(pointOnPlane, vs)){
-          selectedPoints[count*3+0] = direct.x;
-          selectedPoints[count*3+1] = direct.y;
-          selectedPoints[count*3+2] = direct.z;
-          count ++;
+      
+      if(evt.ctrlKey && count>0){
+        var geometry = selectedGroup.geometry;
+        var index = geometry.index;
+        var position = geometry.attributes.position;
+        var lop = count;
+        count = 0;
+        for ( var i = 0;  i < lop; i ++ ) {
+          // var a = index.getX( i );
+          var direct = new THREE.Vector3(position.array[i*3],position.array[i*3+1],position.array[i*3+2])
+          // direct.fromBufferAttribute( position, a )
+          // var mouse = THREE.Vector2()
+          // var ray=new THREE.Ray( new THREE.Vector3().copy(direct),new THREE.Vector3().copy(camera.position).normalize())
+          // raycaster.set( new THREE.Vector3().copy(direct),new THREE.Vector3().copy(camera.position));
+          raycaster.set( camera.position,new THREE.Vector3().copy(direct).applyEuler(group.rotation).sub( camera.position ).normalize());
+          // ray.intersectPlane( plane, pointOnPlane );
+          raycaster.ray.intersectPlane( plane, pointOnPlane );
+          if(!isInside(pointOnPlane, vs)){
+            selectedPoints[count*3+0] = direct.x;
+            selectedPoints[count*3+1] = direct.y;
+            selectedPoints[count*3+2] = direct.z;
+            count ++;
+          }
         }
       }
+      else {
+        if(!evt.shiftKey)count = 0;
+        var geometry = group.children[0].geometry;
+        var index = geometry.index;
+        var position = geometry.attributes.position;
+        for ( var i = 0, l = index.count; i < l; i ++ ) {
+          var a = index.getX( i );
+          var direct = new THREE.Vector3()
+          direct.fromBufferAttribute( position, a )
+          // var mouse = THREE.Vector2()
+          // var ray=new THREE.Ray( new THREE.Vector3().copy(direct),new THREE.Vector3().copy(camera.position).normalize())
+          // raycaster.set( new THREE.Vector3().copy(direct),new THREE.Vector3().copy(camera.position));
+          raycaster.set( camera.position,new THREE.Vector3().copy(direct).applyEuler(group.rotation).sub( camera.position ).normalize());
+          // ray.intersectPlane( plane, pointOnPlane );
+          raycaster.ray.intersectPlane( plane, pointOnPlane );
+          if(isInside(pointOnPlane, vs)){
+            selectedPoints[count*3+0] = direct.x;
+            selectedPoints[count*3+1] = direct.y;
+            selectedPoints[count*3+2] = direct.z;
+            count ++;
+          }
+        }
+      } 
  
         selectedGroup.geometry.setDrawRange(0, count);
         console.log(count,closestPoint)
@@ -786,6 +871,7 @@ function main() {
       // marker.position.copy( closestPoint );
       // on first click add an extra point
       render()
+      polygonRender()
       
     }
 
@@ -1217,6 +1303,16 @@ function heightmapColor(){
   return document.getElementById('heightmapColor').checked;
 }
 
+
+const PolygonColor = document.getElementById( 'polygoncolor' );
+PolygonColor.addEventListener( 'input', function () {
+  polygonRender()
+} );
+
+
+
+
+
 const SelectedSize = document.getElementById( 'vol' );
 SelectedSize.addEventListener( 'input', function () {
   setSelectedSize(this.value)
@@ -1307,6 +1403,7 @@ document.getElementById('btn-move').addEventListener('click', function(){
   selectedGroup.geometry.setDrawRange(0, 0);
   setToolState('move')
   render()
+  polygonRender()
 });
 
 document.getElementById('btn-point').addEventListener('click', function(){
@@ -1314,6 +1411,7 @@ document.getElementById('btn-point').addEventListener('click', function(){
   selectedGroup.geometry.setDrawRange(0, 0);
   setToolState('point')
   render()
+  polygonRender()
 });
 
 document.getElementById('btn-polygon').addEventListener('click', function(){
@@ -1324,6 +1422,7 @@ document.getElementById('btn-polygon').addEventListener('click', function(){
   selectedGroup.geometry.setDrawRange(0, 0);
   setToolState('polygon')
   render()
+  polygonRender()
 });
 
 document.getElementById('btn-pencil').addEventListener('click', function(){
@@ -1331,4 +1430,5 @@ document.getElementById('btn-pencil').addEventListener('click', function(){
   selectedGroup.geometry.setDrawRange(0, 0);
   setToolState('pencil')
   render()
+  polygonRender()
 });
