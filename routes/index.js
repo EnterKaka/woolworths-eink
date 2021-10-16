@@ -25,44 +25,24 @@ app.get('/viewer', auth, function(req, res) {
 })
 
 app.get('/dashboard', auth, function(req, res) {
-	// render to views/index.ejs template file
 
-	console.log('/dashboard----------');
-	if(req.session.dbname)
-		console.log(req.session.dbname, req.session.collectionname);
-	else{
-		req.session.dbname = 'OwlEyeStudioWebInterface';
-		req.session.collectionname = 'models';
-	}
+	console.log('********* load dashboard page ************');
 
 	//This is all models that seperated with name.
 	var allmodels = [];
 	var allnames = [];
-	const client = new MongoClient('mongodb://localhost:27017/', { useUnifiedTopology: true });
+	
 	async function run() {
 		try {
-			await client.connect();
-			const database = client.db(req.session.dbname);
-			const datas = database.collection(req.session.collectionname);
-			// query for movies that have a runtime less than 15 minutes
-			const cursor = datas.find({});
-			// print a message if no documents were found
-			if ((await cursor.count()) === 0) {
-				console.log("No documents found!");
-		   		//  process.exit(1)
-		   		req.flash('error', 'No existed');
-		   		// redirect to users list page
-		   		res.header(400).json({status: 'fail'});
-			}else{
 				// replace console.dir with your callback to access individual elements
 				var lastmodelname;//for current item for update
-				await cursor.forEach(function(model) {
-					let modelname = model.measurement[0].name;
+				for(const model of  loadedData){
+					let modelname = model.name;
 					let eachmodeldata = {
 						_id: model._id,
-						datetime: model.datetime,
-						mass: model.measurement[0].mass,
-						volume: model.measurement[0].volume,
+						datetime: model.date + ' ' + model.time,
+						mass: model.mass,
+						volume: model.volume,
 					}
 					let stored = false;
 					for(const element of allmodels){
@@ -83,20 +63,21 @@ app.get('/dashboard', auth, function(req, res) {
 						allnames.push(modelname);
 					}
 					lastmodelname = modelname;//for name sort by current datetime
-				});
+				}
 				allmodels = makeSortedDatasbytime(lastmodelname, allmodels);
-				//sucess
-				res.render('pages/dashboard', {
-					title: 'Dashboard - Owl Studio Web App',
-					data: allmodels,
-					loadedData: loadedData,
-					names: allnames,
-					dbname: req.session.dbname,
-					collectionname: req.session.collectionname,
-				});
-			}
+				// //sucess
+				if(loadedData !== ''){
+					res.render('pages/dashboard', {
+						title: 'Dashboard - Owl Studio Web App',
+						data: allmodels,
+						loadedData: loadedData,
+						names: allnames,
+					});
+				}
+				else{
+					res.redirect('/data/');
+				}
 		} finally {
-			await client.close();
 		}
 	}
 	run().catch(
