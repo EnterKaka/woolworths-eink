@@ -41,6 +41,7 @@ function openModel_Fromlocal(e) {
     }
 }
 
+
 var controls, triangle, mouse3, plane,pointOnPlane,target,closestPoint, canvas2;
 var camera, count = 0,line, positions, renderer, scene, canvas, parent_canvas;
 var group, marker, mesh, raycaster, mouse, toolstate = 'move',lookatP={x:0,y:0,z:0};
@@ -279,13 +280,13 @@ function main() {
     scene.add(camera);
     
     //natural rotate control
-    // controls = new OrbitControls(camera, renderer.domElement);
-		// controls.addEventListener( 'change', render ); // call this only in static scenes (i.e., if there is no animation loop)
-		// controls.minDistance = 0.1;
-		// controls.maxDistance = 100;
+    controls = new OrbitControls(camera, renderer.domElement);
+		controls.addEventListener( 'change', render ); // call this only in static scenes (i.e., if there is no animation loop)
+		controls.minDistance = 0.1;
+		controls.maxDistance = 100;
     // controls.enableRotate = true;
-    // controls.maxPolarAngle = Infinity;
-    // controls.enableRotate = false;
+    controls.maxPolarAngle = Infinity;
+    controls.enableRotate = false;
     // controls.autoRotate = true
     // controls.enableDamping = true;
     // controls.maxPolarAngle(Math.PI);
@@ -351,27 +352,30 @@ function main() {
     // Output some text when finished dragging the p element and reset the opacity
     document.addEventListener("dragend", function(event) {
       document.getElementById("viewer_3d").innerHTML = "Finished dragging the p element.";
-      event.target.style.opacity = "1";
+      canvas.style.opacity = "1";
     });
 
     /* Events fired on the drop target */
 
     // When the draggable p element enters the droptarget, change the DIVS's border style
     document.addEventListener("dragenter", function(event) {
-      if ( event.target.className == "3dviewer" ) {
-        event.target.style.border = "3px dotted red";
+      if ( event.target.className == "dviewer" ) {
+        canvas.style.border = "3px dotted red";
       }
     });
 
     // By default, data/elements cannot be dropped in other elements. To allow a drop, we must prevent the default handling of the element
     document.addEventListener("dragover", function(event) {
+      // console.log('dragover')
       event.preventDefault();
+      // document.getElementById("viewer_3d").style.color = "red";
     });
 
     // When the draggable p element leaves the droptarget, reset the DIVS's border style
     document.addEventListener("dragleave", function(event) {
-      if ( event.target.className == "3dviewer" ) {
-        event.target.style.border = "";
+      // console.log('dragover')
+      if ( event.target.className == "dviewer" ) {
+        canvas.style.border = "";
       }
     });
 
@@ -383,9 +387,9 @@ function main() {
     */
     document.addEventListener("drop", function(event) {
       event.preventDefault();
-      if ( event.target.className == "3dviewer" ) {
+      if ( event.target.className == "dviewer" ) {
         document.getElementById("viewer_3d").style.color = "";
-        event.target.style.border = "";
+        canvas.style.border = "";
         var file = event.dataTransfer.files[0];
         var reader = new FileReader();
         reader.onload = function(ev) {
@@ -464,7 +468,7 @@ function main() {
         //console.log(event, {canvas})
         mouse.x = ( event.offsetX / canvas.clientWidth ) * 2 - 1;
         mouse.y = - ( event.offsetY / canvas.clientHeight ) * 2 + 1;
-
+        // render()
         ////console.log(mouse.x, mouse.y)
             
     }
@@ -476,7 +480,7 @@ function main() {
         mouseDown = true;
         mouseX = evt.clientX;
         mouseY = evt.clientY;
-
+        // render()
         
     }
 
@@ -485,7 +489,7 @@ function main() {
         evt.preventDefault();
 
         mouseDown = false;
-        
+        // render()
     }
 
     function onMouseRightDown(evt) {
@@ -494,14 +498,14 @@ function main() {
         mouseRightDown = true;
         mouseX = evt.clientX;
         mouseY = evt.clientY;
-        
+        // render()
     }
 
     function onMouseRightUp(evt) {
         evt.preventDefault();
         console.log('down')
         mouseRightDown = false;
-        
+        // render()
     }
 
     function onDocumentMouseWheel( event ) {
@@ -518,18 +522,20 @@ function main() {
         // camera.near = ;
         // camera.far = ;
         // camera.updateProjectionMatrix();
+        render()
 
     }
 
     function rotateScene(deltaX, deltaY) {
       console.log('rotatescene')
-        // group.rotation.z += deltaX / 100;
-        // group.rotation.x += deltaY / 100;
+        group.rotation.z += deltaX / 100;
+        group.rotation.x += deltaY / 100;
         
-        group.children[0].geometry.rotateZ(deltaX / 100);
-        group.children[0].geometry.rotateX(deltaY / 100);
-        group.children[2].geometry.rotateZ(deltaX / 100);
-        group.children[2].geometry.rotateX(deltaY / 100);
+        // group.children[0].geometry.rotateZ(deltaX / 100);
+        // group.children[0].geometry.rotateX(deltaY / 100);
+        // group.children[2].geometry.rotateZ(deltaX / 100);
+        // group.children[2].geometry.rotateX(deltaY / 100);
+        render()
     } 
 
     function cameraMove(deltaX, deltaY) {
@@ -540,6 +546,7 @@ function main() {
         lookatP.x -= deltaX / 50;        
         lookatP.z += deltaY / 50;
         camera.lookAt(lookatP.x,lookatP.y,lookatP.z);
+        render()
       }
     }
   }
@@ -548,6 +555,7 @@ function main() {
     camera.aspect = parent_canvas.clientWidth/parent_canvas.clientHeight;
     camera.updateProjectionMatrix();
     renderer.setSize((parent_canvas.clientWidth-30),parent_canvas.clientHeight);
+    render()
     // controls.handleResize();
   }
 
@@ -651,13 +659,14 @@ function main() {
       drawing = true;
     } 
     polygon.push([evt.offsetX,evt.offsetY])
-
+    render()
   }
 
   function drawPencil(evt){
     
     if(mouseDown)
       polygon.push([evt.offsetX,evt.offsetY])
+    render()
   }
 
   function startPencil(evt){
@@ -666,6 +675,7 @@ function main() {
       console.log('formated')
       drawing = true;
     }
+    render()
   }
 
   function isInside(point, vs) {
@@ -774,6 +784,7 @@ function main() {
       // selectedGroup.geometry.attributes.position.needsUpdate = true;
       // marker.position.copy( closestPoint );
       // on first click add an extra point
+      render()
       
     }
 
@@ -1179,7 +1190,7 @@ function main() {
 
   init_highlow();
   main();
-  animate();
+  // animate();
 
 
 
@@ -1208,6 +1219,7 @@ function heightmapColor(){
 const SelectedSize = document.getElementById( 'vol' );
 SelectedSize.addEventListener( 'input', function () {
   setSelectedSize(this.value)
+  render()
 } );
 
 function setSelectedSize(c){
@@ -1218,6 +1230,7 @@ function setSelectedSize(c){
 const SelectedColor = document.getElementById( 'selectedcolor' );
 SelectedColor.addEventListener( 'input', function () {
   setSelectedColor(this.value)
+  render()
 } );
 
 function setSelectedColor(c){
@@ -1228,6 +1241,7 @@ function setSelectedColor(c){
 const Pointcolors = document.getElementById( 'pointcolor' );
 Pointcolors.addEventListener( 'input', function () {
   setPointColor(this.value)
+  render()
 } );
 
 function setPointColor(c){
@@ -1238,6 +1252,7 @@ function setPointColor(c){
 const Delaunycolors = document.getElementById( 'delaunycolor' );
 Delaunycolors.addEventListener( 'input', function () {
   setDelaunyColor(this.value)
+  render()
 } );
 
 function setDelaunyColor(c){
@@ -1254,6 +1269,7 @@ document.getElementById('delaunyDiv').addEventListener('click', function(){
    
     group.children[1].visible=true;
   };
+  render()
 
 });
 
@@ -1274,6 +1290,7 @@ document.getElementById('heightmapColorDiv').addEventListener('click', function(
     group.children[0].material.vertexColors=true;
     group.children[0].material.needsUpdate = true;
   };
+  render()
 
 });
 
@@ -1286,21 +1303,31 @@ function setToolState(tool){
 
 document.getElementById('btn-move').addEventListener('click', function(){
   polygon = [];
+  selectedGroup.geometry.setDrawRange(0, 0);
   setToolState('move')
+  render()
 });
 
 document.getElementById('btn-point').addEventListener('click', function(){
   polygon = [];
+  selectedGroup.geometry.setDrawRange(0, 0);
   setToolState('point')
+  render()
 });
 
 document.getElementById('btn-polygon').addEventListener('click', function(){
   // if(toolstate !== "polygon"){
   //   polygon = []
   // }
+  polygon = [];
+  selectedGroup.geometry.setDrawRange(0, 0);
   setToolState('polygon')
+  render()
 });
 
 document.getElementById('btn-pencil').addEventListener('click', function(){
+  polygon = [];
+  selectedGroup.geometry.setDrawRange(0, 0);
   setToolState('pencil')
+  render()
 });
