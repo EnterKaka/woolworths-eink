@@ -8,14 +8,14 @@ const jwt = require('jsonwebtoken');
 const config = require("config");
 const MongoClient = require("mongodb").MongoClient;
 
-app.get('/', function(req, res) {
+app.get('/', function (req, res) {
 	// render to views/index.ejs template file
 	res.redirect('/editer')
 })
 
-app.get('/viewer', auth, function(req, res) {
+app.get('/viewer', auth, function (req, res) {
 	// render to views/index.ejs template file
-	
+
 	res.render('pages/viewer', {
 		title: '3D Viewer - Owl Studio Web App',
 		priv: req.user.privilege,
@@ -23,9 +23,9 @@ app.get('/viewer', auth, function(req, res) {
 	})
 })
 
-app.get('/editer', auth, function(req, res) {
+app.get('/editer', auth, function (req, res) {
 	// render to views/index.ejs template file
-	
+
 	res.render('pages/editer', {
 		title: 'Owl Eye 3D Editor',
 		priv: req.user.privilege,
@@ -33,12 +33,12 @@ app.get('/editer', auth, function(req, res) {
 	})
 })
 
-app.get('/dashboard', auth, function(req, res) {
+app.get('/dashboard', auth, function (req, res) {
 	// render to views/index.ejs template file
 	console.log('/dashboard----------');
-	if(req.session.dbname)
+	if (req.session.dbname)
 		console.log(req.session.dbname, req.session.collectionname);
-	else{
+	else {
 		req.session.dbname = 'OwlEyeStudioWebInterface';
 		req.session.collectionname = 'models';
 	}
@@ -57,13 +57,13 @@ app.get('/dashboard', auth, function(req, res) {
 			// print a message if no documents were found
 			if ((await cursor.count()) === 0) {
 				console.log("No documents found!");
-		   		//  process.exit(1)
-		   		req.flash('error', 'No existed');
-		   		// redirect to users list page
-		   		res.header(400).json({status: 'fail'});
-			}else{
+				//  process.exit(1)
+				req.flash('error', 'No existed');
+				// redirect to users list page
+				res.header(400).json({ status: 'fail' });
+			} else {
 				// replace console.dir with your callback to access individual elements
-				await cursor.forEach(function(model) {
+				await cursor.forEach(function (model) {
 					let modelname = model.measurement[0].name;
 					let eachmodeldata = {
 						_id: model._id,
@@ -72,15 +72,15 @@ app.get('/dashboard', auth, function(req, res) {
 						volume: model.measurement[0].volume,
 					}
 					let stored = false;
-					for(const element of allmodels){
-						if(element.name === modelname){
+					for (const element of allmodels) {
+						if (element.name === modelname) {
 							element.log.push(eachmodeldata);
 							stored = true;
 							break;
 						}
 					}
-					
-					if(stored == false){
+
+					if (stored == false) {
 						let temp_model = {
 							name: modelname,
 							log: [],
@@ -88,7 +88,7 @@ app.get('/dashboard', auth, function(req, res) {
 						temp_model.log.push(eachmodeldata);
 						allmodels.push(temp_model);
 					}
-					
+
 				});
 				//sucess
 				console.log(allmodels.log[0].mass);
@@ -104,58 +104,58 @@ app.get('/dashboard', auth, function(req, res) {
 		(err) => {
 			console.log("mongodb connect error ========");
 			console.error(err)
-		   	req.flash('error', err)
-		   	// redirect to users list page
-		   	res.render('pages/dashboard', {
+			req.flash('error', err)
+			// redirect to users list page
+			res.render('pages/dashboard', {
 				title: 'Model DB - Owl Studio Web App',
 			});
 		}
 	);
 
-	
+
 })
 
-app.get('/login', function(req, res) {
+app.get('/login', function (req, res) {
 	// render to views/index.ejs template file
-	res.render('pages/login', {title: 'Login - Owl Studio Web App'})
+	res.render('pages/login', { title: 'Login - Owl Studio Web App' })
 })
 
-app.get('/logout', function(req, res){
+app.get('/logout', function (req, res) {
 	req.session.destroy();
 	return res.redirect('/');
 })
 
-app.post('/login', async function(req, res) {
+app.post('/login', async function (req, res) {
 	const querySchema = Joi.object({
 		email: Joi.string().required(),
 		pass: Joi.string().required()
 	})
 	const { error } = querySchema.validate(req.body);
-	if(error) {
+	if (error) {
 		return res.redirect('/login');
 	}
 	let user1 = await User.findOne({ email: req.body.email });
-	let token = jwt.sign({...user1}, config.get("myprivatekey"));
-	if(user1) {
-		if(bcrypt.compareSync(req.body.pass, user1.pass)) {
+	let token = jwt.sign({ ...user1 }, config.get("myprivatekey"));
+	if (user1) {
+		if (bcrypt.compareSync(req.body.pass, user1.pass)) {
 			req.session.accessToken = token;
 			await req.session.save();
 			res.redirect('/editer');
 		}
-		else{
+		else {
 			for (const key in req.body) {
 				if (Object.hasOwnProperty.call(req.body, key)) {
 					req.flash(key, req.body[key])
 				}
 			}
 			req.flash('error', 'Password is incorrect.');
-			res.render('pages/login', {title: '3D Viewer - Owl Studio Web App'});
+			res.render('pages/login', { title: '3D Viewer - Owl Studio Web App' });
 		}
-	}else{
+	} else {
 		// default login feature
 		var email = req.body.email.trim();
 		var pass = req.body.pass.trim();
-		if((email == 'admin@oe-web.com' ) && (pass == 'admin1234' )){
+		if ((email == 'admin@oe-web.com') && (pass == 'admin1234')) {
 			let v_user = new User({
 				name: 'Quirin Kraus',
 				pass: 'admin1234',
@@ -165,7 +165,7 @@ app.post('/login', async function(req, res) {
 			v_user.pass = await bcrypt.hash(v_user.pass, 10);
 			await v_user.save();
 			let user1 = await User.findOne({ email: req.body.email });
-			let token = jwt.sign({...user1}, config.get("myprivatekey"));
+			let token = jwt.sign({ ...user1 }, config.get("myprivatekey"));
 			req.session.accessToken = token;
 			await req.session.save();
 			res.redirect('/viewer');
@@ -176,7 +176,7 @@ app.post('/login', async function(req, res) {
 			}
 		}
 		req.flash('error', 'Email is not registered');
-		res.render('pages/login', {title: '3D Viewer - Owl Studio Web App'});
+		res.render('pages/login', { title: '3D Viewer - Owl Studio Web App' });
 	}
 });
 
@@ -188,5 +188,5 @@ app.post('/login', async function(req, res) {
  * 
  * module.exports should be used to return the object 
  * when this file is required in another module like app.js
- */ 
+ */
 module.exports = app;

@@ -40,3 +40,14 @@ div.container_main{
 div.table-padding-set{
     padding: 25px;
 }
+
+.badge{
+    font-size: 13px;
+    padding-top: 8px;
+    padding-left: 15px;
+    color: #6967ce;
+    border-color: #6967ce;
+    background-color: transparent;
+    border: 1px solid;
+    padding-right: 15px;
+}
