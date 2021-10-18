@@ -53,3 +53,27 @@ export const voxelGridFilter = (size, array) => {
     return resultArray;
 }
 
+// export const outlierRemovalFilter = (num, dev, dis, arr) => {
+//     if (num > arr.length / 3 - 1) num = arr.length / 3 - 1;
+//     var resultArray = [];
+//     for (var i = 0; i < arr.length; i += 3) {
+//         var disarr = [];
+//         for (var j = 0; j < arr.length; j += 3) {
+//             if (i !== j) disarr.push(dis[i + '.' + j]);
+//         }
+//         if (calcuDis(disarr, num) < dev) resultArray.push(arr[i], arr[i + 1], arr[i + 2]);
+//     }
+//     return resultArray;
+// }
+
+// export const calcuDis = (arr, num) => {
+//     var dev = 0;
+//     for (var i = 0; i < num; i++) {
+//         for (var j = i + 1; j < arr.length; j++) {
+//             if (arr[i] > arr[j]) arr[i] = [arr[j], arr[j] = arr[i]][0];
+//         }
+//         dev += arr[i];
+//     }
+//     return dev / num;
+// }
+

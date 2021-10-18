@@ -4,6 +4,7 @@ import { OBJLoader } from './OBJLoader.js';
 import Delaunator from './delaunator.js';
 import * as dat from './dat.js';
 import * as filters from './filters.js';
+import { OBJExporter } from './OBJExporter.js';
 
 // import { PCDLoader } from './PCDLoader.js';
 import { XYZLoader, getminmaxhegiht, getminmaxhegihtfromarray, getrgb, init_highlow } from './XYZLoader.js';
@@ -48,6 +49,10 @@ var camera, count = 0, line, positions, renderer, scene, canvas, parent_canvas;
 var group, marker, mesh, raycaster, mouse, toolstate = 'move', lookatP = { x: 0, y: 0, z: 0 };
 var selectedPoints, selectedGroup, polygon = [], drawing = true;
 var mouseDown, mouseRightDown, mouseX, mouseY;
+var historys = {
+  step: 0,
+  data: []
+}
 //three.js point cloud viewer
 
 function main() {
@@ -222,11 +227,11 @@ function main() {
 
 
 
-  // var geometry5 = new THREE.TorusBufferGeometry( 1, 0.05, 6, 32 );
+  // var geometry5 = new THREE.TorusBufferGeometry(1, 0.05, 6, 32);
   // var material5 = new THREE.MeshNormalMaterial();
-  // mesh = new THREE.Mesh( geometry5, material5 );
-  // scene.add( mesh );
-  // scene.add( marker );
+  // mesh = new THREE.Mesh(geometry5, material5);
+  // scene.add(mesh);
+  // scene.add(marker);
 
 
 
@@ -1076,7 +1081,7 @@ function reloadModelFromArray(array) {
     geometry1.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
   }
 
-  geometry1.center();
+  // geometry1.center();
 
   var material;
   if (heightmapColor()) {
@@ -1332,8 +1337,9 @@ document.getElementById('btn-pencil').addEventListener('click', function () {
 
 document.getElementById('f1-filter').addEventListener('click', function () {
   polygon = [];
-  // console.log(group.children[0].geometry)
-  var filteredPoints = filters.gridMinimumFilter(document.getElementById('f1-cell-size').value, group.children[0].geometry.attributes.position.array)
+  var array = group.children[0].geometry.attributes.position.array;
+  addToHistory(array)
+  var filteredPoints = filters.gridMinimumFilter(document.getElementById('f1-cell-size').value, array)
   reloadModelFromArray(filteredPoints)
   render()
   polygonRender()
@@ -1341,8 +1347,9 @@ document.getElementById('f1-filter').addEventListener('click', function () {
 
 document.getElementById('f2-filter').addEventListener('click', function () {
   polygon = [];
-  // console.log(group.children[0].geometry)
-  var filteredPoints = filters.voxelGridFilter(document.getElementById('f2-cell-size').value, group.children[0].geometry.attributes.position.array)
+  var array = group.children[0].geometry.attributes.position.array;
+  addToHistory(array)
+  var filteredPoints = filters.voxelGridFilter(document.getElementById('f2-cell-size').value, array)
   reloadModelFromArray(filteredPoints)
   render()
   polygonRender()
@@ -1350,10 +1357,121 @@ document.getElementById('f2-filter').addEventListener('click', function () {
 
 document.getElementById('f3-filter').addEventListener('click', function () {
   polygon = [];
-  // console.log(group.children[0].geometry)
-  var filteredPoints = filters.outlierRemovalFilter(document.getElementById('f3-number').value, document.getElementById('f3-deviation').value, group.children[0].geometry.attributes.position.array)
-  reloadModelFromArray(filteredPoints)
+  var array = group.children[0].geometry.attributes.position.array;
+  addToHistory(array)
+  var distances = {};
+  var indexs = [];
+  var num = document.getElementById('f3-number').value;
+  if (num >= array.length / 3) num = array.length - 1;
+  var dev = document.getElementById('f3-deviation').value;
+  var resultArray = [];
+  for (var i = 0; i < array.length - 3; i += 3) {
+    for (var j = i + 3; j < array.length; j += 3) {
+      distances[i + '.' + j] = new THREE.Vector3(array[i], array[i + 1], array[i + 2]).distanceTo(new THREE.Vector3(array[j], array[j + 1], array[j + 2]))
+      indexs.push(i + '.' + j);
+    }
+  }
+  for (var i = 0; i < indexs.length - 1; i++) {
+    for (var j = i + 1; j < indexs.length; j++) {
+      if (distances[indexs[i]] > distances[indexs[j]]) indexs[i] = [indexs[j], indexs[j] = indexs[i]][0];
+    }
+  }
+  for (var i = 0; i < array.length / 3; i++) {
+    var len = 0, count = 0;
+    var pind = i * 3;
+    for (var j = 0; j < indexs.length; j++) {
+      var ind = indexs[j].split('.');
+      if (ind[0] == pind || ind[1] == pind) {
+        count++;
+        len += distances[indexs[j]];
+        if (count == num) break;
+      }
+    }
+    if ((len / num) < dev) resultArray.push(array[i * 3], array[i * 3 + 1], array[i * 3 + 2]);
+  }
+  // var filteredPoints = filters.outlierRemovalFilter(document.getElementById('f3-number').value, document.getElementById('f3-deviation').value, distances, array)
+  reloadModelFromArray(resultArray)
   render()
   polygonRender()
 });
 
+document.getElementById('f4-filter').addEventListener('click', function () {
+  polygon = [];
+  var array = group.children[0].geometry.attributes.position.array;
+  addToHistory(array)
+  var resultArray = [];
+  var limit1 = document.getElementById('f4-limit1').value;
+  var limit2 = document.getElementById('f4-limit2').value;
+  var pass = document.getElementById('f4-pass').value;
+  if (limit1 > limit2) limit1 = [limit2, limit2 = limit1][0];
+  if (pass == "x")
+    for (var i = 0; i < array.length; i += 3) {
+      var dis = new THREE.Vector3(array[i], 0, 0).distanceTo(new THREE.Vector3(array[i], array[i + 1], array[i + 2]));
+      if (dis > limit1 && dis < limit2) resultArray.push(array[i], array[i + 1], array[i + 2]);
+    }
+  else if (pass == "y")
+    for (var i = 0; i < array.length; i += 3) {
+      var dis = new THREE.Vector3(0, array[i + 1], 0).distanceTo(new THREE.Vector3(array[i], array[i + 1], array[i + 2]));
+      if (dis > limit1 && dis < limit2) resultArray.push(array[i], array[i + 1], array[i + 2]);
+    }
+  else if (pass == "z")
+    for (var i = 0; i < array.length; i += 3) {
+      var dis = new THREE.Vector3(0, 0, array[i + 2]).distanceTo(new THREE.Vector3(array[i], array[i + 1], array[i + 2]));
+      if (dis > limit1 && dis < limit2) resultArray.push(array[i], array[i + 1], array[i + 2]);
+    }
+  reloadModelFromArray(resultArray)
+  render()
+  polygonRender()
+});
+
+function addToHistory(array) {
+  historys.data[historys.step] = [...array];
+  historys.step++;
+}
+
+document.addEventListener('keypress', (e) => {
+  e.preventDefault();
+  polygon = [];
+  if (e.keyCode == 26 && e.ctrlKey && historys.step > 0) {
+    reloadModelFromArray(historys.data[historys.step - 1])
+    render()
+    polygonRender()
+    historys.step--;
+  }
+  // else if (e.keyCode == 25 && e.ctrlKey && historys.step < historys.data.length - 1) {
+  //   historys.step++;
+  //   reloadModelFromArray(historys.data[historys.step])
+  //   render()
+  //   polygonRender()
+  //   historys.step--;
+  // }
+}, false);
+
+function download(filename, text) {
+  var element = document.createElement('a');
+  element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
+  element.setAttribute('download', filename);
+
+  element.style.display = 'none';
+  document.body.appendChild(element);
+
+  element.click();
+
+  document.body.removeChild(element);
+}
+
+document.getElementById('obj-download').addEventListener('click', () => {
+  const exporter = new OBJExporter();
+  const result = exporter.parse(scene);
+  download('model.obj', result);
+})
+document.getElementById('txt-download').addEventListener('click', () => {
+  let result = "";
+  var array = group.children[0].geometry.attributes.position.array;
+
+  for (var i = 0; i < array.length; i += 3) {
+    result += `        ${array[i]},        ${array[i + 1]},        ${array[i + 2]}\n`;
+  }
+
+  download('model.txt', result);
+})
