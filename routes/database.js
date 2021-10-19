@@ -1,15 +1,22 @@
 var express = require('express');
 var app = express();
 const auth = require("../middleware/auth");
-const User = require('../model/User');
-const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken');
-const config = require("config");
 const MongoClient = require("mongodb").MongoClient;
-const { object } = require('joi');
+var ObjectId = require('mongoose').Types.ObjectId;
+const fs = require('fs');
+const Setting = require('../model/Setting');
+var http = require('http');
+var converter = require('json-2-csv');
+const fileUpload = require('express-fileupload');
+app.use(fileUpload());
+const csvtojson = require("csvtojson");
 
+/* export page */
 
 app.get('/export', auth, function(req, res) {
+
+	console.log("*********** load export page ************")
+
 	// if(loadedData === '')
 	// 	res.redirect('/data');
 	res.render('pages/export', {
@@ -19,211 +26,179 @@ app.get('/export', auth, function(req, res) {
 });
 
 app.post('/exportdb', auth, function(req, res) {
-	let models = req.body.models, type = req.body.type, file = req.body.file;
-	let result = [];
-	for(let model of models){
-		loadedData.filter((obj)=>{
-			if(obj.name === model)
-				result.push(obj);
-		});
-	}
-	result = [
-		  {
-			_id: '6164789b142200003a000b06',
-			date: '12.10.2021',
-			time: '02:47:06',
-			name: 'blablabla_ground',
-			mass: 0,
-			volume: 7.299601078033447,
-			setid: '615ca5f16db0eade08fc6de8'
-		  },
-		  {
-			_id: '6169775ce13f0000180070bd',
-			date: '15.10.2021',
-			time: '14:43:08',
-			name: 'Borhspat',
-			mass: 511.9866638183594,
-			volume: 170.66221618652344,
-			setid: '6166dda320ab6a7368d021ea'
-		  },
-		  {
-			_id: '616976b2e13f00001800708b',
-			date: '15.10.2021',
-			time: '14:40:17',
-			name: 'Borhspat',
-			mass: 512.51806640625,
-			volume: 170.83935546875,
-			setid: '6166dda320ab6a7368d021ea'
-		  },
-		  {
-			_id: '616975ede13f000018007059',
-			date: '15.10.2021',
-			time: '14:37:01',
-			name: 'Borhspat',
-			mass: 505.2047424316406,
-			volume: 168.40158081054688,
-			setid: '6166dda320ab6a7368d021ea'
-		  },
-		  {
-			_id: '6169743ae13f000018007024',
-			date: '15.10.2021',
-			time: '14:29:45',
-			name: 'Borhspat',
-			mass: 511.5616149902344,
-			volume: 170.52053833007812,
-			setid: '6166dda320ab6a7368d021ea'
-		  },
-		  {
-			_id: '61697317e13f000018006ff4',
-			date: '15.10.2021',
-			time: '14:24:55',
-			name: 'Borhspat',
-			mass: 492.8695983886719,
-			volume: 164.28985595703125,
-			setid: '6166dda320ab6a7368d021ea'
-		  },
-		  {
-			_id: '616971bf4b3400006a0057e7',
-			date: '15.10.2021',
-			time: '14:19:11',
-			name: 'Borhspat',
-			mass: 511.5113830566406,
-			volume: 170.5037841796875,
-			setid: '6166dda320ab6a7368d021ea'
-		  },
-		  {
-			_id: '61696d094b3400006a0057b5',
-			date: '15.10.2021',
-			time: '13:59:05',
-			name: 'Borhspat',
-			mass: 503.1424255371094,
-			volume: 167.71414184570312,
-			setid: '6166dda320ab6a7368d021ea'
-		  },
-		  {
-			_id: '6169685b4b3400006a005783',
-			date: '15.10.2021',
-			time: '13:39:06',
-			name: 'Borhspat',
-			mass: 508.8956298828125,
-			volume: 169.6318817138672,
-			setid: '6166dda320ab6a7368d021ea'
-		  },
-		  {
-			_id: '616963a84b3400006a005751',
-			date: '15.10.2021',
-			time: '13:19:04',
-			name: 'Borhspat',
-			mass: 514.4164428710938,
-			volume: 171.47213745117188,
-			setid: '6166dda320ab6a7368d021ea'
-		  },
-		  {
-			_id: '61695f034b3400006a0056a5',
-			date: '15.10.2021',
-			time: '12:59:15',
-			name: 'Borhspat',
-			mass: 513.3041381835938,
-			volume: 171.1013946533203,
-			setid: '6166dda320ab6a7368d021ea'
-		  },
-		  {
-			_id: '61695bb04b3400006a005673',
-			date: '15.10.2021',
-			time: '12:45:04',
-			name: 'Borhspat',
-			mass: 511.91448974609375,
-			volume: 170.63815307617188,
-			setid: '6166dda320ab6a7368d021ea'
-		  },
-		  {
-			_id: '61695a494b3400006a005641',
-			date: '15.10.2021',
-			time: '12:39:05',
-			name: 'Borhspat',
-			mass: 509.2815856933594,
-			volume: 169.76052856445312,
-			setid: '6166dda320ab6a7368d021ea'
-		  },
-		  {
-			_id: '616955984b3400006a00560f',
-			date: '15.10.2021',
-			time: '12:19:04',
-			name: 'Borhspat',
-			mass: 514.4915161132812,
-			volume: 171.49717712402344,
-			setid: '6166dda320ab6a7368d021ea'
-		  },
-		  {
-			_id: '6169543c4b3400006a0055dd',
-			date: '15.10.2021',
-			time: '12:13:16',
-			name: 'Borhspat',
-			mass: 495.9162292480469,
-			volume: 165.30540466308594,
-			setid: '6166dda320ab6a7368d021ea'
-		  },
-		  {
-			_id: '616950ec4b3400006a005593',
-			date: '15.10.2021',
-			time: '11:59:07',
-			name: 'Borhspat',
-			mass: 508.2196350097656,
-			volume: 169.4065399169922,
-			setid: '6166dda320ab6a7368d021ea'
-		  },
-		  {
-			_id: '61694f08cd0900004000160a',
-			date: '15.10.2021',
-			time: '11:51:03',
-			name: 'Borhspat',
-			mass: 510.6504211425781,
-			volume: 170.21681213378906,
-			setid: '6166dda320ab6a7368d021ea'
-		  },
-		  {
-			_id: '61694d47cd090000400015d8',
-			date: '15.10.2021',
-			time: '11:43:34',
-			name: 'Borhspat',
-			mass: 507.2160949707031,
-			volume: 169.07203674316406,
-			setid: '6166dda320ab6a7368d021ea'
-		  },
-		  {
-			_id: '61694b68cd090000400015a6',
-			date: '15.10.2021',
-			time: '11:35:36',
-			name: 'Borhspat',
-			mass: 489.9007873535156,
-			volume: 163.30026245117188,
-			setid: '6166dda320ab6a7368d021ea'
-		  },
-		  {
-			_id: '61694a69cd09000040001574',
-			date: '15.10.2021',
-			time: '11:31:21',
-			name: 'Borhspat',
-			mass: 491.3125305175781,
-			volume: 163.77084350585938,
-			setid: '6166dda320ab6a7368d021ea'
-		  }
-	  ];
-	let settingid = [];
-	result.filter(function(volume){ 
-		if(settingid.indexOf(volume.setid) === -1){
-			settingid.push(volume.setid);
-		}
-	});
-	console.log(settingid,'1242135423542345');
+	console.log("************ make file *************");
+	async function run() {
+		try {
+			/* link mongoDB */
+			const client = await new MongoClient('mongodb://localhost:27017/', { useUnifiedTopology: true });
 
-	if(loadedData === '')
-		res.redirect('/data');
-	res.render('pages/export', {
-		title: 'Export page - Owl Studio Web App',
-		loadedData: loadedData
+			let models = req.body.models, type = req.body.type, file = req.body.file;
+			let result = [];
+			let modelname = '';
+			/* find models by model name */
+			for(let model of models){
+				loadedData.filter((obj)=>{
+					if(obj.name === model)
+						result.push(obj);
+				});
+				modelname = model;
+			}
+			if(models.length > 1) modelname = 'total';
+			let settingid = [];
+
+			/* get db settings that included models */
+			result.filter(function(volume){ 
+				if(settingid.indexOf(volume.setid) === -1){
+					settingid.push(volume.setid);
+				}
+			});
+			await client.connect();
+			let totaldata = [];
+			/* export data */
+			for(let element of settingid){
+				let setobj = await Setting.findOne({_id: new ObjectId(element) });
+				/* get db name and collection name */
+				const database = client.db(setobj.dbname);
+				const datas = database.collection(setobj.collectionname);
+				for(let model of models){
+					const cursor = await datas.find({"measurement.name": model}).toArray();
+					if(cursor.length === 0) continue;
+					cursor.forEach(obj => {
+						totaldata.push(obj);
+					});
+				}
+			}
+			if(file === 'csv'){
+				var json2csvCallback = async function (err, csv) {
+					if (err) throw err;
+					await fs.writeFileSync('download/' + modelname + '.csv', csv);
+					// await res.send(csv);
+					// console.log(csv);
+				};
+				var option = {
+					// delimiter : {
+					// 	wrap  : '\'', // Double Quote (") character
+					// 	field : ';', // Comma field delimiter
+					// 	array : ',', // Semicolon array value delimiter
+					// 	eol   : '\n' // Newline delimiter
+					// },
+					keys : ['_id','datetime','measurement.date','measurement.mass','measurement.name','measurement.pointcloud.x','measurement.pointcloud.y','measurement.pointcloud.z','measurement.remark','measurement.time','measurement.volume','modifeod','name'],
+					// prependHeader    : true,
+					// sortHeader       : false,
+					// trimHeaderValues : true,
+					// trimFieldValues  :  true,
+				}
+				converter.json2csv(totaldata, json2csvCallback,option);
+				}
+			else
+				await fs.writeFileSync('download/'+modelname + '.json', JSON.stringify(totaldata),'utf8');
+			client.close();
+				res.render('pages/export', {
+				title: 'Export page - Owl Studio Web App',
+				loadedData: loadedData
+			})
+		} 
+		finally {
+		}
+	}
+	run().catch(
+		(err) => {
+			console.error(err)
+			req.flash('error', err)
+			res.render('pages/export', {
+				title: 'Model DB - Owl Studio Web App',
+				loadedData:loadedData,
+				data: [],
+			});
+		}
+	);
+
+});
+app.get('/exportdb', auth, function(req, res){
+	console.log("************ download *************");
+	res.download(__dirname+'/../download/' + req.query.name, req.query.name);
+});
+
+/* import page */
+
+app.get('/import', auth, function(req, res) {
+
+	console.log("*********** load export page ************")
+
+	res.render('pages/import', {
+		title: 'Import page - Owl Studio Web App',
 	})
 });
 
+app.post('/upload', auth, function(req, res) {
+
+	console.log("*********** upload page ************")
+
+	console.log(req.files)
+	if (req.files) {
+        const file = req.files.file;
+		console.log(file);
+        const fileName = file.name;
+		console.log(fileName);
+        file.mv(`${__dirname}/../upload/${fileName}`, err => {
+            if (err) {
+                console.log(err);
+                res.send('There is error');
+            } else {
+                res.send('uploaded successfully');
+            }
+        })
+    } else {
+        res.send('There are no files');
+    }
+});
+
+app.post('/importdb', auth, async function(req, res) {
+
+	console.log("************ import file *************");
+	
+	async function run() {
+		const client = await new MongoClient('mongodb://localhost:27017/', { useUnifiedTopology: true });
+		try {
+			await client.connect();
+			/* get db name and collection name */
+			const database = await client.db(req.body.dbname);
+			if(req.body.filename.split('.')[1] === 'json'){
+				console.log('json*************************')
+				const data = fs.readFileSync(__dirname + '/../upload/' + req.body.filename);
+				const docs = JSON.parse(data.toString());
+				database.collection(req.body.collectionname).insertMany(docs, function(err, result){
+					if (err) throw err;
+					console.log('Inserted docs:', result.insertedCount);
+				});
+			}else{
+				console.log('csv**********************')
+				await csvtojson().fromFile(__dirname + '/../upload/' + req.body.filename).then(async jsonobj=>{
+					await database.collection(req.body.collectionname).insertMany(jsonobj, function(err, result){
+						if (err) throw err;
+						console.log('Inserted docs:', result.insertedCount);
+					});
+				});
+			}
+			/* link mongoDB */
+			
+			res.render('pages/import', {
+				title: 'Export page - Owl Studio Web App',
+			});
+		} 
+		finally {
+		}
+	}
+	run().catch(
+		(err) => {
+			console.error(err)
+			req.flash('error', err)
+			res.render('pages/import', {
+				title: 'Model DB - Owl Studio Web App',
+			});
+		}
+	);
+
+});
 
 module.exports = app;

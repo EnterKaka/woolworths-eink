@@ -72,3 +72,20 @@ div#DataTables_Table_0_length{
     margin-top: 20px;
     margin-bottom: 10px;
 }
+
+#formFile::before {
+    content: "Pick file";
+    position: absolute;
+    z-index: 2;
+    display: block;
+    background-color: #eee;
+    width: 80px;
+}
+
+.custom-file-input ~ .custom-file-label::after {
+    content: "Select File";
+}
+
+#uploadform{
+    width: 100%;
+}

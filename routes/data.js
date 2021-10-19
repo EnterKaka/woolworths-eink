@@ -5,8 +5,6 @@ var ObjectId = require('mongoose').Types.ObjectId;
 const auth = require("../middleware/auth");
 const Setting = require('../model/Setting');
 
-var dbname = 'OwlEyeStudioWebInterface' , collectionname = 'models';
-
 /* load data page */
 app.get('/', auth, async function(req, res, next) {
 	

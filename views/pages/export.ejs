@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html class="loading" lang="en" data-textdirection="ltr">
 	<head>
+		<link rel="stylesheet" type="text/css" href="/stylesheets/material-kit.css">
 		<%- include('../partials/head'); %>
 		<link rel="stylesheet" href="/prettydropdowns/prettydropdowns.css">		<!-- BEGIN Three.js Load -->
 		<!-- END Three.js Load -->
@@ -165,7 +166,7 @@
 
 <script>
 	$(document).ready(function() {
-	  	$('#models').prettyDropdown({width:'100%'});
+		$('#models').prettyDropdown({width:'100%'});
 	});
 	/* confirm alert */
 	function onclick_get(){
@@ -192,10 +193,20 @@
 		}).then((result) => {
 			if (result.isConfirmed) {
 				url = '/database/exportdb';
-				$.post( url,{models:models,type:type,file:file}, function( queryResult ) {
-					
+
+				// const file = fs.createWriteStream("blablabla_ground.json");
+				if(type === 'sep'){
+					models.forEach(model => {
+						$.post( url,{models:[model],type:type,file:file}, function( queryResult ) {
+							window.open('/database/exportdb?name=' + model + '.' + file);
+						});
 					});
 				}
+				else
+					$.post( url,{models:models,type:type,file:file}, function( queryResult ) {
+							window.open('/database/exportdb?name=total.' + file);
+						});
+					}
 			});
 		}
 </script>
