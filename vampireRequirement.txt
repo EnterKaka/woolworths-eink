@@ -23,7 +23,7 @@ Step 3: 500 USD
 - Actions with marked points: right click on selected points in viewer:
 1. change marked and unmarked points  
 2. delete points 
-3. save points in new pointcloud 
+3. save points in new pointcloud
 - When save pointclouds we need some kind of model browser (a list where the loaded pointclouds are stored (maybe a button with dropdown in toolbar). there we can save a pointcloud inside. and we can select it to edit it from here)
 - rename models in modelbrowser 
 - calculate volume between two files. selecte to pointcloud, calculate volume between these files.

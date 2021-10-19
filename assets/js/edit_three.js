@@ -46,7 +46,7 @@ function openModel_Fromlocal(e) {
 
 
 var controls, triangle, mouse3, plane, pointOnPlane, target, closestPoint, canvas2;
-var camera, count = 0, line, positions, renderer, scene, canvas, parent_canvas;
+var camera, count = 0, line, positions, renderer, scene, canvas, parent_canvas, unselectedPoints = [];
 var group, marker, mesh, raycaster, mouse, toolstate = 'move', lookatP = { x: 0, y: 0, z: 0 };
 var selectedPoints, selectedGroup, polygon = [], drawing = true;
 var mouseDown, mouseRightDown, mouseX, mouseY;
@@ -524,6 +524,7 @@ function onWindowResize() {
   camera.updateProjectionMatrix();
   renderer.setSize((parent_canvas.clientWidth - 30), parent_canvas.clientHeight);
   render()
+  polygonRender()
   // controls.handleResize();
 }
 
@@ -563,7 +564,6 @@ function onAddPoint(evt) {
     if (evt.ctrlKey && count > 0) {
       var geometry = selectedGroup.geometry;
 
-
       var position = geometry.attributes.position;
 
       var minDistance = Infinity;
@@ -593,12 +593,60 @@ function onAddPoint(evt) {
           selectedPoints[count * 3 + 2] = newpoints[i * 3 + 2];
           count++;
         }
+        else {
+          unselectedPoints.push(newpoints[i * 3], newpoints[i * 3 + 1], newpoints[i * 3 + 2])
+        }
       }
 
       selectedGroup.geometry.setDrawRange(0, count);
       console.log(count, closestPoint)
       selectedGroup.geometry.attributes.position.needsUpdate = true;
 
+    }
+    else if (evt.shiftKey) {
+      // var geometry = group.children[0].geometry;
+
+      // var index = geometry.index;
+      // var position = geometry.attributes.position;
+
+      var minDistance = Infinity;
+      var sind;
+      console.log(unselectedPoints.length)
+      for (let i = 0; i < unselectedPoints.length; i += 3) {
+
+        // var a = index.getX(i);
+
+        // pointOnPlane.fromBufferAttribute(position, a)
+
+        raycaster.ray.closestPointToPoint(new THREE.Vector3(unselectedPoints[i], unselectedPoints[i + 1], unselectedPoints[i + 2]).applyEuler(group.rotation), target)
+        var distanceSq = new THREE.Vector3(unselectedPoints[i], unselectedPoints[i + 1], unselectedPoints[i + 2]).applyEuler(group.rotation).distanceToSquared(target);
+
+        if (distanceSq < minDistance) {
+
+          closestPoint.set(unselectedPoints[i], unselectedPoints[i + 1], unselectedPoints[i + 2]);
+          minDistance = distanceSq;
+          sind = i;
+        }
+
+      }
+      // ////console.log(closestPoint)
+      var unclonep = [...unselectedPoints];
+      unselectedPoints = [];
+      for (let i = 0; i < unclonep.length; i += 3) {
+        if (i !== sind) unselectedPoints.push(unclonep[i], unclonep[i + 1], unclonep[i + 2])
+      }
+
+
+      selectedPoints[count * 3 + 0] = closestPoint.x;
+      selectedPoints[count * 3 + 1] = closestPoint.y;
+      selectedPoints[count * 3 + 2] = closestPoint.z;
+      count++;
+
+      selectedGroup.geometry.setDrawRange(0, count);
+      console.log(count, closestPoint)
+      selectedGroup.geometry.attributes.position.needsUpdate = true;
+      // marker.position.copy( closestPoint );
+      // on first click add an extra point
     }
     else {
       var geometry = group.children[0].geometry;
@@ -607,8 +655,8 @@ function onAddPoint(evt) {
       var position = geometry.attributes.position;
 
       var minDistance = Infinity;
-
-      for (let i = 0, l = index.count; i < l; i++) {
+      var sind;
+      for (let i = 0; i < index.count; i++) {
 
         var a = index.getX(i);
 
@@ -621,23 +669,23 @@ function onAddPoint(evt) {
 
           closestPoint.copy(pointOnPlane);
           minDistance = distanceSq;
-
+          sind = i;
         }
 
       }
+      sind *= 3;
+      unselectedPoints = [];
       // ////console.log(closestPoint)
-      if (evt.shiftKey) {
-        selectedPoints[count * 3 + 0] = closestPoint.x;
-        selectedPoints[count * 3 + 1] = closestPoint.y;
-        selectedPoints[count * 3 + 2] = closestPoint.z;
-        count++;
+      var unclonep = [...position.array];
+      for (let i = 0; i < unclonep.length; i += 3) {
+        if (i != sind) unselectedPoints.push(unclonep[i], unclonep[i + 1], unclonep[i + 2])
       }
-      else {
-        selectedPoints[0] = closestPoint.x;
-        selectedPoints[1] = closestPoint.y;
-        selectedPoints[2] = closestPoint.z;
-        count = 1;
-      }
+
+      selectedPoints[0] = closestPoint.x;
+      selectedPoints[1] = closestPoint.y;
+      selectedPoints[2] = closestPoint.z;
+      count = 1;
+
       selectedGroup.geometry.setDrawRange(0, count);
       console.log(count, closestPoint)
       selectedGroup.geometry.attributes.position.needsUpdate = true;
@@ -734,17 +782,21 @@ function finishdraw(evt) {
           selectedPoints[count * 3 + 2] = direct.z;
           count++;
         }
+        else {
+          unselectedPoints.push(direct.x, direct.y, direct.z)
+        }
       }
     }
-    else {
-      if (!evt.shiftKey) count = 0;
-      var geometry = group.children[0].geometry;
-      var index = geometry.index;
-      var position = geometry.attributes.position;
-      for (var i = 0, l = index.count; i < l; i++) {
-        var a = index.getX(i);
-        var direct = new THREE.Vector3()
-        direct.fromBufferAttribute(position, a)
+    else if (evt.shiftKey) {
+
+      // var geometry = group.children[0].geometry;
+      // var index = geometry.index;
+      // var position = geometry.attributes.position;
+      var updatedUn = [];
+      for (var i = 0; i < unselectedPoints.length; i += 3) {
+        // var a = index.getX(i);
+        var direct = new THREE.Vector3(unselectedPoints[i], unselectedPoints[i + 1], unselectedPoints[i + 2])
+        // direct.fromBufferAttribute(position, a)
 
         raycaster.set(camera.position, new THREE.Vector3().copy(direct).applyEuler(group.rotation).sub(camera.position).normalize());
 
@@ -754,6 +806,36 @@ function finishdraw(evt) {
           selectedPoints[count * 3 + 1] = direct.y;
           selectedPoints[count * 3 + 2] = direct.z;
           count++;
+        }
+        else {
+          updatedUn.push(direct.x, direct.y, direct.z)
+        }
+      }
+      unselectedPoints = updatedUn;
+    }
+    else {
+      count = 0;
+      var geometry = group.children[0].geometry;
+      var index = geometry.index;
+      var position = geometry.attributes.position;
+      unselectedPoints = [];
+      for (var i = 0, l = index.count; i < l; i++) {
+        var a = index.getX(i);
+        var direct = new THREE.Vector3()
+        direct.fromBufferAttribute(position, a)
+
+        raycaster.set(camera.position, new THREE.Vector3().copy(direct).applyEuler(group.rotation).sub(camera.position).normalize());
+
+        raycaster.ray.intersectPlane(plane, pointOnPlane);
+
+        if (isInside(pointOnPlane, vs)) {
+          selectedPoints[count * 3 + 0] = direct.x;
+          selectedPoints[count * 3 + 1] = direct.y;
+          selectedPoints[count * 3 + 2] = direct.z;
+          count++;
+        }
+        else {
+          unselectedPoints.push(direct.x, direct.y, direct.z)
         }
       }
     }
@@ -864,8 +946,8 @@ function reloadModelFromData(filename, wholecontent) {
 
 
 
-
-  selectedPoints = new Float32Array(geometry1.index.count * 30);
+  unselectedPoints = [...geometry1.attributes.position.array];
+  selectedPoints = new Float32Array(geometry1.index.count * 300);
   console.log(points3d.length)
   var geometry3 = new THREE.BufferGeometry();
   geometry3.addAttribute('position', new THREE.BufferAttribute(selectedPoints, 3));
@@ -977,7 +1059,8 @@ function reloadModelFromObjData(filename, wholecontent) {
 
 
 
-  selectedPoints = new Float32Array(geometry1.index.count * 30);
+  unselectedPoints = [...geometry1.attributes.position.array];
+  selectedPoints = new Float32Array(geometry1.index.count * 300);
   // console.log(points3d.length)
   var geometry3 = new THREE.BufferGeometry();
   geometry3.addAttribute('position', new THREE.BufferAttribute(selectedPoints, 3));
@@ -1074,7 +1157,8 @@ function reloadModelFromJSONData(filename, wholecontent) {
   group.add(mesh);
 
 
-  selectedPoints = new Float32Array(geometry1.index.count * 30);
+  unselectedPoints = [...geometry1.attributes.position.array];
+  selectedPoints = new Float32Array(geometry1.index.count * 300);
   console.log(points3d.length)
   var geometry3 = new THREE.BufferGeometry();
   geometry3.addAttribute('position', new THREE.BufferAttribute(selectedPoints, 3));
@@ -1173,7 +1257,8 @@ function reloadModelFromArray(array) {
   group.add(mesh);
 
 
-  selectedPoints = new Float32Array(geometry1.index.count * 30);
+  unselectedPoints = [...geometry1.attributes.position.array];
+  selectedPoints = new Float32Array(geometry1.index.count * 300);
   console.log(points3d.length)
   var geometry3 = new THREE.BufferGeometry();
   geometry3.addAttribute('position', new THREE.BufferAttribute(selectedPoints, 3));
@@ -1191,7 +1276,7 @@ function reloadModelFromArray(array) {
   ////////////convex testing
   let geometry5 = new ConvexGeometry(points3d);
   geometry5.computeBoundingSphere();
-  geometry5.center()
+  // geometry5.center()
   var mesh5 = new THREE.Mesh(
     geometry5,
     new THREE.MeshLambertMaterial({ color: delaunycolor(), wireframe: surface(), side: THREE.DoubleSide })
@@ -1324,9 +1409,20 @@ Delaunycolors.addEventListener('input', function () {
   render()
 });
 
+// const Delaunycolors3 = document.getElementById('delaunycolor3');
+// Delaunycolors3.addEventListener('input', function () {
+//   setDelaunyColor3(this.value)
+//   render()
+// });
+
 function setDelaunyColor(c) {
   group.children[1].material.color.set(c);
+  group.children[3].material.color.set(c);
 }
+
+// function setDelaunyColor3(c) {
+//   group.children[3].material.color.set(c);
+// }
 
 document.getElementById('delaunyDiv').addEventListener('click', function () {
   var two = document.getElementById('delauny');
@@ -1393,7 +1489,8 @@ function setToolState(tool) {
 
 document.getElementById('btn-move').addEventListener('click', function () {
   polygon = [];
-  selectedGroup.geometry.setDrawRange(0, 0);
+  count = 0;
+  selectedGroup.geometry.setDrawRange(0, count);
   setToolState('move')
   render()
   polygonRender()
@@ -1401,7 +1498,8 @@ document.getElementById('btn-move').addEventListener('click', function () {
 
 document.getElementById('btn-point').addEventListener('click', function () {
   polygon = [];
-  selectedGroup.geometry.setDrawRange(0, 0);
+  count = 0;
+  selectedGroup.geometry.setDrawRange(0, count);
   setToolState('point')
   render()
   polygonRender()
@@ -1412,7 +1510,8 @@ document.getElementById('btn-polygon').addEventListener('click', function () {
   //   polygon = []
   // }
   polygon = [];
-  selectedGroup.geometry.setDrawRange(0, 0);
+  count = 0;
+  selectedGroup.geometry.setDrawRange(0, count);
   setToolState('polygon')
   render()
   polygonRender()
@@ -1420,8 +1519,68 @@ document.getElementById('btn-polygon').addEventListener('click', function () {
 
 document.getElementById('btn-pencil').addEventListener('click', function () {
   polygon = [];
-  selectedGroup.geometry.setDrawRange(0, 0);
+  count = 0;
+  selectedGroup.geometry.setDrawRange(0, count);
   setToolState('pencil')
+  render()
+  polygonRender()
+});
+
+document.getElementById('btn-check').addEventListener('click', function () {
+  if (count < 4) {
+    alert("Delaunay 3D triangulation requires 4 or more points.")
+    return;
+  }
+  var updatePoints = [];
+  for (var i = 0; i < count; i++) {
+    updatePoints.push(selectedPoints[i * 3], selectedPoints[i * 3 + 1], selectedPoints[i * 3 + 2])
+  }
+
+  var array = group.children[0].geometry.attributes.position.array;
+  addToHistory(array)
+
+  polygon = [];
+  count = 0;
+  selectedGroup.geometry.setDrawRange(0, count);
+  reloadModelFromArray(updatePoints);
+  render()
+  polygonRender()
+});
+
+document.getElementById('btn-delete').addEventListener('click', function () {
+  if (unselectedPoints.length < 12) {
+    alert("Delaunay 3D triangulation requires 4 or more points.")
+    return;
+  }
+
+  var array = group.children[0].geometry.attributes.position.array;
+  addToHistory(array)
+
+  polygon = [];
+  count = 0;
+  selectedGroup.geometry.setDrawRange(0, count);
+  reloadModelFromArray(unselectedPoints);
+  render()
+  polygonRender()
+});
+
+document.getElementById('btn-change').addEventListener('click', function () {
+  polygon = [];
+  // selectedGroup.geometry.setDrawRange(0, 0);
+  var unselec2 = [...unselectedPoints];
+  unselectedPoints = [];
+  console.log(count, unselec2)
+  for (var i = 0; i < count; i++) {
+    unselectedPoints.push(selectedPoints[i * 3], selectedPoints[i * 3 + 1], selectedPoints[i * 3 + 2])
+  }
+  count = unselec2.length / 3;
+  for (var i = 0; i < unselec2.length; i += 3) {
+    selectedPoints[i] = unselec2[i];
+    selectedPoints[i + 1] = unselec2[i + 1];
+    selectedPoints[i + 2] = unselec2[i + 2];
+  }
+  selectedGroup.geometry.setDrawRange(0, count);
+  selectedGroup.geometry.attributes.position.needsUpdate = true;
   render()
   polygonRender()
 });
@@ -1431,6 +1590,10 @@ document.getElementById('f1-filter').addEventListener('click', function () {
   var array = group.children[0].geometry.attributes.position.array;
   addToHistory(array)
   var filteredPoints = filters.gridMinimumFilter(document.getElementById('f1-cell-size').value, array)
+  if (filteredPoints.length < 12) {
+    alert("Delaunay 3D triangulation requires 4 or more points.")
+    return;
+  }
   reloadModelFromArray(filteredPoints)
   render()
   polygonRender()
@@ -1441,6 +1604,10 @@ document.getElementById('f2-filter').addEventListener('click', function () {
   var array = group.children[0].geometry.attributes.position.array;
   addToHistory(array)
   var filteredPoints = filters.voxelGridFilter(document.getElementById('f2-cell-size').value, array)
+  if (filteredPoints.length < 12) {
+    alert("Delaunay 3D triangulation requires 4 or more points.")
+    return;
+  }
   reloadModelFromArray(filteredPoints)
   render()
   polygonRender()
@@ -1450,38 +1617,14 @@ document.getElementById('f3-filter').addEventListener('click', function () {
   polygon = [];
   var array = group.children[0].geometry.attributes.position.array;
   addToHistory(array)
-  var distances = {};
-  var indexs = [];
   var num = document.getElementById('f3-number').value;
-  if (num >= array.length / 3) num = array.length - 1;
   var dev = document.getElementById('f3-deviation').value;
-  var resultArray = [];
-  for (var i = 0; i < array.length - 3; i += 3) {
-    for (var j = i + 3; j < array.length; j += 3) {
-      distances[i + '.' + j] = new THREE.Vector3(array[i], array[i + 1], array[i + 2]).distanceTo(new THREE.Vector3(array[j], array[j + 1], array[j + 2]))
-      indexs.push(i + '.' + j);
-    }
+  var filteredPoints = filters.outlierRemovalFilter(num, dev, array)
+  if (filteredPoints.length < 12) {
+    alert("Delaunay 3D triangulation requires 4 or more points.")
+    return;
   }
-  for (var i = 0; i < indexs.length - 1; i++) {
-    for (var j = i + 1; j < indexs.length; j++) {
-      if (distances[indexs[i]] > distances[indexs[j]]) indexs[i] = [indexs[j], indexs[j] = indexs[i]][0];
-    }
-  }
-  for (var i = 0; i < array.length / 3; i++) {
-    var len = 0, count = 0;
-    var pind = i * 3;
-    for (var j = 0; j < indexs.length; j++) {
-      var ind = indexs[j].split('.');
-      if (ind[0] == pind || ind[1] == pind) {
-        count++;
-        len += distances[indexs[j]];
-        if (count == num) break;
-      }
-    }
-    if ((len / num) < dev) resultArray.push(array[i * 3], array[i * 3 + 1], array[i * 3 + 2]);
-  }
-  // var filteredPoints = filters.outlierRemovalFilter(document.getElementById('f3-number').value, document.getElementById('f3-deviation').value, distances, array)
-  reloadModelFromArray(resultArray)
+  reloadModelFromArray(filteredPoints)
   render()
   polygonRender()
 });
@@ -1490,27 +1633,15 @@ document.getElementById('f4-filter').addEventListener('click', function () {
   polygon = [];
   var array = group.children[0].geometry.attributes.position.array;
   addToHistory(array)
-  var resultArray = [];
   var limit1 = document.getElementById('f4-limit1').value;
   var limit2 = document.getElementById('f4-limit2').value;
   var pass = document.getElementById('f4-pass').value;
-  if (limit1 > limit2) limit1 = [limit2, limit2 = limit1][0];
-  if (pass == "x")
-    for (var i = 0; i < array.length; i += 3) {
-      var dis = new THREE.Vector3(array[i], 0, 0).distanceTo(new THREE.Vector3(array[i], array[i + 1], array[i + 2]));
-      if (dis > limit1 && dis < limit2) resultArray.push(array[i], array[i + 1], array[i + 2]);
-    }
-  else if (pass == "y")
-    for (var i = 0; i < array.length; i += 3) {
-      var dis = new THREE.Vector3(0, array[i + 1], 0).distanceTo(new THREE.Vector3(array[i], array[i + 1], array[i + 2]));
-      if (dis > limit1 && dis < limit2) resultArray.push(array[i], array[i + 1], array[i + 2]);
-    }
-  else if (pass == "z")
-    for (var i = 0; i < array.length; i += 3) {
-      var dis = new THREE.Vector3(0, 0, array[i + 2]).distanceTo(new THREE.Vector3(array[i], array[i + 1], array[i + 2]));
-      if (dis > limit1 && dis < limit2) resultArray.push(array[i], array[i + 1], array[i + 2]);
-    }
-  reloadModelFromArray(resultArray)
+  var filteredPoints = filters.passThroughFilter(pass, limit1, limit2, array)
+  if (filteredPoints.length < 12) {
+    alert("Delaunay 3D triangulation requires 4 or more points.")
+    return;
+  }
+  reloadModelFromArray(filteredPoints)
   render()
   polygonRender()
 });
@@ -1538,9 +1669,9 @@ document.addEventListener('keypress', (e) => {
   // }
 }, false);
 
-function download(filename, text) {
+function download(filename, type, text) {
   var element = document.createElement('a');
-  element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
+  element.setAttribute('href', `data:${type}/plain;charset=utf-8,` + encodeURIComponent(text));
   element.setAttribute('download', filename);
 
   element.style.display = 'none';
@@ -1553,8 +1684,13 @@ function download(filename, text) {
 
 document.getElementById('obj-download').addEventListener('click', () => {
   const exporter = new OBJExporter();
-  const result = exporter.parse(scene);
-  download('model.obj', result);
+  const result = exporter.parse(group.children[1]);
+  download('model.obj', 'object', result);
+})
+document.getElementById('obj-download').addEventListener('click', () => {
+  const exporter = new OBJExporter();
+  const result = exporter.parse(group.children[3]);
+  download('model(3Dmesh).obj', 'object', result);
 })
 document.getElementById('txt-download').addEventListener('click', () => {
   let result = "";
@@ -1563,6 +1699,5 @@ document.getElementById('txt-download').addEventListener('click', () => {
   for (var i = 0; i < array.length; i += 3) {
     result += `        ${array[i]},        ${array[i + 1]},        ${array[i + 2]}\n`;
   }
-
-  download('model.txt', result);
+  download('model.txt', 'text', result);
 })

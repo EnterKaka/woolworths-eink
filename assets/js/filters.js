@@ -53,27 +53,63 @@ export const voxelGridFilter = (size, array) => {
     return resultArray;
 }
 
-// export const outlierRemovalFilter = (num, dev, dis, arr) => {
-//     if (num > arr.length / 3 - 1) num = arr.length / 3 - 1;
-//     var resultArray = [];
-//     for (var i = 0; i < arr.length; i += 3) {
-//         var disarr = [];
-//         for (var j = 0; j < arr.length; j += 3) {
-//             if (i !== j) disarr.push(dis[i + '.' + j]);
-//         }
-//         if (calcuDis(disarr, num) < dev) resultArray.push(arr[i], arr[i + 1], arr[i + 2]);
-//     }
-//     return resultArray;
-// }
+export const outlierRemovalFilter = (num, dev, array) => {
+    var distances = {};
+    var indexs = [];
+    var dev = dev * dev;
+    if (num >= array.length / 3) num = array.length - 1;
+    var resultArray = [];
+    console.log(array.length / 3)
+    for (var i = 0; i < array.length - 3; i += 3) {
+        for (var j = i + 3; j < array.length; j += 3) {
+            distances[i + '.' + j] = Math.pow(array[i] - array[j], 2) + Math.pow(array[i + 1] - array[j + 1], 2) + Math.pow(array[i + 2] - array[j + 2], 2);
+            indexs.push(i + '.' + j);
+        }
+    }
+    for (var i = 0; i < indexs.length - 1; i++) {
+        for (var j = i + 1; j < indexs.length; j++) {
+            if (distances[indexs[i]] > distances[indexs[j]]) indexs[i] = [indexs[j], indexs[j] = indexs[i]][0];
+        }
+    }
+    for (var i = 0; i < array.length / 3; i++) {
+        var len = 0, count = 0;
+        var pind = i * 3;
+        for (var j = 0; j < indexs.length; j++) {
+            var ind = indexs[j].split('.');
+            if (ind[0] == pind || ind[1] == pind) {
+                count++;
+                len += distances[indexs[j]];
+                if (count == num) break;
+            }
+            console.log(i, j)
+        }
+        if ((len / num) < dev) resultArray.push(array[i * 3], array[i * 3 + 1], array[i * 3 + 2]);
+    }
+    alert("looped completed")
+}
 
-// export const calcuDis = (arr, num) => {
-//     var dev = 0;
-//     for (var i = 0; i < num; i++) {
-//         for (var j = i + 1; j < arr.length; j++) {
-//             if (arr[i] > arr[j]) arr[i] = [arr[j], arr[j] = arr[i]][0];
-//         }
-//         dev += arr[i];
-//     }
-//     return dev / num;
-// }
+export const passThroughFilter = (pass, limit1, limit2, array) => {
+    var resultArray = [];
+
+    if (limit1 > limit2) limit1 = [limit2, limit2 = limit1][0];
+    limit1 = limit1 * limit1;
+    limit2 = limit2 * limit2;
+    if (pass == "x")
+        for (var i = 0; i < array.length; i += 3) {
+            var dis = Math.pow(array[i + 1], 2) + Math.pow(array[i + 2], 2);
+            if (dis > limit1 && dis < limit2) resultArray.push(array[i], array[i + 1], array[i + 2]);
+        }
+    else if (pass == "y")
+        for (var i = 0; i < array.length; i += 3) {
+            var dis = Math.pow(array[i], 2) + Math.pow(array[i + 2], 2);
+            if (dis > limit1 && dis < limit2) resultArray.push(array[i], array[i + 1], array[i + 2]);
+        }
+    else if (pass == "z")
+        for (var i = 0; i < array.length; i += 3) {
+            var dis = Math.pow(array[i], 2) + Math.pow(array[i + 1], 2);
+            if (dis > limit1 && dis < limit2) resultArray.push(array[i], array[i + 1], array[i + 2]);
+        }
+    return resultArray;
+}
+
 
