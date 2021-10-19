@@ -14,13 +14,16 @@ Step 2: 500 USD
 -- filter: add filter libs to filter pointcloud data -> can you do this? i need a "GridMinimumFilter" 
 and a "Statistical Outliere Removal" Filter and a "pass through" filter, (Cubic Filter- Voxel Grid Filter)
 -- When filtering data or deleting points -> update the viewed pointcloud. but the steps must be revertable (ctr + z) !
-- delauny 3D triangulate pointcloud
+-- delauny 3D triangulate pointcloud
 - selection of vertices like pointcloud selection must be possible. also same actions (delete, save, chane selection)
-- triangulation view: surface and mesh
+-- triangulation view: surface and mesh
 -- Export pointclouds as .txt file, triangulation as .obj file
 
 Step 3: 500 USD
-- Actions with marked points: right click on selected points in viewer:1. change marked and unmarked points  2. delete points 3. save points in new pointcloud 
+- Actions with marked points: right click on selected points in viewer:
+1. change marked and unmarked points  
+2. delete points 
+3. save points in new pointcloud 
 - When save pointclouds we need some kind of model browser (a list where the loaded pointclouds are stored (maybe a button with dropdown in toolbar). there we can save a pointcloud inside. and we can select it to edit it from here)
 - rename models in modelbrowser 
 - calculate volume between two files. selecte to pointcloud, calculate volume between these files.

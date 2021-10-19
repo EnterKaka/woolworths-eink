@@ -5,6 +5,7 @@ import Delaunator from './delaunator.js';
 import * as dat from './dat.js';
 import * as filters from './filters.js';
 import { OBJExporter } from './OBJExporter.js';
+import { ConvexGeometry } from './ConvexGeometry.js';
 
 // import { PCDLoader } from './PCDLoader.js';
 import { XYZLoader, getminmaxhegiht, getminmaxhegihtfromarray, getrgb, init_highlow } from './XYZLoader.js';
@@ -74,10 +75,10 @@ function main() {
   closestPoint = new THREE.Vector3();
 
 
-  const markerGeometry = new THREE.SphereGeometry(0.05);
-  const makerMaterial = new THREE.MeshBasicMaterial({ color: 0xff0000 });
-  markerGeometry.center();
-  marker = new THREE.Mesh(markerGeometry, makerMaterial);
+  // const markerGeometry = new THREE.SphereGeometry(0.05);
+  // const makerMaterial = new THREE.MeshBasicMaterial({ color: 0xff0000 });
+  // markerGeometry.center();
+  // marker = new THREE.Mesh(markerGeometry, makerMaterial);
 
 
 
@@ -206,7 +207,7 @@ function main() {
 
   var light = new THREE.DirectionalLight(0xffffff, 1.5);
   // light.position.setScalar(100);
-  light.position.set(0, 20, -26);
+  light.position.set(0, 0, 56);
   scene.add(light);
   scene.add(new THREE.AmbientLight(0xffffff, 0.5));
 
@@ -518,6 +519,7 @@ function main() {
 }
 
 function onWindowResize() {
+  polygon = [];
   camera.aspect = parent_canvas.clientWidth / parent_canvas.clientHeight;
   camera.updateProjectionMatrix();
   renderer.setSize((parent_canvas.clientWidth - 30), parent_canvas.clientHeight);
@@ -527,7 +529,6 @@ function onWindowResize() {
 
 function render() {
   renderer.render(scene, camera);
-
 
 }
 
@@ -849,12 +850,19 @@ function reloadModelFromData(filename, wholecontent) {
 
   geometry1.setIndex(meshIndex); // add three.js index to the existing geometry
   geometry1.computeVertexNormals();
+
+  // let geometry5 = new ConvexGeometry(points3d);
+  // geometry5.computeBoundingSphere();
+  // geometry5.center()
+
   var mesh = new THREE.Mesh(
     geometry1, // re-use the existing geometry
-    new THREE.MeshLambertMaterial({ color: delaunycolor(), wireframe: true })
+    new THREE.MeshLambertMaterial({ color: delaunycolor(), wireframe: surface(), side: THREE.DoubleSide })
   );
   mesh.visible = delauny();
   group.add(mesh);
+
+
 
 
   selectedPoints = new Float32Array(geometry1.index.count * 30);
@@ -872,7 +880,19 @@ function reloadModelFromData(filename, wholecontent) {
 
   // var gui = new dat.GUI();
   // gui.add(mesh.material, "wireframe");
-  ////////////
+  ////////////convex testing
+  let geometry5 = new ConvexGeometry(points3d);
+  geometry5.computeBoundingSphere();
+  geometry5.center()
+  var mesh5 = new THREE.Mesh(
+    geometry5,
+    new THREE.MeshLambertMaterial({ color: delaunycolor(), wireframe: surface(), side: THREE.DoubleSide })
+  );
+  mesh5.visible = delauny3();
+  group.add(mesh5);
+  //////////////////convex testing
+
+
   render();
 }
 
@@ -883,6 +903,7 @@ function reloadModelFromObjData(filename, wholecontent) {
   var geometry1 = new THREE.BufferGeometry();
   var loader = new OBJLoader();
   var points2;
+  var points3d = [];
   var colors = [];
 
   geometry1.copy(loader.parse(wholecontent).children[0].geometry);
@@ -915,6 +936,7 @@ function reloadModelFromObjData(filename, wholecontent) {
   var min = values[0];
   var max = values[1];
   for (var i = 0; i < points.length; i += 3) {
+    points3d.push(new THREE.Vector3(points[i], points[i + 1], points[i + 2]))
     dparam.push([points[i], points[i + 1]]);
 
     let zvalue = parseFloat(points[i + 2]);
@@ -947,7 +969,7 @@ function reloadModelFromObjData(filename, wholecontent) {
   geometry1.computeVertexNormals();
   var mesh = new THREE.Mesh(
     geometry1, // re-use the existing geometry
-    new THREE.MeshLambertMaterial({ color: delaunycolor(), wireframe: true })
+    new THREE.MeshLambertMaterial({ color: delaunycolor(), wireframe: surface(), side: THREE.DoubleSide })
   );
   mesh.visible = delauny();
   group.add(mesh);
@@ -967,6 +989,19 @@ function reloadModelFromObjData(filename, wholecontent) {
   console.log(material)
   selectedGroup = new THREE.Points(geometry3, material3);
   group.add(selectedGroup);
+
+
+  ////////////convex testing
+  let geometry5 = new ConvexGeometry(points3d);
+  geometry5.computeBoundingSphere();
+  geometry5.center()
+  var mesh5 = new THREE.Mesh(
+    geometry5,
+    new THREE.MeshLambertMaterial({ color: delaunycolor(), wireframe: surface(), side: THREE.DoubleSide })
+  );
+  mesh5.visible = delauny3();
+  group.add(mesh5);
+  //////////////////convex testing
   render();
 }
 
@@ -1033,7 +1068,7 @@ function reloadModelFromJSONData(filename, wholecontent) {
   geometry1.computeVertexNormals();
   var mesh = new THREE.Mesh(
     geometry1, // re-use the existing geometry
-    new THREE.MeshLambertMaterial({ color: delaunycolor(), wireframe: true })
+    new THREE.MeshLambertMaterial({ color: delaunycolor(), wireframe: surface(), side: THREE.DoubleSide })
   );
   mesh.visible = delauny();
   group.add(mesh);
@@ -1051,7 +1086,22 @@ function reloadModelFromJSONData(filename, wholecontent) {
   console.log(material)
   selectedGroup = new THREE.Points(geometry3, material3);
   group.add(selectedGroup);
-  render();
+
+
+  ////////////convex testing
+  let geometry5 = new ConvexGeometry(points3d);
+  geometry5.computeBoundingSphere();
+  geometry5.center()
+  var mesh5 = new THREE.Mesh(
+    geometry5,
+    new THREE.MeshLambertMaterial({ color: delaunycolor(), wireframe: surface(), side: THREE.DoubleSide })
+  );
+  mesh5.visible = delauny3();
+  group.add(mesh5);
+  //////////////////convex testing
+  console.log('rendered')
+  // render();
+  setTimeout(() => { render() }, 2000)
 }
 
 function reloadModelFromArray(array) {
@@ -1117,7 +1167,7 @@ function reloadModelFromArray(array) {
   geometry1.computeVertexNormals();
   var mesh = new THREE.Mesh(
     geometry1, // re-use the existing geometry
-    new THREE.MeshLambertMaterial({ color: delaunycolor(), wireframe: true })
+    new THREE.MeshLambertMaterial({ color: delaunycolor(), wireframe: surface(), side: THREE.DoubleSide })
   );
   mesh.visible = delauny();
   group.add(mesh);
@@ -1135,6 +1185,20 @@ function reloadModelFromArray(array) {
   console.log(material)
   selectedGroup = new THREE.Points(geometry3, material3);
   group.add(selectedGroup);
+
+
+
+  ////////////convex testing
+  let geometry5 = new ConvexGeometry(points3d);
+  geometry5.computeBoundingSphere();
+  geometry5.center()
+  var mesh5 = new THREE.Mesh(
+    geometry5,
+    new THREE.MeshLambertMaterial({ color: delaunycolor(), wireframe: surface(), side: THREE.DoubleSide })
+  );
+  mesh5.visible = delauny3();
+  group.add(mesh5);
+  //////////////////convex testing
   render();
 }
 
@@ -1205,8 +1269,14 @@ function delaunycolor() {
 function delauny() {
   return document.getElementById('delauny').checked;
 }
+function delauny3() {
+  return document.getElementById('delauny3').checked;
+}
 function heightmapColor() {
   return document.getElementById('heightmapColor').checked;
+}
+function surface() {
+  return !document.getElementById('surface').checked;
 }
 
 
@@ -1261,15 +1331,36 @@ function setDelaunyColor(c) {
 document.getElementById('delaunyDiv').addEventListener('click', function () {
   var two = document.getElementById('delauny');
   if (!two.checked) {
-
     group.children[1].visible = false;
   }
   else {
-
     group.children[1].visible = true;
   };
   render()
+});
 
+document.getElementById('delaunyDiv3').addEventListener('click', function () {
+  var two = document.getElementById('delauny3');
+  if (!two.checked) {
+    group.children[3].visible = false;
+  }
+  else {
+    group.children[3].visible = true;
+  };
+  render()
+});
+
+document.getElementById('surfaceDiv').addEventListener('click', function () {
+  var two = document.getElementById('surface');
+  if (!two.checked) {
+    group.children[1].material.wireframe = true;
+    group.children[3].material.wireframe = true;
+  }
+  else {
+    group.children[1].material.wireframe = false;
+    group.children[3].material.wireframe = false;
+  };
+  render()
 });
 
 document.getElementById('heightmapColorDiv').addEventListener('click', function () {
