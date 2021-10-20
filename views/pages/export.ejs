@@ -51,7 +51,7 @@
 											</ul>
 										</div>
 									</div>
-									<div class="card-content collapse show">
+									<div class="card-content collapse show"  style="position: relative;">
 										<div class="card-body">
 											<!-- <p class="card-subtitle">You can load *.txt, *.obj files from owl windows app.</p> -->
 											<div class="row">
@@ -147,6 +147,9 @@
 														<% } %>	      
 												</div>
 											</div>
+											<div>
+												<img src="/img/loading.gif" id="loadingimg" style="position: absolute;top: 0px;right: 0;left: 0;margin: 0 auto; z-index: 100;">
+											</div>	
 										</div>
 									</div>
 								</div>
@@ -166,6 +169,7 @@
 
 <script>
 	$(document).ready(function() {
+		$('#loadingimg').hide();
 		$('#models').prettyDropdown({width:'100%'});
 	});
 	/* confirm alert */
@@ -194,19 +198,32 @@
 			if (result.isConfirmed) {
 				url = '/database/exportdb';
 
-				// const file = fs.createWriteStream("blablabla_ground.json");
+				var parent = $('#loadingimg').parent();
+				parent.empty();
+				parent.append('<img src="/img/loading.gif" id="loadingimg" style="position: absolute;top: 0px;right: 0;left: 0;margin: 0 auto; z-index: 100;">');
+
+				$('.card-content').css('opacity','0.5');
+				$('#loadingimg').show();
 				if(type === 'sep'){
+					models.forEach(model=>{
+						$('#loadingimg').parent().append('<iframe name="' + model + '" frameborder="0" style="display: none;"></iframe>');
+					});
 					models.forEach(model => {
 						$.post( url,{models:[model],type:type,file:file}, function( queryResult ) {
-							window.open('/database/exportdb?name=' + model + '.' + file);
+							window.open('/database/exportdb?name=' + model + '.' + file,model);
+							$('.card-content').css('opacity','1');
+							$('#loadingimg').hide();
 						});
 					});
 				}
-				else
+				else{
 					$.post( url,{models:models,type:type,file:file}, function( queryResult ) {
-							window.open('/database/exportdb?name=total.' + file);
-						});
+							$('#loadingimg').parent().append('<iframe name="hiddenframe" frameborder="0" style="display: none;"></iframe>');
+							window.open('/database/exportdb?name=total.' + file,"hiddenframe");
+							$('.card-content').css('opacity','1');
+							$('#loadingimg').hide();						});
 					}
+				}
 			});
 		}
 </script>

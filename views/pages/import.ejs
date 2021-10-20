@@ -59,7 +59,7 @@
 														<label class="custom-file-label" for="customFile">Choose file</label>
 													</div>
 												</form>
-												<iframe style="display: none;" name="hiddenitem"></iframe>
+												<iframe style="display: none;" name="hiddenitem" id="ifr"></iframe>
 											</div>
 											<div class="row">
 												<div class="col-lg-5 col-md-5 col-sm-5">
@@ -78,31 +78,6 @@
 												</div>
 												<div class="col-lg-3 col-md-3 col-sm-3" style="display: flex;">
 													<button type="button" class="btn btn-info btn-min-width" onclick="importdatabase()" style="margin: auto;"><i class="ft-upload"></i> Import</button>
-													<% if (messages.error) { %>
-														<!-- <p style="color:red"><%- messages.error %></p> -->
-														<script>
-															$.toast({
-																heading: 'Error',
-																text: '<%- messages.error %>',
-																showHideTransition: 'fade',
-																icon: 'error',
-																hideAfter: 1500   // in milli seconds
-															})
-														</script>
-														<% } %>
-														
-														<% if (messages.success) { %>
-															<!-- <p style="color:green"><%- messages.success %></p> -->
-															<script>
-																$.toast({
-																	heading: 'Success',
-																	text: '<%- messages.success %>',
-																	showHideTransition: 'slide',
-																	icon: 'success',
-																	hideAfter: 1500   // in milli seconds
-																})
-															</script>
-														<% } %>	      
 												</div>
 											</div>
 										</div>
@@ -120,7 +95,6 @@
 
 <!-- page content end -->
 <%- include('../partials/footer'); %>
-
 <script>
 	$(".custom-file-input").on("change", function() {
 		var fileName = $(this).val().split("\\").pop();
@@ -132,7 +106,23 @@
 		let dbname = $('#dbname').val();
 		let collectionname = $('#collectionname').val();
 		$.post('/database/importdb',{filename:filename,dbname:dbname,collectionname:collectionname},function(response){
-
+			alert(response);
+			if(response === 'Import Successfully')
+				$.toast({
+					heading: 'Success',
+					text: response,
+					showHideTransition: 'slide',
+					icon: 'success',
+					hideAfter: 1500   // in milli seconds
+				});
+			else															
+				$.toast({
+					heading: 'Error',
+					text: response,
+					showHideTransition: 'fade',
+					icon: 'error',
+					hideAfter: 1500   // in milli seconds
+				});
 		});
 	}
 </script>

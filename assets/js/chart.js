@@ -119,6 +119,7 @@ function drawChart(ctx,data,ft,tt){
         //new 
             x: {
                 display: true,
+                reverse: true,
                 title: {
                     display: true,
                     text: 'Time',
@@ -248,9 +249,11 @@ function drawChart(ctx,data,ft,tt){
         ctx.addEventListener("dblclick", function() {
             //go to 3d viewer with last id
             var this_canvas = $(this).attr('id');
+            console.log('******** canvas ***********',this_canvas)
             // var this_id = this_canvas;
-            this_canvas = this_canvas.split('-');
+            this_canvas = this_canvas.split('canvas-model-');
             var this_canvas_modelname = 'input-modelid-' + this_canvas.slice(-1);
+            console.log('*********** canvas_modelname *********',this_canvas_modelname);
             this_canvas_modelname = document.getElementById(this_canvas_modelname).value
             // location.href = "/data/view/" + this_canvas;
             load3dmodelwithidonlocal(this_canvas.slice(-1),this_canvas_modelname);
