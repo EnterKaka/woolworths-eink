@@ -9,6 +9,7 @@ var http = require('http');
 var converter = require('json-2-csv');
 const fileUpload = require('express-fileupload');
 app.use(fileUpload());
+var dateTime = require('node-datetime');
 /* export page */
 
 app.get('/export', auth, function(req, res) {
@@ -32,6 +33,8 @@ app.post('/exportdb', auth, function(req, res) {
 
 			let models = req.body.models, type = req.body.type, file = req.body.file;
 			let result = [];
+			let date_ob = new Date();
+
 			let modelname = '';
 			/* find models by model name */
 			for(let model of models){
@@ -80,7 +83,7 @@ app.post('/exportdb', auth, function(req, res) {
 					// 	array : ',', // Semicolon array value delimiter
 					// 	eol   : '\n' // Newline delimiter
 					// },
-					keys : ['_id','datetime','measurement.date','measurement.mass','measurement.name','measurement.pointcloud.x','measurement.pointcloud.y','measurement.pointcloud.z','measurement.remark','measurement.time','measurement.volume','modifeod','name'],
+					keys : ['_id','datetime','measurement.date','measurement.mass','measurement.name','measurement.remark','measurement.time','measurement.volume','modifeod','name'],
 					// prependHeader    : true,
 					// sortHeader       : false,
 					// trimHeaderValues : true,
@@ -114,7 +117,8 @@ app.post('/exportdb', auth, function(req, res) {
 });
 app.get('/exportdb', auth, function(req, res){
 	console.log("************ download *************");
-	res.download(__dirname+'/../download/' + req.query.name, req.query.name);
+	var dt = dateTime.create();
+	res.download(__dirname+'/../download/' + req.query.name, dt.format('d.m.Y') + '_' + req.query.name);
 });
 
 /* import page */
