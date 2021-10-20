@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html class="loading" lang="en" data-textdirection="ltr">
+<!-- <input type="number" style="z-index:10000000055555"> -->
 
 <head>
   <%- include('../partials/head'); %>
@@ -97,19 +98,23 @@
                               <i class="ft-filter mr-1"></i> Filters
                             </a>
                             <div class="dropdown-menu" x-placement="bottom-start"
-                              style="position: absolute; will-change: transform; top: 0px; left: 0px; transform: translate3d(0px, 47px, 0px);">
-                              <a class="dropdown-item" id="dropdownIcon1-tab" href="#dropdownIcon1" data-toggle="tab"
-                                aria-controls="dropdownIcon1" aria-expanded="true"
-                                data-nsfw-filter-status="swf">GridMinimumFilter</a>
-                              <a class="dropdown-item" id="dropdownIcon2-tab" href="#dropdownIcon2" data-toggle="tab"
-                                aria-controls="dropdownIcon2" aria-expanded="true"
-                                data-nsfw-filter-status="swf">VoxelGridFilter</a>
-                              <a class="dropdown-item" id="dropdownIcon3-tab" href="#dropdownIcon3" data-toggle="tab"
-                                aria-controls="dropdownIcon3" aria-expanded="true"
-                                data-nsfw-filter-status="swf">StatisticalOutlierRemovalFilter</a>
-                              <a class="dropdown-item" id="dropdownIcon4-tab" href="#dropdownIcon4" data-toggle="tab"
-                                aria-controls="dropdownIcon4" aria-expanded="true"
-                                data-nsfw-filter-status="swf">PassThroughFilter</a>
+                              style="position: absolute; will-change: transform; top: 0px; left: 0px; transform: translate3d(0px, 47px, 0px);padding:15px;">
+                              <a class="btn btn-icon btn-outline-primary btn-glow round mb-1" id="dropdownIcon1-tab"
+                                href="#dropdownIcon1" data-toggle="tab" aria-controls="dropdownIcon1"
+                                aria-expanded="true" data-nsfw-filter-status="swf"
+                                style="width:100%">GridMinimumFilter</a>
+                              <a class="btn btn-icon btn-outline-primary btn-glow round mb-1" id="dropdownIcon2-tab"
+                                href="#dropdownIcon2" data-toggle="tab" aria-controls="dropdownIcon2"
+                                aria-expanded="true" data-nsfw-filter-status="swf"
+                                style="width:100%">VoxelGridFilter</a>
+                              <a class="btn btn-icon btn-outline-primary btn-glow round mb-1" id="dropdownIcon3-tab"
+                                href="#dropdownIcon3" data-toggle="tab" aria-controls="dropdownIcon3"
+                                aria-expanded="true" data-nsfw-filter-status="swf"
+                                style="width:100%">StatisticalOutlierRemovalFilter</a>
+                              <a class="btn btn-icon btn-outline-primary btn-glow round mb-1" id="dropdownIcon4-tab"
+                                href="#dropdownIcon4" data-toggle="tab" aria-controls="dropdownIcon4"
+                                aria-expanded="true" data-nsfw-filter-status="swf"
+                                style="width:100%">PassThroughFilter</a>
                             </div>
                           </li>
                           <!-- <li class="nav-item"><input type="text" class="form-control round btn-glow mb-1 mr-1"
@@ -213,6 +218,12 @@
                                 class="btn btn-icon btn-outline-success btn-glow round btn-sm mr-1 mb-1"
                                 title='Open model from local pc' id='btn-delete'>
                                 <i class="ft-x"></i>
+                              </button>
+
+                              <button type='button'
+                                class="btn btn-icon btn-outline-success btn-glow round btn-sm mr-1 mb-1"
+                                title='Open model from local pc' id='btn-volume'>
+                                <i class="ft-volume-2"></i> Volum test
                               </button>
                             </div>
                           </div>
@@ -348,7 +359,9 @@
         </div>
       </div>
       <!-- ////////////////////////////////////////////////////////////////////////////-->
+      <!-- BEGIN: Customizer-->
 
+      <!-- End: Customizer-->
       <!-- page content end -->
       <%- include('../partials/footer'); %>
         <script type="module" src="/js/edit_three.js"></script>
@@ -385,6 +398,7 @@
             </div>
           </div>
         </div>
+
 </body>
 
 </html>

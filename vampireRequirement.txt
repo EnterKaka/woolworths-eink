@@ -15,7 +15,7 @@ Step 2: 500 USD
 and a "Statistical Outliere Removal" Filter and a "pass through" filter, (Cubic Filter- Voxel Grid Filter)
 -- When filtering data or deleting points -> update the viewed pointcloud. but the steps must be revertable (ctr + z) !
 -- delauny 3D triangulate pointcloud
-- selection of vertices like pointcloud selection must be possible. also same actions (delete, save, chane selection)
+-- selection of vertices like pointcloud selection must be possible. also same actions (delete, save, chane selection)
 -- triangulation view: surface and mesh
 -- Export pointclouds as .txt file, triangulation as .obj file
 

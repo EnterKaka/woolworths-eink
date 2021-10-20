@@ -633,7 +633,7 @@ function onAddPoint(evt) {
       var unclonep = [...unselectedPoints];
       unselectedPoints = [];
       for (let i = 0; i < unclonep.length; i += 3) {
-        if (i !== sind) unselectedPoints.push(unclonep[i], unclonep[i + 1], unclonep[i + 2])
+        if (i != sind) unselectedPoints.push(unclonep[i], unclonep[i + 1], unclonep[i + 2])
       }
 
 
@@ -649,37 +649,39 @@ function onAddPoint(evt) {
       // on first click add an extra point
     }
     else {
-      var geometry = group.children[0].geometry;
-
-      var index = geometry.index;
-      var position = geometry.attributes.position;
+      // var geometry = group.children[0].geometry;
+      var array = group.children[0].geometry.attributes.position.array;
+      // var index = geometry.index;
+      // var position = geometry.attributes.position;
 
       var minDistance = Infinity;
       var sind;
-      for (let i = 0; i < index.count; i++) {
+      for (let i = 0; i < array.length; i += 3) {
 
-        var a = index.getX(i);
+        // var a = index.getX(i);
 
-        pointOnPlane.fromBufferAttribute(position, a)
+        // pointOnPlane.fromBufferAttribute(position, a)
 
-        raycaster.ray.closestPointToPoint(new THREE.Vector3().copy(pointOnPlane).applyEuler(group.rotation), target)
-        var distanceSq = new THREE.Vector3().copy(pointOnPlane).applyEuler(group.rotation).distanceToSquared(target);
+        raycaster.ray.closestPointToPoint(new THREE.Vector3(array[i], array[i + 1], array[i + 2]).applyEuler(group.rotation), target)
+        var distanceSq = new THREE.Vector3(array[i], array[i + 1], array[i + 2]).applyEuler(group.rotation).distanceToSquared(target);
 
         if (distanceSq < minDistance) {
 
-          closestPoint.copy(pointOnPlane);
+          closestPoint.set(array[i], array[i + 1], array[i + 2]);
           minDistance = distanceSq;
           sind = i;
         }
 
       }
-      sind *= 3;
-      unselectedPoints = [];
+      // sind *= 3;
       // ////console.log(closestPoint)
-      var unclonep = [...position.array];
-      for (let i = 0; i < unclonep.length; i += 3) {
-        if (i != sind) unselectedPoints.push(unclonep[i], unclonep[i + 1], unclonep[i + 2])
+      var unclonep = [];
+      for (let i = 0; i < array.length; i += 3) {
+        // var a = index.getX(i);
+        // pointOnPlane.fromBufferAttribute(position, a)
+        if (i != sind) unclonep.push(array[i], array[i + 1], array[i + 2])
       }
+      unselectedPoints = unclonep;
 
       selectedPoints[0] = closestPoint.x;
       selectedPoints[1] = closestPoint.y;
@@ -939,7 +941,7 @@ function reloadModelFromData(filename, wholecontent) {
 
   var mesh = new THREE.Mesh(
     geometry1, // re-use the existing geometry
-    new THREE.MeshLambertMaterial({ color: delaunycolor(), wireframe: surface(), side: THREE.DoubleSide })
+    new THREE.MeshLambertMaterial({ color: heightmapColor() ? "#ffffff" : delaunycolor(), wireframe: surface(), side: THREE.DoubleSide, vertexColors: heightmapColor(), })
   );
   mesh.visible = delauny();
   group.add(mesh);
@@ -956,7 +958,7 @@ function reloadModelFromData(filename, wholecontent) {
     color: selectedcolor(),
     size: selectedsize()
   });
-  console.log(material)
+
   selectedGroup = new THREE.Points(geometry3, material3);
   group.add(selectedGroup);
 
@@ -964,17 +966,21 @@ function reloadModelFromData(filename, wholecontent) {
   // gui.add(mesh.material, "wireframe");
   ////////////convex testing
   let geometry5 = new ConvexGeometry(points3d);
+  // geometry5.setIndex(meshIndex);
   geometry5.computeBoundingSphere();
+  // if (colors.length > 0) {
+  //   geometry5.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
+  // }
   geometry5.center()
   var mesh5 = new THREE.Mesh(
     geometry5,
-    new THREE.MeshLambertMaterial({ color: delaunycolor(), wireframe: surface(), side: THREE.DoubleSide })
+    new THREE.MeshLambertMaterial({ color: delaunycolor(), wireframe: surface(), side: THREE.DoubleSide, })
   );
   mesh5.visible = delauny3();
   group.add(mesh5);
   //////////////////convex testing
 
-
+  console.log(group)
   render();
 }
 
@@ -1051,7 +1057,7 @@ function reloadModelFromObjData(filename, wholecontent) {
   geometry1.computeVertexNormals();
   var mesh = new THREE.Mesh(
     geometry1, // re-use the existing geometry
-    new THREE.MeshLambertMaterial({ color: delaunycolor(), wireframe: surface(), side: THREE.DoubleSide })
+    new THREE.MeshLambertMaterial({ color: heightmapColor() ? "#ffffff" : delaunycolor(), wireframe: surface(), side: THREE.DoubleSide, vertexColors: heightmapColor(), })
   );
   mesh.visible = delauny();
   group.add(mesh);
@@ -1151,7 +1157,7 @@ function reloadModelFromJSONData(filename, wholecontent) {
   geometry1.computeVertexNormals();
   var mesh = new THREE.Mesh(
     geometry1, // re-use the existing geometry
-    new THREE.MeshLambertMaterial({ color: delaunycolor(), wireframe: surface(), side: THREE.DoubleSide })
+    new THREE.MeshLambertMaterial({ color: heightmapColor() ? "#ffffff" : delaunycolor(), wireframe: surface(), side: THREE.DoubleSide, vertexColors: heightmapColor(), })
   );
   mesh.visible = delauny();
   group.add(mesh);
@@ -1251,7 +1257,7 @@ function reloadModelFromArray(array) {
   geometry1.computeVertexNormals();
   var mesh = new THREE.Mesh(
     geometry1, // re-use the existing geometry
-    new THREE.MeshLambertMaterial({ color: delaunycolor(), wireframe: surface(), side: THREE.DoubleSide })
+    new THREE.MeshLambertMaterial({ color: heightmapColor() ? "#ffffff" : delaunycolor(), wireframe: surface(), side: THREE.DoubleSide, vertexColors: heightmapColor(), })
   );
   mesh.visible = delauny();
   group.add(mesh);
@@ -1400,6 +1406,7 @@ Pointcolors.addEventListener('input', function () {
 
 function setPointColor(c) {
   group.children[0].material.color.set(c);
+  group.children[1].material.color.set(c);
 }
 
 
@@ -1416,7 +1423,7 @@ Delaunycolors.addEventListener('input', function () {
 // });
 
 function setDelaunyColor(c) {
-  group.children[1].material.color.set(c);
+
   group.children[3].material.color.set(c);
 }
 
@@ -1468,6 +1475,8 @@ document.getElementById('heightmapColorDiv').addEventListener('click', function 
 
     group.children[0].material.vertexColors = false;
     group.children[0].material.needsUpdate = true;
+    group.children[1].material.vertexColors = false;
+    group.children[1].material.needsUpdate = true;
   }
   else {
     ////console.log(group)
@@ -1475,6 +1484,8 @@ document.getElementById('heightmapColorDiv').addEventListener('click', function 
     setPointColor("#ffffff")
     group.children[0].material.vertexColors = true;
     group.children[0].material.needsUpdate = true;
+    group.children[1].material.vertexColors = true;
+    group.children[1].material.needsUpdate = true;
   };
   render()
 
@@ -1652,9 +1663,10 @@ function addToHistory(array) {
 }
 
 document.addEventListener('keypress', (e) => {
-  e.preventDefault();
+
   polygon = [];
   if (e.keyCode == 26 && e.ctrlKey && historys.step > 0) {
+    e.preventDefault();
     reloadModelFromArray(historys.data[historys.step - 1])
     render()
     polygonRender()
@@ -1701,3 +1713,45 @@ document.getElementById('txt-download').addEventListener('click', () => {
   }
   download('model.txt', 'text', result);
 })
+
+document.getElementById('btn-volume').addEventListener('click', () => {
+  alert(getVolume(group.children[1].geometry))
+})
+
+
+function getVolume(geometry) {
+  if (!geometry.isBufferGeometry) {
+    console.log("'geometry' must be an indexed or non-indexed buffer geometry");
+    return 0;
+  }
+  var isIndexed = geometry.index !== null;
+  let position = geometry.attributes.position;
+  let sum = 0;
+  let p1 = new THREE.Vector3(),
+    p2 = new THREE.Vector3(),
+    p3 = new THREE.Vector3();
+  if (!isIndexed) {
+    let faces = position.count / 3;
+    for (let i = 0; i < faces; i++) {
+      p1.fromBufferAttribute(position, i * 3 + 0);
+      p2.fromBufferAttribute(position, i * 3 + 1);
+      p3.fromBufferAttribute(position, i * 3 + 2);
+      sum += signedVolumeOfTriangle(p1, p2, p3);
+    }
+  }
+  else {
+    let index = geometry.index;
+    let faces = index.count / 3;
+    for (let i = 0; i < faces; i++) {
+      p1.fromBufferAttribute(position, index.array[i * 3 + 0]);
+      p2.fromBufferAttribute(position, index.array[i * 3 + 1]);
+      p3.fromBufferAttribute(position, index.array[i * 3 + 2]);
+      sum += signedVolumeOfTriangle(p1, p2, p3);
+    }
+  }
+  return sum;
+}
+
+function signedVolumeOfTriangle(p1, p2, p3) {
+  return p1.dot(p2.cross(p3)) / 6.0;
+}
