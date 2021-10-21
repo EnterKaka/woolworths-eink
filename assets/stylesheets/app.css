@@ -104,3 +104,16 @@ div#DataTables_Table_0_length{
 footer.footer.expand{
     margin-left: 0px !important;
 }
+
+.dashborad_three #viewer_3d.expand{
+    max-height: none;
+    height: auto;
+}
+
+.dashborad_three #viewer_3d{
+    max-height: 350px;
+    height: auto;
+}
+div.container_main.small{
+    min-height: auto;
+}

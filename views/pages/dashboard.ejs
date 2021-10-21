@@ -47,12 +47,7 @@
                                         <!-- <h4 class="card-title">OWL 3D WEB APP</h4> -->
                                         <a class="heading-elements-toggle"><i class="la la-ellipsis font-medium-3"></i></a>
                                         <div class="heading-elements">
-                                            <ul class="list-inline mb-0">
-                                                <!-- <li><a data-action="collapse"><i class="ft-minus"></i></a></li> -->
-                                                <!-- <li><a data-action="reload"><i class="ft-rotate-cw"></i></a></li> -->
-                                                <li><a data-action="expand"><i class="ft-maximize"></i></a></li>
-                                                <!-- <li><a data-action="close"><i class="ft-x"></i></a></li> -->
-                                            </ul>
+                                            <a data-action="expand"><i class="ft-maximize"></i></a>
                                         </div>
                                         </div>
                                     <div class="card-content collapse show">
@@ -60,7 +55,7 @@
                                             <!-- <p class="card-subtitle">You can load *.txt, *.obj files from owl windows app.</p> -->
                                             <div class="form-group">
                                                 <!-- basic viewer -->
-                                                <%- include('../partials/threeviewer'); %>
+                                                <%- include('../partials/threeviewer', {id:'dashborad_three'}); %>
                                             </div>
                                         </div>
                                     </div>
@@ -82,12 +77,7 @@
                                                 <h4 class="card-title"></h4>
                                                 <a class="heading-elements-toggle"><i class="la la-ellipsis-v font-medium-3"></i></a>
                                                 <div class="heading-elements">
-                                                    <ul class="list-inline mb-0">
-                                                        <!-- <li><a data-action="collapse"><i class="ft-minus"></i></a></li> -->
-                                                        <!-- <li><a data-action="reload"><i class="ft-rotate-cw"></i></a></li> -->
-                                                        <li><a data-action="expand"><i class="ft-maximize"></i></a></li>
-                                                        <!-- <li><a data-action="close"><i class="ft-x"></i></a></li> -->
-                                                    </ul>
+                                                    <a data-action="expand"><i class="ft-maximize"></i></a>
                                                 </div>
                                             </div>
                                             <div class="card-content collapse show">
@@ -161,8 +151,11 @@
         <script src="/js/chart.js" type="module"></script>
         <script type="text/javascript">
             $("[id^=btn-]").hide();
-            $('div.container_main').css('min-height','auto');
-            $('#viewer_3d').css('max-height','500px');
+            $('div.container_main').addClass('small');
+            $('a[data-action="expand"]').click(() => {
+                $('div.container_main').toggleClass('small');
+                $('.dashborad_three #viewer_3d').toggleClass('expand');
+            });
         </script>
         <!-- <script src="/js/alert_getmodelfromdb.js" type="text/javascript"></script> -->
     </body>

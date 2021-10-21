@@ -43,11 +43,7 @@
                         <!-- <h4 class="card-title">OWL 3D WEB APP</h4> -->
                         <a class="heading-elements-toggle"><i class="la la-ellipsis font-medium-3"></i></a>
                         <div class="heading-elements">
-                            <ul class="list-inline mb-0">
-                                <li><a data-action="collapse"><i class="ft-minus"></i></a></li>
-                                <li><a data-action="reload"><i class="ft-rotate-cw"></i></a></li>
-                                <li><a data-action="expand"><i class="ft-maximize"></i></a></li>
-                                <li><a data-action="close"><i class="ft-x"></i></a></li>
+                              <a data-action="expand"><i class="ft-maximize"></i></a>
                             </ul>
                         </div>
                       </div>
@@ -56,7 +52,7 @@
                             <!-- <p class="card-subtitle">You can load *.txt, *.obj files from owl windows app.</p> -->
                             <div class="form-group">
                                 <!-- basic viewer -->
-                                <%- include('../partials/threeviewer'); %>
+                                <%- include('../partials/threeviewer', {id:'view'}); %>
                             </div>
                         </div>
                     </div>

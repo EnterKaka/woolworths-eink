@@ -17,3 +17,14 @@
 <!-- END CHAMELEON  JS-->
 <!-- BEGIN PAGE LEVEL JS-->
 <!-- END PAGE LEVEL JS-->
+<script type="text/javascript">
+	function expand(){
+		$('#sidebar').toggleClass('hide');
+		$('.navbar-container.content').toggleClass('expand');
+		$('.app-content.content').toggleClass('expand');
+		$('footer.footer.expand').toggleClass('expand');
+    setTimeout(() => {
+      $('#viewer_3d').width('calc(100%)');
+    }, 100);
+	}
+</script>
