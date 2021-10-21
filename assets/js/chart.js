@@ -81,7 +81,7 @@ function drawChart(ctx,data,ft,tt){
                 },
             },
             tooltip: {
-                usePointStyle: true,
+                // usePointStyle: true,
                 position: 'nearest',
             }
         },
@@ -120,6 +120,12 @@ function drawChart(ctx,data,ft,tt){
             x: {
                 display: true,
                 reverse: true,
+                ticks:{
+                    autoSkip:true,
+                    maxRotation:0,
+                    minRotation:0,
+                    maxTicksLimit:10
+                },
                 title: {
                     display: true,
                     text: 'Time',
@@ -166,11 +172,12 @@ function drawChart(ctx,data,ft,tt){
                 lineTension: 0,
                 fill: false,
                 borderColor: "#FF7D4D",
-                pointBorderColor: "#FF7D4D",
-                pointBackgroundColor: "#FFF",
-                pointBorderWidth: 2,
-                pointHoverBorderWidth: 2,
-                pointRadius: 4,
+                pointStyle :null,
+                // pointBorderColor: "#FF7D4D",
+                pointHoverBackgroundColor: "#FFF",
+                pointBorderWidth: 0,
+                pointHoverBorderWidth: 4,
+                // pointRadius: 4,
             }]
         };
 
@@ -275,11 +282,12 @@ function drawChart(ctx,data,ft,tt){
                 lineTension: 0,
                 fill: false,
                 borderColor: "#FF7D4D",
-                pointBorderColor: "#FF7D4D",
-                pointBackgroundColor: "#FFF",
-                pointBorderWidth: 2,
-                pointHoverBorderWidth: 2,
-                pointRadius: 4,
+                pointStyle :null,
+                // pointBorderColor: "#FF7D4D",
+                pointHoverBackgroundColor: "#FFF",
+                pointBorderWidth: 0,
+                pointHoverBorderWidth: 4,
+                // pointRadius: 4,
             }]
         };
 

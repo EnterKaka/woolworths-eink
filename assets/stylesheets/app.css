@@ -89,3 +89,18 @@ div#DataTables_Table_0_length{
 #uploadform{
     width: 100%;
 }
+
+#sidebar.hide{
+     display: none;
+}
+
+.navbar-container.content.expand{
+    margin-left: 0px !important;
+}
+
+.app-content.content.expand{
+    margin-left: 0px !important;
+}
+footer.footer.expand{
+    margin-left: 0px !important;
+}
