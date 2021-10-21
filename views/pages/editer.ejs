@@ -48,23 +48,25 @@
               <div class="row">
                 <div class="col-lg-12 col-md-12">
                   <div class="card" id="canvas-container">
-                    <div class="card-header">
+                    <div class="card-header" style="padding-bottom:0">
                       <% if(messages.pcl_name){ %>
                         <h4 class="card-title" id='modelpath'>
                           <%= messages.pcl_name %>
-                            </h2>
-                            <% }else{ %>
-                              <h4 class="card-title" id='modelpath'>filename</h4>
-                              <% } %>
-                                <a class="heading-elements-toggle"><i class="la la-ellipsis-v font-medium-3"></i></a>
-                                <div class="heading-elements">
-                                  <ul class="list-inline mb-0">
-                                    <li><a data-action="collapse"><i class="ft-minus"></i></a></li>
-                                    <li><a data-action="reload"><i class="ft-rotate-cw"></i></a></li>
-                                    <li><a data-action="expand"><i class="ft-maximize"></i></a></li>
-                                    <li><a data-action="close"><i class="ft-x"></i></a></li>
-                                  </ul>
-                                </div>
+                        </h4>
+                        <% }else{ %>
+                          <h4 class="card-title" id='modelpath'>filename</h4>
+                          <% } %>
+                            <label id='groundpath' style="margin-top:5px; margin-bottom:0;font-size:12px;">GroundFile :
+                            </label>
+                            <a class="heading-elements-toggle"><i class="la la-ellipsis-v font-medium-3"></i></a>
+                            <div class="heading-elements">
+                              <ul class="list-inline mb-0">
+                                <li><a data-action="collapse"><i class="ft-minus"></i></a></li>
+                                <li><a data-action="reload"><i class="ft-rotate-cw"></i></a></li>
+                                <li><a data-action="expand"><i class="ft-maximize"></i></a></li>
+                                <li><a data-action="close"><i class="ft-x"></i></a></li>
+                              </ul>
+                            </div>
                     </div>
                     <div class="card-content collapse show">
 
@@ -116,6 +118,10 @@
                                 aria-expanded="true" data-nsfw-filter-status="swf"
                                 style="width:100%">PassThroughFilter</a>
                             </div>
+                          </li>
+                          <li class="nav-item">
+                            <button type="button" class="nav-link" data-toggle="modal" data-target="#editerModal"
+                              data-whatever="@getbootstrap">Open modal for @getbootstrap</button>
                           </li>
                           <!-- <li class="nav-item"><input type="text" class="form-control round btn-glow mb-1 mr-1"
                               id="count" style="height: 31px;padding-left: 15px;width: 81px;" min="0.1" max="10"
@@ -219,12 +225,12 @@
                                 title='Open model from local pc' id='btn-delete'>
                                 <i class="ft-x"></i>
                               </button>
-
+                              <input type="file" id="ground-file" style="display:none;" accept=".txt">
                               <button type='button'
                                 class="btn btn-icon btn-outline-success btn-glow round btn-sm mr-1 mb-1"
-                                title='Open model from local pc' id='btn-volume'>
-                                <i class="ft-volume-2"></i> Volum test
+                                title='Open model from local pc' id='btn-volume'> Volum test
                               </button>
+
                             </div>
                           </div>
                           <div class="tab-pane active" id="tabIcon4" aria-expanded="true"
@@ -243,10 +249,14 @@
                                 <i class="ft-save"></i>
                               </button>
                               <button type='button' style="float:right;"
-                                class="btn btn-icon btn-outline-primary btn-glow round btn-sm mb-1"
+                                class="btn btn-icon btn-outline-primary btn-glow round btn-sm mr-1 mb-1"
                                 title='Open model from local pc' id='btn-download' data-toggle="modal"
                                 data-target="#exampleModal">
                                 <i class="ft-download"></i>
+                              </button>
+                              <button type='button'
+                                class="btn btn-icon btn-outline-primary btn-glow round btn-sm mr-1 mb-1"
+                                title='Open model from local pc' id='btn-ground'> set Ground File
                               </button>
                               <% if(messages.pointcloud){ %>
                                 <input type="hidden" id="pointcloud" value='<%- messages.pointcloud %>'>
@@ -394,6 +404,37 @@
                 </div>
               </div>
               <div class="modal-footer">
+              </div>
+            </div>
+          </div>
+        </div>
+
+
+        <div class="modal fade text-left" id="editerModal" tabindex="-1" role="dialog"
+          aria-labelledby="editerModalLabel" aria-hidden="true">
+          <div class="modal-dialog" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="editerModalLabel">New message</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">×</span>
+                </button>
+              </div>
+              <div class="modal-body">
+                <form>
+                  <div class="form-group">
+                    <label for="recipient-name" class="col-form-label">Recipient:</label>
+                    <input type="text" class="form-control" id="recipient-name">
+                  </div>
+                  <div class="form-group">
+                    <label for="message-text" class="col-form-label">Message:</label>
+                    <textarea class="form-control" id="message-text"></textarea>
+                  </div>
+                </form>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary">Send message</button>
               </div>
             </div>
           </div>

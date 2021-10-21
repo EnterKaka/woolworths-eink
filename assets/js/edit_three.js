@@ -50,6 +50,7 @@ var camera, count = 0, line, positions, renderer, scene, canvas, parent_canvas, 
 var group, marker, mesh, raycaster, mouse, toolstate = 'move', lookatP = { x: 0, y: 0, z: 0 };
 var selectedPoints, selectedGroup, polygon = [], drawing = true;
 var mouseDown, mouseRightDown, mouseX, mouseY;
+var heapCvalue = 0, groundTop = 0;
 var historys = {
   step: 0,
   data: []
@@ -857,6 +858,24 @@ function customTriangulate(points3d) {
 
 }
 
+function reloadGroundFromData(filename, content) {
+  $('#groundpath').html("GroundFile : " + filename);
+  let lines = content.split('\n');
+  groundTop = 0;
+  let count = 0;
+  for (let line of lines) {
+    line = line.trim();
+    if (line.charAt(0) === '#') continue; // skip comments
+    let lineValues = line.split(/\s+/);
+    if (lineValues.length === 3) {
+      groundTop += parseFloat(lineValues[2]);
+      count++;
+    }
+  }
+  groundTop /= count;
+  alert(groundTop)
+}
+
 function reloadModelFromData(filename, wholecontent) {
 
   $('#modelpath').html(filename);
@@ -896,7 +915,11 @@ function reloadModelFromData(filename, wholecontent) {
     geometry1.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
   }
 
+  console.log(geometry1.attributes.position.array)
+  heapCvalue = geometry1.attributes.position.array[2];
   geometry1.center();
+  heapCvalue -= geometry1.attributes.position.array[2];
+  console.log(geometry1.attributes.position.array)
 
   // var vertexColors = ( geometry1.hasAttribute( 'color' ) === true );
 
@@ -995,7 +1018,9 @@ function reloadModelFromObjData(filename, wholecontent) {
   var colors = [];
 
   geometry1.copy(loader.parse(wholecontent).children[0].geometry);
+  heapCvalue = geometry1.attributes.position.array[2];
   geometry1.center();
+  heapCvalue -= geometry1.attributes.position.array[2];
 
 
   // var vertexColors = ( geometry1.hasAttribute( 'color' ) === true );
@@ -1121,7 +1146,9 @@ function reloadModelFromJSONData(filename, wholecontent) {
     geometry1.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
   }
 
+  heapCvalue = geometry1.attributes.position.array[2];
   geometry1.center();
+  heapCvalue -= geometry1.attributes.position.array[2];
 
   var material;
   if (heightmapColor()) {
@@ -1501,6 +1528,7 @@ function setToolState(tool) {
 document.getElementById('btn-move').addEventListener('click', function () {
   polygon = [];
   count = 0;
+  unselectedPoints = [...group.children[0].geometry.attributes.position.array];
   selectedGroup.geometry.setDrawRange(0, count);
   setToolState('move')
   render()
@@ -1510,6 +1538,7 @@ document.getElementById('btn-move').addEventListener('click', function () {
 document.getElementById('btn-point').addEventListener('click', function () {
   polygon = [];
   count = 0;
+  unselectedPoints = [...group.children[0].geometry.attributes.position.array];
   selectedGroup.geometry.setDrawRange(0, count);
   setToolState('point')
   render()
@@ -1522,6 +1551,7 @@ document.getElementById('btn-polygon').addEventListener('click', function () {
   // }
   polygon = [];
   count = 0;
+  unselectedPoints = [...group.children[0].geometry.attributes.position.array];
   selectedGroup.geometry.setDrawRange(0, count);
   setToolState('polygon')
   render()
@@ -1531,6 +1561,7 @@ document.getElementById('btn-polygon').addEventListener('click', function () {
 document.getElementById('btn-pencil').addEventListener('click', function () {
   polygon = [];
   count = 0;
+  unselectedPoints = [...group.children[0].geometry.attributes.position.array];
   selectedGroup.geometry.setDrawRange(0, count);
   setToolState('pencil')
   render()
@@ -1699,7 +1730,7 @@ document.getElementById('obj-download').addEventListener('click', () => {
   const result = exporter.parse(group.children[1]);
   download('model.obj', 'object', result);
 })
-document.getElementById('obj-download').addEventListener('click', () => {
+document.getElementById('obj-download3').addEventListener('click', () => {
   const exporter = new OBJExporter();
   const result = exporter.parse(group.children[3]);
   download('model(3Dmesh).obj', 'object', result);
@@ -1715,13 +1746,16 @@ document.getElementById('txt-download').addEventListener('click', () => {
 })
 
 document.getElementById('btn-volume').addEventListener('click', () => {
-  alert(getVolume(group.children[1].geometry))
+  alert(getVolume(group.children[0].geometry))
 })
 
 
 function getVolume(geometry) {
+  console.log(heapCvalue, groundTop)
+  var zTop = heapCvalue - groundTop;
+
   if (!geometry.isBufferGeometry) {
-    console.log("'geometry' must be an indexed or non-indexed buffer geometry");
+    alert("'geometry' must be an indexed or non-indexed buffer geometry");
     return 0;
   }
   var isIndexed = geometry.index !== null;
@@ -1736,6 +1770,9 @@ function getVolume(geometry) {
       p1.fromBufferAttribute(position, i * 3 + 0);
       p2.fromBufferAttribute(position, i * 3 + 1);
       p3.fromBufferAttribute(position, i * 3 + 2);
+      p1.z += zTop;
+      p2.z += zTop;
+      p3.z += zTop;
       sum += signedVolumeOfTriangle(p1, p2, p3);
     }
   }
@@ -1746,6 +1783,9 @@ function getVolume(geometry) {
       p1.fromBufferAttribute(position, index.array[i * 3 + 0]);
       p2.fromBufferAttribute(position, index.array[i * 3 + 1]);
       p3.fromBufferAttribute(position, index.array[i * 3 + 2]);
+      p1.z += zTop;
+      p2.z += zTop;
+      p3.z += zTop;
       sum += signedVolumeOfTriangle(p1, p2, p3);
     }
   }
@@ -1753,5 +1793,41 @@ function getVolume(geometry) {
 }
 
 function signedVolumeOfTriangle(p1, p2, p3) {
-  return p1.dot(p2.cross(p3)) / 6.0;
+  var result = p1.dot(p2.cross(p3)) / 6.0;
+  return Math.abs(result);
+  // return result;
+  // if (result > 0) return result; else return 0;
 }
+
+//open file dialog
+document.getElementById('btn-ground').addEventListener('click', () => {
+  btn_open_ground();
+})
+
+function btn_open_ground() {
+  $("#ground-file").trigger("click");
+}
+
+$('#ground-file').change(openGround_Fromlocal);
+
+function openGround_Fromlocal(e) {
+  var files = e.target.files;
+  if (files.length < 1) {
+    alert('select a file...');
+    return;
+  }
+  var file = files[0];
+
+  var reader = new FileReader();
+  var model_text;
+  reader.addEventListener("load", () => {
+    // this will then display a text file
+    model_text = reader.result;
+    reloadGroundFromData(file.name, model_text);
+  }, false);
+
+  if (file) {
+    reader.readAsText(file);
+  }
+}
+// alert(new THREE.Vector3(parseFloat(0), parseFloat(0), parseFloat(2)).dot(new THREE.Vector3(parseFloat(2), parseFloat(0), parseFloat(2)).cross(new THREE.Vector3(parseFloat(0), parseFloat(2), parseFloat(2)))) / 6.0)
