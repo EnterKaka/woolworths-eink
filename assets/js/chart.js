@@ -122,8 +122,8 @@ function drawChart(ctx,data,ft,tt){
                 reverse: true,
                 ticks:{
                     autoSkip:true,
-                    maxRotation:0,
-                    minRotation:0,
+                    // maxRotation:0,
+                    // minRotation:0,
                     maxTicksLimit:10
                 },
                 title: {
