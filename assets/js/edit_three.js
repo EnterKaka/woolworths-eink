@@ -873,7 +873,7 @@ function reloadGroundFromData(filename, content) {
     }
   }
   groundTop /= count;
-  alert(groundTop)
+  // alert(groundTop)
 }
 
 function reloadModelFromData(filename, wholecontent) {
@@ -964,7 +964,7 @@ function reloadModelFromData(filename, wholecontent) {
 
   var mesh = new THREE.Mesh(
     geometry1, // re-use the existing geometry
-    new THREE.MeshLambertMaterial({ color: heightmapColor() ? "#ffffff" : delaunycolor(), wireframe: surface(), side: THREE.DoubleSide, vertexColors: heightmapColor(), })
+    new THREE.MeshLambertMaterial({ color: heightmapColor() ? "#ffffff" : pointcolor(), wireframe: surface(), side: THREE.DoubleSide, vertexColors: heightmapColor(), })
   );
   mesh.visible = delauny();
   group.add(mesh);
@@ -1082,7 +1082,7 @@ function reloadModelFromObjData(filename, wholecontent) {
   geometry1.computeVertexNormals();
   var mesh = new THREE.Mesh(
     geometry1, // re-use the existing geometry
-    new THREE.MeshLambertMaterial({ color: heightmapColor() ? "#ffffff" : delaunycolor(), wireframe: surface(), side: THREE.DoubleSide, vertexColors: heightmapColor(), })
+    new THREE.MeshLambertMaterial({ color: heightmapColor() ? "#ffffff" : pointcolor(), wireframe: surface(), side: THREE.DoubleSide, vertexColors: heightmapColor(), })
   );
   mesh.visible = delauny();
   group.add(mesh);
@@ -1184,7 +1184,7 @@ function reloadModelFromJSONData(filename, wholecontent) {
   geometry1.computeVertexNormals();
   var mesh = new THREE.Mesh(
     geometry1, // re-use the existing geometry
-    new THREE.MeshLambertMaterial({ color: heightmapColor() ? "#ffffff" : delaunycolor(), wireframe: surface(), side: THREE.DoubleSide, vertexColors: heightmapColor(), })
+    new THREE.MeshLambertMaterial({ color: heightmapColor() ? "#ffffff" : pointcolor(), wireframe: surface(), side: THREE.DoubleSide, vertexColors: heightmapColor(), })
   );
   mesh.visible = delauny();
   group.add(mesh);
@@ -1284,7 +1284,7 @@ function reloadModelFromArray(array) {
   geometry1.computeVertexNormals();
   var mesh = new THREE.Mesh(
     geometry1, // re-use the existing geometry
-    new THREE.MeshLambertMaterial({ color: heightmapColor() ? "#ffffff" : delaunycolor(), wireframe: surface(), side: THREE.DoubleSide, vertexColors: heightmapColor(), })
+    new THREE.MeshLambertMaterial({ color: heightmapColor() ? "#ffffff" : pointcolor(), wireframe: surface(), side: THREE.DoubleSide, vertexColors: heightmapColor(), })
   );
   mesh.visible = delauny();
   group.add(mesh);
