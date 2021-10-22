@@ -117,3 +117,8 @@ footer.footer.expand{
 div.container_main.small{
     min-height: auto;
 }
+@media (max-width: 768px){
+    .navbar-collapse {
+        padding-top:5px !important;
+    }
+}

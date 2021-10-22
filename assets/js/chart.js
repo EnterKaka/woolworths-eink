@@ -253,6 +253,30 @@ function drawChart(ctx,data,ft,tt){
             drawChart(ctx, data,inputft, inputtt);
         }
         //ondblclick listener
+        let time_stamp = 0; // Or Date.now()
+        ctx.addEventListener("touchstart", function(event_) {
+            if (event_.timeStamp - time_stamp < 300) { // A tap that occurs less than 300 ms from the last tap will trigger a double tap. This delay may be different between browsers.
+                event_.preventDefault();
+                var this_canvas = $(this).attr('id');
+                console.log('******** canvas ***********',this_canvas)
+                // var this_id = this_canvas;
+                this_canvas = this_canvas.split('canvas-model-');
+                var this_canvas_modelname = 'input-modelid-' + this_canvas.slice(-1);
+                console.log('*********** canvas_modelname *********',this_canvas_modelname);
+                this_canvas_modelname = document.getElementById(this_canvas_modelname).value
+                // location.href = "/data/view/" + this_canvas;
+                load3dmodelwithidonlocal(this_canvas.slice(-1),this_canvas_modelname);
+                // location.href = '#canvas-container';
+                //for current item get
+                // var ctx = document.getElementById(this_id);
+                // console.log(ctx.chart.options.plugins.tooltip);
+                window.scrollTo(0,0);
+    
+                return false;
+            }
+            time_stamp = event_.timeStamp;
+        });
+
         ctx.addEventListener("dblclick", function() {
             //go to 3d viewer with last id
             var this_canvas = $(this).attr('id');
@@ -268,7 +292,7 @@ function drawChart(ctx,data,ft,tt){
             //for current item get
             // var ctx = document.getElementById(this_id);
             // console.log(ctx.chart.options.plugins.tooltip);
-            window.scrollTo(0,0);
+            window.scrollTo(0,80);
         });
     }else{
         // Chart Data
@@ -458,14 +482,14 @@ function init_socket(){
                     + '&Tab;<h4 class="info">Model Information&nbsp;:&nbsp;<%= element.name %></h4><br>'
                     + '<div class="row">'
                     + '<div class="col-md-12 col-lg-6">'
-                    + '<dl class="row"><dt class="col-6"> 1. Last Measurement Date&nbsp;:</dt><dd class="col-6" id="lm-date-' + element + '" ></dd></dl>'
-                    + '<dl class="row"><dt class="col-6"> 2. Last Measurement Time&nbsp;:</dt><dd class="col-6" id="lm-time-' + element + '" ></dd></dl>'
-                    + '<dl class="row"><dt class="col-6"> 3. Last Measurement Volume&nbsp;:</dt><dd class="col-6" id="lm-volume-' + element + '" ></dd></dl>'
+                    + '<dl class="row"><dt class="col-9"> 1. Last Measurement Date&nbsp;:</dt><dd class="col-3" id="lm-date-' + element + '" ></dd></dl>'
+                    + '<dl class="row"><dt class="col-9"> 2. Last Measurement Time&nbsp;:</dt><dd class="col-3" id="lm-time-' + element + '" ></dd></dl>'
+                    + '<dl class="row"><dt class="col-9"> 3. Last Measurement Volume&nbsp;:</dt><dd class="col-3" id="lm-volume-' + element + '" ></dd></dl>'
                     + '</div>'
                     + '<div class="col-md-12 col-lg-6">'
-                    + '<dl class="row"><dt class="col-6"> 4. Last Measurement Mass&nbsp;:</dt><dd class="col-6" id="lm-mass-' + element + '" ></dd></dl>'
-                    + '<dl class="row"><dt class="col-6"> 5. Last Measurement Density&nbsp;:</dt><dd class="col-6" id="lm-density-' + element + '" ></dd></dl>'
-                    + '<dl class="row"><dt class="col-6"> 6. Average Volume&nbsp;:</dt><dd class="col-6" id="lm-averagevolume-' + element + '" ></dd></dl>'
+                    + '<dl class="row"><dt class="col-9"> 4. Last Measurement Mass&nbsp;:</dt><dd class="col-3" id="lm-mass-' + element + '" ></dd></dl>'
+                    + '<dl class="row"><dt class="col-9"> 5. Last Measurement Density&nbsp;:</dt><dd class="col-3" id="lm-density-' + element + '" ></dd></dl>'
+                    + '<dl class="row"><dt class="col-9"> 6. Average Volume&nbsp;:</dt><dd class="col-3" id="lm-averagevolume-' + element + '" ></dd></dl>'
                     + '</div>'
                     + '</div>'
                     + '<input type="hidden" id="input-modelid-' + element + '">'
@@ -622,6 +646,15 @@ function main() {
         mouseX = 0,
         mouseY = 0;
 
+    canvas.addEventListener('touchmove', function (e) {
+        onTouchMove(e);
+    }, false);
+    canvas.addEventListener('touchstart', function (e) {
+        onTouchStart(e);
+    }, false);
+    canvas.addEventListener('touchend', function (e) {
+        onTouchEnd(e);
+    }, false);
     canvas.addEventListener('mousemove', function (e) {
         onMouseMove(e);
     }, false);
@@ -778,6 +811,34 @@ function main() {
     }
 
     function onMouseUp(evt) {
+        evt.preventDefault();
+
+        mouseDown = false;
+    }
+
+    function onTouchMove(evt) {
+        if (!mouseDown) {
+            return;
+        }
+        evt.preventDefault();
+
+        var deltaX = evt.touches[0].clientX - mouseX,
+            deltaY = evt.touches[0].clientY - mouseY;
+        mouseX = evt.touches[0].clientX;
+        mouseY = evt.touches[0].clientY;
+        rotateScene(deltaX, deltaY);
+    }
+
+    function onTouchStart(evt) {
+        evt.preventDefault();
+
+        mouseDown = true;
+        mouseX = evt.touches[0].clientX;
+        mouseY = evt.touches[0].clientY;
+
+    }
+
+    function onTouchEnd(evt) {
         evt.preventDefault();
 
         mouseDown = false;
