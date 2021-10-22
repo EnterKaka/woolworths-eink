@@ -124,7 +124,7 @@ function drawChart(ctx,data,ft,tt){
                     autoSkip:true,
                     // maxRotation:0,
                     // minRotation:0,
-                    maxTicksLimit:10
+                    maxTicksLimit:5
                 },
                 title: {
                     display: true,
