@@ -40,9 +40,7 @@ function updateGraph (id){
     ctx = ctx.getContext('2d');
     let data = document.getElementById(inputname).value;
     data = JSON.parse(data);
-    console.log(data);
     // let tempdata = makeChartDataFromModelSetsWithRange(data,ft,tt);
-    console.log(ft,'---------------',tt);
     drawChart(ctx,data,ft,tt);
 }
 
@@ -76,7 +74,7 @@ function drawChart(ctx,data,ft,tt){
                 // color: '#0040ff',
                 font: {
                     family: 'Times',
-                    size: 25,
+                    size: 20,
                     lineHeight: 1.2,
                 },
             },
@@ -86,37 +84,6 @@ function drawChart(ctx,data,ft,tt){
             }
         },
         scales: {
-        //last setting
-        // xAxes: [{    
-        //     display: true,
-        //     gridLines: {
-        //         color: "#f3f3f3",
-        //         drawTicks: false,
-        //     },
-        //     scaleLabel: {
-        //         display: true,
-        //         labelString: 'Time'
-        //     },
-        //     offset: 60,
-        //     position: 'end',
-        //     labelOffset: {
-        //         x: 0,
-        //         y: 15
-        //       },
-        // }],
-        // yAxes: [{
-        //     display: true,
-        //     gridLines: {
-        //         color: "#f3f3f3",
-        //         drawTicks: false,
-        //     },
-        //     scaleLabel: {
-        //         display: true,
-        //         labelString: 'Volume in m**3'
-        //     }
-        // }]
-
-        //new 
             x: {
                 display: true,
                 reverse: true,
@@ -126,18 +93,18 @@ function drawChart(ctx,data,ft,tt){
                     // minRotation:0,
                     maxTicksLimit:5
                 },
-                title: {
-                    display: true,
-                    text: 'Time',
-                    // color: '#911',
-                    font: {
-                    family: 'Times',
-                    size: 20,
-                    weight: 'bold',
-                    lineHeight: 1.2,
-                    },
-                    padding: {top: 20, left: 0, right: 0, bottom: 0}
-                }
+                // title: {
+                //     display: true,
+                //     text: 'Time',
+                //     // color: '#911',
+                //     font: {
+                //     family: 'Times',
+                //     size: 20,
+                //     weight: 'bold',
+                //     lineHeight: 1.2,
+                //     },
+                //     padding: {top: 20, left: 0, right: 100, bottom: 0}
+                // }
             },
             y: {
                 display: true,
@@ -148,7 +115,6 @@ function drawChart(ctx,data,ft,tt){
                     font: {
                     family: 'Times',
                     size: 20,
-                    style: 'normal',
                     weight: 'bold',
                     lineHeight: 1.2
                     },
@@ -192,7 +158,6 @@ function drawChart(ctx,data,ft,tt){
         var lineChart = new Chart(ctx, config);
         chartlist.push(lineChart);
         chartnamelist.push(data.name);
-        console.log(lineChart);
 
         //set necessay extra information
         let lm_date = 'lm-date-' + data.name,
@@ -993,7 +958,8 @@ function getminmaxheightfromjson(lines){
 function load3dmodelwithidonlocal(modelname,_id){
     var posturl = '/data/view/' + _id;
     $.post(posturl, { id: _id }, function(data, status){
-        reloadModelFromJSONData(modelname,data.data);
+        reloadModelFromJSONData(data.name,data.data);
+
     });
 }
 

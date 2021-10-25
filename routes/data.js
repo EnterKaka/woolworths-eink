@@ -119,13 +119,21 @@ app.post('/view/(:id)', auth, async function(req, res, next) {
 			const cursor = await datas.findOne({_id: new ObjectId(id) });
 			// console.log(cursor);
 			// print a message if no documents were found
+			
 			if (cursor) {
+				var format = (Math.round(cursor.measurement[0].volume * 100) / 100).toFixed(2);
+				// req.flash('pcl_name', cursor.measurement[0].name + ' : ' + cursor.measurement[0].date + ' ' + cursor.measurement[0].time + ' (' + format + ')');
 				// replace console.dir with your callback to access individual elements
 				var pcl = cursor.measurement[0].pointcloud;
+				var display_name = '';
+				if(cursor.measurement[0].name.toLowerCase() === 'general')
+					display_name = cursor.measurement[0].name + ' : ' + cursor.measurement[0].date + ' ' + cursor.measurement[0].time;
+				else
+					display_name = cursor.measurement[0].name + ' : ' + cursor.measurement[0].date + ' ' + cursor.measurement[0].time + ' (' + format + ')';
 				res.header(200).json({
 					status: 'sucess',
 					data: pcl,
-					name: cursor.measurement[0].name,
+					name: display_name,
 				});
 			}else{
 				res.header(400).json({

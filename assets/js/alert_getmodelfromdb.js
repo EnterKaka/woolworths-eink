@@ -29,6 +29,7 @@ function onclick_get(){
             autoWidth: true,
             processing: true,
             data: queryResult.data,
+            order: [[ 1, "desc" ]],
             columns: [
                 { data: 'name',width: '25%', responsivePriority: 1, targets: 0 },
                 { data: 'date', width: '30%', targets: 1},

@@ -7,6 +7,9 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const config = require("config");
 const MongoClient = require("mongodb").MongoClient;
+const Setting = require('../model/Setting');
+var ObjectId = require('mongoose').Types.ObjectId;
+
 
 
 app.get('/', function(req, res) {
@@ -14,20 +17,66 @@ app.get('/', function(req, res) {
 	res.redirect('/dashboard')
 })
 
-app.get('/viewer', auth, function(req, res) {
+app.get('/viewer', auth, async function(req, res) {
 	// render to views/index.ejs template file
-	
-	res.render('pages/viewer', {
-		title: '3D Viewer - Owl Studio Web App',
-		priv: req.user.privilege,
-		model_data: '',
-	})
+	console.log('******** load view ************');
+	// const client = new MongoClient('mongodb://localhost:27017/', { useUnifiedTopology: true });
+
+	// if(loadedData !== ''){
+		// var result = [];
+		// loadedData.filter((obj)=>{
+		// 	if(obj.name.toLowerCase() === 'general')
+		// 		result.push(obj);
+		// });
+		// var mysortfunction = (a, b) => {
+
+		// 	var o1 = a['date'].toLowerCase();
+		// 	var o2 = b['date'].toLowerCase();
+		  
+		// 	var p1 = a['time'].toLowerCase();
+		// 	var p2 = b['time'].toLowerCase();
+		  
+		// 	if (o1 < o2) return -1;
+		// 	if (o1 > o2) return 1;
+		// 	if (p1 < p2) return -1;
+		// 	if (p1 > p2) return 1;
+		// 	return 0;
+		// }
+		// var latest = result.shift();
+		// let setobj = await Setting.findOne({_id: new ObjectId(latest.setid) });
+		// let dbname = setobj.dbname;
+		// let collectionname = setobj.collectionname;
+		// await client.connect();
+		// const database = client.db(dbname);
+		// const datas = database.collection(collectionname);
+		// // query for movies that have a runtime less than 15 minutes
+		// const cursor = await datas.findOne({_id: new ObjectId(latest._id) });
+		// // console.log(cursor);
+		// // print a message if no documents were found
+		// if (cursor) {
+		// 	// replace console.dir with your callback to access individual elements
+		// 	var pcl = cursor.measurement[0].pointcloud;
+		// 	req.flash("pointcloud", JSON.stringify(pcl));
+		// 	req.flash('pcl_name', cursor.measurement[0].name);
+
+		// }
+		res.render('pages/viewer', {
+			title: '3D Viewer - Owl Studio Web App',
+			priv: req.user.privilege,
+			model_data: '',
+		});
+	// }
+	// else{
+	// 	res.redirect('/data/');
+	// }
+
 })
 
 app.get('/dashboard', auth, function(req, res) {
 
 	console.log('********* load dashboard page ************');
 
+	const client = new MongoClient('mongodb://localhost:27017/', { useUnifiedTopology: true });
 	//This is all models that seperated with name.
 	var allmodels = [];
 	var allnames = [];
@@ -67,6 +116,48 @@ app.get('/dashboard', auth, function(req, res) {
 				allmodels = makeSortedDatasbytime(lastmodelname, allmodels);
 				// //sucess
 				if(loadedData !== ''){
+
+					/* load general data default */
+					var result = [];
+					loadedData.filter((obj)=>{
+						if(obj.name.toLowerCase() === 'general')
+							result.push(obj);
+					});
+					var mysortfunction = (a, b) => {
+			
+						var o1 = a['date'].toLowerCase();
+						var o2 = b['date'].toLowerCase();
+					  
+						var p1 = a['time'].toLowerCase();
+						var p2 = b['time'].toLowerCase();
+					  
+						if (o1 < o2) return -1;
+						if (o1 > o2) return 1;
+						if (p1 < p2) return -1;
+						if (p1 > p2) return 1;
+						return 0;
+					}
+					var latest = result.shift();
+					let setobj = await Setting.findOne({_id: new ObjectId(latest.setid) });
+					let dbname = setobj.dbname;
+					let collectionname = setobj.collectionname;
+					await client.connect();
+					const database = client.db(dbname);
+					const datas = database.collection(collectionname);
+					// query for movies that have a runtime less than 15 minutes
+					const cursor = await datas.findOne({_id: new ObjectId(latest._id) });
+					// console.log(cursor);
+					// print a message if no documents were found
+					if (cursor) {
+						// replace console.dir with your callback to access individual elements
+						var pcl = cursor.measurement[0].pointcloud;
+						req.flash("pointcloud", JSON.stringify(pcl));
+						var format = (Math.round(cursor.measurement[0].volume * 100) / 100).toFixed(2);
+						req.flash('pcl_name', cursor.measurement[0].name + ' : ' + cursor.measurement[0].date + ' ' + cursor.measurement[0].time);
+			
+					}
+			
+
 					res.render('pages/dashboard', {
 						title: 'Dashboard - Owl Studio Web App',
 						data: allmodels,
