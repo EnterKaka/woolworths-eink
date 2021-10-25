@@ -419,6 +419,7 @@
 
         <div class="modal fade text-left" id="directSave" tabindex="-1" role="dialog" aria-labelledby="directSaveLabel"
           aria-hidden="true" style="z-index:100001;">
+
           <div class="modal-dialog" role="document">
             <div class="modal-content">
               <div class="modal-header">
@@ -449,7 +450,7 @@
 
 
         <div class="modal fade text-left" id="editerModal" tabindex="-1" role="dialog"
-          aria-labelledby="editerModalLabel" aria-hidden="true" style="z-index:100000;padding-left:17px;">
+          aria-labelledby="editerModalLabel" aria-hidden="true" style="z-index:100000;">
           <div class="modal-dialog" role="document" style="max-width:1000px;height:90%;">
             <div class="modal-content" style="height:100%;">
               <div class="modal-header">
@@ -585,6 +586,13 @@
                 <button type="button" class="btn btn-primary" id="browser-save">Save</button>
               </div>
             </div>
+          </div>
+        </div>
+        <div
+          style="position:fixed;height:100%;width:100%;background:lightgrey;top:0;left:0;opacity:0.5;z-index:100002;display:none;"
+          id="loading">
+          <div class="spinner-border text-primary" role="status" style="top:50%;left:50%;position:absolute;">
+            <span class="sr-only">Loading...</span>
           </div>
         </div>
 

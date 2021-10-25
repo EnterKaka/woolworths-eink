@@ -2044,6 +2044,7 @@ document.getElementById('directSaveBtn').addEventListener('click', () => {
   //     z: array[i + 2]
   //   })
   // }
+  loading.style.display = 'block';
   $.ajax({
     url: "/data/modelsave",
     data: {
@@ -2078,9 +2079,11 @@ document.getElementById('directSaveBtn').addEventListener('click', () => {
     if (res.success)
       alert('success');
     else alert(res.error);
+    loading.style.display = 'none';
     $('#btn-dsClose').trigger('click');
   }).fail(() => {
     alert('network error');
+    loading.style.display = 'none';
     $('#btn-dsClose').trigger('click');
   })
 })
@@ -2224,7 +2227,7 @@ document.getElementById('browser-save').addEventListener('click', () => {
     sessionHistory[n].name = clonelist[i].children[0].innerText.trim();
     savedata.push(sessionHistory[n]);
   }
-
+  loading.style.display = 'block';
   $.ajax({
     url: "/data/multimodelsave",
     data: {
@@ -2237,9 +2240,12 @@ document.getElementById('browser-save').addEventListener('click', () => {
     if (res.success)
       alert('success');
     else alert(res.error);
+    loading.style.display = 'none';
     $('#browser-close').trigger('click');
+
   }).fail(() => {
     alert('network error');
+    loading.style.display = 'none';
     $('#browser-close').trigger('click');
   })
   sessionHistory = sessionHistory.filter((e, id) => {
@@ -2253,6 +2259,7 @@ document.getElementById('bhistory-tab').addEventListener('click', () => {
 document.getElementById('bdatabase-tab').addEventListener('click', () => {
   document.getElementById('browser-save').style.display = 'none';
 })
+const loading = document.getElementById('loading');
 
 
 // alert(new THREE.Vector3(parseFloat(2), parseFloat(2), parseFloat(2)).dot(new THREE.Vector3(parseFloat(4), parseFloat(2), parseFloat(2)).cross(new THREE.Vector3(parseFloat(2), parseFloat(4), parseFloat(2)))) / 6.0)
