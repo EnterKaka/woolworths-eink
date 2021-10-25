@@ -55,6 +55,8 @@ var historys = {
   step: 0,
   data: []
 }
+var sessionHistory = [];
+var dblist;
 //three.js point cloud viewer
 
 function main() {
@@ -883,6 +885,13 @@ function reloadGroundFromData(filename, content) {
   averageTop /= count;
   var geometry1 = new THREE.BufferGeometry().setFromPoints(points3d);
   groundTop = geometry1.attributes.position.array[2];
+  sessionHistory.push({
+    name: filename,
+    date: getDate(),
+    time: getTime(),
+    type: 'ground',
+    data: [...geometry1.attributes.position.array],
+  })
   geometry1.center();
   groundTop -= geometry1.attributes.position.array[2];
   // alert(groundTop)
@@ -923,7 +932,13 @@ function reloadModelFromData(filename, wholecontent) {
 
 
   var geometry1 = new THREE.BufferGeometry().setFromPoints(points3d);
-
+  sessionHistory.push({
+    name: filename,
+    date: getDate(),
+    time: getTime(),
+    type: 'model(txt)',
+    data: [...geometry1.attributes.position.array],
+  })
   if (colors.length > 0) {
     geometry1.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
   }
@@ -1033,6 +1048,13 @@ function reloadModelFromObjData(filename, wholecontent) {
   var colors = [];
 
   geometry1.copy(loader.parse(wholecontent).children[0].geometry);
+  sessionHistory.push({
+    name: filename,
+    date: getDate(),
+    time: getTime(),
+    type: 'model(obj)',
+    data: [...geometry1.attributes.position.array],
+  })
   heapCvalue = geometry1.attributes.position.array[2];
   geometry1.center();
   heapCvalue -= geometry1.attributes.position.array[2];
@@ -1158,7 +1180,13 @@ function reloadModelFromJSONData(filename, wholecontent) {
   });
 
   var geometry1 = new THREE.BufferGeometry().setFromPoints(points3d);
-
+  sessionHistory.push({
+    name: filename,
+    date: getDate(),
+    time: getTime(),
+    type: 'model(json)',
+    data: [...geometry1.attributes.position.array],
+  })
   if (colors.length > 0) {
     geometry1.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
   }
@@ -1238,8 +1266,20 @@ function reloadModelFromJSONData(filename, wholecontent) {
   setTimeout(() => { render() }, 2000)
 }
 
-function reloadModelFromArray(array) {
-
+function reloadModelFromArray(array, neededhistory = false) {
+  if (neededhistory == true) {
+    var clone = [];
+    for (var i = 0; i < array.length; i++) {
+      clone.push(array[i] + heapCvalue)
+    }
+    sessionHistory.push({
+      name: document.getElementById('modelpath').innerText,
+      date: getDate(),
+      time: getTime(),
+      type: 'model(edited)',
+      data: clone,
+    })
+  }
   var colors = [];
   var points2;
   var points3d = [];
@@ -1264,7 +1304,11 @@ function reloadModelFromArray(array) {
   if (colors.length > 0) {
     geometry1.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
   }
-
+  if (neededhistory == "center&heapCvalue") {
+    heapCvalue = geometry1.attributes.position.array[2];
+    geometry1.center();
+    heapCvalue -= geometry1.attributes.position.array[2];
+  }
   // geometry1.center();
 
   var material;
@@ -1601,7 +1645,7 @@ document.getElementById('btn-check').addEventListener('click', function () {
   polygon = [];
   count = 0;
   selectedGroup.geometry.setDrawRange(0, count);
-  reloadModelFromArray(updatePoints);
+  reloadModelFromArray(updatePoints, true);
   render()
   polygonRender()
 });
@@ -1618,7 +1662,7 @@ document.getElementById('btn-delete').addEventListener('click', function () {
   polygon = [];
   count = 0;
   selectedGroup.geometry.setDrawRange(0, count);
-  reloadModelFromArray(unselectedPoints);
+  reloadModelFromArray(unselectedPoints, true);
   render()
   polygonRender()
 });
@@ -1653,7 +1697,7 @@ document.getElementById('f1-filter').addEventListener('click', function () {
     alert("Delaunay 3D triangulation requires 4 or more points.")
     return;
   }
-  reloadModelFromArray(filteredPoints)
+  reloadModelFromArray(filteredPoints, true)
   render()
   polygonRender()
 });
@@ -1667,7 +1711,7 @@ document.getElementById('f2-filter').addEventListener('click', function () {
     alert("Delaunay 3D triangulation requires 4 or more points.")
     return;
   }
-  reloadModelFromArray(filteredPoints)
+  reloadModelFromArray(filteredPoints, true)
   render()
   polygonRender()
 });
@@ -1683,7 +1727,7 @@ document.getElementById('f3-filter').addEventListener('click', function () {
     alert("Delaunay 3D triangulation requires 4 or more points.")
     return;
   }
-  reloadModelFromArray(filteredPoints)
+  reloadModelFromArray(filteredPoints, true)
   render()
   polygonRender()
 });
@@ -1700,7 +1744,7 @@ document.getElementById('f4-filter').addEventListener('click', function () {
     alert("Delaunay 3D triangulation requires 4 or more points.")
     return;
   }
-  reloadModelFromArray(filteredPoints)
+  reloadModelFromArray(filteredPoints, true)
   render()
   polygonRender()
 });
@@ -1992,31 +2036,41 @@ document.getElementById('directSaveBtn').addEventListener('click', () => {
   var hour = dataobj.getHours();
   var min = dataobj.getMinutes();
   var sec = dataobj.getSeconds();
-  var jsonData = [];
-  for (var i = 0; i < array.length; i += 3) {
-    jsonData.push({
-      x: array[i],
-      y: array[i + 1],
-      z: array[i + 2]
-    })
-  }
+  // var jsonData = [];
+  // for (var i = 0; i < array.length; i += 3) {
+  //   jsonData.push({
+  //     x: array[i],
+  //     y: array[i + 1],
+  //     z: array[i + 2]
+  //   })
+  // }
   $.ajax({
     url: "/data/modelsave",
     data: {
+      db: document.getElementById('ds-database').value,
+      col: document.getElementById('ds-collection').value,
       modeldata:
+      // {
+      //   "datetime": `${date}.${month}.${year} ${hour}:${min}:${sec}`,
+      //   "measurement": [{
+      //     "date": `${year}-${month}-${date}`,
+      //     "mass": '',
+      //     "name": document.getElementById('ds-modelName').value,
+      //     "pointcloud": jsonData,
+      //     "remark": "",
+      //     "time": `${hour}:${min}:${sec}`,
+      //     "volume": document.getElementById('ds-modelVolume').value,
+      //   }],
+      //   "modifeod": "06.10.2021 22:19:47",
+      //   "name": "DeutscheBarytIndustrieOwlEye",
+      // }
       {
-        "datetime": `${date}.${month}.${year} ${hour}:${min}:${sec}`,
-        "measurement": [{
-          "date": `${year}-${month}-${date}`,
-          "mass": '',
-          "name": document.getElementById('ds-modelName').value,
-          "pointcloud": jsonData,
-          "remark": "",
-          "time": `${hour}:${min}:${sec}`,
-          "volume": document.getElementById('ds-modelVolume').value,
-        }],
-        "modifeod": "06.10.2021 22:19:47",
-        "name": "DeutscheBarytIndustrieOwlEye",
+        "date": `${year}.${month}.${date}`,
+        "name": document.getElementById('ds-modelName').value,
+        "data": array,
+        "time": `${hour}:${min}:${sec}`,
+        "type": `model`,
+        "volume": document.getElementById('ds-modelVolume').value,
       }
     },
     type: "post"
@@ -2030,4 +2084,175 @@ document.getElementById('directSaveBtn').addEventListener('click', () => {
     $('#btn-dsClose').trigger('click');
   })
 })
+
+function getDate() {
+  const dataobj = new Date();
+  var year = dataobj.getFullYear();
+  var month = dataobj.getMonth() + 1;
+  var date = dataobj.getDate();
+  return `${year}.${month}.${date}`;
+
+}
+
+function getTime() {
+  const dataobj = new Date();
+  var hour = dataobj.getHours();
+  var min = dataobj.getMinutes();
+  var sec = dataobj.getSeconds();
+  return `${hour}:${min}:${sec}`;
+}
+document.getElementById('browser-load').addEventListener('click', () => {
+  var id1 = document.getElementById('cdatabase-list').value;
+  var id2 = document.getElementById('ccollection-list').value;
+  var database = dblist[id1].db;
+  var collection = dblist[id1].col[id2];
+  console.log(dblist, database, collection)
+  $.ajax({
+    url: "/data/getmodellist",
+    data: {
+      db: database,
+      col: collection
+    },
+    type: "post"
+  }).done((res) => {
+    if (res.success) {
+      console.log(res.data)
+      const htable = document.getElementById('database-models');
+      htable.innerHTML = '';
+      for (var i = res.data.length - 1; i >= 0; i--) {
+        htable.innerHTML += `<tr>
+        <td>${res.data[i].name}</td>
+        <td>${res.data[i].date}</td>
+        <td>${res.data[i].time}</td>
+        <td>${res.data[i].type}</td>
+        <td style="width:170px;">
+          <button data-id=${i} type='button' class="dload-btn btn btn-icon btn-outline-primary  round btn-sm mr-1"
+            title='loading'><i class="ft-upload"></i>
+          </button>
+        </td>
+      </tr>`;
+      }
+      $('.dload-btn').click(function () {
+        console.log({ data: res.data })
+        document.getElementById('modelpath').innerText = this.parentElement.parentElement.children[0].innerText;
+        reloadModelFromArray(res.data[this.dataset.id].data, 'center&heapCvalue');
+        $('#browser-close').trigger('click');
+      })
+    }
+    else alert(res.error);
+    // $('#browser-close').trigger('click');
+  }).fail(() => {
+    alert('network error');
+    $('#browser-close').trigger('click');
+  })
+})
+document.getElementById('btn-emb').addEventListener('click', () => {
+  $.ajax({
+    url: "/data/getdatabaselist",
+    type: "get"
+  }).done((res) => {
+    if (res.error) alert('db error');
+    else if (res.success) {
+      console.log(res.data)
+      dblist = res.data;
+      if (dblist.length == 0) return;
+      const database = document.getElementById('cdatabase-list');
+      const collection = document.getElementById('ccollection-list');
+      database.innerHTML = "";
+      collection.innerHTML = "";
+      for (var i = 0; i < dblist.length; i++) {
+        database.innerHTML += `<option value="${i}">${dblist[i].db}</option>`;
+      }
+      for (var i = 0; i < dblist[0].col.length; i++) {
+        collection.innerHTML += `<option value="${i}">${dblist[0].col[i]}</option>`;
+      }
+      database.addEventListener('change', () => {
+        var id = database.value;
+        collection.innerHTML = "";
+        for (var i = 0; i < dblist[id].col.length; i++) {
+          collection.innerHTML += `<option value="${i}">${dblist[id].col[i]}</option>`;
+        }
+      })
+    }
+  }).fail(() => {
+    alert('network error');
+  })
+  const htable = document.getElementById('history-models');
+  htable.innerHTML = '';
+  for (var i = sessionHistory.length - 1; i >= 0; i--) {
+    if (!sessionHistory[i].deleted) {
+      htable.innerHTML += `<tr>
+        <td contenteditable="true" data-id=${i}>${sessionHistory[i].name}</td>
+        <td>${sessionHistory[i].date}</td>
+        <td>${sessionHistory[i].time}</td>
+        <td>${sessionHistory[i].type}</td>
+        <td style="width:170px;">
+          <button data-id=${i} type='button' class="hload-btn btn btn-icon btn-outline-primary  round btn-sm mr-1"
+            title='loading'><i class="ft-upload"></i>
+          </button>
+          <button data-id=${i} type='button' class="hdel-btn btn btn-icon btn-outline-primary  round btn-sm"
+            title='delete'><i class="ft-x-square"></i>
+          </button>
+        </td>
+      </tr>`;
+    }
+  }
+  $('.hload-btn').click(function () {
+    console.log({ this: this })
+    document.getElementById('modelpath').innerText = this.parentElement.parentElement.children[0].innerText;
+    reloadModelFromArray(sessionHistory[this.dataset.id].data, 'center&heapCvalue');
+    $('#browser-close').trigger('click');
+  })
+  $('.hdel-btn').click(function () {
+    console.log({ this: this })
+    sessionHistory[this.dataset.id].deleted = true;
+    $(this.parentElement.parentElement).remove();
+    // $('#browser-close').trigger('click');
+  })
+})
+document.getElementById('browser-save').addEventListener('click', () => {
+  var database = document.getElementById('hdatabase-name').value.trim();
+  var collection = document.getElementById('hcollection-name').value.trim();
+  if (database == "" || collection == "") {
+    alert('please enter database and collection name for saving.')
+    return;
+  }
+  var savedata = [];
+  var clonelist = document.getElementById('history-models').children;
+  for (var i = 0; i < clonelist.length; i++) {
+    var n = clonelist[i].children[0].dataset.id;
+    sessionHistory[n].name = clonelist[i].children[0].innerText.trim();
+    savedata.push(sessionHistory[n]);
+  }
+
+  $.ajax({
+    url: "/data/multimodelsave",
+    data: {
+      database,
+      collection,
+      savedata
+    },
+    type: "post"
+  }).done((res) => {
+    if (res.success)
+      alert('success');
+    else alert(res.error);
+    $('#browser-close').trigger('click');
+  }).fail(() => {
+    alert('network error');
+    $('#browser-close').trigger('click');
+  })
+  sessionHistory = sessionHistory.filter((e, id) => {
+    return !e.deleted;
+  })
+
+})
+document.getElementById('bhistory-tab').addEventListener('click', () => {
+  document.getElementById('browser-save').style.display = 'inline-block';
+})
+document.getElementById('bdatabase-tab').addEventListener('click', () => {
+  document.getElementById('browser-save').style.display = 'none';
+})
+
+
 // alert(new THREE.Vector3(parseFloat(2), parseFloat(2), parseFloat(2)).dot(new THREE.Vector3(parseFloat(4), parseFloat(2), parseFloat(2)).cross(new THREE.Vector3(parseFloat(2), parseFloat(4), parseFloat(2)))) / 6.0)

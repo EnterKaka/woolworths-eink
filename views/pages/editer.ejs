@@ -121,9 +121,8 @@
                             </div>
                           </li>
                           <li class="nav-item">
-                            <a class="nav-link" href="javascript:void(0)" data-toggle="modal"
-                              data-target="#editerModal">Editor
-                              Model Browser</a>
+                            <a class="nav-link" href="javascript:void(0)" data-toggle="modal" data-target="#editerModal"
+                              id="btn-emb">Editor Model Browser</a>
                           </li>
                           <!-- <li class="nav-item"><input type="text" class="form-control round btn-glow mb-1 mr-1"
                               id="count" style="height: 31px;padding-left: 15px;width: 81px;" min="0.1" max="10"
@@ -430,6 +429,10 @@
               </div>
               <div class="modal-body">
                 <div class="row toolbar" style="flex-direction: row;">
+                  <label for="ds-modelName" class="ml-1">Database Name</label>
+                  <input type="text" class="form-control ml-1 mr-1 mb-2" id="ds-database">
+                  <label for="ds-modelName" class="ml-1">Collection Name</label>
+                  <input type="text" class="form-control ml-1 mr-1 mb-2" id="ds-collection">
                   <label for="ds-modelName" class="ml-1">Model Name</label>
                   <input type="text" class="form-control ml-1 mr-1 mb-2" id="ds-modelName">
                   <label for="ds-modelVolume" class="ml-1">Model Volume</label>
@@ -474,50 +477,13 @@
                 <div class="tab-content px-1 pt-1">
                   <div role="tabpanel" class="tab-pane active" id="bhistory" aria-labelledby="bhistory-tab"
                     aria-expanded="true">
-                    <div class="table-responsive">
-                      <table class="table mb-0">
-                        <thead>
-                          <tr>
-                            <th>name</th>
-                            <th>date</th>
-                            <th>time</th>
-                            <th>type</th>
-                            <th>#</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          <tr>
-                            <!-- <th scope="row">1</th> -->
-                            <td contenteditable="true">example</td>
-                            <td>06.10.2021</td>
-                            <td>12:25:14</td>
-                            <td>model</td>
-                            <td style="width:170px;">
-                              <button type='button' class="btn btn-icon btn-outline-primary  round btn-sm"
-                                title='Open model from local pc'><i class="ft-upload"></i>
-                              </button>
-                              <button type='button' class="btn btn-icon btn-outline-primary  round btn-sm ml-1"
-                                title='Open model from local pc'><i class="ft-x"></i>
-                              </button>
-                            </td>
-                          </tr>
-                        </tbody>
-                      </table>
-                    </div>
-                  </div>
-                  <div class="tab-pane" id="bdatabase" role="tabpanel" aria-labelledby="bdatabase-tab"
-                    aria-expanded="false">
                     <div class="row">
                       <div class="col-xl-6 col-lg-12">
                         <div class="form-group">
                           <p class="text-bold-600 font-medium-2">
                             Database
                           </p>
-                          <select class="select2 form-control select2-hidden-accessible" id="default-select"
-                            data-select2-id="default-select" tabindex="-1" aria-hidden="true">
-                            <option value="AK" data-select2-id="323">Alaska</option>
-                            <option value="HI" data-select2-id="324">Hawaii</option>
-                          </select>
+                          <input type="text" class="form-control" id="hdatabase-name" />
                         </div>
                       </div>
                       <div class="col-xl-6 col-lg-12">
@@ -525,11 +491,7 @@
                           <p class="text-bold-600 font-medium-2">
                             Collection
                           </p>
-                          <select class="select2 form-control select2-hidden-accessible" id="default-select"
-                            data-select2-id="default-select" tabindex="-1" aria-hidden="true">
-                            <option value="AK" data-select2-id="323">Alaska</option>
-                            <option value="HI" data-select2-id="324">Hawaii</option>
-                          </select>
+                          <input type="text" class="form-control" id="hcollection-name" />
                         </div>
                       </div>
                     </div>
@@ -544,22 +506,73 @@
                             <th>#</th>
                           </tr>
                         </thead>
-                        <tbody>
-                          <tr>
-                            <!-- <th scope="row">1</th> -->
+                        <tbody id="history-models">
+                          <!-- <tr>
                             <td contenteditable="true">example</td>
                             <td>06.10.2021</td>
                             <td>12:25:14</td>
                             <td>model</td>
                             <td style="width:170px;">
-                              <button type='button' class="btn btn-icon btn-outline-primary  round btn-sm"
-                                title='Open model from local pc'><i class="ft-upload"></i>
+                              <button type='button' class="btn btn-icon btn-outline-primary  round btn-sm mr-1"
+                                title='loading'><i class="ft-upload"></i>
                               </button>
-                              <button type='button' class="btn btn-icon btn-outline-primary  round btn-sm ml-1"
-                                title='Open model from local pc'><i class="ft-x"></i>
+                              <button type='button' class="btn btn-icon btn-outline-primary  round btn-sm"
+                                title='delete'><i class="ft-x-square"></i>
                               </button>
                             </td>
+                          </tr> -->
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                  <div class="tab-pane" id="bdatabase" role="tabpanel" aria-labelledby="bdatabase-tab"
+                    aria-expanded="false">
+                    <div class="row">
+                      <div class="col-xl-4 col-lg-12">
+                        <div class="form-group">
+                          <p class="text-bold-600 font-medium-2">
+                            Database
+                          </p>
+                          <select class="select2 form-control select2-hidden-accessible" id="cdatabase-list"
+                            data-select2-id="default-select" tabindex="-1" aria-hidden="true">
+                            <!-- <option value="AK">Alaska</option>
+                            <option value="HI">Hawaii</option> -->
+                          </select>
+                        </div>
+                      </div>
+                      <div class="col-xl-4 col-lg-12">
+                        <div class="form-group">
+                          <p class="text-bold-600 font-medium-2">
+                            Collection
+                          </p>
+                          <select class="select2 form-control select2-hidden-accessible" id="ccollection-list"
+                            data-select2-id="default-select" tabindex="-1" aria-hidden="true">
+                            <!-- <option value="AK">Alaska</option>
+                            <option value="HI">Hawaii</option> -->
+                          </select>
+                        </div>
+                      </div>
+                      <div class="col-xl-4 col-lg-12">
+                        <div class="form-group">
+                          <button type="button" class="btn btn-outline-primary" style="margin-top:39px;"
+                            id="browser-load"><i class="ft-upload-cloud"></i> Load</button>
+                        </div>
+                      </div>
+
+                    </div>
+                    <div class="table-responsive">
+                      <table class="table mb-0">
+                        <thead>
+                          <tr>
+                            <th>name</th>
+                            <th>date</th>
+                            <th>time</th>
+                            <th>type</th>
+                            <th>#</th>
                           </tr>
+                        </thead>
+                        <tbody id="database-models">
+
                         </tbody>
                       </table>
                     </div>
@@ -568,8 +581,8 @@
 
               </div>
               <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary">Save</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal" id="browser-close">Close</button>
+                <button type="button" class="btn btn-primary" id="browser-save">Save</button>
               </div>
             </div>
           </div>

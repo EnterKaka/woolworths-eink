@@ -203,15 +203,137 @@ app.get('/edit/(:_id)', auth, async function (req, res, next) {
 
 app.post('/modelsave', auth, async function (req, res, next) {
 	const client = new MongoClient('mongodb://localhost:27017/', { useUnifiedTopology: true });
-	modeldata = req.body.modeldata;
-	console.log(modeldata)
+	var modeldata = req.body.modeldata;
+	var db = req.body.db;
+	var col = req.body.col;
+	console.log(db, col)
+	async function run() {
+		try {
+			await client.connect();
+			const database = client.db(db);
+			const collection = database.collection(col);
+			// query for movies that have a runtime less than 15 minutes
+			await collection.insertOne(modeldata);
+			res.header(200).json({
+				success: true
+			});
+			// print a message if no documents were found
+
+		} finally {
+			await client.close();
+		}
+	}
+	run().catch(
+		(err) => {
+			console.log("mongodb connect error ========");
+			console.error(err)
+			//  process.exit(1)
+			req.flash('error', err)
+			res.header(200).json({
+				error: 'db error'
+			});
+		}
+	);
+})
+app.post('/getmodellist', auth, async function (req, res, next) {
+	console.log('getmodellist')
+	const client = new MongoClient('mongodb://localhost:27017/', { useUnifiedTopology: true });
+	const dbname = req.body.db;
+	const colname = req.body.col;
+	console.log(req.body, dbname, colname)
+	async function run() {
+		try {
+			await client.connect();
+			const database = client.db(dbname);
+			const collection = database.collection(colname);
+			var testdata = await collection.findOne({});
+			if (!testdata.name || !testdata.date || !testdata.time || !testdata.data || !testdata.type) {
+				res.header(200).json({
+					error: "This collection doesn't seem to be for save model data."
+				});
+			}
+			else {
+				var data = await collection.find({}).toArray();
+				res.header(200).json({
+					success: true,
+					data: data,
+				});
+			}
+			// print a message if no documents were found
+
+		} finally {
+			await client.close()
+		}
+	}
+	run().catch(
+		(err) => {
+			console.log("mongodb connect error ========");
+			console.error(err)
+			//  process.exit(1)
+			req.flash('error', err)
+			res.header(200).json({
+				error: 'db error'
+			});
+		}
+	);
+})
+app.get('/getdatabaselist', auth, async function (req, res, next) {
+	const client = new MongoClient('mongodb://localhost:27017/', { useUnifiedTopology: true });
+	// console.log(modeldata)
 	async function run() {
 		try {
 			await client.connect();
 			const database = client.db('OwlEyeStudioWebInterface');
-			const collection = database.collection('models');
+			const adminDb = await database.admin();
+			const datalist = await adminDb.listDatabases()
+			const basenames = datalist.databases;
+			var dblist = [];
+			for (var i = 0; i < basenames.length; i++) {
+				const base = client.db(basenames[i].name);
+				const cols = await base.collections();
+				var dbcell = {};
+				dbcell.db = basenames[i].name;
+				dbcell.col = [];
+				for (var j = 0; j < cols.length; j++) {
+					dbcell.col.push(cols[j].collectionName);
+				}
+				dblist.push(dbcell);
+			}
+			res.header(200).json({
+				success: true,
+				data: dblist,
+			});
+			// print a message if no documents were found
+
+		} finally {
+			await client.close()
+		}
+	}
+	run().catch(
+		(err) => {
+			console.log("mongodb connect error ========");
+			console.error(err)
+			//  process.exit(1)
+			req.flash('error', err)
+			res.header(200).json({
+				error: 'db error'
+			});
+		}
+	);
+})
+app.post('/multimodelsave', auth, async function (req, res, next) {
+	const client = new MongoClient('mongodb://localhost:27017/', { useUnifiedTopology: true });
+	var modeldata = req.body.savedata;
+	var databaseName = req.body.database;
+	var collectionName = req.body.collection;
+	// console.log(modeldata)
+	async function run() {
+		try {
+			await client.connect();
+			const database = client.db(databaseName);
+			const collection = database.collection(collectionName);
 			// query for movies that have a runtime less than 15 minutes
-			await collection.insertOne(modeldata);
+			await collection.insertMany(modeldata);
 			res.header(200).json({
 				success: true
 			});
