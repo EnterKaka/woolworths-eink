@@ -5,42 +5,42 @@ var ObjectId = require('mongoose').Types.ObjectId;
 const auth = require("../middleware/auth");
 const Setting = require('../model/Setting');
 
-var dbname = 'OwlEyeStudioWebInterface' , collectionname = 'models';
+var dbname = 'OwlEyeStudioWebInterface', collectionname = 'models';
 
 // SHOW LIST OF USERS
-app.get('/', auth, async function(req, res, next) {
+app.get('/', auth, async function (req, res, next) {
 	const client = new MongoClient('mongodb://localhost:27017/', { useUnifiedTopology: true });
 	let allmembers = await Setting.find();
 	var dbs = [], collections = [];
 	let found = false;
-	allmembers.forEach( function(mem){
+	allmembers.forEach(function (mem) {
 		let db = mem.dbname.trim();
 		let col = mem.collectionname.trim();
 		found = false;
 		for (var i = 0; i < dbs.length && !found; i++) {
 			if (dbs[i] === db) {
-			  found = true;
-			  break;
+				found = true;
+				break;
 			}
 		}
-		if(!found){
+		if (!found) {
 			dbs.push(db);
 		}
 
 		found = false;
 		for (var i = 0; i < collections.length && !found; i++) {
 			if (collections[i] === col) {
-			  found = true;
-			  break;
+				found = true;
+				break;
 			}
 		}
-		if(!found){
+		if (!found) {
 			collections.push(col);
 		}
 	});
 	console.log(dbs, collections);
 
-	console.log('/data/--------',dbname, collectionname);
+	console.log('/data/--------', dbname, collectionname);
 	//session dbname and collection name save
 	req.session.dbname = dbname;
 	req.session.collectionname = collectionname;
@@ -56,13 +56,13 @@ app.get('/', auth, async function(req, res, next) {
 			// print a message if no documents were found
 			if ((await cursor.count()) === 0) {
 				console.log("No documents found!");
-		   		//  process.exit(1)
-		   		req.flash('error', 'No existed');
-		   		// redirect to users list page
-		   		res.header(400).json({status: 'fail'});
-			}else{
+				//  process.exit(1)
+				req.flash('error', 'No existed');
+				// redirect to users list page
+				res.header(400).json({ status: 'fail' });
+			} else {
 				// replace console.dir with your callback to access individual elements
-				await cursor.forEach(function(model) {
+				await cursor.forEach(function (model) {
 					let splitdata = model.datetime.split(' ');
 					let eachmodeldata = {
 						_id: model._id,
@@ -74,7 +74,7 @@ app.get('/', auth, async function(req, res, next) {
 					}
 					sentdata.push(eachmodeldata);
 				});
-				console.log('/data/-----',dbname, collectionname);
+				console.log('/data/-----', dbname, collectionname);
 				res.render('pages/data', {
 					title: 'Model DB - Owl Studio Web App',
 					dbname: dbname,
@@ -92,10 +92,10 @@ app.get('/', auth, async function(req, res, next) {
 		(err) => {
 			console.log("mongodb connect error ========");
 			console.error(err)
-		   	//  process.exit(1)
-		   	req.flash('error', err)
-		   	// redirect to users list page
-		   	res.render('pages/data', {
+			//  process.exit(1)
+			req.flash('error', err)
+			// redirect to users list page
+			res.render('pages/data', {
 				title: 'Model DB - Owl Studio Web App',
 				dbname: dbname,
 				collectionname: collectionname,
@@ -105,18 +105,18 @@ app.get('/', auth, async function(req, res, next) {
 	);
 });
 
-app.get('/view/(:_id)', auth, async function(req, res, next) {
+app.get('/view/(:_id)', auth, async function (req, res, next) {
 	// let model = await Model.findOne({datetime: req.params.datetime})
 	const client = new MongoClient('mongodb://localhost:27017/', { useUnifiedTopology: true });
 
-	console.log('/data/view/_id--------',dbname, collectionname);
+	console.log('/data/view/_id--------', dbname, collectionname);
 	async function run() {
 		try {
 			await client.connect();
 			const database = client.db(dbname);
 			const datas = database.collection(collectionname);
 			// query for movies that have a runtime less than 15 minutes
-			const cursor = await datas.findOne({_id: new ObjectId(req.params._id) });
+			const cursor = await datas.findOne({ _id: new ObjectId(req.params._id) });
 			// console.log(cursor);
 			// print a message if no documents were found
 			if (cursor) {
@@ -129,11 +129,11 @@ app.get('/view/(:_id)', auth, async function(req, res, next) {
 				req.flash("pointcloud", JSON.stringify(pcl));
 				req.flash('pcl_name', cursor.measurement[0].name)
 				res.redirect('/viewer');
-			}else{
+			} else {
 				console.log("No documents found!");
-		   		req.flash('error', 'No existed');
-		   		// redirect to users list page
-		   		res.redirect('/data/');
+				req.flash('error', 'No existed');
+				// redirect to users list page
+				res.redirect('/data/');
 			}
 		} finally {
 			await client.close();
@@ -143,28 +143,28 @@ app.get('/view/(:_id)', auth, async function(req, res, next) {
 		(err) => {
 			console.log("mongodb connect error ========");
 			console.error(err)
-		   	//  process.exit(1)
-		   	req.flash('error', err)
-		   	// redirect to users list page
-		   	res.redirect('/data/');
+			//  process.exit(1)
+			req.flash('error', err)
+			// redirect to users list page
+			res.redirect('/data/');
 		}
 	);
 
-	
+
 });
 
-app.get('/edit/(:_id)', auth, async function(req, res, next) {
+app.get('/edit/(:_id)', auth, async function (req, res, next) {
 	// let model = await Model.findOne({datetime: req.params.datetime})
 	const client = new MongoClient('mongodb://localhost:27017/', { useUnifiedTopology: true });
 
-	console.log('/data/edit/_id--------',dbname, collectionname);
+	console.log('/data/edit/_id--------', dbname, collectionname);
 	async function run() {
 		try {
 			await client.connect();
 			const database = client.db(dbname);
 			const datas = database.collection(collectionname);
 			// query for movies that have a runtime less than 15 minutes
-			const cursor = await datas.findOne({_id: new ObjectId(req.params._id) });
+			const cursor = await datas.findOne({ _id: new ObjectId(req.params._id) });
 			// console.log(cursor);
 			// print a message if no documents were found
 			if (cursor) {
@@ -177,11 +177,11 @@ app.get('/edit/(:_id)', auth, async function(req, res, next) {
 				req.flash("pointcloud", JSON.stringify(pcl));
 				req.flash('pcl_name', cursor.measurement[0].name)
 				res.redirect('/editer');
-			}else{
+			} else {
 				console.log("No documents found!");
-		   		req.flash('error', 'No existed');
-		   		// redirect to users list page
-		   		res.redirect('/data/');
+				req.flash('error', 'No existed');
+				// redirect to users list page
+				res.redirect('/data/');
 			}
 		} finally {
 			await client.close();
@@ -191,54 +191,87 @@ app.get('/edit/(:_id)', auth, async function(req, res, next) {
 		(err) => {
 			console.log("mongodb connect error ========");
 			console.error(err)
-		   	//  process.exit(1)
-		   	req.flash('error', err)
-		   	// redirect to users list page
-		   	res.redirect('/data/');
+			//  process.exit(1)
+			req.flash('error', err)
+			// redirect to users list page
+			res.redirect('/data/');
 		}
 	);
 
-	
+
 });
 
-app.post('/get', auth, async function(req, res, next) {
+app.post('/modelsave', auth, async function (req, res, next) {
+	const client = new MongoClient('mongodb://localhost:27017/', { useUnifiedTopology: true });
+	modeldata = req.body.modeldata;
+	console.log(modeldata)
+	async function run() {
+		try {
+			await client.connect();
+			const database = client.db('OwlEyeStudioWebInterface');
+			const collection = database.collection('models');
+			// query for movies that have a runtime less than 15 minutes
+			await collection.insertOne(modeldata);
+			res.header(200).json({
+				success: true
+			});
+			// print a message if no documents were found
+
+		} finally {
+			await client.close();
+		}
+	}
+	run().catch(
+		(err) => {
+			console.log("mongodb connect error ========");
+			console.error(err)
+			//  process.exit(1)
+			req.flash('error', err)
+			res.header(200).json({
+				error: 'db error'
+			});
+		}
+	);
+})
+
+app.post('/get', auth, async function (req, res, next) {
 	dbname = req.body.dbname;
 	collectionname = req.body.collectionname;
 
 	//session dbname and collection name save
 	req.session.dbname = dbname;
 	req.session.collectionname = collectionname;
-	
+
 	const client = new MongoClient('mongodb://localhost:27017/', { useUnifiedTopology: true });
 	let allmembers = await Setting.find();
 	let dbs = [], collections = [];
-	allmembers.forEach( function(mem){
+	allmembers.forEach(function (mem) {
 		let db = mem.dbname.trim();
 		let col = mem.collectionname.trim();
 		found = false;
 		for (var i = 0; i < dbs.length && !found; i++) {
 			if (dbs[i] === db) {
-			  found = true;
-			  break;
+				found = true;
+				break;
 			}
 		}
-		if(!found){
+		if (!found) {
 			dbs.push(db);
 		}
 
 		found = false;
 		for (var i = 0; i < collections.length && !found; i++) {
 			if (collections[i] === col) {
-			  found = true;
-			  break;
+				found = true;
+				break;
 			}
 		}
-		if(!found){
+		if (!found) {
 			collections.push(col);
 		}
 	});
 
-	console.log('/data/get/--------',dbname, collectionname);
+	console.log('/data/get/--------', dbname, collectionname);
 	async function run() {
 		try {
 			await client.connect();
@@ -250,13 +283,13 @@ app.post('/get', auth, async function(req, res, next) {
 			// print a message if no documents were found
 			if ((await cursor.count()) === 0) {
 				console.log("No documents found!");
-		   		//  process.exit(1)
-		   		req.flash('error', 'No existed');
-		   		// redirect to users list page
-		   		res.header(400).json({status: 'fail'});
-			}else{
+				//  process.exit(1)
+				req.flash('error', 'No existed');
+				// redirect to users list page
+				res.header(400).json({ status: 'fail' });
+			} else {
 				// replace console.dir with your callback to access individual elements
-				await cursor.forEach(function(model) {
+				await cursor.forEach(function (model) {
 					let splitdata = model.datetime.split(' ');
 					let eachmodeldata = {
 						_id: model._id,
@@ -274,7 +307,7 @@ app.post('/get', auth, async function(req, res, next) {
 				// redirect to users list page
 				res.header(200).json({
 					status: 'success',
-					data: sentdata 
+					data: sentdata
 				});
 			}
 		} finally {
@@ -285,15 +318,15 @@ app.post('/get', auth, async function(req, res, next) {
 		(err) => {
 			console.log("mongodb connect error ========");
 			console.error(err)
-		   	//  process.exit(1)
-		   	req.flash('error', err)
-		   	// redirect to users list page
-		   	res.render('pages/data', {
+			//  process.exit(1)
+			req.flash('error', err)
+			// redirect to users list page
+			res.render('pages/data', {
 				title: 'Model DB - Owl Studio Web App',
 				dbname: dbname,
 				collectionname: collectionname,
 				data: [],
-				dbs:dbs,
+				dbs: dbs,
 				collections: collections,
 			});
 		}

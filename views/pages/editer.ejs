@@ -21,7 +21,7 @@
     <%- include('../partials/sidebar'); %>
 
       <!-- dashboard -->
-      <div class="app-content content">
+      <div class="app-content content" id="editArea">
         <div class="content-wrapper">
           <div class="content-wrapper-before"></div>
           <div class="content-header row">
@@ -56,7 +56,8 @@
                         <% }else{ %>
                           <h4 class="card-title" id='modelpath'>filename</h4>
                           <% } %>
-                            <label id='groundpath' style="margin-top:5px; margin-bottom:0;font-size:12px;">GroundFile :
+                            <label>GroundFile : </label><label id='groundpath'
+                              style="margin-top:5px; margin-bottom:0;font-size:12px;">
                             </label>
                             <a class="heading-elements-toggle"><i class="la la-ellipsis-v font-medium-3"></i></a>
                             <div class="heading-elements">
@@ -122,7 +123,7 @@
                           <li class="nav-item">
                             <a class="nav-link" href="javascript:void(0)" data-toggle="modal"
                               data-target="#editerModal">Editor
-                              Model Browser</button>
+                              Model Browser</a>
                           </li>
                           <!-- <li class="nav-item"><input type="text" class="form-control round btn-glow mb-1 mr-1"
                               id="count" style="height: 31px;padding-left: 15px;width: 81px;" min="0.1" max="10"
@@ -137,34 +138,38 @@
                               <!-- <p data-nsfw-filter-status="swf">Oat cake marzipan cake lollipop caramels wafer pie jelly beans. Icing halvah chocolate cake carrot cake. Jelly beans carrot cake marshmallow gingerbread chocolate cake. Gummies cupcake croissant.</p> -->
 
                               <input type="color" value="#87CEEB" style="height: 31px;width:60px;"
-                                class="btn btn-icon btn-outline-success btn-glow round btn-sm mr-1 mb-1"
-                                id="pointcolor">
+                                class="btn btn-icon btn-outline-success btn-glow round btn-sm mr-1 mb-1" id="pointcolor"
+                                title="set points color">
                               <input type="color" value="#800080" style="height: 31px;width:60px;"
                                 class="btn btn-icon btn-outline-success btn-glow round btn-sm mr-1 mb-1"
-                                id="delaunycolor">
+                                id="delaunycolor" title="set 3D trianglation mesh's color">
                               <div id="delaunyDiv" class="form-group pb-0 mb-1"
-                                style="padding-top: 3px; padding-left:10px; margin-bottom:0px;">
+                                style="padding-top: 3px; padding-left:10px; margin-bottom:0px;"
+                                title="set 2D delauny trianglation (shift+q)">
                                 <input type="checkbox" data-size="sm" id="delauny" class="switchery"
                                   data-color="success" data-secondary-color="success" data-switchery="true"
                                   style="display: none;">
                                 <label for="delauny" class="font-medium-2 text-bold-600">delauny(2D)</label>
                               </div>
                               <div id="delaunyDiv3" class="form-group pb-0 mb-1"
-                                style="padding-top: 3px; padding-left:10px; margin-bottom:0px;">
+                                style="padding-top: 3px; padding-left:10px; margin-bottom:0px;"
+                                title="set 3D delauny trianglation (shift+w)">
                                 <input type="checkbox" data-size="sm" id="delauny3" class="switchery"
                                   data-color="success" data-secondary-color="success" data-switchery="true"
                                   style="display: none;">
                                 <label for="delauny3" class="font-medium-2 text-bold-600">delauny(3D)</label>
                               </div>
                               <div id="surfaceDiv" class="form-group pb-0 mb-1"
-                                style="padding-top: 3px; padding-left:10px; margin-bottom:0px;">
+                                style="padding-top: 3px; padding-left:10px; margin-bottom:0px;"
+                                title="set for 2/3D trianglation mesh's surface (shift+e)">
                                 <input type="checkbox" data-size="sm" id="surface" class="switchery"
                                   data-color="success" data-secondary-color="success" data-switchery="true"
                                   style="display: none;">
                                 <label for="surface" class="font-medium-2 text-bold-600">surface</label>
                               </div>
                               <div id="heightmapColorDiv" class="form-group pb-0 mb-1"
-                                style="padding-top: 3px; padding-left:10px; margin-bottom:0px; flex-grow:20;">
+                                style="padding-top: 3px; padding-left:10px; margin-bottom:0px; flex-grow:20;"
+                                title="set heightmap color for points/mesh (shift+r)">
                                 <input type="checkbox" data-size="sm" id="heightmapColor" checked class="switchery"
                                   data-color="success" data-secondary-color="success" data-switchery="true"
                                   style="display: none;">
@@ -176,12 +181,13 @@
                             <div class="row toolbar">
                               <input type="color" value="#87CEEB" style="height: 31px;width:60px;"
                                 class="btn btn-icon btn-outline-primary btn-glow round btn-sm mr-1 mb-1"
-                                id="polygoncolor">
+                                id="polygoncolor" title="set polygon's color">
                               <input type="color" value="#87CEEB" style="height: 31px;width:60px;"
                                 class="btn btn-icon btn-outline-primary btn-glow round btn-sm mr-1 mb-1"
-                                id="selectedcolor">
+                                id="selectedcolor" title="set polygon's color">
                               <div id="selectedsize" class="form-group pb-0 mb-1"
-                                style="height: 31px;width: 60px; padding-left:10px;padding-top: 7px; margin-bottom:0px;">
+                                style="height: 31px;width: 60px; padding-left:10px;padding-top: 7px; margin-bottom:0px;"
+                                title="set selected points size">
                                 <input type="range" class="mr-1 " id="vol" name="vol" min="0.1" max="1" step="0.1"
                                   value="0.2">
                               </div>
@@ -191,46 +197,43 @@
                             <div class="row toolbar">
                               <button type='button'
                                 class="btn btn-icon btn-outline-success btn-glow round active btn-sm mr-1 mb-1"
-                                title='Open model from local pc' id='btn-move'>
+                                title='move tool (shift+a)' id='btn-move'>
                                 <i class="ft-move"></i>
                               </button>
                               <button type='button'
                                 class="btn btn-icon btn-outline-success btn-glow round btn-sm mr-1 mb-1"
-                                title='Open model from local pc' id='btn-point'>
+                                title='point select tool (shift+z)' id='btn-point'>
                                 <i class="ft-edit-2"></i>
                               </button>
                               <button type='button'
                                 class="btn btn-icon btn-outline-success btn-glow round btn-sm mr-1 mb-1"
-                                title='Open model from local pc' id='btn-polygon'>
+                                title='polygon draw tool (shift+d)' id='btn-polygon'>
                                 <i class="ft-octagon"></i>
                               </button>
                               <button type='button'
                                 class="btn btn-icon btn-outline-success btn-glow round btn-sm mr-3 mb-1"
-                                title='Open model from local pc' id='btn-pencil'>
+                                title='pencil tool for point selection (shift+f)' id='btn-pencil'>
                                 <i class="ft-edit-3"></i>
                               </button>
 
 
                               <button type='button'
                                 class="btn btn-icon btn-outline-success btn-glow round btn-sm mr-1 mb-1"
-                                title='Open model from local pc' id='btn-check'>
+                                title='get selected points (shift+v)' id='btn-check'>
                                 <i class="ft-check-circle"></i>
                               </button>
                               <button type='button'
                                 class="btn btn-icon btn-outline-success btn-glow round btn-sm mr-1 mb-1"
-                                title='Open model from local pc' id='btn-change'>
+                                title='change between selected/unselected points (shift+c)' id='btn-change'>
                                 <i class="ft-refresh-cw"></i>
                               </button>
                               <button type='button'
                                 class="btn btn-icon btn-outline-success btn-glow round btn-sm mr-1 mb-1"
-                                title='Open model from local pc' id='btn-delete'>
+                                title='delete selected points (shift+x)' id='btn-delete'>
                                 <i class="ft-x"></i>
                               </button>
                               <input type="file" id="ground-file" style="display:none;" accept=".txt">
-                              <button type='button'
-                                class="btn btn-icon btn-outline-success btn-glow round btn-sm mr-1 mb-1"
-                                title='Open model from local pc' id='btn-volume'> Volum test
-                              </button>
+
 
                             </div>
                           </div>
@@ -241,23 +244,28 @@
                                 id="input_model">
                               <button type='button'
                                 class="btn btn-icon btn-outline-primary btn-glow round btn-sm mr-1 mb-1"
-                                title='Open model from local pc' id='btn-openfromLocal'>
+                                title='load model from txt,obj file' id='btn-openfromLocal'>
                                 <i class="ft-upload"></i>
                               </button>
                               <button type='button' style="float:right;"
                                 class="btn btn-icon btn-outline-primary btn-glow round btn-sm mr-1 mb-1"
-                                title='Open model from local pc' id='btn-save'>
+                                title='save model into db (models collection) (shift+s)' id='btn-directSave'
+                                data-toggle="modal" data-target="#directSave">
                                 <i class="ft-save"></i>
                               </button>
                               <button type='button' style="float:right;"
                                 class="btn btn-icon btn-outline-primary btn-glow round btn-sm mr-1 mb-1"
-                                title='Open model from local pc' id='btn-download' data-toggle="modal"
+                                title='download model with txt,obj file' id='btn-download' data-toggle="modal"
                                 data-target="#exampleModal">
                                 <i class="ft-download"></i>
                               </button>
                               <button type='button'
                                 class="btn btn-icon btn-outline-primary btn-glow round btn-sm mr-1 mb-1"
-                                title='Open model from local pc' id='btn-ground'> set Ground File
+                                title='set ground file' id='btn-ground'> set Ground File
+                              </button>
+                              <button type='button'
+                                class="btn btn-icon btn-outline-primary btn-glow round btn-sm mr-1 mb-1"
+                                title='test volume' id='btn-volume'> Volume test
                               </button>
                               <% if(messages.pointcloud){ %>
                                 <input type="hidden" id="pointcloud" value='<%- messages.pointcloud %>'>
@@ -268,12 +276,12 @@
                           <div class="tab-pane" id="dropdownIcon1" role="tabpanel" aria-labelledby="dropdownIcon1-tab"
                             aria-expanded="false">
                             <div class="row toolbar">
-                              <div class="badge badge-pill badge-primary mb-1 mr-1" style="">Grid Minimum
+                              <div class="badge badge-pill badge-primary mb-1 mr-1">Grid Minimum
                                 Filter
                               </div>
                               <input type="number" class="form-control round btn-glow mb-1 mr-1" id="f1-cell-size"
                                 style="height: 31px;padding-left: 15px;width: 81px;" min="0.1" max="10" step="0.1"
-                                value="0.5">
+                                value="0.5" title="set cell size">
                               <button type='button' style="float:right;"
                                 class="btn btn-icon btn-outline-primary btn-glow round btn-sm mb-1"
                                 title='Open model from local pc' id='f1-filter'>
@@ -284,12 +292,12 @@
                           <div class="tab-pane" id="dropdownIcon2" role="tabpanel" aria-labelledby="dropdownIcon2-tab"
                             aria-expanded="false">
                             <div class="row toolbar">
-                              <div class="badge badge-pill badge-primary mb-1 mr-1" style="">Voxel Grid
+                              <div class="badge badge-pill badge-primary mb-1 mr-1">Voxel Grid
                                 Filter
                               </div>
                               <input type="number" class="form-control round btn-glow mb-1 mr-1" id="f2-cell-size"
                                 style="height: 31px;padding-left: 15px;width: 81px;" min="0.1" max="10" step="0.1"
-                                value="0.5">
+                                value="0.5" title="set cell size">
                               <button type='button' style="float:right;"
                                 class="btn btn-icon btn-outline-primary btn-glow round btn-sm mb-1"
                                 title='Open model from local pc' id='f2-filter'>
@@ -300,16 +308,16 @@
                           <div class="tab-pane" id="dropdownIcon3" role="tabpanel" aria-labelledby="dropdownIcon3-tab"
                             aria-expanded="false">
                             <div class="row toolbar">
-                              <div class="badge badge-pill badge-primary mb-1 mr-1" style="">Statistical
+                              <div class="badge badge-pill badge-primary mb-1 mr-1">Statistical
                                 Outlier Removal
                                 Filter
                               </div>
                               <input type="number" class="form-control round btn-glow mb-1 mr-1" id="f3-number"
                                 style="height: 31px;padding-left: 15px;width: 81px;" min="1" max="100" step="1"
-                                value="30">
+                                value="30" title="set points number for calculation">
                               <input type="number" class="form-control round btn-glow mb-1 mr-1" id="f3-deviation"
                                 style="height: 31px;padding-left: 15px;width: 81px;" min="0.1" max="10" step="0.1"
-                                value="0.5">
+                                value="0.5" title="Standard Deviation">
                               <button type='button' style="float:right;"
                                 class="btn btn-icon btn-outline-primary btn-glow round btn-sm mb-1"
                                 title='Open model from local pc' id='f3-filter'>
@@ -320,21 +328,21 @@
                           <div class="tab-pane" id="dropdownIcon4" role="tabpanel" aria-labelledby="dropdownIcon4-tab"
                             aria-expanded="false">
                             <div class="row toolbar">
-                              <div class="badge badge-pill badge-primary mb-1 mr-1" style="">Pass Through
+                              <div class="badge badge-pill badge-primary mb-1 mr-1">Pass Through
                                 Filter
                               </div>
                               <select class="form-control round btn-glow mb-1 mr-1" style="height: 31px;padding-left: 15px;
-                                width: 60px;padding-right: 0;" id="f4-pass">
+                                width: 60px;padding-right: 0;" id="f4-pass" title="set pass(axis)">
                                 <option value="x">X</option>
                                 <option value="y">Y</option>
                                 <option value="z">Z</option>
                               </select>
                               <input type="number" class="form-control round btn-glow mb-1 mr-1" id="f4-limit1"
                                 style="height: 31px;padding-left: 15px;width: 81px;" min="0" max="10000" step="1"
-                                value="0">
+                                value="0" title="set min limit">
                               <input type="number" class="form-control round btn-glow mb-1 mr-1" id="f4-limit2"
                                 style="height: 31px;padding-left: 15px;width: 81px;" min="1" max="10000" step="1"
-                                value="500">
+                                value="500" title="set max limit">
                               <button type='button' style="float:right;"
                                 class="btn btn-icon btn-outline-primary btn-glow round btn-sm mb-1"
                                 title='Open model from local pc' id='f4-filter'>
@@ -385,8 +393,8 @@
 
         <!-- page footer -->
         <div class="modal fade text-left" id="exampleModal" tabindex="-1" role="dialog"
-          aria-labelledby="exampleModalLabel" aria-hidden="true">
-          <div class="modal-dialog" role="document" style="margin: 18.75rem auto;">
+          aria-labelledby="exampleModalLabel" aria-hidden="true" style="z-index:100001;">
+          <div class="modal-dialog" role="document">
             <div class="modal-content">
               <div class="modal-header">
                 <h5 class="modal-title" id="exampleModalLabel">Please choose download file type</h5>
@@ -410,32 +418,158 @@
           </div>
         </div>
 
-
-        <div class="modal fade text-left" id="editerModal" tabindex="-1" role="dialog"
-          aria-labelledby="editerModalLabel" aria-hidden="true">
+        <div class="modal fade text-left" id="directSave" tabindex="-1" role="dialog" aria-labelledby="directSaveLabel"
+          aria-hidden="true" style="z-index:100001;">
           <div class="modal-dialog" role="document">
             <div class="modal-content">
               <div class="modal-header">
-                <h5 class="modal-title" id="editerModalLabel">New message</h5>
+                <h5 class="modal-title" id="directSaveLabel">Please enter(confirm) model's name and volume</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                   <span aria-hidden="true">×</span>
                 </button>
               </div>
               <div class="modal-body">
-                <form>
-                  <div class="form-group">
-                    <label for="recipient-name" class="col-form-label">Recipient:</label>
-                    <input type="text" class="form-control" id="recipient-name">
+                <div class="row toolbar" style="flex-direction: row;">
+                  <label for="ds-modelName" class="ml-1">Model Name</label>
+                  <input type="text" class="form-control ml-1 mr-1 mb-2" id="ds-modelName">
+                  <label for="ds-modelVolume" class="ml-1">Model Volume</label>
+                  <input type="text" class="form-control ml-1 mr-1 mb-2" id="ds-modelVolume">
+                </div>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal" id="btn-dsClose">Close</button>
+                <button type="button" class="btn btn-primary" id="directSaveBtn">Save</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+
+        <div class="modal fade text-left" id="editerModal" tabindex="-1" role="dialog"
+          aria-labelledby="editerModalLabel" aria-hidden="true" style="z-index:100000;padding-left:17px;">
+          <div class="modal-dialog" role="document" style="max-width:1000px;height:90%;">
+            <div class="modal-content" style="height:100%;">
+              <div class="modal-header">
+                <!-- <h5 class="modal-title" id="editerModalLabel" style="font-weight:800;">Editor Model Browser</h5> -->
+                <ul class="nav nav-tabs">
+                  <li class="nav-item">
+                    <a class="nav-link active" id="bhistory-tab" data-toggle="tab" href="#bhistory" aria-controls="home"
+                      aria-expanded="true">history</a>
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link" id="bdatabase-tab" data-toggle="tab" href="#bdatabase" aria-controls="profile"
+                      aria-expanded="false">database</a>
+                  </li>
+                </ul>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">×</span>
+                </button>
+              </div>
+              <div class="modal-body" style="overflow-y: auto;padding-top:0;">
+                <!-- <button type='button' style="margin:10px;" class="btn btn-outline-primary btn-glow round"
+                  title='Open model from local pc'>
+                  <i class="ft-save"></i> Save
+                </button> -->
+
+                <div class="tab-content px-1 pt-1">
+                  <div role="tabpanel" class="tab-pane active" id="bhistory" aria-labelledby="bhistory-tab"
+                    aria-expanded="true">
+                    <div class="table-responsive">
+                      <table class="table mb-0">
+                        <thead>
+                          <tr>
+                            <th>name</th>
+                            <th>date</th>
+                            <th>time</th>
+                            <th>type</th>
+                            <th>#</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr>
+                            <!-- <th scope="row">1</th> -->
+                            <td contenteditable="true">example</td>
+                            <td>06.10.2021</td>
+                            <td>12:25:14</td>
+                            <td>model</td>
+                            <td style="width:170px;">
+                              <button type='button' class="btn btn-icon btn-outline-primary  round btn-sm"
+                                title='Open model from local pc'><i class="ft-upload"></i>
+                              </button>
+                              <button type='button' class="btn btn-icon btn-outline-primary  round btn-sm ml-1"
+                                title='Open model from local pc'><i class="ft-x"></i>
+                              </button>
+                            </td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
                   </div>
-                  <div class="form-group">
-                    <label for="message-text" class="col-form-label">Message:</label>
-                    <textarea class="form-control" id="message-text"></textarea>
+                  <div class="tab-pane" id="bdatabase" role="tabpanel" aria-labelledby="bdatabase-tab"
+                    aria-expanded="false">
+                    <div class="row">
+                      <div class="col-xl-6 col-lg-12">
+                        <div class="form-group">
+                          <p class="text-bold-600 font-medium-2">
+                            Database
+                          </p>
+                          <select class="select2 form-control select2-hidden-accessible" id="default-select"
+                            data-select2-id="default-select" tabindex="-1" aria-hidden="true">
+                            <option value="AK" data-select2-id="323">Alaska</option>
+                            <option value="HI" data-select2-id="324">Hawaii</option>
+                          </select>
+                        </div>
+                      </div>
+                      <div class="col-xl-6 col-lg-12">
+                        <div class="form-group">
+                          <p class="text-bold-600 font-medium-2">
+                            Collection
+                          </p>
+                          <select class="select2 form-control select2-hidden-accessible" id="default-select"
+                            data-select2-id="default-select" tabindex="-1" aria-hidden="true">
+                            <option value="AK" data-select2-id="323">Alaska</option>
+                            <option value="HI" data-select2-id="324">Hawaii</option>
+                          </select>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="table-responsive">
+                      <table class="table mb-0">
+                        <thead>
+                          <tr>
+                            <th>name</th>
+                            <th>date</th>
+                            <th>time</th>
+                            <th>type</th>
+                            <th>#</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr>
+                            <!-- <th scope="row">1</th> -->
+                            <td contenteditable="true">example</td>
+                            <td>06.10.2021</td>
+                            <td>12:25:14</td>
+                            <td>model</td>
+                            <td style="width:170px;">
+                              <button type='button' class="btn btn-icon btn-outline-primary  round btn-sm"
+                                title='Open model from local pc'><i class="ft-upload"></i>
+                              </button>
+                              <button type='button' class="btn btn-icon btn-outline-primary  round btn-sm ml-1"
+                                title='Open model from local pc'><i class="ft-x"></i>
+                              </button>
+                            </td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
                   </div>
-                </form>
+                </div>
+
               </div>
               <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary">Send message</button>
+                <button type="button" class="btn btn-primary">Save</button>
               </div>
             </div>
           </div>

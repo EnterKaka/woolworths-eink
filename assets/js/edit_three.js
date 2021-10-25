@@ -50,7 +50,7 @@ var camera, count = 0, line, positions, renderer, scene, canvas, parent_canvas, 
 var group, marker, mesh, raycaster, mouse, toolstate = 'move', lookatP = { x: 0, y: 0, z: 0 };
 var selectedPoints, selectedGroup, polygon = [], drawing = true;
 var mouseDown, mouseRightDown, mouseX, mouseY;
-var heapCvalue = 0, groundTop = 0;
+var heapCvalue = 0, groundTop = 0, averageTop, minTop, maxTop;
 var historys = {
   step: 0,
   data: []
@@ -309,7 +309,7 @@ function main() {
   if (tempvaluetag) {
     pointcloud = tempvaluetag.value;
     pointcloud = JSON.parse(pointcloud);
-    let modelname = '';
+    let modelname = 'new_Model';
     reloadModelFromJSONData(modelname, pointcloud);
   } else {
     loader.load('./3dmodels/Weissspat_1632872292.txt', function (text) {
@@ -859,25 +859,38 @@ function customTriangulate(points3d) {
 }
 
 function reloadGroundFromData(filename, content) {
-  $('#groundpath').html("GroundFile : " + filename);
+  $('#groundpath').html(filename);
   let lines = content.split('\n');
   groundTop = 0;
+  maxTop = -Infinity;
+  minTop = Infinity;
+  averageTop = 0;
   let count = 0;
+
+  var points3d = [];
   for (let line of lines) {
     line = line.trim();
     if (line.charAt(0) === '#') continue; // skip comments
     let lineValues = line.split(/\s+/);
     if (lineValues.length === 3) {
-      groundTop += parseFloat(lineValues[2]);
+      points3d.push(new THREE.Vector3(parseFloat(lineValues[0]), parseFloat(lineValues[1]), parseFloat(lineValues[2])));
+      averageTop += parseFloat(lineValues[2]);
       count++;
+      if (maxTop < lineValues[2]) maxTop = lineValues[2];
+      if (minTop > lineValues[2]) minTop = lineValues[2];
     }
   }
-  groundTop /= count;
+  averageTop /= count;
+  var geometry1 = new THREE.BufferGeometry().setFromPoints(points3d);
+  groundTop = geometry1.attributes.position.array[2];
+  geometry1.center();
+  groundTop -= geometry1.attributes.position.array[2];
   // alert(groundTop)
 }
 
 function reloadModelFromData(filename, wholecontent) {
-
+  historys.step = 0;
+  historys.data = [];
   $('#modelpath').html(filename);
   var lines = wholecontent.split('\n');
   getminmaxhegiht(lines);
@@ -915,11 +928,11 @@ function reloadModelFromData(filename, wholecontent) {
     geometry1.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
   }
 
-  console.log(geometry1.attributes.position.array)
+  // console.log(geometry1.attributes.position.array)
   heapCvalue = geometry1.attributes.position.array[2];
   geometry1.center();
   heapCvalue -= geometry1.attributes.position.array[2];
-  console.log(geometry1.attributes.position.array)
+  // console.log(geometry1.attributes.position.array)
 
   // var vertexColors = ( geometry1.hasAttribute( 'color' ) === true );
 
@@ -973,7 +986,7 @@ function reloadModelFromData(filename, wholecontent) {
 
   unselectedPoints = [...geometry1.attributes.position.array];
   selectedPoints = new Float32Array(geometry1.index.count * 300);
-  console.log(points3d.length)
+  // console.log(points3d.length)
   var geometry3 = new THREE.BufferGeometry();
   geometry3.addAttribute('position', new THREE.BufferAttribute(selectedPoints, 3));
   geometry3.setDrawRange(0, 0)
@@ -1009,6 +1022,8 @@ function reloadModelFromData(filename, wholecontent) {
 
 function reloadModelFromObjData(filename, wholecontent) {
   //////console.log('localdata');
+  historys.step = 0;
+  historys.data = [];
   $('#modelpath').html(filename);
 
   var geometry1 = new THREE.BufferGeometry();
@@ -1120,7 +1135,9 @@ function reloadModelFromObjData(filename, wholecontent) {
 }
 
 function reloadModelFromJSONData(filename, wholecontent) {
-  // $('#modelpath').html(filename);
+  $('#modelpath').html(filename);
+  historys.step = 0;
+  historys.data = [];
   var colors = [];
   var points2;
   var points3d = [];
@@ -1693,8 +1710,8 @@ function addToHistory(array) {
   historys.step++;
 }
 
-document.addEventListener('keypress', (e) => {
-
+document.getElementById('editArea').addEventListener('keypress', (e) => {
+  console.log({ d: document.getElementById('editArea') })
   polygon = [];
   if (e.keyCode == 26 && e.ctrlKey && historys.step > 0) {
     e.preventDefault();
@@ -1702,6 +1719,54 @@ document.addEventListener('keypress', (e) => {
     render()
     polygonRender()
     historys.step--;
+  }
+  else if (e.keyCode == 81 && e.shiftKey) {
+    console.log(1)
+    $("#delauny").trigger('click');
+  }
+  else if (e.keyCode == 87 && e.shiftKey) {
+    console.log(2)
+    $("#delauny3").trigger('click');
+  }
+  else if (e.keyCode == 69 && e.shiftKey) {
+    console.log(3)
+    $("#surface").trigger('click');
+  }
+  else if (e.keyCode == 82 && e.shiftKey) {
+    console.log(4)
+    $("#heightmapColor").trigger('click');
+  }
+  else if (e.keyCode == 65 && e.shiftKey) {
+    console.log(5)
+    $("#btn-move").trigger('click');
+  }
+  else if (e.keyCode == 83 && e.shiftKey) {
+    console.log(6)
+    $("#btn-directSave").trigger('click');
+  }
+  else if (e.keyCode == 68 && e.shiftKey) {
+    console.log(7)
+    $("#btn-polygon").trigger('click');
+  }
+  else if (e.keyCode == 70 && e.shiftKey) {
+    console.log(8)
+    $("#btn-pencil").trigger('click');
+  }
+  else if (e.keyCode == 90 && e.shiftKey) {
+    console.log(9)
+    $("#btn-point").trigger('click');
+  }
+  else if (e.keyCode == 88 && e.shiftKey) {
+    console.log(10)
+    $("#btn-delete").trigger('click');
+  }
+  else if (e.keyCode == 67 && e.shiftKey) {
+    console.log(11)
+    $("#btn-change").trigger('click');
+  }
+  else if (e.keyCode == 86 && e.shiftKey) {
+    console.log(12)
+    $("#btn-check").trigger('click');
   }
   // else if (e.keyCode == 25 && e.ctrlKey && historys.step < historys.data.length - 1) {
   //   historys.step++;
@@ -1746,13 +1811,31 @@ document.getElementById('txt-download').addEventListener('click', () => {
 })
 
 document.getElementById('btn-volume').addEventListener('click', () => {
-  alert(getVolume(group.children[0].geometry))
+
+  console.log(heapCvalue, groundTop, averageTop, maxTop, minTop)
+  e1 = 0;
+  e2 = 0;
+  console.log('groundTop', getVolume(group.children[0].geometry, groundTop))
+  console.log(e1, e2)
+  e1 = 0;
+  e2 = 0;
+  console.log('averageTop', getVolume(group.children[0].geometry, averageTop))
+  console.log(e1, e2)
+  e1 = 0;
+  e2 = 0;
+  console.log('maxTop', getVolume(group.children[0].geometry, parseFloat(maxTop)))
+  console.log(e1, e2)
+  e1 = 0;
+  e2 = 0;
+  console.log('minTop', getVolume(group.children[0].geometry, parseFloat(minTop)))
+  console.log(e1, e2)
+  alert(Math.abs(getVolume(group.children[0].geometry, averageTop)))
 })
 
 
-function getVolume(geometry) {
-  console.log(heapCvalue, groundTop)
-  var zTop = heapCvalue - groundTop;
+function getVolume(geometry, ground) {
+  var zTop = heapCvalue - ground;
+  // var zTop = groundTop;
 
   if (!geometry.isBufferGeometry) {
     alert("'geometry' must be an indexed or non-indexed buffer geometry");
@@ -1760,6 +1843,8 @@ function getVolume(geometry) {
   }
   var isIndexed = geometry.index !== null;
   let position = geometry.attributes.position;
+  let sum1 = 0;
+  let sum2 = 0;
   let sum = 0;
   let p1 = new THREE.Vector3(),
     p2 = new THREE.Vector3(),
@@ -1773,6 +1858,7 @@ function getVolume(geometry) {
       p1.z += zTop;
       p2.z += zTop;
       p3.z += zTop;
+
       sum += signedVolumeOfTriangle(p1, p2, p3);
     }
   }
@@ -1780,23 +1866,84 @@ function getVolume(geometry) {
     let index = geometry.index;
     let faces = index.count / 3;
     for (let i = 0; i < faces; i++) {
+      let result = 0;
       p1.fromBufferAttribute(position, index.array[i * 3 + 0]);
       p2.fromBufferAttribute(position, index.array[i * 3 + 1]);
       p3.fromBufferAttribute(position, index.array[i * 3 + 2]);
       p1.z += zTop;
       p2.z += zTop;
       p3.z += zTop;
-      sum += signedVolumeOfTriangle(p1, p2, p3);
+      // console.log(p1.z)
+      // console.log(p1.z, p2.z, p3.z)
+      // if (p1.z < 0 && p2.z >= 0 && p3.z >= 0) result = e1Volume(p1, p2, p3);
+      // else if (p2.z < 0 && p1.z >= 0 && p3.z >= 0) result = e1Volume(p2, p1, p3);
+      // else if (p3.z < 0 && p1.z >= 0 && p2.z >= 0) result = e1Volume(p3, p1, p2);
+      // else if (p3.z <= 0 && p2.z <= 0 && p1.z > 0) result = e2Volume(p3, p2, p1);
+      // else if (p1.z <= 0 && p3.z <= 0 && p2.z > 0) result = e2Volume(p1, p3, p2);
+      // else if (p1.z <= 0 && p2.z <= 0 && p3.z > 0) result = e2Volume(p1, p2, p3);
+      // else if (p1.z <= 0 && p2.z <= 0 && p3.z <= 0) result = signedVolumeOfTriangle(p1, p2, p3);
+      if (p1.z > 0 && p2.z <= 0 && p3.z <= 0) result = e1Volume(p1, p2, p3);
+      else if (p2.z > 0 && p1.z <= 0 && p3.z <= 0) result = e1Volume(p2, p1, p3);
+      else if (p3.z > 0 && p1.z <= 0 && p2.z <= 0) result = e1Volume(p3, p1, p2);
+      else if (p3.z >= 0 && p2.z >= 0 && p1.z < 0) result = e2Volume(p3, p2, p1);
+      else if (p1.z >= 0 && p3.z >= 0 && p2.z < 0) result = e2Volume(p1, p3, p2);
+      else if (p1.z >= 0 && p2.z >= 0 && p3.z < 0) result = e2Volume(p1, p2, p3);
+      else if (p1.z >= 0 && p2.z >= 0 && p3.z >= 0) result = signedVolumeOfTriangle(p1, p2, p3);
+      // result = signedVolumeOfTriangle(p1, p2, p3);
+      // if (result > 0) sum1 += result;
+      // else sum2 += result;
+      // else sum1 += signedVolumeOfTriangle(p1, p2, p3);
+      sum2 += result;
     }
   }
-  return sum;
+  // return Math.abs(sum);
+  // return sum1 + "  ,  " + sum2;
+  console.log(sum1)
+  return sum2;
 }
 
 function signedVolumeOfTriangle(p1, p2, p3) {
-  var result = p1.dot(p2.cross(p3)) / 6.0;
+  // var result = p1.dot(p2.cross(p3)) / 6.0;
+  var result = (p1.x * (p2.y - p3.y) + p2.x * (p3.y - p1.y) + p3.x * (p1.y - p2.y)) * (p1.z + p2.z + p3.z) / 6.0;
   return Math.abs(result);
+  // console.log(result)
   // return result;
   // if (result > 0) return result; else return 0;
+}
+
+function e1Volume(p1, p2, p3) {
+  e1++;
+  let q = new THREE.Vector3().copy(p1);
+  let w = new THREE.Vector3();
+  let e = new THREE.Vector3();
+  w.x = p2.x - (p2.z / (p2.z - p1.z) * (p2.x - p1.x));
+  w.y = p2.y - (p2.z / (p2.z - p1.z) * (p2.y - p1.y));
+  w.z = 0;
+  e.x = p3.x - (p3.z / (p3.z - p1.z) * (p3.x - p1.x));
+  e.y = p3.y - (p3.z / (p3.z - p1.z) * (p3.y - p1.y));
+  e.z = 0;
+  // console.log(p1, p2, p3, w, e)
+  // console.log('1', signedVolumeOfTriangle(p1, p2, p3))
+  // console.log('2', signedVolumeOfTriangle(q, w, e))
+  return signedVolumeOfTriangle(q, w, e)
+  // return signedVolumeOfTriangle(p1, p2, p3)
+}
+let e1 = 0, e2 = 0;
+function e2Volume(p1, p2, p3) {
+  e2++;
+  let q = new THREE.Vector3().copy(p1);
+  let w = new THREE.Vector3().copy(p2);
+  let e = new THREE.Vector3();
+  let r = new THREE.Vector3();
+  e.x = p2.x - (p2.z / (p2.z - p3.z) * (p2.x - p3.x));
+  e.y = p2.y - (p2.z / (p2.z - p3.z) * (p2.y - p3.y));
+  e.z = 0;
+  r.x = p1.x - (p1.z / (p1.z - p3.z) * (p1.x - p3.x));
+  r.y = p1.y - (p1.z / (p1.z - p3.z) * (p1.y - p3.y));
+  r.z = 0;
+  // console.log(p1, p2, p3, e, r)
+  return signedVolumeOfTriangle(q, e, r) + signedVolumeOfTriangle(new THREE.Vector3().copy(w), new THREE.Vector3().copy(e), new THREE.Vector3().copy(r))
+  // return signedVolumeOfTriangle(p1, p2, p3)
 }
 
 //open file dialog
@@ -1830,4 +1977,57 @@ function openGround_Fromlocal(e) {
     reader.readAsText(file);
   }
 }
-// alert(new THREE.Vector3(parseFloat(0), parseFloat(0), parseFloat(2)).dot(new THREE.Vector3(parseFloat(2), parseFloat(0), parseFloat(2)).cross(new THREE.Vector3(parseFloat(0), parseFloat(2), parseFloat(2)))) / 6.0)
+
+document.getElementById('btn-directSave').addEventListener('click', () => {
+  document.getElementById('ds-modelName').value = document.getElementById('modelpath').innerText;
+  document.getElementById('ds-modelVolume').value = Math.abs(getVolume(group.children[0].geometry, averageTop));
+})
+
+document.getElementById('directSaveBtn').addEventListener('click', () => {
+  var array = group.children[0].geometry.attributes.position.array;
+  const dataobj = new Date();
+  var year = dataobj.getFullYear();
+  var month = dataobj.getMonth() + 1;
+  var date = dataobj.getDate();
+  var hour = dataobj.getHours();
+  var min = dataobj.getMinutes();
+  var sec = dataobj.getSeconds();
+  var jsonData = [];
+  for (var i = 0; i < array.length; i += 3) {
+    jsonData.push({
+      x: array[i],
+      y: array[i + 1],
+      z: array[i + 2]
+    })
+  }
+  $.ajax({
+    url: "/data/modelsave",
+    data: {
+      modeldata:
+      {
+        "datetime": `${date}.${month}.${year} ${hour}:${min}:${sec}`,
+        "measurement": [{
+          "date": `${year}-${month}-${date}`,
+          "mass": '',
+          "name": document.getElementById('ds-modelName').value,
+          "pointcloud": jsonData,
+          "remark": "",
+          "time": `${hour}:${min}:${sec}`,
+          "volume": document.getElementById('ds-modelVolume').value,
+        }],
+        "modifeod": "06.10.2021 22:19:47",
+        "name": "DeutscheBarytIndustrieOwlEye",
+      }
+    },
+    type: "post"
+  }).done((res) => {
+    if (res.success)
+      alert('success');
+    else alert(res.error);
+    $('#btn-dsClose').trigger('click');
+  }).fail(() => {
+    alert('network error');
+    $('#btn-dsClose').trigger('click');
+  })
+})
+// alert(new THREE.Vector3(parseFloat(2), parseFloat(2), parseFloat(2)).dot(new THREE.Vector3(parseFloat(4), parseFloat(2), parseFloat(2)).cross(new THREE.Vector3(parseFloat(2), parseFloat(4), parseFloat(2)))) / 6.0)
