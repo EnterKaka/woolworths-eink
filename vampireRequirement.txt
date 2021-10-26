@@ -21,13 +21,13 @@ and a "Statistical Outliere Removal" Filter and a "pass through" filter, (Cubic 
 
 Step 3: 500 USD
 -- Volume Calculation (selecte heap file and ground file, calculate volume between two files)
-- Add extra Editor Model Browser 
+-- Add extra Editor Model Browser 
 (there all loaded models to Editor are stored and shown, all loaded in one session, u can save session to extra DB by insterting collection name)
-- In Model Browser are many files like model file, ground file, loaded files from drag and drop, but also marked points with save.
-- rename models in model browser, delete models from model browser, open models from model browser to editor
-- save model browser session (save all stored models from this sessions to db), load model browser session by name of collection
-- Hotkeys for tool buttons
-- tooltip of each button (make it right)
+-- In Model Browser are many files like model file, ground file, loaded files from drag and drop, but also marked points with save.
+-- rename models in model browser, delete models from model browser, open models from model browser to editor
+-- save model browser session (save all stored models from this sessions to db), load model browser session by name of collection
+-- Hotkeys for tool buttons
+-- tooltip of each button (make it right)
 
 
 

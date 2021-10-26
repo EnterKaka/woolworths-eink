@@ -202,6 +202,7 @@ app.get('/edit/(:_id)', auth, async function (req, res, next) {
 });
 
 app.post('/modelsave', auth, async function (req, res, next) {
+	console.log('modelsave called.')
 	const client = new MongoClient('mongodb://localhost:27017/', { useUnifiedTopology: true });
 	var modeldata = req.body.modeldata;
 	var db = req.body.db;

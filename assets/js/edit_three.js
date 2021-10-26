@@ -2029,6 +2029,10 @@ document.getElementById('btn-directSave').addEventListener('click', () => {
 
 document.getElementById('directSaveBtn').addEventListener('click', () => {
   var array = group.children[0].geometry.attributes.position.array;
+  var savedata = [];
+  for (var i = 2; i < array.length; i += 3) {
+    savedata.push(array[i] + heapCvalue);
+  }
   const dataobj = new Date();
   var year = dataobj.getFullYear();
   var month = dataobj.getMonth() + 1;
@@ -2068,7 +2072,7 @@ document.getElementById('directSaveBtn').addEventListener('click', () => {
       {
         "date": `${year}.${month}.${date}`,
         "name": document.getElementById('ds-modelName').value,
-        "data": array,
+        "data": savedata,
         "time": `${hour}:${min}:${sec}`,
         "type": `model`,
         "volume": document.getElementById('ds-modelVolume').value,
