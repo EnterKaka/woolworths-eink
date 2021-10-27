@@ -206,7 +206,16 @@ app.post('/login', async function(req, res) {
 	if(error) {
 		return res.redirect('/login');
 	}
-	let user1 = await User.findOne({ email: req.body.email });
+	let user1;
+	console.log(req.body.email);
+	if(req.body.email.includes('@')){
+		console.log('email')
+		user1 = await User.findOne({ email: req.body.email });
+	}else{
+		console.log('name')
+		user1 = await User.findOne({ name: req.body.email });
+	}
+	console.log(user1);
 	let token = jwt.sign({...user1}, config.get("myprivatekey"));
 	if(user1) {
 		if(bcrypt.compareSync(req.body.pass, user1.pass)) {
@@ -247,7 +256,12 @@ app.post('/login', async function(req, res) {
 		// 		req.flash(key, req.body[key])
 		// 	}
 		// }
-		req.flash('error', 'Email is not registered');
+		if(req.body.email.includes('@')){
+			req.flash('error', 'Email is not registered');
+		}
+		else{
+			req.flash('error', 'UserName is not registered');
+		}
 		res.render('pages/login', {title: '3D Viewer - Owl Studio Web App'});
 	}
 });
