@@ -15,7 +15,22 @@ app.get('/', auth, admin, async function(req, res, next) {
 		data : allmembers,	
 	})
 });
-
+app.post('/settime', auth, admin, async function(req, res, next) {
+	let v_user = {
+		dbname: 'delaytime',
+		collectionname: req.body.delaytime,
+	};
+	let mem = await Setting.findOneAndUpdate({dbname: 'delaytime'}, v_user);
+	if(!mem){
+		let v_setting = new Setting({
+			dbname: 'delaytime',
+			collectionname: req.body.delaytime,
+		});
+		await v_setting.save();
+	}
+	delaytime = 1000*req.body.delaytime;
+	res.send();
+});
 // SHOW ADD USER FORM
 app.get('/add', auth, admin, function(req, res, next){	
 	// render to views/pages/members/add.ejs
