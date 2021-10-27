@@ -2,7 +2,7 @@ import * as THREE from './three.module.js';
 import { OrbitControls } from './OrbitControls.js';
 import { XYZLoader, getminmaxhegiht, getrgb, init_highlow } from './XYZLoader.js';
 
-var controls, camera, renderer, scene, canvas, parent_canvas, group;
+var controls, camera, renderer, scene, canvas, parent_canvas, group, zoom = 0.5, finger_dest = 0, timer;
 
 // chart global list
 var chartlist, chartnamelist;
@@ -609,17 +609,65 @@ function main() {
 
     var mouseDown = false,
         mouseX = 0,
-        mouseY = 0;
+        mouseY = 0,
+        timerflag = 0;
 
+
+    /* touch mode */
     canvas.addEventListener('touchmove', function (e) {
-        onTouchMove(e);
+        if(timerflag) onTransfer(e);
+        else     onTouchMove(e);
     }, false);
     canvas.addEventListener('touchstart', function (e) {
+        timer = setTimeout(() => {
+            onTransfer(e);
+            timerflag = 1;
+        }, 500);
         onTouchStart(e);
     }, false);
     canvas.addEventListener('touchend', function (e) {
+        if(timer){
+            clearTimeout(timer);
+            timerflag = 0;
+        }
         onTouchEnd(e);
     }, false);
+
+    // canvas.addEventListener('gestureend', function(e) {
+    //     e.preventDefault();
+    //     console.log('here')
+    //     if (e.scale < 1.0) {
+    //         console.log('smaller')
+    //         // User moved fingers closer together
+    //     } else if (e.scale > 1.0) {
+    //         console.log('bigger')
+    //         // User moved fingers further apart
+    //     }
+    // }, false);
+    // canvas.addEventListener('gesturestart', function(e) {
+    //     e.preventDefault();
+    //     console.log('start')
+    //     if (e.scale < 1.0) {
+    //         console.log('smaller')
+    //         // User moved fingers closer together
+    //     } else if (e.scale > 1.0) {
+    //         console.log('bigger')
+    //         // User moved fingers further apart
+    //     }
+    // }, false);
+    // canvas.addEventListener('gesturechange', function(e) {
+    //     e.preventDefault();
+    //     console.log('gesturechange')
+    //     if (e.scale < 1.0) {
+    //         console.log('smaller')
+    //         // User moved fingers closer together
+    //     } else if (e.scale > 1.0) {
+    //         console.log('bigger')
+    //         // User moved fingers further apart
+    //     }
+    // }, false);
+
+    /* mouse mode */
     canvas.addEventListener('mousemove', function (e) {
         onMouseMove(e);
     }, false);
@@ -780,15 +828,38 @@ function main() {
 
         mouseDown = false;
     }
+    function onTransfer(evt){
+		console.log('long touch');
+		var deltaX = evt.touches[0].clientX - mouseX,
+		deltaY = evt.touches[0].clientY - mouseY;
+		mouseX = evt.touches[0].clientX;
+		mouseY = evt.touches[0].clientY;
+		
+		// group.position.y -= deltaY * 0.05;//zoom
+		group.position.z -= deltaY * 0.05;//zoom
+		group.position.x += deltaX * 0.05;
+    }
+    
 
+    function get_distance(e) {
+        var diffX = e.touches[0].clientX - e.touches[1].clientX;
+        var diffY = e.touches[0].clientY - e.touches[1].clientY;
+        return Math.sqrt(diffX * diffX + diffY * diffY); // Pythagorean theorem
+    }
+    
     function onTouchMove(evt) {
         if (!mouseDown) {
             return;
         }
         evt.preventDefault();
-
+        console.log(evt);
+        if(evt.touches.length > 1) {
+            var new_finger_dist = get_distance(evt); // Get current distance between fingers
+            zoom = zoom * Math.abs(finger_dist / new_finger_dist); // Zoom is proportional to change
+            finger_dist = new_finger_dist;
+        }
         var deltaX = evt.touches[0].clientX - mouseX,
-            deltaY = evt.touches[0].clientY - mouseY;
+        deltaY = evt.touches[0].clientY - mouseY;
         mouseX = evt.touches[0].clientX;
         mouseY = evt.touches[0].clientY;
         rotateScene(deltaX, deltaY);
