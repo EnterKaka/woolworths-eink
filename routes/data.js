@@ -206,7 +206,7 @@ app.post('/multimodelsave', auth, async function (req, res, next) {
 	var modeldata = req.body.savedata;
 	var databaseName = req.body.database;
 	var collectionName = req.body.collection;
-	console.log(modeldata, databaseName, collectionName)
+	console.log(databaseName, collectionName)
 	async function run() {
 		try {
 			await client.connect();

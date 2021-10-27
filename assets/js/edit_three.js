@@ -861,14 +861,14 @@ function customTriangulate(points3d) {
 }
 
 function reloadGroundFromData(filename, content) {
-  $('#groundpath').html(filename);
+  // $('#groundpath').html(filename);
   let lines = content.split('\n');
   groundTop = 0;
   maxTop = -Infinity;
   minTop = Infinity;
   averageTop = 0;
   let count = 0;
-
+  var saveArray = [];
   var points3d = [];
   for (let line of lines) {
     line = line.trim();
@@ -876,6 +876,7 @@ function reloadGroundFromData(filename, content) {
     let lineValues = line.split(/\s+/);
     if (lineValues.length === 3) {
       points3d.push(new THREE.Vector3(parseFloat(lineValues[0]), parseFloat(lineValues[1]), parseFloat(lineValues[2])));
+      saveArray.push(parseFloat(lineValues[0]), parseFloat(lineValues[1]), parseFloat(lineValues[2]));
       averageTop += parseFloat(lineValues[2]);
       count++;
       if (maxTop < lineValues[2]) maxTop = lineValues[2];
@@ -883,6 +884,7 @@ function reloadGroundFromData(filename, content) {
     }
   }
   averageTop /= count;
+  console.log(count)
   var geometry1 = new THREE.BufferGeometry().setFromPoints(points3d);
   groundTop = geometry1.attributes.position.array[2];
   sessionHistory.push({
@@ -890,7 +892,7 @@ function reloadGroundFromData(filename, content) {
     date: getDate(),
     time: getTime(),
     type: 'ground',
-    data: [...geometry1.attributes.position.array],
+    data: saveArray,
   })
   geometry1.center();
   groundTop -= geometry1.attributes.position.array[2];
@@ -910,7 +912,7 @@ function reloadModelFromData(filename, wholecontent) {
   var values = getminmaxhegiht(lines);
   var min = values[0];
   var max = values[1];
-
+  var saveArray = [];
   for (let line of lines) {
     line = line.trim();
     if (line.charAt(0) === '#') continue; // skip comments
@@ -918,7 +920,7 @@ function reloadModelFromData(filename, wholecontent) {
     if (lineValues.length === 3) {
       // XYZ
       points3d.push(new THREE.Vector3(parseFloat(lineValues[0]), parseFloat(lineValues[1]), parseFloat(lineValues[2])));
-
+      saveArray.push(parseFloat(lineValues[0]), parseFloat(lineValues[1]), parseFloat(lineValues[2]));
       let zvalue = parseFloat(lineValues[2]);
       //set rgb from xyz
       let k = (zvalue - min) / (max - min);
@@ -937,7 +939,7 @@ function reloadModelFromData(filename, wholecontent) {
     date: getDate(),
     time: getTime(),
     type: 'model(txt)',
-    data: [...geometry1.attributes.position.array],
+    data: saveArray,
   })
   if (colors.length > 0) {
     geometry1.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
@@ -1166,10 +1168,10 @@ function reloadModelFromJSONData(filename, wholecontent) {
   var values = getminmaxheightfromjson(wholecontent);
   var min = values[0];
   var max = values[1];
-
+  var saveArray = [];
   wholecontent.forEach(function (xyz) {
     points3d.push(new THREE.Vector3(parseFloat(xyz.x), parseFloat(xyz.y), parseFloat(xyz.z)));
-
+    saveArray.push(parseFloat(xyz.x), parseFloat(xyz.y), parseFloat(xyz.z));
     let zvalue = parseFloat(xyz.z);
     let k = (zvalue - min) / (max - min);
     let rgb = getrgb(k);
@@ -1185,7 +1187,7 @@ function reloadModelFromJSONData(filename, wholecontent) {
     date: getDate(),
     time: getTime(),
     type: 'model(json)',
-    data: [...geometry1.attributes.position.array],
+    data: saveArray,
   })
   if (colors.length > 0) {
     geometry1.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
@@ -1379,6 +1381,32 @@ function reloadModelFromArray(array, neededhistory = false) {
   group.add(mesh5);
   //////////////////convex testing
   render();
+}
+
+function getIndexedGeom(array) {
+
+  var points3d = [];
+  for (var i = 0; i < array.length; i += 3) {
+    points3d.push(new THREE.Vector3(parseFloat(array[i]), parseFloat(array[i + 1]), parseFloat(array[i + 2])));
+  }
+  var geometry1 = new THREE.BufferGeometry().setFromPoints(points3d);
+  heapCvalue = geometry1.attributes.position.array[2];
+  geometry1.center();
+  heapCvalue -= geometry1.attributes.position.array[2];
+
+  var indexDelaunay = Delaunator.from(
+    points3d.map(v => {
+      return [v.x, v.y];
+    })
+  );
+
+  var meshIndex = []; // delaunay index => three.js index
+  for (let i = 0; i < indexDelaunay.triangles.length; i++) {
+    meshIndex.push(indexDelaunay.triangles[i]);
+  }
+
+  geometry1.setIndex(meshIndex); // add three.js index to the existing geometry
+  return geometry1;
 }
 
 /*function getminmaxhegiht(lines){
@@ -1856,26 +1884,68 @@ document.getElementById('txt-download').addEventListener('click', () => {
 
 document.getElementById('btn-volume').addEventListener('click', () => {
 
-  console.log(heapCvalue, groundTop, averageTop, maxTop, minTop)
+  // console.log(heapCvalue, groundTop, averageTop, maxTop, minTop)
   e1 = 0;
   e2 = 0;
-  console.log('groundTop', getVolume(group.children[0].geometry, groundTop))
-  console.log(e1, e2)
-  e1 = 0;
-  e2 = 0;
-  console.log('averageTop', getVolume(group.children[0].geometry, averageTop))
-  console.log(e1, e2)
-  e1 = 0;
-  e2 = 0;
-  console.log('maxTop', getVolume(group.children[0].geometry, parseFloat(maxTop)))
-  console.log(e1, e2)
-  e1 = 0;
-  e2 = 0;
-  console.log('minTop', getVolume(group.children[0].geometry, parseFloat(minTop)))
-  console.log(e1, e2)
-  alert(Math.abs(getVolume(group.children[0].geometry, averageTop)))
+  // console.log('groundTop', getVolume(group.children[0].geometry, groundTop))
+  // console.log(e1, e2)
+  // e1 = 0;
+  // e2 = 0;
+  // console.log('averageTop', getVolume(group.children[0].geometry, averageTop))
+  // console.log(e1, e2)
+  // e1 = 0;
+  // e2 = 0;
+  // console.log('maxTop', getVolume(group.children[0].geometry, parseFloat(maxTop)))
+  // console.log(e1, e2)
+  // e1 = 0;
+  // e2 = 0;
+  // console.log('minTop', getVolume(group.children[0].geometry, parseFloat(minTop)))
+  // console.log(e1, e2)
+  var h = document.getElementById('vheap-list').value;
+  var v = document.getElementById('vground-list').value;
+
+  var volume = Math.abs(getSelVolume(sessionHistory[h].data, sessionHistory[v].data));
+  sessionHistory[h].volume = volume;
+  $("#btn-vClose").trigger('click');
+  alert(volume)
 })
 
+function getSelVolume(heap, ground) {
+  var geometry = getIndexedGeom(heap);
+  var sum2 = 0;
+  var GT = 0;
+  let p1 = new THREE.Vector3(),
+    p2 = new THREE.Vector3(),
+    p3 = new THREE.Vector3();
+
+  for (var i = 2; i < ground.length; i += 3) {
+    GT += parseFloat(ground[i]);
+  }
+  GT /= (ground.length / 3);
+  console.log(heapCvalue, GT, averageTop)
+  let position = geometry.attributes.position;
+  let index = geometry.index;
+  let faces = index.count / 3;
+  for (let i = 0; i < faces; i++) {
+    let result = 0;
+    p1.fromBufferAttribute(position, index.array[i * 3 + 0]);
+    p2.fromBufferAttribute(position, index.array[i * 3 + 1]);
+    p3.fromBufferAttribute(position, index.array[i * 3 + 2]);
+    p1.z += heapCvalue - GT;
+    p2.z += heapCvalue - GT;
+    p3.z += heapCvalue - GT;
+    if (p1.z > 0 && p2.z <= 0 && p3.z <= 0) result = e1Volume(p1, p2, p3);
+    else if (p2.z > 0 && p1.z <= 0 && p3.z <= 0) result = e1Volume(p2, p1, p3);
+    else if (p3.z > 0 && p1.z <= 0 && p2.z <= 0) result = e1Volume(p3, p1, p2);
+    else if (p3.z >= 0 && p2.z >= 0 && p1.z < 0) result = e2Volume(p3, p2, p1);
+    else if (p1.z >= 0 && p3.z >= 0 && p2.z < 0) result = e2Volume(p1, p3, p2);
+    else if (p1.z >= 0 && p2.z >= 0 && p3.z < 0) result = e2Volume(p1, p2, p3);
+    else if (p1.z >= 0 && p2.z >= 0 && p3.z >= 0) result = signedVolumeOfTriangle(p1, p2, p3);
+
+    sum2 += result;
+  }
+  return sum2;
+}
 
 function getVolume(geometry, ground) {
   var zTop = heapCvalue - ground;
@@ -2015,6 +2085,7 @@ function openGround_Fromlocal(e) {
     // this will then display a text file
     model_text = reader.result;
     reloadGroundFromData(file.name, model_text);
+    reloadHGlist(true);
   }, false);
 
   if (file) {
@@ -2048,7 +2119,8 @@ document.getElementById('directSaveBtn').addEventListener('click', () => {
   //     z: array[i + 2]
   //   })
   // }
-  loading.style.display = 'block';
+  // loading.style.display = 'block';
+  $('#btn-dsClose').trigger('click');
   $.ajax({
     url: "/data/modelsave",
     data: {
@@ -2081,14 +2153,14 @@ document.getElementById('directSaveBtn').addEventListener('click', () => {
     type: "post"
   }).done((res) => {
     if (res.success)
-      alert('success');
-    else alert(res.error);
-    loading.style.display = 'none';
-    $('#btn-dsClose').trigger('click');
+      alert('successfully saved');
+    else alert(res.error + "(saving failed)");
+    // loading.style.display = 'none';
+    // $('#btn-dsClose').trigger('click');
   }).fail(() => {
-    alert('network error');
-    loading.style.display = 'none';
-    $('#btn-dsClose').trigger('click');
+    alert('network error(saving failed)');
+    // loading.style.display = 'none';
+    // $('#btn-dsClose').trigger('click');
   })
 })
 
@@ -2193,6 +2265,7 @@ document.getElementById('btn-emb').addEventListener('click', () => {
         <td>${sessionHistory[i].date}</td>
         <td>${sessionHistory[i].time}</td>
         <td>${sessionHistory[i].type}</td>
+        <td>${sessionHistory[i].volume}</td>
         <td style="width:170px;">
           <button data-id=${i} type='button' class="hload-btn btn btn-icon btn-outline-primary  round btn-sm mr-1"
             title='loading'><i class="ft-upload"></i>
@@ -2231,7 +2304,8 @@ document.getElementById('browser-save').addEventListener('click', () => {
     sessionHistory[n].name = clonelist[i].children[0].innerText.trim();
     savedata.push(sessionHistory[n]);
   }
-  loading.style.display = 'block';
+  // loading.style.display = 'block';
+  $('#browser-close').trigger('click');
   $.ajax({
     url: "/data/multimodelsave",
     data: {
@@ -2242,15 +2316,15 @@ document.getElementById('browser-save').addEventListener('click', () => {
     type: "post"
   }).done((res) => {
     if (res.success)
-      alert('success');
-    else alert(res.error);
-    loading.style.display = 'none';
-    $('#browser-close').trigger('click');
+      alert('successfully saved');
+    else alert(res.error + '(saving failed)');
+    // loading.style.display = 'none';
+    // $('#browser-close').trigger('click');
 
   }).fail(() => {
-    alert('network error');
-    loading.style.display = 'none';
-    $('#browser-close').trigger('click');
+    alert('network error(saving failed)');
+    // loading.style.display = 'none';
+    // $('#browser-close').trigger('click');
   })
   sessionHistory = sessionHistory.filter((e, id) => {
     return !e.deleted;
@@ -2264,6 +2338,22 @@ document.getElementById('bdatabase-tab').addEventListener('click', () => {
   document.getElementById('browser-save').style.display = 'none';
 })
 const loading = document.getElementById('loading');
+
+document.getElementById('btn-vol').addEventListener('click', () => {
+  reloadHGlist();
+})
+
+function reloadHGlist(heapSelec = false) {
+  const heap = document.getElementById('vheap-list');
+  const ground = document.getElementById('vground-list');
+  var hv = heap.value;
+  heap.innerHTML = "";
+  ground.innerHTML = "";
+  for (var i = sessionHistory.length - 1; i >= 0; i--) {
+    heap.innerHTML += `<option value='${i}' ${(heapSelec && hv == i) && "selected"} title = "${sessionHistory[i].type} ${sessionHistory[i].date} ${sessionHistory[i].time}" > ${sessionHistory[i].name}</option > `;
+    ground.innerHTML += `<option value='${i}' title = "${sessionHistory[i].type} ${sessionHistory[i].date} ${sessionHistory[i].time}" > ${sessionHistory[i].name}</option > `;
+  }
+}
 
 
 // alert(new THREE.Vector3(parseFloat(2), parseFloat(2), parseFloat(2)).dot(new THREE.Vector3(parseFloat(4), parseFloat(2), parseFloat(2)).cross(new THREE.Vector3(parseFloat(2), parseFloat(4), parseFloat(2)))) / 6.0)

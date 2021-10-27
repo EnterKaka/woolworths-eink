@@ -56,9 +56,9 @@
                         <% }else{ %>
                           <h4 class="card-title" id='modelpath'>filename</h4>
                           <% } %>
-                            <label>GroundFile : </label><label id='groundpath'
+                            <!-- <label>GroundFile : </label><label id='groundpath'
                               style="margin-top:5px; margin-bottom:0;font-size:12px;">
-                            </label>
+                            </label> -->
                             <a class="heading-elements-toggle"><i class="la la-ellipsis-v font-medium-3"></i></a>
                             <div class="heading-elements">
                               <ul class="list-inline mb-0">
@@ -123,6 +123,10 @@
                           <li class="nav-item">
                             <a class="nav-link" href="javascript:void(0)" data-toggle="modal" data-target="#editerModal"
                               id="btn-emb">Editor Model Browser</a>
+                          </li>
+                          <li class="nav-item">
+                            <a class="nav-link" href="javascript:void(0)" data-toggle="modal" data-target="#volumeModal"
+                              id="btn-vol">Calculate Volume</a>
                           </li>
                           <!-- <li class="nav-item"><input type="text" class="form-control round btn-glow mb-1 mr-1"
                               id="count" style="height: 31px;padding-left: 15px;width: 81px;" min="0.1" max="10"
@@ -258,14 +262,7 @@
                                 data-target="#exampleModal">
                                 <i class="ft-download"></i>
                               </button>
-                              <button type='button'
-                                class="btn btn-icon btn-outline-primary btn-glow round btn-sm mr-1 mb-1"
-                                title='set ground file' id='btn-ground'> set Ground File
-                              </button>
-                              <button type='button'
-                                class="btn btn-icon btn-outline-primary btn-glow round btn-sm mr-1 mb-1"
-                                title='test volume' id='btn-volume'> Volume test
-                              </button>
+
                               <% if(messages.pointcloud){ %>
                                 <input type="hidden" id="pointcloud" value='<%- messages.pointcloud %>'>
                                 <% } %>
@@ -448,6 +445,42 @@
           </div>
         </div>
 
+        <div class="modal fade text-left" id="volumeModal" tabindex="-1" role="dialog" aria-labelledby="volumeLabel"
+          aria-hidden="true" style="z-index:100001;">
+          <div class="modal-dialog" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="directSaveLabel">Please enter(confirm) model's name and volume</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">×</span>
+                </button>
+              </div>
+              <div class="modal-body">
+                <label for="ds-modelName" class="ml-1">Heap File</label>
+                <select class="select2 form-control select2-hidden-accessible mb-1" id="vheap-list"
+                  data-select2-id="default-select" tabindex="-1" aria-hidden="true">
+                  <!-- <option value="AK">Alaska</option>
+                            <option value="HI">Hawaii</option> -->
+                </select>
+                <label for="ds-modelVolume" class="ml-1">Ground File</label>
+                <select class="select2 form-control select2-hidden-accessible mb-1" id="vground-list"
+                  data-select2-id="default-select" tabindex="-1" aria-hidden="true">
+                  <option value="AK">Alaska</option>
+                  <option value="HI">Hawaii</option>
+                </select>
+                <button type='button' class="btn btn-icon btn-outline-primary btn-glow round btn-sm mr-1 mb-1"
+                  title='set ground file from PC' id='btn-ground'> set ground file from PC
+                </button>
+
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal" id="btn-vClose">Close</button>
+                <button type="button" class="btn btn-primary" id="btn-volume">Calculate</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
 
         <div class="modal fade text-left" id="editerModal" tabindex="-1" role="dialog"
           aria-labelledby="editerModalLabel" aria-hidden="true" style="z-index:100000;">
@@ -504,6 +537,7 @@
                             <th>date</th>
                             <th>time</th>
                             <th>type</th>
+                            <th>volume</th>
                             <th>#</th>
                           </tr>
                         </thead>
