@@ -30,13 +30,18 @@ function onclick_get(){
             processing: true,
             data: queryResult.data,
             order: [[ 1, "desc" ]],
+            scrollX:        true,
+            scrollCollapse: true,
+            fixedColumns: {
+              left: 1,
+            },
             columns: [
                 { data: 'name',width: '25%', responsivePriority: 1, targets: 0 },
                 { data: 'date', width: '30%', targets: 1},
                 { data: 'time', width: '30%', targets: 2},
                 { data: 'mass', width: '30%', targets: 3},
                 { data: 'volume', width: '30%', targets: 4},
-                { targets: 5, render:function ( data, type, row ) {
+                {  data: 'setid', width: '30%', targets: 5, render:function ( data, type, row ) {
                   return '<a href="/data/view/' + row._id + '" class="btn btn-primary btn-min-width mr-1 mb-1">View</a>';}},
                 ],
                 initComplete: function(settings, json) {

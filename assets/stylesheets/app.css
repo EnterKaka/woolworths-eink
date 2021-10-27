@@ -121,4 +121,20 @@ div.container_main.small{
     .navbar-collapse {
         padding-top:5px !important;
     }
+    #DataTables_Table_0_length{
+        width: 100% !important;
+        display: flex;
+        justify-content: center;
+    }
+    #DataTables_Table_0_filter{
+        width: 100%;
+        display: flex;
+        justify-content: center;
+    }
+}
+.odd .dtfc-fixed-left{
+    background-color: rgb(250, 251, 252);
+}
+.even .dtfc-fixed-left{
+    background-color: white;
 }
