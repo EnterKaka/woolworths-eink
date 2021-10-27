@@ -6,7 +6,8 @@
 				<ul class="nav navbar-nav mr-auto float-left">
 					<li class="nav-item d-block d-md-none"><a class="nav-link nav-menu-main menu-toggle hidden-sm hidden-xs" href="#"><i class="ft-menu"></i></a></li>
 					<li class="nav-item d-none d-md-block"><a class="nav-link" href="#" onclick="expand()"><i class="ficon ft-maximize"></i></a></li>
-					<li class="nav-item dropdown navbar-search"><a class="nav-link dropdown-toggle hide" data-toggle="dropdown" href="#"><i class="ficon ft-search"></i></a>
+					<li class="nav-item d-none d-md-block"><a class="nav-link" href="#" onclick="switchList()"><i class="la la-expand" style="font-size: 1.6rem;"></i></a></li>
+					<!-- <li class="nav-item dropdown navbar-search"><a class="nav-link dropdown-toggle hide" data-toggle="dropdown" href="#"><i class="ficon ft-search"></i></a>
 						<ul class="dropdown-menu">
 							<li class="arrow_box">
 								<form>
@@ -19,7 +20,7 @@
 								</form>
 							</li>
 						</ul>
-					</li>
+					</li> -->
 				</ul>
 				<ul class="nav navbar-nav float-right">         
 					<li class="dropdown dropdown-language nav-item">
@@ -45,3 +46,27 @@
 </nav>
 										
 <!-- ////////////////////////////////////////////////////////////////////////////-->
+<script type="text/javascript">
+	var switch_flag = false;
+	function expand(){
+		$('#sidebar').toggleClass('hide');
+		$('.navbar-container.content').toggleClass('expand');
+		$('.app-content.content').toggleClass('expand');
+		$('footer.footer.expand').toggleClass('expand');
+		setTimeout(() => {
+		$('#viewer_3d').width('calc(100%)');
+		}, 100);
+	}
+	function switchList(){
+		switch_flag  = !switch_flag;
+		if(switch_flag){
+			$(".chart_element").removeClass('col-lg-6').addClass('col-lg-12');
+			$(".la.la-expand").removeClass('la-expand').addClass('la-compress');
+		}
+		else{
+			$(".chart_element").removeClass('col-lg-12').addClass('col-lg-6');
+			$(".la.la-expand").removeClass('la-compress').addClass('la-expand');
+		}
+		
+	}
+</script>

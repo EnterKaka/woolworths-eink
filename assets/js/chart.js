@@ -235,7 +235,7 @@ function drawChart(ctx,data,ft,tt){
                 //for current item get
                 // var ctx = document.getElementById(this_id);
                 // console.log(ctx.chart.options.plugins.tooltip);
-                window.scrollTo(0,0);
+                window.scrollTo(0,80);
     
                 return false;
             }
