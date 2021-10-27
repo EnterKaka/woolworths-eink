@@ -177,7 +177,7 @@ app.post('/get', auth, async function(req, res, next) {
 				let db = mem.dbname.trim();
 				let col = mem.collectionname.trim();
 				if(db === 'delaytime'){
-					delaytime = col*1000;
+					delaytime = col*60000;
 					continue;
 				}
 				const database = client.db(db);

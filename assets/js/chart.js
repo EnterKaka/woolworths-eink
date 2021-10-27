@@ -242,17 +242,32 @@ function drawChart(ctx,data,ft,tt){
             time_stamp = event_.timeStamp;
         });
 
-        ctx.addEventListener("dblclick", function() {
+        ctx.addEventListener("dblclick", function(evt) {
             //go to 3d viewer with last id
             var this_canvas = $(this).attr('id');
             console.log('******** canvas ***********',this_canvas)
             // var this_id = this_canvas;
             this_canvas = this_canvas.split('canvas-model-');
+            var this_canvas_totalmodel = 'input-model-' + this_canvas.slice(-1)
             var this_canvas_modelname = 'input-modelid-' + this_canvas.slice(-1);
+            const points = lineChart.getElementsAtEventForMode(evt, 'nearest', lineChart.options);
+            if (points.length) {
+                const firstPoint = points[0];
+                const label = lineChart.data.labels[firstPoint.index];
+                var totalmodel = JSON.parse(document.getElementById(this_canvas_totalmodel).value).log;
+                let obj = totalmodel.find((o)=>{
+                    if(o.datetime.toString()===label)
+                    return true;
+                });
+                this_canvas_modelname = obj._id;
+            }else{
+                this_canvas_modelname = document.getElementById(this_canvas_modelname).value
+            }
             console.log('*********** canvas_modelname *********',this_canvas_modelname);
-            this_canvas_modelname = document.getElementById(this_canvas_modelname).value
             // location.href = "/data/view/" + this_canvas;
             load3dmodelwithidonlocal(this_canvas.slice(-1),this_canvas_modelname);
+
+
             // location.href = '#canvas-container';
             //for current item get
             // var ctx = document.getElementById(this_id);

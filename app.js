@@ -13,7 +13,7 @@ const http = require('http').Server(app);
 const io = require('socket.io')(http);
 
 global.loadedData = '';
-global.delaytime = 1000*3600;
+global.delaytime = 60000*60;
 /**
  * Store database credentials in a separate config.js file
  * Load the file/module and its values

@@ -28,7 +28,7 @@ app.post('/settime', auth, admin, async function(req, res, next) {
 		});
 		await v_setting.save();
 	}
-	delaytime = 1000*req.body.delaytime;
+	delaytime = 60000*req.body.delaytime;
 	res.send();
 });
 // SHOW ADD USER FORM

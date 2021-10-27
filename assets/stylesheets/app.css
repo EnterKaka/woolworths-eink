@@ -117,6 +117,9 @@ footer.footer.expand{
 div.container_main.small{
     min-height: auto;
 }
+#delaytimeset{
+    float: left;
+}
 @media (max-width: 768px){
     .navbar-collapse {
         padding-top:5px !important;
@@ -130,6 +133,9 @@ div.container_main.small{
         width: 100%;
         display: flex;
         justify-content: center;
+    }
+    #delaytimeset{
+        float: right;
     }
 }
 .odd .dtfc-fixed-left{
