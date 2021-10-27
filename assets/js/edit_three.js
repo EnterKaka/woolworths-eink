@@ -1268,12 +1268,22 @@ function reloadModelFromJSONData(filename, wholecontent) {
   setTimeout(() => { render() }, 2000)
 }
 
-function reloadModelFromArray(array, neededhistory = false) {
+function reloadModelFromArray(array, neededhistory = false, needsaveheap = false) {
   if (neededhistory == true) {
     var clone = [];
     for (var i = 0; i < array.length; i++) {
       clone.push(array[i] + heapCvalue)
     }
+    sessionHistory.push({
+      name: document.getElementById('modelpath').innerText,
+      date: getDate(),
+      time: getTime(),
+      type: 'model(edited)',
+      data: clone,
+    })
+  }
+  else if (neededhistory == "withoutheap") {
+    var clone = [...array];
     sessionHistory.push({
       name: document.getElementById('modelpath').innerText,
       date: getDate(),
@@ -1306,7 +1316,7 @@ function reloadModelFromArray(array, neededhistory = false) {
   if (colors.length > 0) {
     geometry1.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
   }
-  if (neededhistory == "center&heapCvalue") {
+  if (needsaveheap) {
     heapCvalue = geometry1.attributes.position.array[2];
     geometry1.center();
     heapCvalue -= geometry1.attributes.position.array[2];
@@ -2214,7 +2224,7 @@ document.getElementById('browser-load').addEventListener('click', () => {
       $('.dload-btn').click(function () {
         console.log({ data: res.data })
         document.getElementById('modelpath').innerText = this.parentElement.parentElement.children[0].innerText;
-        reloadModelFromArray(res.data[this.dataset.id].data, 'center&heapCvalue');
+        reloadModelFromArray(res.data[this.dataset.id].data, 'withoutheap', true);
         $('#browser-close').trigger('click');
       })
     }
@@ -2280,7 +2290,7 @@ document.getElementById('btn-emb').addEventListener('click', () => {
   $('.hload-btn').click(function () {
     console.log({ this: this })
     document.getElementById('modelpath').innerText = this.parentElement.parentElement.children[0].innerText;
-    reloadModelFromArray(sessionHistory[this.dataset.id].data, 'center&heapCvalue');
+    reloadModelFromArray(sessionHistory[this.dataset.id].data, 'withoutheap', true);
     $('#browser-close').trigger('click');
   })
   $('.hdel-btn').click(function () {
