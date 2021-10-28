@@ -1002,7 +1002,7 @@ function reloadModelFromData(filename, wholecontent) {
 
 
   unselectedPoints = [...geometry1.attributes.position.array];
-  selectedPoints = new Float32Array(geometry1.index.count * 300);
+  selectedPoints = new Float32Array(geometry1.index.count * 30);
   // console.log(points3d.length)
   var geometry3 = new THREE.BufferGeometry();
   geometry3.addAttribute('position', new THREE.BufferAttribute(selectedPoints, 3));
@@ -1130,7 +1130,7 @@ function reloadModelFromObjData(filename, wholecontent) {
 
 
   unselectedPoints = [...geometry1.attributes.position.array];
-  selectedPoints = new Float32Array(geometry1.index.count * 300);
+  selectedPoints = new Float32Array(geometry1.index.count * 30);
   // console.log(points3d.length)
   var geometry3 = new THREE.BufferGeometry();
   geometry3.addAttribute('position', new THREE.BufferAttribute(selectedPoints, 3));
@@ -1238,7 +1238,7 @@ function reloadModelFromJSONData(filename, wholecontent) {
 
 
   unselectedPoints = [...geometry1.attributes.position.array];
-  selectedPoints = new Float32Array(geometry1.index.count * 300);
+  selectedPoints = new Float32Array(geometry1.index.count * 30);
   console.log(points3d.length)
   var geometry3 = new THREE.BufferGeometry();
   geometry3.addAttribute('position', new THREE.BufferAttribute(selectedPoints, 3));
@@ -1364,7 +1364,7 @@ function reloadModelFromArray(array, neededhistory = false, needsaveheap = false
 
 
   unselectedPoints = [...geometry1.attributes.position.array];
-  selectedPoints = new Float32Array(geometry1.index.count * 300);
+  selectedPoints = new Float32Array(geometry1.index.count * 30);
   console.log(points3d.length)
   var geometry3 = new THREE.BufferGeometry();
   geometry3.addAttribute('position', new THREE.BufferAttribute(selectedPoints, 3));
@@ -1760,7 +1760,8 @@ document.getElementById('f3-filter').addEventListener('click', function () {
   addToHistory(array)
   var num = document.getElementById('f3-number').value;
   var dev = document.getElementById('f3-deviation').value;
-  var filteredPoints = filters.outlierRemovalFilter(num, dev, array)
+  var filteredPoints = filters.updatedRemovalFilter(num, dev, array)
+  // return;
   if (filteredPoints.length < 12) {
     alert("Delaunay 3D triangulation requires 4 or more points.")
     return;
@@ -2105,7 +2106,7 @@ function openGround_Fromlocal(e) {
 
 document.getElementById('btn-directSave').addEventListener('click', () => {
   document.getElementById('ds-modelName').value = document.getElementById('modelpath').innerText;
-  document.getElementById('ds-modelVolume').value = Math.abs(getVolume(group.children[0].geometry, averageTop));
+  document.getElementById('ds-modelVolume').value = sessionHistory[sessionHistory.length - 1].volume || 0;
 })
 
 document.getElementById('directSaveBtn').addEventListener('click', () => {
