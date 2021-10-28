@@ -124,13 +124,17 @@ export const updatedRemovalFilter = (num, dis, array) => {
             let arr1 = gridData[id];
             let arr2 = [];
             let abc = id.split('.');
-            let a = abc[0], b = abc[1], c = abc[2];
+            let a = parseFloat(abc[0]), b = parseFloat(abc[1]), c = parseFloat(abc[2]);
             let loop = true;
+            let reEnd = Math.abs(a);
+            if (reEnd < Math.abs(b)) reEnd = Math.abs(b);
+            if (reEnd < Math.abs(c)) reEnd = Math.abs(c);
+            reEnd += endInd;
             // console.log('elsed')
             while (loop) {
                 wdh++;
                 // console.log(wdh)
-                if (wdh > endInd) break;
+                if (wdh > reEnd) break;
                 // console.log(wdh)
                 for (let i = -wdh; i <= wdh; i++) {
                     // console.log(i, -wdh, wdh)
@@ -138,7 +142,7 @@ export const updatedRemovalFilter = (num, dis, array) => {
                         for (let k = -wdh; k <= wdh; k++) {
                             // console.log('for3ed', i == -wdh, i == wdh, j == -wdh, j == wdh, k == -wdh, k == wdh, i, j, k, wdh)
                             if (i == -wdh || i == wdh || j == -wdh || j == wdh || k == -wdh || k == wdh) {
-                                let cid = (i + parseFloat(a)) + '.' + (j + parseFloat(b)) + '.' + (k + parseFloat(c));
+                                let cid = (i + a) + '.' + (j + b) + '.' + (k + c);
                                 // console.log(cid)
                                 if (gridData[cid]) {
                                     arr2.push(...gridData[cid])
