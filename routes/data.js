@@ -213,6 +213,7 @@ app.post('/get', auth, async function(req, res, next) {
 					status: 'success',
 					loadedData:loadedData,
 					data: sentdata,
+					delaytime:delaytime
 				});
 			}
 		} finally {

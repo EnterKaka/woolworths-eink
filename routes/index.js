@@ -163,6 +163,7 @@ app.get('/dashboard', auth, function(req, res) {
 						data: allmodels,
 						loadedData: loadedData,
 						names: allnames,
+						delaytime:delaytime
 					});
 				}
 				else{

@@ -866,7 +866,9 @@ function main() {
         if (!mouseDown) {
             return;
         }
-        evt.preventDefault();
+		if (evt.cancelable) {
+			evt.preventDefault();
+		}  
         // console.log(evt);
         // if(evt.touches.length > 1) {
         //     var new_finger_dist = get_distance(evt); // Get current distance between fingers
@@ -878,14 +880,16 @@ function main() {
         mouseX = evt.touches[0].clientX;
         mouseY = evt.touches[0].clientY;
         if(evt.touches.length > 1) {
-			group.position.y -= deltaY * 0.05;//zoom
+			camera.fov = 0.5;
 			return;
 		}
         rotateScene(deltaX, deltaY);
     }
 
     function onTouchStart(evt) {
-        evt.preventDefault();
+		if (evt.cancelable) {
+			evt.preventDefault();
+		}  
 
         mouseDown = true;
         mouseX = evt.touches[0].clientX;
@@ -894,7 +898,9 @@ function main() {
     }
 
     function onTouchEnd(evt) {
-        evt.preventDefault();
+		if (evt.cancelable) {
+			evt.preventDefault();
+		}  
 
         mouseDown = false;
     }

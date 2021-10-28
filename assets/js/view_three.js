@@ -292,7 +292,6 @@ function main() {
     
     function onTouchMove(evt) {
 		console.log('++++++++++ touch move +++++++++');
-		console.log(evt);
 		if (!mouseDown) {
 			return;
 		}
@@ -304,7 +303,8 @@ function main() {
 		mouseX = evt.touches[0].clientX;
 		mouseY = evt.touches[0].clientY;
 		if(evt.touches.length > 1) {
-			group.position.y -= deltaY * 0.05;//zoom
+			// group.position.y -= deltaY * 0.05;//zoom.
+			camera.fov = 0.5;
 			return;
 		}
 		rotateScene(deltaX, deltaY);
