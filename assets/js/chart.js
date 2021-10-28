@@ -856,23 +856,23 @@ function main() {
     }
     
 
-    function get_distance(e) {
-        var diffX = e.touches[0].clientX - e.touches[1].clientX;
-        var diffY = e.touches[0].clientY - e.touches[1].clientY;
-        return Math.sqrt(diffX * diffX + diffY * diffY); // Pythagorean theorem
-    }
+    // function get_distance(e) {
+    //     var diffX = e.touches[0].clientX - e.touches[1].clientX;
+    //     var diffY = e.touches[0].clientY - e.touches[1].clientY;
+    //     return Math.sqrt(diffX * diffX + diffY * diffY); // Pythagorean theorem
+    // }
     
     function onTouchMove(evt) {
         if (!mouseDown) {
             return;
         }
         evt.preventDefault();
-        console.log(evt);
-        if(evt.touches.length > 1) {
-            var new_finger_dist = get_distance(evt); // Get current distance between fingers
-            zoom = zoom * Math.abs(finger_dist / new_finger_dist); // Zoom is proportional to change
-            finger_dist = new_finger_dist;
-        }
+        // console.log(evt);
+        // if(evt.touches.length > 1) {
+        //     var new_finger_dist = get_distance(evt); // Get current distance between fingers
+        //     zoom = zoom * Math.abs(finger_dist / new_finger_dist); // Zoom is proportional to change
+        //     finger_dist = new_finger_dist;
+        // }
         var deltaX = evt.touches[0].clientX - mouseX,
         deltaY = evt.touches[0].clientY - mouseY;
         mouseX = evt.touches[0].clientX;

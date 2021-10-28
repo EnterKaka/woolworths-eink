@@ -92,7 +92,8 @@
 													hideAfter: 1500   // in milli seconds
 												});
 												</script>
-										<% } else { %>
+										<% } else {
+											if(loadedData !== ''){ %>
 											<!-- <p style="color:green"><%- messages.success %></p> -->
 											<script>
 												$.toast({
@@ -103,7 +104,7 @@
 													hideAfter: 1500   // in milli seconds
 												});
 											</script>
-										<% } }%>	      
+										<% } } }%>	      
 									</div>
 									<div class="table-padding-set">
 										<div class="table-responsive">
