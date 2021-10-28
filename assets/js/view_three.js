@@ -44,24 +44,27 @@ function main() {
 	  mouseX = 0,
 	  mouseY = 0,
 	  timerflag = 0;
-	  
+	  document.addEventListener('touchmove',(e)=>{
+		console.log(e);
+
+	  });
 	  /* touch mode */
 	  canvas.addEventListener('touchmove', function (e) {
 		  if(timerflag) onTransfer(e);
 		  else     onTouchMove(e);
 		}, false);
 		canvas.addEventListener('touchstart', function (e) {
-			timer = setTimeout(() => {
-				onTransfer(e);
-				timerflag = 1;
-			}, 500);
+			// timer = setTimeout(() => {
+			// 	onTransfer(e);
+			// 	timerflag = 1;
+			// }, 1000);
 			onTouchStart(e);
 		}, false);
 		canvas.addEventListener('touchend', function (e) {
-			if(timer){
-				clearTimeout(timer);
-				timerflag = 0;
-			}
+			// if(timer){
+			// 	clearTimeout(timer);
+			// 	timerflag = 0;
+			// }
 			onTouchEnd(e);
 		}, false);
 		
@@ -296,16 +299,14 @@ function main() {
 		if (evt.cancelable) {
 			evt.preventDefault();
 		}  
-		if(evt.touches.length > 1) {
-			var new_finger_dist = get_distance(evt); // Get current distance between fingers
-			zoom = zoom * Math.abs(finger_dist / new_finger_dist); // Zoom is proportional to change
-			finger_dist = new_finger_dist;
-			return;
-		}
 		var deltaX = evt.touches[0].clientX - mouseX,
 		deltaY = evt.touches[0].clientY - mouseY;
 		mouseX = evt.touches[0].clientX;
 		mouseY = evt.touches[0].clientY;
+		if(evt.touches.length > 1) {
+			group.position.y -= deltaY * 0.05;//zoom
+			return;
+		}
 		rotateScene(deltaX, deltaY);
     }
 	
@@ -329,11 +330,6 @@ function main() {
 		mouseDown = false;
 	}
 	
-	function get_distance(e) {
-		var diffX = e.touches[0].clientX - e.touches[1].clientX;
-		var diffY = e.touches[0].clientY - e.touches[1].clientY;
-		return Math.sqrt(diffX * diffX + diffY * diffY); // Pythagorean theorem
-  }
   function rotateScene(deltaX, deltaY) {
 	  group.rotation.z += deltaX / 100;
 	  group.rotation.x += deltaY / 100;

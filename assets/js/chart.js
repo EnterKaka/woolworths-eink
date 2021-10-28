@@ -634,17 +634,17 @@ function main() {
         else     onTouchMove(e);
     }, false);
     canvas.addEventListener('touchstart', function (e) {
-        timer = setTimeout(() => {
-            onTransfer(e);
-            timerflag = 1;
-        }, 500);
+        // timer = setTimeout(() => {
+        //     onTransfer(e);
+        //     timerflag = 1;
+        // }, 500);
         onTouchStart(e);
     }, false);
     canvas.addEventListener('touchend', function (e) {
-        if(timer){
-            clearTimeout(timer);
-            timerflag = 0;
-        }
+        // if(timer){
+        //     clearTimeout(timer);
+        //     timerflag = 0;
+        // }
         onTouchEnd(e);
     }, false);
 
@@ -877,6 +877,10 @@ function main() {
         deltaY = evt.touches[0].clientY - mouseY;
         mouseX = evt.touches[0].clientX;
         mouseY = evt.touches[0].clientY;
+        if(evt.touches.length > 1) {
+			group.position.y -= deltaY * 0.05;//zoom
+			return;
+		}
         rotateScene(deltaX, deltaY);
     }
 

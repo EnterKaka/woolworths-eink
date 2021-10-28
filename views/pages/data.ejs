@@ -78,11 +78,10 @@
 													showHideTransition: 'fade',
 													icon: 'error',
 													hideAfter: 1500   // in milli seconds
-												})
+												});
 												</script>
-										<% } %>
-										
-										<% if (messages.success) { %>
+										<% } else{
+											if (messages.success) { %>
 											<!-- <p style="color:green"><%- messages.success %></p> -->
 											<script>
 												$.toast({
@@ -91,9 +90,20 @@
 													showHideTransition: 'slide',
 													icon: 'success',
 													hideAfter: 1500   // in milli seconds
-												})
+												});
 												</script>
-										<% } %>	      
+										<% } else { %>
+											<!-- <p style="color:green"><%- messages.success %></p> -->
+											<script>
+												$.toast({
+													heading: 'Reload Database',
+													text: 'Reload Latest Data',
+													showHideTransition: 'slide',
+													icon: 'success',
+													hideAfter: 1500   // in milli seconds
+												});
+											</script>
+										<% } }%>	      
 									</div>
 									<div class="table-padding-set">
 										<div class="table-responsive">
@@ -167,6 +177,11 @@
 					return '<a href="/data/view/' + row._id + '" class="btn btn-primary btn-min-width mr-1 mb-1">View</a>';}},
 				],
 			});
+
+            setTimeout(() => {
+                document.location.href = '/data';
+            },60*60*1000);
+
 		});
 	</script>
 	</body>
