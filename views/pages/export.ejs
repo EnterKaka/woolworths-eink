@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html class="loading" lang="en" data-textdirection="ltr">
+	<head>
+		<link rel="stylesheet" type="text/css" href="/stylesheets/material-kit.css">
+		<%- include('../partials/head'); %>
+		<link rel="stylesheet" href="/prettydropdowns/prettydropdowns.css">		<!-- BEGIN Three.js Load -->
+		<!-- END Three.js Load -->
+	</head>
+	<body class="vertical-layout vertical-menu 2-columns   menu-expanded fixed-navbar" data-open="click" data-menu="vertical-menu" data-color="bg-gradient-x-purple-blue" data-col="2-columns">
+		<!-- fixed-top-->
+		<%- include('../partials/header'); %>
+		<!-- ////////////////////////////////////////////////////////////////////////////-->
+		<%- include('../partials/sidebar'); %>
+		
+		<!-- dashboard -->
+		<div class="app-content content">
+			<div class="content-wrapper">
+				<div class="content-wrapper-before"></div>
+				<div class="content-header row">
+					<div class="content-header-left col-md-4 col-12 mb-2">
+						<h3 class="content-header-title">Owl Eye Viewer</h3>
+					</div>
+					<div class="content-header-right col-md-8 col-12">
+						<div class="breadcrumbs-top float-md-right">
+							<div class="breadcrumb-wrapper mr-1">
+								<ol class="breadcrumb">
+									<li class="breadcrumb-item"><a href="/">Home</a>
+									</li>
+									<li class="breadcrumb-item active">Export
+									</li>
+								</ol>
+							</div>
+						</div>
+					</div>
+				</div>
+				
+				<div class="content-body">
+					<section id="basic-buttons">
+					<!-- 3d viewer card body start -->
+						<div class="row">
+							<div class="col-lg-12 col-md-12">
+								<div class="card" id="canvas-container">
+									<div class="card-header">
+										<a class="heading-elements-toggle"><i class="la la-ellipsis font-medium-3"></i></a>
+										<div class="heading-elements">
+											<a data-action="expand"><i class="ft-maximize"></i></a>
+										</div>
+									</div>
+									<div class="card-content collapse show"  style="position: relative;">
+										<div class="card-body">
+											<!-- <p class="card-subtitle">You can load *.txt, *.obj files from owl windows app.</p> -->
+											<div class="row">
+												<div class="col-md-12 col-lg-12 col-sm-12">
+													<label for="size">Select models:</label><br>
+													<select id="models" name="models" multiple>
+														<% if (loadedData) {
+															let result = [];
+															%>
+															<% loadedData.forEach(function(model){ 
+																if(result.indexOf(model.name) === -1){
+																	result.push(model.name);
+																	%>
+																<option value="<%= model.name%>"><%= model.name%></option>
+															<% }}) %>
+														<% } %>
+													</select>
+												</div>
+											</div>
+											<div class="row">
+												<div class="col-lg-5 col-md-5 col-sm-5">
+													<div class="title">
+														<h4>Export Type</h4>
+													</div>
+													<div class="form-check">
+														<label class="form-check-label">
+															<input class="form-check-input" type="radio" name="exporttype" id="sep" checked value="sep">
+															Export separately
+															<span class="circle">
+																<span class="check"></span>
+															</span>
+														</label>
+													</div>
+													<div class="form-check">
+														<label class="form-check-label">
+															<input class="form-check-input" type="radio" name="exporttype" id="one" value="one">
+															Export to one File
+															<span class="circle">
+																<span class="check"></span>
+															</span>
+														</label>
+													</div>
+												</div>
+												<div class="col-lg-4 col-md-4 col-sm-4">
+													<div class="title">
+														<h4>File Type</h4>
+													</div>
+													<div class="form-check">
+														<label class="form-check-label">
+															<input class="form-check-input" type="radio" name="filetype" id="json" checked value="json">
+															json
+															<span class="circle">
+																<span class="check"></span>
+															</span>
+														</label>
+													</div>
+													<div class="form-check">
+														<label class="form-check-label">
+															<input class="form-check-input" type="radio" name="filetype" id="csv" value="csv">
+															csv
+															<span class="circle">
+																<span class="check"></span>
+															</span>
+														</label>
+													</div>
+												</div>
+												<div class="col-lg-3 col-md-3 col-sm-3" style="display: flex;">
+													<button type="button" class="btn btn-info btn-min-width" onclick="onclick_get()" style="margin: auto;"><i class="ft-download"></i> Export</button>
+													<% if (messages.error) { %>
+														<!-- <p style="color:red"><%- messages.error %></p> -->
+														<script>
+															$.toast({
+																heading: 'Error',
+																text: '<%- messages.error %>',
+																showHideTransition: 'fade',
+																icon: 'error',
+																hideAfter: 1500   // in milli seconds
+															})
+														</script>
+														<% } %>
+														
+														<% if (messages.success) { %>
+															<!-- <p style="color:green"><%- messages.success %></p> -->
+															<script>
+																$.toast({
+																	heading: 'Success',
+																	text: '<%- messages.success %>',
+																	showHideTransition: 'slide',
+																	icon: 'success',
+																	hideAfter: 1500   // in milli seconds
+																})
+															</script>
+														<% } %>	      
+												</div>
+											</div>
+											<div>
+												<img src="/img/loading.gif" id="loadingimg" style="position: absolute;top: 0px;right: 0;left: 0;margin: 0 auto; z-index: 100;">
+											</div>	
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</section>
+				</div>
+
+
+			</div>
+		</div>
+<!-- ////////////////////////////////////////////////////////////////////////////-->
+
+<!-- page content end -->
+<%- include('../partials/footer'); %>
+<script src="/prettydropdowns/jquery.prettydropdowns.js"></script>
+
+<script>
+	$(document).ready(function() {
+		$('#loadingimg').hide();
+		$('#models').prettyDropdown({width:'100%'});
+	});
+	/* confirm alert */
+	function onclick_get(){
+		/* get value */
+		let models = $('#models').val();
+		let type = $("input[name='exporttype']:checked").val();
+		let file = $("input[name='filetype']:checked").val();
+		const swalWithBootstrapButtons = Swal.mixin({
+			customClass: {
+				confirmButton: 'btn btn-success',
+				cancelButton: 'btn btn-danger'
+			},
+			buttonsStyling: false
+			});
+		
+		swalWithBootstrapButtons.fire({
+			title: "Export " + models.length + " models",
+			text: 'Are you sure?',
+			icon: 'warning',
+			showCancelButton: true,
+			confirmButtonText: 'Yes, get it!',
+			cancelButtonText: 'No, cancel!',
+			reverseButtons: true
+		}).then((result) => {
+			if (result.isConfirmed) {
+				url = '/database/exportdb';
+
+				var parent = $('#loadingimg').parent();
+				parent.empty();
+				parent.append('<img src="/img/loading.gif" id="loadingimg" style="position: absolute;top: 0px;right: 0;left: 0;margin: 0 auto; z-index: 100;">');
+
+				$('.card-content').css('opacity','0.5');
+				$('#loadingimg').show();
+				if(type === 'sep'){
+					models.forEach(model=>{
+						$('#loadingimg').parent().append('<iframe name="' + model + '" frameborder="0" style="display: none;"></iframe>');
+					});
+					models.forEach(model => {
+						$.post( url,{models:[model],type:type,file:file}, function( queryResult ) {
+							window.open('/database/exportdb?name=' + model + '.' + file,model);
+							$('.card-content').css('opacity','1');
+							$('#loadingimg').hide();
+						});
+					});
+				}
+				else{
+					$.post( url,{models:models,type:type,file:file}, function( queryResult ) {
+							$('#loadingimg').parent().append('<iframe name="hiddenframe" frameborder="0" style="display: none;"></iframe>');
+							window.open('/database/exportdb?name=total.' + file,"hiddenframe");
+							$('.card-content').css('opacity','1');
+							$('#loadingimg').hide();						});
+					}
+				}
+			});
+		}
+</script>
+</body>
+</html>

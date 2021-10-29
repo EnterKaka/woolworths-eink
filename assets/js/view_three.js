@@ -8,10 +8,11 @@ import * as dat from './dat.js';
 // import { PCDLoader } from './PCDLoader.js';
 import { XYZLoader, getminmaxhegiht, getminmaxhegihtfromarray, getrgb, init_highlow } from './XYZLoader.js';
 import { TrackballControls } from './TrackballControls.js';
+import PinchZoom from './pinch-zoom.js';
 
 //open file dialog
 function btn_open_model(){
-    $("#input_model").trigger("click");
+	$("#input_model").trigger("click");
 }
 
 $('#input_model').change(openModel_Fromlocal);
@@ -37,235 +38,319 @@ function openModel_Fromlocal(e) {
       }
     }, false);
   
-    if (file) {
-      reader.readAsText(file);
-    }
+  if (file) {
+	  reader.readAsText(file);
+	}
 }
 
-var controls, camera, renderer, scene, canvas, parent_canvas, group;
+var controls, camera, renderer, scene, canvas, parent_canvas, group, pinch, zoom = 0.5, finger_dest = 0, timer;
 //three.js point cloud viewer
 
 function main() {
-    canvas = document.querySelector('#viewer_3d');
+	canvas = document.querySelector('#viewer_3d');
+	// pinch = new PinchZoom(canvas);
+  // pinch.defaults.onZoomStart = () => {
+	  //   console.log('++++++++++ here');
+	  // };
+	  var mouseDown = false,
+	  mouseX = 0,
+	  mouseY = 0,
+	  timerflag = 0;
+	  document.addEventListener('touchmove',(e)=>{
+		console.log(e);
 
-    var mouseDown = false,
-        mouseX = 0,
-        mouseY = 0;
-
-    canvas.addEventListener('mousemove', function (e) {
-      //console.log('move')
-        onMouseMove(e);
-    }, false);
-    canvas.addEventListener('mousedown', function (e) {
-      //console.log('down')
-      if(e.button == 0) {
-        onMouseDown(e);
-      }
-    }, false);
-    canvas.addEventListener('mouseup', function (e) {
-      //console.log('up')
-        onMouseUp(e);
-    }, false);
-
-    renderer = new THREE.WebGLRenderer({canvas, antialias: true});
-    renderer.setPixelRatio(window.devicePixelRatio);
-    renderer.setSize(canvas.clientWidth, canvas.clientHeight);
-
-    scene = new THREE.Scene();
-    //scene background color
-    scene.background = new THREE.Color( 0x111111 );
-
-
-    var light = new THREE.DirectionalLight(0xffffff, 1.5);
-    // light.position.setScalar(100);
-    light.position.set( 0, 20, -26 );
-    scene.add(light);
-    scene.add(new THREE.AmbientLight(0xffffff, 0.5));
-    // //set axis
-    // var axes = new THREE.AxesHelper(20);
-    // scene.add(axes);
-    // // //set grid helper
-    // var gridXZ = new THREE.GridHelper(0, 0);
-    // scene.add(gridXZ);
-
-    // var gridXY = new THREE.GridHelper(30, 60);
-    // gridXY.rotation.x = Math.PI / 2;
-    // scene.add(gridXY);
-
-    // var gridYZ = new THREE.GridHelper(30, 60);
-    // gridYZ.rotation.z = Math.PI / 2;
-
-    var fov = 60;
-    var aspect = canvas.clientWidth/canvas.clientHeight;  // the canvas default
-    var near = 0.01;
-    var far = 1000;
-    camera = new THREE.PerspectiveCamera(fov, aspect, near, far);
-    camera.position.set( 0, -20, 6 );
-    // camera.position.setScalar(15);
-    camera.lookAt(0,0,0);
-    scene.add(camera);
-    
-    //natural rotate control
-    controls = new OrbitControls(camera, renderer.domElement);
+	  });
+	  /* touch mode */
+	  canvas.addEventListener('touchmove', function (e) {
+		  if(timerflag) onTransfer(e);
+		  else     onTouchMove(e);
+		}, false);
+		canvas.addEventListener('touchstart', function (e) {
+			// timer = setTimeout(() => {
+			// 	onTransfer(e);
+			// 	timerflag = 1;
+			// }, 1000);
+			onTouchStart(e);
+		}, false);
+		canvas.addEventListener('touchend', function (e) {
+			// if(timer){
+			// 	clearTimeout(timer);
+			// 	timerflag = 0;
+			// }
+			onTouchEnd(e);
+		}, false);
+		
+		
+		canvas.addEventListener('gestureend', function(e) {
+			console.log('here');
+			if (e.scale < 1.0) {
+				// User moved fingers closer together
+			} else if (e.scale > 1.0) {
+				// User moved fingers further apart
+			}
+		}, false);
+		
+	
+	
+        canvas.addEventListener('mousemove', function (e) {
+			onMouseMove(e);
+        }, false);
+        canvas.addEventListener('mousedown', function (e) {
+			if(e.button == 0) {
+				onMouseDown(e);
+			}
+		}, false);
+		canvas.addEventListener('mouseup', function (e) {
+			onMouseUp(e);
+		}, false);
+		
+		renderer = new THREE.WebGLRenderer({canvas, antialias: true});
+		renderer.setPixelRatio(window.devicePixelRatio);
+		renderer.setSize(canvas.clientWidth, canvas.clientHeight);
+		
+		scene = new THREE.Scene();
+		//scene background color
+		// scene.background = new THREE.Color( 0x333333 );
+		// //set axis
+		// var axes = new THREE.AxesHelper(20);
+		// scene.add(axes);
+		// // //set grid helper
+		// var gridXZ = new THREE.GridHelper(0, 0);
+		// scene.add(gridXZ);
+		
+		// var gridXY = new THREE.GridHelper(30, 60);
+		// gridXY.rotation.x = Math.PI / 2;
+		// scene.add(gridXY);
+		
+		// var gridYZ = new THREE.GridHelper(30, 60);
+		// gridYZ.rotation.z = Math.PI / 2;
+		
+		var fov = 60;
+		var aspect = canvas.clientWidth/canvas.clientHeight;  // the canvas default
+		var near = 0.01;
+		var far = 1000;
+		camera = new THREE.PerspectiveCamera(fov, aspect, near, far);
+		camera.position.set( 0, -20, 6 );
+		camera.lookAt(0,0,0);
+		scene.add(camera);
+		
+		//natural rotate control
+		controls = new OrbitControls(camera, renderer.domElement);
 		// controls.addEventListener( 'change', render ); // call this only in static scenes (i.e., if there is no animation loop)
-		// controls.minDistance = 0.1;
-		// controls.maxDistance = 100;
-    // controls.enableRotate = true;
-    // controls.maxPolarAngle = Infinity;
-    controls.enableRotate = false;
-    // controls.autoRotate = true
-    // controls.enableDamping = true;
-    // controls.maxPolarAngle(Math.PI);
-    
-    //new rotate 360 control
-    // controls = new TrackballControls(camera, renderer.domElement);
-    // controls.rotateSpeed = 3.8;
-    // controls.zoomSpeed = 1.2;
-    // controls.panSpeed = 1.8;
-    // controls.keys = [ 'keyA', 'keyS', 'keyD' ];
-    // controls.noRotate = true;
-
-    // load a resource pcd file load
-    // var loader = new PCDLoader();
-    // loader.load( '../3dmodels/Zaghetto.pcd', function ( points ) {
-
-    // points.geometry.center();
-    // points.geometry.rotateX( Math.PI );
-    // scene.add( points );
-
-    // render();
-
-    // } );
-    group = new THREE.Object3D();
-    var points1, pointcloud;
-    const loader = new THREE.FileLoader();
-    var tempvaluetag = document.getElementById('pointcloud');
-    if(tempvaluetag){
-      pointcloud = tempvaluetag.value;
-      pointcloud = JSON.parse(pointcloud);
-      let modelname = '';
-      reloadModelFromJSONData(modelname,pointcloud);
-    }else{
-      loader.load( './3dmodels/Weissspat_1632872292.txt', function ( text ) {
-        // $('#modelpath').html('Weissspat_1632872292.txt');
-        reloadModelFromData('Weissspat_1632872292.txt',text);
-      } );
-    }
-    scene.add(group);
-    
-    parent_canvas = document.getElementById('main_canvas');
-    $('#btn-openfromLocal').click(function(){
-      btn_open_model();
-    })
-
-    // resize canvas when Toggle fullscreen
-    $('a[data-action="expand"]').on('click',async function(e) {
-      await new Promise(r => setTimeout(r, 10));
-      onWindowResize();
-    });
-    window.addEventListener('resize', onWindowResize);
-    
-
-
-
-
-    //drag and drop
-    // While dragging the p element, change the color of the output text
-    document.addEventListener("drag", function(event) {
-      document.getElementById("viewer_3d").style.color = "red";
-    });
-
-    // Output some text when finished dragging the p element and reset the opacity
-    document.addEventListener("dragend", function(event) {
-      document.getElementById("viewer_3d").innerHTML = "Finished dragging the p element.";
-      event.target.style.opacity = "1";
-    });
-
-    /* Events fired on the drop target */
-
-    // When the draggable p element enters the droptarget, change the DIVS's border style
-    document.addEventListener("dragenter", function(event) {
-      if ( event.target.className == "3dviewer" ) {
-        event.target.style.border = "3px dotted red";
-      }
-    });
-
-    // By default, data/elements cannot be dropped in other elements. To allow a drop, we must prevent the default handling of the element
-    document.addEventListener("dragover", function(event) {
-      event.preventDefault();
-    });
-
-    // When the draggable p element leaves the droptarget, reset the DIVS's border style
-    document.addEventListener("dragleave", function(event) {
-      if ( event.target.className == "3dviewer" ) {
-        event.target.style.border = "";
-      }
-    });
-
-    /* On drop - Prevent the browser default handling of the data (default is open as link on drop)
-      Reset the color of the output text and DIV's border color
-      Get the dragged data with the dataTransfer.getData() method
-      The dragged data is the id of the dragged element ("drag1")
-      Append the dragged element into the drop element
-    */
-    document.addEventListener("drop", function(event) {
-      event.preventDefault();
-      if ( event.target.className == "3dviewer" ) {
-        document.getElementById("viewer_3d").style.color = "";
-        event.target.style.border = "";
-        var file = event.dataTransfer.files[0];
-        var reader = new FileReader();
-        reader.onload = function(ev) {
-          var model_text = ev.target.result;
-          if(file.name.split('.').pop()=='obj'){
-            reloadModelFromObjData(file.name,model_text)   
-          }
-          else{
-            reloadModelFromData(file.name,model_text);
-          }
-        };
-
+		controls.minDistance = 0.1;
+		controls.maxDistance = 100;
+		controls.enableRotate = true;
+		controls.maxPolarAngle = Infinity;
+		controls.enableRotate = false;
+		// controls.autoRotate = true
+		controls.enableDamping = true;
+		// controls.maxPolarAngle(Math.PI);
+		
+		//new rotate 360 control
+		// controls = new TrackballControls(camera, renderer.domElement);
+		// controls.rotateSpeed = 3.8;
+		// controls.zoomSpeed = 1.2;
+		// controls.panSpeed = 1.8;
+		// controls.keys = [ 'keyA', 'keyS', 'keyD' ];
+		// controls.noRotate = true;
+		
+		// load a resource pcd file load
+		// var loader = new PCDLoader();
+		// loader.load( '../3dmodels/Zaghetto.pcd', function ( points ) {
+			
+			// points.geometry.center();
+			// points.geometry.rotateX( Math.PI );
+			// scene.add( points );
+			
+			// render();
+			
+			// } );
+			group = new THREE.Object3D();
+			var points1, pointcloud;
+			var loader = new XYZLoader();
+			var tempvaluetag = document.getElementById('pointcloud');
+			if(tempvaluetag){
+				pointcloud = tempvaluetag.value;
+				pointcloud = JSON.parse(pointcloud);
+				let modelname = '';
+				reloadModelFromJSONData(modelname,pointcloud);
+				
+			}else{
+				loader.load( './3dmodels/owleyeweb.txt', function ( geometry ) {
+					$('#modelpath').html('owleyeweb.txt');
+					geometry.center();
+					
+					var vertexColors = ( geometry.hasAttribute( 'color' ) === true );
+					
+					var material = new THREE.PointsMaterial( { size: 0.1, vertexColors: vertexColors } );
+					
+					points1 = new THREE.Points( geometry, material );
+					group.add( points1 );
+					render();
+					
+				} );
+			}
+			scene.add(group);
+			
+			parent_canvas = document.getElementById('main_canvas');
+			$('#btn-openfromLocal').click(function(){
+				btn_open_model();
+			})
+			
+			// resize canvas when Toggle fullscreen
+			$('a[data-action="expand"]').on('click',async function(e) {
+				await new Promise(r => setTimeout(r, 10));
+				onWindowResize();
+			});
+			window.addEventListener('resize', onWindowResize);
+			
+			
+			
+			
+			
+			//drag and drop
+			// While dragging the p element, change the color of the output text
+			document.addEventListener("drag", function(event) {
+				document.getElementById("viewer_3d").style.color = "red";
+			});
+			
+			// Output some text when finished dragging the p element and reset the opacity
+			document.addEventListener("dragend", function(event) {
+				document.getElementById("viewer_3d").innerHTML = "Finished dragging the p element.";
+				event.target.style.opacity = "1";
+			});
+			
+			/* Events fired on the drop target */
+			
+			// When the draggable p element enters the droptarget, change the DIVS's border style
+			document.addEventListener("dragenter", function(event) {
+				if ( event.target.className == "3dviewer" ) {
+					event.target.style.border = "3px dotted red";
+				}
+			});
+			
+			// By default, data/elements cannot be dropped in other elements. To allow a drop, we must prevent the default handling of the element
+			document.addEventListener("dragover", function(event) {
+				event.preventDefault();
+			});
+			
+			// When the draggable p element leaves the droptarget, reset the DIVS's border style
+			document.addEventListener("dragleave", function(event) {
+				if ( event.target.className == "3dviewer" ) {
+					event.target.style.border = "";
+				}
+			});
+			
+			/* On drop - Prevent the browser default handling of the data (default is open as link on drop)
+			Reset the color of the output text and DIV's border color
+			Get the dragged data with the dataTransfer.getData() method
+			The dragged data is the id of the dragged element ("drag1")
+			Append the dragged element into the drop element
+			*/
+			document.addEventListener("drop", function(event) {
+				event.preventDefault();
+				if ( event.target.className == "3dviewer" ) {
+					document.getElementById("viewer_3d").style.color = "";
+					event.target.style.border = "";
+					var file = event.dataTransfer.files[0];
+					var reader = new FileReader();
+					reader.onload = function(ev) {
+						var model_text = ev.target.result;
+						reloadModelFromData(file.name,model_text);
+		};
+		
         reader.readAsText(file);
-      }
+	}
     });
-
+	
     function onMouseMove(evt) {
-        if (!mouseDown) {
-            return;
+		if (!mouseDown) {
+			return;
         }
         evt.preventDefault();
-
+		
         var deltaX = evt.clientX - mouseX,
-            deltaY = evt.clientY - mouseY;
+		deltaY = evt.clientY - mouseY;
         mouseX = evt.clientX;
         mouseY = evt.clientY;
         //console.log('moved')
         rotateScene(deltaX, deltaY);
     }
-
+	
     function onMouseDown(evt) {
-        evt.preventDefault();
-
+		evt.preventDefault();
+		
         mouseDown = true;
         mouseX = evt.clientX;
         mouseY = evt.clientY;
     }
-
+    
     function onMouseUp(evt) {
-        evt.preventDefault();
-
-        mouseDown = false;
+		evt.preventDefault();
+		
+		mouseDown = false;
     }
-
-    function rotateScene(deltaX, deltaY) {
-      // console.log(deltaX, deltaY)
-        group.rotation.z += deltaX / 100;
-        group.rotation.x += deltaY / 100;
+    
+    function onTransfer(evt){
+		console.log('long touch');
+		var deltaX = evt.touches[0].clientX - mouseX,
+		deltaY = evt.touches[0].clientY - mouseY;
+		mouseX = evt.touches[0].clientX;
+		mouseY = evt.touches[0].clientY;
+		
+		// group.position.y -= deltaY * 0.05;//zoom
+		group.position.z -= deltaY * 0.05;//zoom
+		group.position.x += deltaX * 0.05;
+    }
+    
+    function onTouchMove(evt) {
+		console.log('++++++++++ touch move +++++++++');
+		if (!mouseDown) {
+			return;
+		}
+		if (evt.cancelable) {
+			evt.preventDefault();
+		}  
+		var deltaX = evt.touches[0].clientX - mouseX,
+		deltaY = evt.touches[0].clientY - mouseY;
+		mouseX = evt.touches[0].clientX;
+		mouseY = evt.touches[0].clientY;
+		if(evt.touches.length > 1) {
+			// group.position.y -= deltaY * 0.05;//zoom.
+			camera.fov = 0.5;
+			return;
+		}
+		rotateScene(deltaX, deltaY);
+    }
+	
+	function onTouchStart(evt) {
+		if (evt.cancelable) {
+			evt.preventDefault();
+		}
+		// evt.preventDefault();
+		
+		mouseDown = true;
+		mouseX = evt.touches[0].clientX;
+		mouseY = evt.touches[0].clientY;
+		
+	}
+	
+	function onTouchEnd(evt) {
+		if (evt.cancelable) {
+			evt.preventDefault();
+		}
+		
+		mouseDown = false;
+	}
+	
+  function rotateScene(deltaX, deltaY) {
+	  group.rotation.z += deltaX / 100;
+	  group.rotation.x += deltaY / 100;
     } 
-  }
+}
 
-  function onWindowResize(){
-    camera.aspect = parent_canvas.clientWidth/parent_canvas.clientHeight;
+function onWindowResize(){
+	camera.aspect = parent_canvas.clientWidth/parent_canvas.clientHeight;
     camera.updateProjectionMatrix();
     renderer.setSize((parent_canvas.clientWidth-30),parent_canvas.clientHeight);
     // controls.handleResize();
@@ -280,7 +365,7 @@ function main() {
     controls.update();
     // stats.update();
     render();
-  }
+}
 
   function customTriangulate(points3d){
     
@@ -298,7 +383,7 @@ function main() {
     var values = getminmaxhegiht(lines);
     var min = values[0];
     var max = values[1];
-
+	
     for ( let line of lines ) {
       line = line.trim();
       if ( line.charAt( 0 ) === '#' ) continue; // skip comments
@@ -324,18 +409,18 @@ function main() {
 
     // geometry1.setAttribute( 'position', new THREE.Float32BufferAttribute( vertices, 3 ) );
     if ( colors.length > 0 ) {
-      geometry1.setAttribute( 'color', new THREE.Float32BufferAttribute( colors, 3 ) );
+		geometry1.setAttribute( 'color', new THREE.Float32BufferAttribute( colors, 3 ) );
     }
-
+	
     geometry1.center();
-
-    // var vertexColors = ( geometry1.hasAttribute( 'color' ) === true );
+	
+    var vertexColors = ( geometry1.hasAttribute( 'color' ) === true );
 
     var material = new THREE.PointsMaterial( { size: 0.1, vertexColors: heightmapColor(), color: pointcolor() } );
     // var material = new THREE.PointsMaterial( { size: 0.1, color: pointcolor() } );
     
     while(group.children.length > 0){ 
-      group.clear(); 
+		group.remove(group.children[0]); 
     }
     //draw axis
     // var axes = new THREE.AxesHelper(20);
@@ -343,7 +428,7 @@ function main() {
     // //set grid helper
     // var gridXZ = new THREE.GridHelper(0, 0);
     // scene.add(gridXZ);
-
+	
     // var gridXY = new THREE.GridHelper(30, 60);
     // gridXY.rotation.x = Math.PI / 2;
     // scene.add(gridXY);
@@ -381,7 +466,7 @@ function main() {
     // gui.add(mesh.material, "wireframe");
     ////////////
     render();
-  }
+}
 
   function reloadModelFromObjData(filename,wholecontent) {
     //console.log('localdata');
@@ -481,7 +566,7 @@ function main() {
     var values = getminmaxheightfromjson(wholecontent);
     var min = values[0];
     var max = values[1];
-
+	
     wholecontent.forEach(function (xyz) {
       points3d.push(new THREE.Vector3(parseFloat(xyz.x), parseFloat(xyz.y), parseFloat(xyz.z)));
       // vertices.push( parseFloat( xyz.x ) );
@@ -502,9 +587,9 @@ function main() {
 
     // geometry1.setAttribute( 'position', new THREE.Float32BufferAttribute( vertices, 3 ) );
     if ( colors.length > 0 ) {
-      geometry1.setAttribute( 'color', new THREE.Float32BufferAttribute( colors, 3 ) );
+		geometry1.setAttribute( 'color', new THREE.Float32BufferAttribute( colors, 3 ) );
     }
-
+	
     geometry1.center();
 
     // var vertexColors = ( geometry1.hasAttribute( 'color' ) === true );
@@ -522,14 +607,14 @@ function main() {
     // //set grid helper
     // var gridXZ = new THREE.GridHelper(0, 0);
     // scene.add(gridXZ);
-
+	
     // var gridXY = new THREE.GridHelper(30, 60);
     // gridXY.rotation.x = Math.PI / 2;
     // scene.add(gridXY);
-
+	
     // var gridYZ = new THREE.GridHelper(30, 60);
     // gridYZ.rotation.z = Math.PI / 2;
-
+	
     points2 = new THREE.Points( geometry1, material );
     group.add( points2 );
 
@@ -558,21 +643,21 @@ function main() {
     // var gui = new dat.GUI();
     // gui.add(mesh.material, "wireframe");
     render();
-  }
+}
 
   /*function getminmaxhegiht(lines){
     var min=Infinity, max=-Infinity, values=[];
     let zvalue;
     for ( let line of lines ) {
-      line = line.trim();
-      if ( line.charAt( 0 ) === '#' ) continue; // skip comments
-      var lineValues = line.split( /\s+/ );
-      if ( lineValues.length === 3 ) {
-        zvalue = parseFloat(lineValues[2]);
-        if( min>zvalue){
-          min=zvalue;
-        }
-        if(max<zvalue){
+		line = line.trim();
+		if ( line.charAt( 0 ) === '#' ) continue; // skip comments
+		var lineValues = line.split( /\s+/ );
+		if ( lineValues.length === 3 ) {
+			zvalue = parseFloat(lineValues[2]);
+			if( min>zvalue){
+				min=zvalue;
+			}
+			if(max<zvalue){
           max=zvalue;
         }
       }
@@ -580,28 +665,28 @@ function main() {
     values.push(min);
     values.push(max);
     return values;
-  }*/
+}*/
 
-  function getminmaxheightfromjson(lines){
-    var min=Infinity, max=-Infinity, values=[];
+function getminmaxheightfromjson(lines){
+	var min=Infinity, max=-Infinity, values=[];
     let zvalue;
-
+	
     lines.forEach( function (line) {
-      zvalue = parseFloat(line.z);
-      if( min>zvalue){
-        min=zvalue;
-      }
-      if(max<zvalue){
-        max=zvalue;
-      }
+		zvalue = parseFloat(line.z);
+		if( min>zvalue){
+			min=zvalue;
+		}
+		if(max<zvalue){
+			max=zvalue;
+		}
     });
-
+	
     values.push(min);
     values.push(max);
     return values;
-  }
+}
 
-  //main load
+//main load
 
   init_highlow();
   main();
