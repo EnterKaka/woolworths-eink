@@ -1,0 +1,41 @@
+Step 1: 500 USD
+-- Extra page called: Owl Eye 3D Editor
+-- Open File by drag and drop or button and open file dialog (open .txt file, open .obj file)
+-- open file from DataList (extra Button beside "View" called "Edit") -> opens the pointcloud in the editor page and editor viewer
+-- Add a tool (find good position for this, maybe above maybe beside we have to discuss this when i can see it)
+-- colore: all points same colore or heightmap (like in the "old" viewer)
+-- Single point selection: selecte single points by clicking on them (selecte nearest point to clicked coordinates) (multiple selection must be possible by holding SHIFT)
+-- Polygon Selection (Polygon tool, pencil tool) to draw polygon, mark selected. Multi selection: Draw new polygon, hold SHIFT to add points
+from new polygon to the selected one, press CTR to unmarke marked points
+Left from STEP 1:
+-- press CTR to unmarke marked points
+
+Step 2: 500 USD
+-- filter: add filter libs to filter pointcloud data -> can you do this? i need a "GridMinimumFilter" 
+and a "Statistical Outliere Removal" Filter and a "pass through" filter, (Cubic Filter- Voxel Grid Filter)
+-- When filtering data or deleting points -> update the viewed pointcloud. but the steps must be revertable (ctr + z) !
+-- delauny 3D triangulate pointcloud
+-- selection of vertices like pointcloud selection must be possible. also same actions (delete, save, chane selection)
+-- triangulation view: surface and mesh
+-- Export pointclouds as .txt file, triangulation as .obj file
+
+Step 3: 500 USD
+-- Volume Calculation (selecte heap file and ground file, calculate volume between two files)
+-- Add extra Editor Model Browser 
+(there all loaded models to Editor are stored and shown, all loaded in one session, u can save session to extra DB by insterting collection name)
+-- In Model Browser are many files like model file, ground file, loaded files from drag and drop, but also marked points with save.
+-- rename models in model browser, delete models from model browser, open models from model browser to editor
+-- save model browser session (save all stored models from this sessions to db), load model browser session by name of collection
+-- Hotkeys for tool buttons
+-- tooltip of each button (make it right)
+
+
+
+Currently we are using node on the server.
+So the server also uses JavaScript.
+Currently, the computation of filters is being performed by the client, which means that the client sends only the set values to the server, and the server performs the calculations and sends the result to the client.
+In this case, the server's computer must be much better than the client's computer.
+
+
+
+apple developer payed account.

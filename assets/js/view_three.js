@@ -1,7 +1,12 @@
 import * as THREE from './three.module.js';
 import { OrbitControls } from './OrbitControls.js';
+import { OBJLoader } from './OBJLoader.js';
+import Delaunator from './delaunator.js';
+import * as dat from './dat.js';
+
+
 // import { PCDLoader } from './PCDLoader.js';
-import { XYZLoader, getminmaxhegiht, getrgb, init_highlow } from './XYZLoader.js';
+import { XYZLoader, getminmaxhegiht, getminmaxhegihtfromarray, getrgb, init_highlow } from './XYZLoader.js';
 import { TrackballControls } from './TrackballControls.js';
 import PinchZoom from './pinch-zoom.js';
 
@@ -13,19 +18,25 @@ function btn_open_model(){
 $('#input_model').change(openModel_Fromlocal);
 
 function openModel_Fromlocal(e) {
-	var files = e.target.files;
-	if (files.length < 1) {
-		alert('select a file...');
-		return;
-	}
-	var file = files[0];
-	var reader = new FileReader();
-	var model_text;
-	reader.addEventListener("load", () => {
-    // this will then display a text file
-    model_text = reader.result;
-    reloadModelFromData(file.name,model_text);
-}, false);
+    var files = e.target.files;
+    if (files.length < 1) {
+        alert('select a file...');
+        return;
+    }
+    var file = files[0];
+
+    var reader = new FileReader();
+    var model_text;
+    reader.addEventListener("load", () => {
+      // this will then display a text file
+      model_text = reader.result;
+      if(file.name.split('.').pop()=='obj'){
+        reloadModelFromObjData(file.name,model_text)   
+      }
+      else{
+        reloadModelFromData(file.name,model_text);
+      }
+    }, false);
   
   if (file) {
 	  reader.readAsText(file);
@@ -34,6 +45,7 @@ function openModel_Fromlocal(e) {
 
 var controls, camera, renderer, scene, canvas, parent_canvas, group, pinch, zoom = 0.5, finger_dest = 0, timer;
 //three.js point cloud viewer
+
 function main() {
 	canvas = document.querySelector('#viewer_3d');
 	// pinch = new PinchZoom(canvas);
@@ -261,6 +273,7 @@ function main() {
 		deltaY = evt.clientY - mouseY;
         mouseX = evt.clientX;
         mouseY = evt.clientY;
+        //console.log('moved')
         rotateScene(deltaX, deltaY);
     }
 	
@@ -341,57 +354,60 @@ function onWindowResize(){
     camera.updateProjectionMatrix();
     renderer.setSize((parent_canvas.clientWidth-30),parent_canvas.clientHeight);
     // controls.handleResize();
-}
+  }
 
-function render(){
-	renderer.render( scene, camera);
-}
+  function render(){
+    renderer.render( scene, camera);
+  }
 
-function animate(){
-	requestAnimationFrame( animate );
-	
+  function animate(){
+    requestAnimationFrame( animate );
     controls.update();
-	
     // stats.update();
-	
     render();
 }
 
-function reloadModelFromData(filename,wholecontent) {
-	$('#modelpath').html(filename);
+  function customTriangulate(points3d){
+    
+  }
+
+  function reloadModelFromData(filename,wholecontent) {
+    //console.log('localdata');
+    $('#modelpath').html(filename);
     var lines = wholecontent.split( '\n' );
     getminmaxhegiht(lines);
     var vertices = [];
     var colors = [];
     var points2;
-	
+    var points3d = [];
     var values = getminmaxhegiht(lines);
     var min = values[0];
     var max = values[1];
 	
     for ( let line of lines ) {
-		line = line.trim();
-		if ( line.charAt( 0 ) === '#' ) continue; // skip comments
-		var lineValues = line.split( /\s+/ );
-		if ( lineValues.length === 3 ) {
-			// XYZ
-			vertices.push( parseFloat( lineValues[ 0 ] ) );
-			vertices.push( parseFloat( lineValues[ 1 ] ) );
-			vertices.push( parseFloat( lineValues[ 2 ] ) );
-			
-			let zvalue = parseFloat( lineValues[ 2 ] );
-			//set rgb from xyz
-			let k=(zvalue - min)/(max - min);
-			let rgb = getrgb(k);
-			//set color from xyz
-			colors.push(rgb[0]);
-			colors.push(rgb[1]);
-			colors.push(rgb[2]);
-		}
+      line = line.trim();
+      if ( line.charAt( 0 ) === '#' ) continue; // skip comments
+      var lineValues = line.split( /\s+/ );
+      if ( lineValues.length === 3 ) {
+      // XYZ
+      points3d.push(new THREE.Vector3(parseFloat(lineValues[ 0 ]), parseFloat(lineValues[ 1 ]), parseFloat(lineValues[ 2 ])));
+      // vertices.push(parseFloat(lineValues[ 0 ]));
+      // vertices.push(parseFloat(lineValues[ 1 ]));
+      // vertices.push(parseFloat(lineValues[ 2 ]));
+      let zvalue = parseFloat( lineValues[ 2 ] );
+      //set rgb from xyz
+      let k=(zvalue - min)/(max - min);
+      let rgb = getrgb(k);
+      //set color from xyz
+      colors.push(rgb[0]);
+      colors.push(rgb[1]);
+      colors.push(rgb[2]);
+      }
     }
-    var geometry1 = new THREE.BufferGeometry();
-    geometry1.setAttribute( 'position', new THREE.Float32BufferAttribute( vertices, 3 ) );
-	
+    var geometry1 = new THREE.BufferGeometry().setFromPoints(points3d);    
+    // var geometry1 = new THREE.BufferGeometry();
+
+    // geometry1.setAttribute( 'position', new THREE.Float32BufferAttribute( vertices, 3 ) );
     if ( colors.length > 0 ) {
 		geometry1.setAttribute( 'color', new THREE.Float32BufferAttribute( colors, 3 ) );
     }
@@ -400,7 +416,8 @@ function reloadModelFromData(filename,wholecontent) {
 	
     var vertexColors = ( geometry1.hasAttribute( 'color' ) === true );
 
-    var material = new THREE.PointsMaterial( { size: 0.1, vertexColors: vertexColors } );
+    var material = new THREE.PointsMaterial( { size: 0.1, vertexColors: heightmapColor(), color: pointcolor() } );
+    // var material = new THREE.PointsMaterial( { size: 0.1, color: pointcolor() } );
     
     while(group.children.length > 0){ 
 		group.remove(group.children[0]); 
@@ -420,24 +437,141 @@ function reloadModelFromData(filename,wholecontent) {
     // gridYZ.rotation.z = Math.PI / 2;
 
     points2 = new THREE.Points( geometry1, material );
+    
     group.add( points2 );
-    // scene.add( points2 );
+    
+    //Delaunay
+    // triangulate x, z
+    var indexDelaunay = Delaunator.from(
+      points3d.map(v => {
+        return [v.x, v.y];
+      })
+    );
+    console.log(indexDelaunay);
+    var meshIndex = []; // delaunay index => three.js index
+    for (let i = 0; i < indexDelaunay.triangles.length; i++){
+      meshIndex.push(indexDelaunay.triangles[i]);
+    }
+
+    geometry1.setIndex(meshIndex); // add three.js index to the existing geometry
+    geometry1.computeVertexNormals();
+    var mesh = new THREE.Mesh(
+      geometry1, // re-use the existing geometry
+      new THREE.MeshLambertMaterial({ color: delaunycolor(), wireframe: true })
+    );
+    mesh.visible = delauny();
+    group.add(mesh);
+
+    // var gui = new dat.GUI();
+    // gui.add(mesh.material, "wireframe");
+    ////////////
     render();
 }
 
-async function reloadModelFromJSONData(filename,wholecontent) {
-	var vertices = [];
+  function reloadModelFromObjData(filename,wholecontent) {
+    //console.log('localdata');
+    $('#modelpath').html(filename);
+    
+    var geometry1 = new THREE.BufferGeometry();
+    var loader = new OBJLoader();
+    var points2;
+    var colors = [];
+
+    geometry1.copy( loader.parse(wholecontent).children[0].geometry );
+    geometry1.center();
+
+
+    // var vertexColors = ( geometry1.hasAttribute( 'color' ) === true );
+    // var material = new THREE.PointsMaterial( { size: 0.1, vertexColors: vertexColors } );    
+    
+    var material = new THREE.PointsMaterial( { size: 0.1, color: pointcolor() } );
+
+    
+    while(group.children.length > 0){ 
+      group.clear(); 
+    }
+    //draw axis
+    // var axes = new THREE.AxesHelper(20);
+    // scene.add(axes);
+    // //set grid helper
+    // var gridXZ = new THREE.GridHelper(0, 0);
+    // scene.add(gridXZ);
+
+    // var gridXY = new THREE.GridHelper(30, 60);
+    // gridXY.rotation.x = Math.PI / 2;
+    // scene.add(gridXY);
+
+    // var gridYZ = new THREE.GridHelper(30, 60);
+    // gridYZ.rotation.z = Math.PI / 2;
+
+    points2 = new THREE.Points( geometry1, material );
+    group.add( points2 );
+    // var geo = loader.parse(wholecontent);
+    // console.log(geo)
+    // geo.children[0].material.wireframe = true;
+    group.add( geo );
+    var points = geometry1.attributes.position.array;
+    var index = -1;
+    var dparam = [];
+    var values = getminmaxhegihtfromarray(points);
+    var min = values[0];
+    var max = values[1];
+    for(var i=0;i<points.length;i+=3){
+      dparam.push( [points[i], points[i+1]] );
+
+      let zvalue = parseFloat( points[ i+2 ] );
+      //set rgb from xyz
+      let k=(zvalue - min)/(max - min);
+      let rgb = getrgb(k);
+      //set color from xyz
+      colors.push(rgb[0]);
+      colors.push(rgb[1]);
+      colors.push(rgb[2]);
+    }
+    if ( colors.length > 0 ) {
+      geometry1.setAttribute( 'color', new THREE.Float32BufferAttribute( colors, 3 ) );
+      material.vertexColors = heightmapColor();
+      material.needsUpdate = true;
+    }
+
+    //Delaunay
+    // triangulate x, z
+    var indexDelaunay = Delaunator.from(
+      dparam
+    );
+
+    var meshIndex = []; // delaunay index => three.js index
+    for (let i = 0; i < indexDelaunay.triangles.length; i++){
+      meshIndex.push(indexDelaunay.triangles[i]);
+    }
+
+    geometry1.setIndex(meshIndex); // add three.js index to the existing geometry
+    geometry1.computeVertexNormals();
+    var mesh = new THREE.Mesh(
+      geometry1, // re-use the existing geometry
+      new THREE.MeshLambertMaterial({ color: delaunycolor(), wireframe: true })
+    );
+    mesh.visible = delauny();
+    group.add(mesh);
+    render();
+  }
+
+  function reloadModelFromJSONData(filename,wholecontent) {
+    //console.log('jsondata');
+    // $('#modelpath').html(filename);
+    var vertices = [];
     var colors = [];
     var points2;
-	
+    var points3d = [];
     var values = getminmaxheightfromjson(wholecontent);
     var min = values[0];
     var max = values[1];
 	
     wholecontent.forEach(function (xyz) {
-		vertices.push( parseFloat( xyz.x ) );
-      vertices.push( parseFloat( xyz.y ) );
-      vertices.push( parseFloat( xyz.z ) );
+      points3d.push(new THREE.Vector3(parseFloat(xyz.x), parseFloat(xyz.y), parseFloat(xyz.z)));
+      // vertices.push( parseFloat( xyz.x ) );
+      // vertices.push( parseFloat( xyz.y ) );
+      // vertices.push( parseFloat( xyz.z ) );
       
       let zvalue = parseFloat( xyz.z );
       let k = (zvalue - min)/(max - min);
@@ -448,21 +582,23 @@ async function reloadModelFromJSONData(filename,wholecontent) {
       colors.push(rgb[2]);
     });
     
-    var geometry1 = new THREE.BufferGeometry();
-    geometry1.setAttribute( 'position', new THREE.Float32BufferAttribute( vertices, 3 ) );
-	
+    var geometry1 = new THREE.BufferGeometry().setFromPoints(points3d);    
+    // var geometry1 = new THREE.BufferGeometry();
+
+    // geometry1.setAttribute( 'position', new THREE.Float32BufferAttribute( vertices, 3 ) );
     if ( colors.length > 0 ) {
 		geometry1.setAttribute( 'color', new THREE.Float32BufferAttribute( colors, 3 ) );
     }
 	
     geometry1.center();
-	
-    var vertexColors = ( geometry1.hasAttribute( 'color' ) === true );
 
-    var material = new THREE.PointsMaterial( { size: 0.1, vertexColors: vertexColors } );
+    // var vertexColors = ( geometry1.hasAttribute( 'color' ) === true );
+    var material = new THREE.PointsMaterial( { size: 0.1, vertexColors: heightmapColor(), color: pointcolor() } );
+    // var material = new THREE.PointsMaterial( { size: 0.1, color: pointcolor() } );
+
     
     while(group.children.length > 0){ 
-		group.remove(group.children[0]); 
+      group.clear(); 
     }
     
     //draw axis
@@ -481,13 +617,36 @@ async function reloadModelFromJSONData(filename,wholecontent) {
 	
     points2 = new THREE.Points( geometry1, material );
     group.add( points2 );
-    // scene.add( points2 );
+
+    //Delaunay
+    // triangulate x, z
+    var indexDelaunay = Delaunator.from(
+      points3d.map(v => {
+        return [v.x, v.y];
+      })
+    );
+    
+    var meshIndex = []; // delaunay index => three.js index
+    for (let i = 0; i < indexDelaunay.triangles.length; i++){
+      meshIndex.push(indexDelaunay.triangles[i]);
+    }
+
+    geometry1.setIndex(meshIndex); // add three.js index to the existing geometry
+    geometry1.computeVertexNormals();
+    var mesh = new THREE.Mesh(
+      geometry1, // re-use the existing geometry
+      new THREE.MeshLambertMaterial({ color: delaunycolor(), wireframe: true })
+    );
+    mesh.visible = delauny();
+    group.add(mesh);
+
+    // var gui = new dat.GUI();
+    // gui.add(mesh.material, "wireframe");
     render();
 }
 
-
-/*function getminmaxhegiht(lines){
-	var min=Infinity, max=-Infinity, values=[];
+  /*function getminmaxhegiht(lines){
+    var min=Infinity, max=-Infinity, values=[];
     let zvalue;
     for ( let line of lines ) {
 		line = line.trim();
@@ -529,8 +688,60 @@ function getminmaxheightfromjson(lines){
 
 //main load
 
-init_highlow();
+  init_highlow();
+  main();
+  animate();
 
-main();
 
-animate();
+
+
+
+//tool control
+function pointcolor(){
+  return document.getElementById( 'pointcolor' ).value;
+}
+function delaunycolor(){
+  return document.getElementById( 'delaunycolor' ).value;
+}
+function delauny(){
+  return document.getElementById('delauny').checked;
+}
+function heightmapColor(){
+  return document.getElementById('heightmapColor').checked;
+}
+
+const Pointcolors = document.getElementById( 'pointcolor' );
+Pointcolors.addEventListener( 'input', function () {
+  group.children[0].material.color.set( this.value );
+} );
+
+const Delaunycolors = document.getElementById( 'delaunycolor' );
+Delaunycolors.addEventListener( 'input', function () {
+  group.children[1].material.color.set( this.value );
+} );
+
+document.getElementById('delaunyDiv').addEventListener('click', function(){
+  var two = document.getElementById('delauny');
+  if(!two.checked){
+    group.children[1].visible=false;
+  }
+  else{
+    group.children[1].visible=true;
+  };
+
+});
+
+document.getElementById('heightmapColorDiv').addEventListener('click', function(){
+  var two = document.getElementById('heightmapColor');
+  if(!two.checked){
+  console.log(group)
+    group.children[0].material.vertexColors=false;
+    group.children[0].material.needsUpdate = true;
+  }
+  else{
+    console.log(group)
+    group.children[0].material.vertexColors=true;
+    group.children[0].material.needsUpdate = true;
+  };
+
+});

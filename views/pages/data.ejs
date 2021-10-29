@@ -21,129 +21,166 @@
 				</script>
 		<%}%>
 
-		<div class="app-content content">
-			<div class="content-wrapper">
-				<div class="content-wrapper-before">
-					
-				</div>
-				<div class="content-header row">
-					<div class="content-header-left col-md-4 col-12 mb-2">
-					<h3 class="content-header-title">Tables</h3>
-					</div>
-					<div class="content-header-right col-md-8 col-12">
-						<div class="breadcrumbs-top float-md-right">
-							<div class="breadcrumb-wrapper mr-1">
-								<ol class="breadcrumb">
-									<li class="breadcrumb-item"><a href="/">Home</a>
-									</li>
-									<li class="breadcrumb-item active">Tables
-									</li>
-								</ol>
-							</div>
-						</div>
-					</div>
-				</div>
-				<div class="content-body">
-					
-					<!-- Table head options start -->
-					<div class="row">
-						<div class="col-12">
-							<div class="card">
-								<div class="card-header">
-									<h4 class="card-title">Owl Studio Model Table</h4>
-									<a class="heading-elements-toggle"><i class="la la-ellipsis-v font-medium-3"></i></a>
-									<div class="heading-elements">
-											<a data-action="expand"><i class="ft-maximize"></i></a>
-										</ul>
-									</div>
-								</div>
-								<div class="card-content collapse show">
-									<div class="card-body" style="padding-bottom: 0px;">
-										<div class="row">
-											<div class="col-md-9">
-												<p>This is Owl Studio Model Table.
-													<br>You can load history and view 3d models.
-												</p>
-											</div>
-											<div class="col-md-3">
-												<input type="button" style="float: right;" class="btn btn-success btn-min-width mr-1 mb-1" value='Get Data' style="float: bottom" onclick="onclick_get()">
-											</div>
-										</div>
-										<% if (messages.error) { %>
-											<!-- <p style="color:red"><%- messages.error %></p> -->
-											<script>
-												$.toast({
-													heading: 'Error',
-													text: '<%- messages.error %>',
-													showHideTransition: 'fade',
-													icon: 'error',
-													hideAfter: 1500   // in milli seconds
-												});
-												</script>
-										<% } else{
-											if (messages.success) { %>
-											<!-- <p style="color:green"><%- messages.success %></p> -->
-											<script>
-												$.toast({
-													heading: 'Success',
-													text: '<%- messages.success %>',
-													showHideTransition: 'slide',
-													icon: 'success',
-													hideAfter: 1500   // in milli seconds
-												});
-												</script>
-										<% } else {
-											if(loadedData !== ''){ %>
-											<!-- <p style="color:green"><%- messages.success %></p> -->
-											<script>
-												$.toast({
-													heading: 'Reload Database',
-													text: 'Reload Latest Data',
-													showHideTransition: 'slide',
-													icon: 'success',
-													hideAfter: 1500   // in milli seconds
-												});
-											</script>
-										<% } } }%>	      
-									</div>
-									<div class="table-padding-set">
-										<div class="table-responsive">
-											<table class="table table-striped">
-												<colgroup>
-													<col style="width: 20%;">
-													<col style="width: 15%;">
-													<col style="width: 10%;">
-													<col style="width: 20%;">
-													<col style="width: 20%;">
-													<col style="width: 15%;">
-												</colgroup>
-												<thead class="thead-dark">
-													<tr>
-														<th scope="col">Name</th>
-														<th scope="col">Date</th>
-														<th scope="col">Time</th>
-														<th scope="col">Mass</th>
-														<th scope="col">Volume</th>
-														<th scope="col">#</th>
-													</tr>
-												</thead>
-												<tbody id='table_main_data'>
-													
-												</tbody>
-											</table>
-											<div style="display: flex; justify-content: center;" id="prepross"></div>
-										</div>
-									</div>
-								</div>
-							</div>
-						</div>
-					</div>
-					<!-- Table head options end -->
-					
-				</div>
-			</div>
-		</div>
-<!-- ////////////////////////////////////////////////////////////////////////////-->
+    <div class="app-content content">
+      <div class="content-wrapper">
+        <div class="content-wrapper-before">
+          
+        </div>
+        <div class="content-header row">
+          <div class="content-header-left col-md-4 col-12 mb-2">
+            <h3 class="content-header-title">Tables</h3>
+          </div>
+          <div class="content-header-right col-md-8 col-12">
+            <div class="breadcrumbs-top float-md-right">
+              <div class="breadcrumb-wrapper mr-1">
+                <ol class="breadcrumb">
+                  <li class="breadcrumb-item"><a href="/">Home</a>
+                  </li>
+                  <li class="breadcrumb-item active">Tables
+                  </li>
+                </ol>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="content-body">
+        
+            <!-- Table head options start -->
+            <div class="row">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <h4 class="card-title">Owl Studio Model Table</h4>
+                            <a class="heading-elements-toggle"><i class="la la-ellipsis-v font-medium-3"></i></a>
+                            <div class="heading-elements">
+                                <ul class="list-inline mb-0">
+                                    <li><a data-action="collapse"><i class="ft-minus"></i></a></li>
+                                    <li><a data-action="reload"><i class="ft-rotate-cw"></i></a></li>
+                                    <li><a data-action="expand"><i class="ft-maximize"></i></a></li>
+                                    <li><a data-action="close"><i class="ft-x"></i></a></li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="card-content collapse show">
+                            <div class="card-body">
+                                <p>This is Owl Studio Model Table.
+                                    <br>You can load history and view 3d models.
+                                    <form class='row db-collection-select' >
+                                      <div class="col-md-4">
+                                        <h5>Database Name</h5>&nbsp;&nbsp;
+                                        <small class="text-muted">eg.<i>OwlEyeStudioWebInterface</i></small>
+                                        <fieldset class='formgroup'>
+                                          <select class='custom-select' id='placeholderInput'>
+                                            <% dbs.forEach( function (member){ %>
+                                              <% if(dbname == member){ %>
+                                                <option value="<%= member %>" selected><%= member %></option>
+                                              <% } else { %>
+                                                <option value="<%= member %>"><%= member %></option>
+                                              <% } %>
+                                            <% }); %>
+                                          </select>
+                                        </fieldset>
+                                      </div>
+                                      <div class="col-md-4">
+                                        <h5>Collection Name</h5>&nbsp;&nbsp;
+                                        <small class="text-muted">eg.<i>models</i></small>
+                                        <fieldset class='formgroup'>
+                                          <select class='custom-select' id='placeholderInput1'>
+                                            <% collections.forEach( function (member){ %>
+                                              <% if(collectionname == member){ %>
+                                                <option value="<%= member %>" selected><%= member %></option>
+                                              <% } else { %>
+                                                <option value="<%= member %>"><%= member %></option>
+                                              <% } %>
+                                            <% }); %>
+                                          </select>
+                                        </fieldset>
+                                      </div>
+                                      <div class='col-md-4'>
+                                        <br><br>
+                                        <input type="button" class="btn btn-success btn-min-width mr-1 mb-1" value='Get Data' style="float: bottom" onclick="onclick_get()">
+                                      </div>
+                                    </form>
+                                </p>
+                                <% if (messages.error) { %>
+                                  <!-- <p style="color:red"><%- messages.error %></p> -->
+                                  <script>
+                                    $.toast({
+                                    heading: 'Error',
+                                    text: '<%- messages.error %>',
+                                    showHideTransition: 'fade',
+                                    icon: 'error',
+                                    hideAfter: 1500   // in milli seconds
+                                  })
+                                  </script>
+                                <% } %>
+                                
+                                <% if (messages.success) { %>
+                                  <!-- <p style="color:green"><%- messages.success %></p> -->
+                                  <script>
+                                    $.toast({
+                                        heading: 'Success',
+                                        text: '<%- messages.success %>',
+                                        showHideTransition: 'slide',
+                                        icon: 'success',
+                                        hideAfter: 1500   // in milli seconds
+                                    })
+                                  </script>
+                                <% } %>	      
+                            </div>
+                            <div class="table-padding-set">
+                                <div class="table-responsive">
+                                    <table class="table">
+                                        <!-- <colgroup>
+                                        <col style="width: 20%;">
+                                        <col style="width: 15%;">
+                                        <col style="width: 10%;">
+                                        <col style="width: 20%;">
+                                        <col style="width: 20%;">
+                                        <col style="width: 15%;">
+                                        </colgroup> -->
+                                        <thead class="thead-dark">
+                                            <tr>
+                                                <th scope="col">Name</th>
+                                                <th scope="col">Date</th>
+                                                <th scope="col">Time</th>
+                                                <th scope="col">Mass</th>
+                                                <th scope="col">Volume</th>
+                                                <th scope="col">#</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id='table_main_data'>
+                                        <% if (data) { %>
+                                            <% data.forEach(function(member){ %>
+                                            <tr>
+                                                <td><%= member.name %></td>
+                                                <td><%= member.date %></td>
+                                                <td><%= member.time %></td>
+                                                <td><%= member.mass %></td>
+                                                <td><%= member.volume %></td>
+                                                <td>
+                                                  
+                                                  <div style="float:left">
+                                                    <a href='/data/view/<%= member._id %>' class="btn btn-primary btn-min-width mr-1 mb-1">View</a>			
+                                                  </div>
+                                                 
+                                                  <div style="float:left">
+                                                    <a href='/data/edit/<%= member._id %>' class="btn btn-primary btn-min-width mr-1 mb-1">Edit</a>     
+                                                  </div>
+                                                
+                                                </td>
+                                            </tr>
+                                            <% }) %>
+                                        <% } %>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Table head options end -->
 
 	<%- include('../partials/footer'); %>
 	<script>

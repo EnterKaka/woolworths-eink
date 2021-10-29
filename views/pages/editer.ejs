@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+<html class="loading" lang="en" data-textdirection="ltr">
+<!-- <input type="number" style="z-index:10000000055555"> -->
+
+<head>
+  <%- include('../partials/head'); %>
+    <!-- BEGIN Three.js Load -->
+    <!-- END Three.js Load -->
+    <style>
+      label.font-medium-2.text-bold-600 {
+        margin-bottom: 0px !important;
+      }
+    </style>
+</head>
+
+<body class="vertical-layout vertical-menu 2-columns   menu-expanded fixed-navbar" data-open="click"
+  data-menu="vertical-menu" data-color="bg-gradient-x-purple-blue" data-col="2-columns">
+  <!-- fixed-top-->
+  <%- include('../partials/header'); %>
+    <!-- ////////////////////////////////////////////////////////////////////////////-->
+    <%- include('../partials/sidebar'); %>
+
+      <!-- dashboard -->
+      <div class="app-content content" id="editArea">
+        <div class="content-wrapper">
+          <div class="content-wrapper-before"></div>
+          <div class="content-header row">
+            <div class="content-header-left col-md-4 col-12 mb-2">
+              <h3 class="content-header-title">Owl Eye 3D Editor</h3>
+            </div>
+            <div class="content-header-right col-md-8 col-12">
+              <div class="breadcrumbs-top float-md-right">
+                <div class="breadcrumb-wrapper mr-1">
+                  <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="/">Home</a>
+                    </li>
+                    <li class="breadcrumb-item active">3D editer
+                    </li>
+                  </ol>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="content-body">
+            <!-- Basic Buttons start -->
+            <section id="basic-buttons">
+              <div class="row">
+                <div class="col-lg-12 col-md-12">
+                  <div class="card" id="canvas-container">
+                    <div class="card-header" style="padding-bottom:0">
+                      <% if(messages.pcl_name){ %>
+                        <h4 class="card-title" id='modelpath'>
+                          <%= messages.pcl_name %>
+                        </h4>
+                        <% }else{ %>
+                          <h4 class="card-title" id='modelpath'>filename</h4>
+                          <% } %>
+                            <!-- <label>GroundFile : </label><label id='groundpath'
+                              style="margin-top:5px; margin-bottom:0;font-size:12px;">
+                            </label> -->
+                            <a class="heading-elements-toggle"><i class="la la-ellipsis-v font-medium-3"></i></a>
+                            <div class="heading-elements">
+                              <ul class="list-inline mb-0">
+                                <li><a data-action="collapse"><i class="ft-minus"></i></a></li>
+                                <li><a data-action="reload"><i class="ft-rotate-cw"></i></a></li>
+                                <li><a data-action="expand"><i class="ft-maximize"></i></a></li>
+                                <li><a data-action="close"><i class="ft-x"></i></a></li>
+                              </ul>
+                            </div>
+                    </div>
+                    <div class="card-content collapse show">
+
+
+
+                      <div class="card-body">
+                        <ul class="nav nav-tabs">
+                          <li class="nav-item">
+                            <a class="nav-link active" id="baseIcon-tab4" data-toggle="tab" aria-controls="tabIcon4"
+                              href="#tabIcon4" aria-expanded="true" data-nsfw-filter-status="swf"><i
+                                class="ft-file-text mr-1"></i> File</a>
+                          </li>
+                          <li class="nav-item">
+                            <a class="nav-link" id="baseIcon-tab1" data-toggle="tab" aria-controls="tabIcon1"
+                              href="#tabIcon1" aria-expanded="false" data-nsfw-filter-status="swf"><i
+                                class="ft-eye mr-1"></i> View</a>
+                          </li>
+                          <li class="nav-item">
+                            <a class="nav-link" id="baseIcon-tab2" data-toggle="tab" aria-controls="tabIcon2"
+                              href="#tabIcon2" aria-expanded="false" data-nsfw-filter-status="swf"><i
+                                class="ft-navigation mr-1"></i> Selection</a>
+                          </li>
+                          <li class="nav-item">
+                            <a class="nav-link" id="baseIcon-tab3" data-toggle="tab" aria-controls="tabIcon3"
+                              href="#tabIcon3" aria-expanded="false" data-nsfw-filter-status="swf"><i
+                                class="ft-scissors mr-1"></i> Tools</a>
+                          </li>
+                          <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button"
+                              aria-haspopup="true" aria-expanded="false" data-nsfw-filter-status="swf">
+                              <i class="ft-filter mr-1"></i> Filters
+                            </a>
+                            <div class="dropdown-menu" x-placement="bottom-start"
+                              style="position: absolute; will-change: transform; top: 0px; left: 0px; transform: translate3d(0px, 47px, 0px);padding:15px;">
+                              <a class="btn btn-icon btn-outline-primary btn-glow round mb-1" id="dropdownIcon1-tab"
+                                href="#dropdownIcon1" data-toggle="tab" aria-controls="dropdownIcon1"
+                                aria-expanded="true" data-nsfw-filter-status="swf"
+                                style="width:100%">GridMinimumFilter</a>
+                              <a class="btn btn-icon btn-outline-primary btn-glow round mb-1" id="dropdownIcon2-tab"
+                                href="#dropdownIcon2" data-toggle="tab" aria-controls="dropdownIcon2"
+                                aria-expanded="true" data-nsfw-filter-status="swf"
+                                style="width:100%">VoxelGridFilter</a>
+                              <a class="btn btn-icon btn-outline-primary btn-glow round mb-1" id="dropdownIcon3-tab"
+                                href="#dropdownIcon3" data-toggle="tab" aria-controls="dropdownIcon3"
+                                aria-expanded="true" data-nsfw-filter-status="swf"
+                                style="width:100%">StatisticalOutlierRemovalFilter</a>
+                              <a class="btn btn-icon btn-outline-primary btn-glow round mb-1" id="dropdownIcon4-tab"
+                                href="#dropdownIcon4" data-toggle="tab" aria-controls="dropdownIcon4"
+                                aria-expanded="true" data-nsfw-filter-status="swf"
+                                style="width:100%">PassThroughFilter</a>
+                            </div>
+                          </li>
+                          <li class="nav-item">
+                            <a class="nav-link" href="javascript:void(0)" data-toggle="modal" data-target="#editerModal"
+                              id="btn-emb">Editor Model Browser</a>
+                          </li>
+                          <li class="nav-item">
+                            <a class="nav-link" href="javascript:void(0)" data-toggle="modal" data-target="#volumeModal"
+                              id="btn-vol">Calculate Volume</a>
+                          </li>
+                          <!-- <li class="nav-item"><input type="text" class="form-control round btn-glow mb-1 mr-1"
+                              id="count" style="height: 31px;padding-left: 15px;width: 81px;" min="0.1" max="10"
+                              step="0.1" value="0.5"></li> -->
+                          <!-- <li class="nav-item">
+                            <a class="nav-link disabled" data-nsfw-filter-status="swf"><i class="ft-gitlab"></i> Disabled</a>
+                          </li> -->
+                        </ul>
+                        <div class="tab-content px-1 pt-1">
+                          <div role="tabpanel" class="tab-pane" id="tabIcon1" aria-labelledby="baseIcon-tab1">
+                            <div class="row toolbar">
+                              <!-- <p data-nsfw-filter-status="swf">Oat cake marzipan cake lollipop caramels wafer pie jelly beans. Icing halvah chocolate cake carrot cake. Jelly beans carrot cake marshmallow gingerbread chocolate cake. Gummies cupcake croissant.</p> -->
+
+                              <input type="color" value="#87CEEB" style="height: 31px;width:60px;"
+                                class="btn btn-icon btn-outline-success btn-glow round btn-sm mr-1 mb-1" id="pointcolor"
+                                title="set points color">
+                              <input type="color" value="#800080" style="height: 31px;width:60px;"
+                                class="btn btn-icon btn-outline-success btn-glow round btn-sm mr-1 mb-1"
+                                id="delaunycolor" title="set 3D trianglation mesh's color">
+                              <div id="delaunyDiv" class="form-group pb-0 mb-1"
+                                style="padding-top: 3px; padding-left:10px; margin-bottom:0px;"
+                                title="set 2D delauny trianglation (shift+q)">
+                                <input type="checkbox" data-size="sm" id="delauny" class="switchery"
+                                  data-color="success" data-secondary-color="success" data-switchery="true"
+                                  style="display: none;">
+                                <label for="delauny" class="font-medium-2 text-bold-600">delauny(2D)</label>
+                              </div>
+                              <div id="delaunyDiv3" class="form-group pb-0 mb-1"
+                                style="padding-top: 3px; padding-left:10px; margin-bottom:0px;"
+                                title="set 3D delauny trianglation (shift+w)">
+                                <input type="checkbox" data-size="sm" id="delauny3" class="switchery"
+                                  data-color="success" data-secondary-color="success" data-switchery="true"
+                                  style="display: none;">
+                                <label for="delauny3" class="font-medium-2 text-bold-600">delauny(3D)</label>
+                              </div>
+                              <div id="surfaceDiv" class="form-group pb-0 mb-1"
+                                style="padding-top: 3px; padding-left:10px; margin-bottom:0px;"
+                                title="set for 2/3D trianglation mesh's surface (shift+e)">
+                                <input type="checkbox" data-size="sm" id="surface" class="switchery"
+                                  data-color="success" data-secondary-color="success" data-switchery="true"
+                                  style="display: none;">
+                                <label for="surface" class="font-medium-2 text-bold-600">surface</label>
+                              </div>
+                              <div id="heightmapColorDiv" class="form-group pb-0 mb-1"
+                                style="padding-top: 3px; padding-left:10px; margin-bottom:0px; flex-grow:20;"
+                                title="set heightmap color for points/mesh (shift+r)">
+                                <input type="checkbox" data-size="sm" id="heightmapColor" checked class="switchery"
+                                  data-color="success" data-secondary-color="success" data-switchery="true"
+                                  style="display: none;">
+                                <label for="heightmapColor" class="font-medium-2 text-bold-600">heightmap</label>
+                              </div>
+                            </div>
+                          </div>
+                          <div class="tab-pane" id="tabIcon2" aria-labelledby="baseIcon-tab2">
+                            <div class="row toolbar">
+                              <input type="color" value="#87CEEB" style="height: 31px;width:60px;"
+                                class="btn btn-icon btn-outline-primary btn-glow round btn-sm mr-1 mb-1"
+                                id="polygoncolor" title="set polygon's color">
+                              <input type="color" value="#87CEEB" style="height: 31px;width:60px;"
+                                class="btn btn-icon btn-outline-primary btn-glow round btn-sm mr-1 mb-1"
+                                id="selectedcolor" title="set polygon's color">
+                              <div id="selectedsize" class="form-group pb-0 mb-1"
+                                style="height: 31px;width: 60px; padding-left:10px;padding-top: 7px; margin-bottom:0px;"
+                                title="set selected points size">
+                                <input type="range" class="mr-1 " id="vol" name="vol" min="0.1" max="1" step="0.1"
+                                  value="0.2">
+                              </div>
+                            </div>
+                          </div>
+                          <div class="tab-pane" id="tabIcon3" aria-labelledby="baseIcon-tab3">
+                            <div class="row toolbar">
+                              <button type='button'
+                                class="btn btn-icon btn-outline-success btn-glow round active btn-sm mr-1 mb-1"
+                                title='move tool (shift+a)' id='btn-move'>
+                                <i class="ft-move"></i>
+                              </button>
+                              <button type='button'
+                                class="btn btn-icon btn-outline-success btn-glow round btn-sm mr-1 mb-1"
+                                title='point select tool (shift+z)' id='btn-point'>
+                                <i class="ft-edit-2"></i>
+                              </button>
+                              <button type='button'
+                                class="btn btn-icon btn-outline-success btn-glow round btn-sm mr-1 mb-1"
+                                title='polygon draw tool (shift+d)' id='btn-polygon'>
+                                <i class="ft-octagon"></i>
+                              </button>
+                              <button type='button'
+                                class="btn btn-icon btn-outline-success btn-glow round btn-sm mr-3 mb-1"
+                                title='pencil tool for point selection (shift+f)' id='btn-pencil'>
+                                <i class="ft-edit-3"></i>
+                              </button>
+
+
+                              <button type='button'
+                                class="btn btn-icon btn-outline-success btn-glow round btn-sm mr-1 mb-1"
+                                title='get selected points (shift+v)' id='btn-check'>
+                                <i class="ft-check-circle"></i>
+                              </button>
+                              <button type='button'
+                                class="btn btn-icon btn-outline-success btn-glow round btn-sm mr-1 mb-1"
+                                title='change between selected/unselected points (shift+c)' id='btn-change'>
+                                <i class="ft-refresh-cw"></i>
+                              </button>
+                              <button type='button'
+                                class="btn btn-icon btn-outline-success btn-glow round btn-sm mr-1 mb-1"
+                                title='delete selected points (shift+x)' id='btn-delete'>
+                                <i class="ft-x"></i>
+                              </button>
+                              <input type="file" id="ground-file" style="display:none;" accept=".txt">
+
+
+                            </div>
+                          </div>
+                          <div class="tab-pane active" id="tabIcon4" aria-expanded="true"
+                            aria-labelledby="baseIcon-tab4">
+                            <div class="row toolbar">
+                              <input name="mymodel" type="file" style="display: none;" accept=".obj, .txt"
+                                id="input_model">
+                              <button type='button'
+                                class="btn btn-icon btn-outline-primary btn-glow round btn-sm mr-1 mb-1"
+                                title='load model from txt,obj file' id='btn-openfromLocal'>
+                                <i class="ft-upload"></i>
+                              </button>
+                              <button type='button' style="float:right;"
+                                class="btn btn-icon btn-outline-primary btn-glow round btn-sm mr-1 mb-1"
+                                title='save model into db (models collection) (shift+s)' id='btn-directSave'
+                                data-toggle="modal" data-target="#directSave">
+                                <i class="ft-save"></i>
+                              </button>
+                              <button type='button' style="float:right;"
+                                class="btn btn-icon btn-outline-primary btn-glow round btn-sm mr-1 mb-1"
+                                title='download model with txt,obj file' id='btn-download' data-toggle="modal"
+                                data-target="#exampleModal">
+                                <i class="ft-download"></i>
+                              </button>
+
+                              <% if(messages.pointcloud){ %>
+                                <input type="hidden" id="pointcloud" value='<%- messages.pointcloud %>'>
+                                <% } %>
+
+                            </div>
+                          </div>
+                          <div class="tab-pane" id="dropdownIcon1" role="tabpanel" aria-labelledby="dropdownIcon1-tab"
+                            aria-expanded="false">
+                            <div class="row toolbar">
+                              <div class="badge badge-pill badge-primary mb-1 mr-1">Grid Minimum
+                                Filter
+                              </div>
+                              <input type="number" class="form-control round btn-glow mb-1 mr-1" id="f1-cell-size"
+                                style="height: 31px;padding-left: 15px;width: 81px;" min="0.1" max="10" step="0.1"
+                                value="0.5" title="set cell size">
+                              <button type='button' style="float:right;"
+                                class="btn btn-icon btn-outline-primary btn-glow round btn-sm mb-1"
+                                title='Open model from local pc' id='f1-filter'>
+                                filtering
+                              </button>
+                            </div>
+                          </div>
+                          <div class="tab-pane" id="dropdownIcon2" role="tabpanel" aria-labelledby="dropdownIcon2-tab"
+                            aria-expanded="false">
+                            <div class="row toolbar">
+                              <div class="badge badge-pill badge-primary mb-1 mr-1">Voxel Grid
+                                Filter
+                              </div>
+                              <input type="number" class="form-control round btn-glow mb-1 mr-1" id="f2-cell-size"
+                                style="height: 31px;padding-left: 15px;width: 81px;" min="0.1" max="10" step="0.1"
+                                value="0.5" title="set cell size">
+                              <button type='button' style="float:right;"
+                                class="btn btn-icon btn-outline-primary btn-glow round btn-sm mb-1"
+                                title='Open model from local pc' id='f2-filter'>
+                                filtering
+                              </button>
+                            </div>
+                          </div>
+                          <div class="tab-pane" id="dropdownIcon3" role="tabpanel" aria-labelledby="dropdownIcon3-tab"
+                            aria-expanded="false">
+                            <div class="row toolbar">
+                              <div class="badge badge-pill badge-primary mb-1 mr-1">Statistical
+                                Outlier Removal
+                                Filter
+                              </div>
+                              <input type="number" class="form-control round btn-glow mb-1 mr-1" id="f3-number"
+                                style="height: 31px;padding-left: 15px;width: 81px;" min="1" max="100" step="1"
+                                value="30" title="set points number for calculation">
+                              <input type="number" class="form-control round btn-glow mb-1 mr-1" id="f3-deviation"
+                                style="height: 31px;padding-left: 15px;width: 81px;" min="0.1" max="10" step="0.1"
+                                value="0.5" title="Standard Deviation">
+                              <button type='button' style="float:right;"
+                                class="btn btn-icon btn-outline-primary btn-glow round btn-sm mb-1"
+                                title='Open model from local pc' id='f3-filter'>
+                                filtering
+                              </button>
+                            </div>
+                          </div>
+                          <div class="tab-pane" id="dropdownIcon4" role="tabpanel" aria-labelledby="dropdownIcon4-tab"
+                            aria-expanded="false">
+                            <div class="row toolbar">
+                              <div class="badge badge-pill badge-primary mb-1 mr-1">Pass Through
+                                Filter
+                              </div>
+                              <select class="form-control round btn-glow mb-1 mr-1" style="height: 31px;padding-left: 15px;
+                                width: 60px;padding-right: 0;" id="f4-pass" title="set pass(axis)">
+                                <option value="x">X</option>
+                                <option value="y">Y</option>
+                                <option value="z">Z</option>
+                              </select>
+                              <input type="number" class="form-control round btn-glow mb-1 mr-1" id="f4-limit1"
+                                style="height: 31px;padding-left: 15px;width: 81px;" min="0" max="10000" step="1"
+                                value="0" title="set min limit">
+                              <input type="number" class="form-control round btn-glow mb-1 mr-1" id="f4-limit2"
+                                style="height: 31px;padding-left: 15px;width: 81px;" min="1" max="10000" step="1"
+                                value="500" title="set max limit">
+                              <button type='button' style="float:right;"
+                                class="btn btn-icon btn-outline-primary btn-glow round btn-sm mb-1"
+                                title='Open model from local pc' id='f4-filter'>
+                                filtering
+                              </button>
+
+                            </div>
+                          </div>
+                        </div>
+                        <!-- </div>
+
+
+
+                        <div class="card-body"> -->
+                        <!-- <p class="card-subtitle">You can load *.txt, *.obj files from owl windows app.</p> -->
+                        <div class="progress" style="height: 3px;margin-bottom:0;display:none;" id="fprgs">
+                          <div id="fprgsBar" class="progress-bar bg-info" role="progressbar" aria-valuenow="100"
+                            aria-valuemin="100" aria-valuemax="100" style="width:100%;"></div>
+                        </div>
+                        <div class="form-group">
+
+
+
+                          <!-- basic viewer -->
+                          <%- include('../partials/threeediter'); %>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </section>
+            <!-- Basic Buttons end -->
+          </div>
+
+
+        </div>
+      </div>
+      <!-- ////////////////////////////////////////////////////////////////////////////-->
+      <!-- BEGIN: Customizer-->
+
+      <!-- End: Customizer-->
+      <!-- page content end -->
+      <%- include('../partials/footer'); %>
+        <script type="module" src="/js/edit_three.js"></script>
+        <script type="module" src="/js/tool_three.js"></script>
+        <!-- <script>
+          window.onbeforeunload = function () {
+            return 'Are you really want to perform the action?';
+          }
+        </script> -->
+
+        <!-- page footer -->
+        <div class="modal fade text-left" id="exampleModal" tabindex="-1" role="dialog"
+          aria-labelledby="exampleModalLabel" aria-hidden="true" style="z-index:100001;">
+          <div class="modal-dialog" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Please choose download file type</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">×</span>
+                </button>
+              </div>
+              <div class="modal-body">
+                <div class="row toolbar" style="justify-content: center;">
+                  <button type="button" class="btn btn-success mr-1 ml-1 mb-1" id="obj-download" data-dismiss="modal"><i
+                      class="ft-download"></i>obj file(2D)</button>
+                  <button type="button" class="btn btn-success mr-1 ml-1 mb-1" id="obj-download3"
+                    data-dismiss="modal"><i class="ft-download"></i>obj file(3D)</button>
+                  <button type="button" class="btn btn-primary mr-1 ml-1 mb-1" id="txt-download" data-dismiss="modal"><i
+                      class=" ft-download"></i>&nbsp;&nbsp;txt file&nbsp;&nbsp;&nbsp;</button>
+                </div>
+              </div>
+              <div class="modal-footer">
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="modal fade text-left" id="directSave" tabindex="-1" role="dialog" aria-labelledby="directSaveLabel"
+          aria-hidden="true" style="z-index:100001;">
+
+          <div class="modal-dialog" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="directSaveLabel">Please enter(confirm) model's name and volume</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">×</span>
+                </button>
+              </div>
+              <div class="modal-body">
+                <div class="row toolbar" style="flex-direction: row;">
+                  <label for="ds-modelName" class="ml-1">Database Name</label>
+                  <input type="text" class="form-control ml-1 mr-1 mb-2" id="ds-database">
+                  <label for="ds-modelName" class="ml-1">Collection Name</label>
+                  <input type="text" class="form-control ml-1 mr-1 mb-2" id="ds-collection">
+                  <label for="ds-modelName" class="ml-1">Model Name</label>
+                  <input type="text" class="form-control ml-1 mr-1 mb-2" id="ds-modelName">
+                  <label for="ds-modelVolume" class="ml-1">Model Volume</label>
+                  <input type="text" class="form-control ml-1 mr-1 mb-2" id="ds-modelVolume">
+                </div>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal" id="btn-dsClose">Close</button>
+                <button type="button" class="btn btn-primary" id="directSaveBtn">Save</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="modal fade text-left" id="volumeModal" tabindex="-1" role="dialog" aria-labelledby="volumeLabel"
+          aria-hidden="true" style="z-index:100001;">
+          <div class="modal-dialog" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="directSaveLabel">Please enter(confirm) model's name and volume</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">×</span>
+                </button>
+              </div>
+              <div class="modal-body">
+                <label for="ds-modelName" class="ml-1">Heap File</label>
+                <select class="select2 form-control select2-hidden-accessible mb-1" id="vheap-list"
+                  data-select2-id="default-select" tabindex="-1" aria-hidden="true">
+                  <!-- <option value="AK">Alaska</option>
+                            <option value="HI">Hawaii</option> -->
+                </select>
+                <label for="ds-modelVolume" class="ml-1">Ground File</label>
+                <select class="select2 form-control select2-hidden-accessible mb-1" id="vground-list"
+                  data-select2-id="default-select" tabindex="-1" aria-hidden="true">
+                  <option value="AK">Alaska</option>
+                  <option value="HI">Hawaii</option>
+                </select>
+                <button type='button' class="btn btn-icon btn-outline-primary btn-glow round btn-sm mr-1 mb-1"
+                  title='set ground file from PC' id='btn-ground'> set ground file from PC
+                </button>
+
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal" id="btn-vClose">Close</button>
+                <button type="button" class="btn btn-primary" id="btn-volume">Calculate</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+
+        <div class="modal fade text-left" id="editerModal" tabindex="-1" role="dialog"
+          aria-labelledby="editerModalLabel" aria-hidden="true" style="z-index:100000;">
+          <div class="modal-dialog" role="document" style="max-width:1100px;height:90%;">
+            <div class="modal-content" style="height:100%;">
+              <div class="modal-header">
+                <!-- <h5 class="modal-title" id="editerModalLabel" style="font-weight:800;">Editor Model Browser</h5> -->
+                <ul class="nav nav-tabs">
+                  <li class="nav-item">
+                    <a class="nav-link active" id="bhistory-tab" data-toggle="tab" href="#bhistory" aria-controls="home"
+                      aria-expanded="true">history</a>
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link" id="bdatabase-tab" data-toggle="tab" href="#bdatabase" aria-controls="profile"
+                      aria-expanded="false">database</a>
+                  </li>
+                </ul>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">×</span>
+                </button>
+              </div>
+              <div class="modal-body" style="overflow-y: auto;padding-top:0;">
+                <!-- <button type='button' style="margin:10px;" class="btn btn-outline-primary btn-glow round"
+                  title='Open model from local pc'>
+                  <i class="ft-save"></i> Save
+                </button> -->
+
+                <div class="tab-content px-1 pt-1">
+                  <div role="tabpanel" class="tab-pane active" id="bhistory" aria-labelledby="bhistory-tab"
+                    aria-expanded="true">
+                    <div class="row">
+                      <div class="col-xl-6 col-lg-12">
+                        <div class="form-group">
+                          <p class="text-bold-600 font-medium-2">
+                            Database
+                          </p>
+                          <input type="text" class="form-control" id="hdatabase-name" />
+                        </div>
+                      </div>
+                      <div class="col-xl-6 col-lg-12">
+                        <div class="form-group">
+                          <p class="text-bold-600 font-medium-2">
+                            Collection
+                          </p>
+                          <input type="text" class="form-control" id="hcollection-name" />
+                        </div>
+                      </div>
+                    </div>
+                    <div class="table-responsive">
+                      <table class="table mb-0">
+                        <thead>
+                          <tr>
+                            <th>name</th>
+                            <th>date</th>
+                            <th>time</th>
+                            <th>type</th>
+                            <th>volume</th>
+                            <th>#</th>
+                          </tr>
+                        </thead>
+                        <tbody id="history-models">
+                          <!-- <tr>
+                            <td contenteditable="true">example</td>
+                            <td>06.10.2021</td>
+                            <td>12:25:14</td>
+                            <td>model</td>
+                            <td style="width:170px;">
+                              <button type='button' class="btn btn-icon btn-outline-primary  round btn-sm mr-1"
+                                title='loading'><i class="ft-upload"></i>
+                              </button>
+                              <button type='button' class="btn btn-icon btn-outline-primary  round btn-sm"
+                                title='delete'><i class="ft-x-square"></i>
+                              </button>
+                            </td>
+                          </tr> -->
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                  <div class="tab-pane" id="bdatabase" role="tabpanel" aria-labelledby="bdatabase-tab"
+                    aria-expanded="false">
+                    <div class="row">
+                      <div class="col-xl-4 col-lg-12">
+                        <div class="form-group">
+                          <p class="text-bold-600 font-medium-2">
+                            Database
+                          </p>
+                          <select class="select2 form-control select2-hidden-accessible" id="cdatabase-list"
+                            data-select2-id="default-select" tabindex="-1" aria-hidden="true">
+                            <!-- <option value="AK">Alaska</option>
+                            <option value="HI">Hawaii</option> -->
+                          </select>
+                        </div>
+                      </div>
+                      <div class="col-xl-4 col-lg-12">
+                        <div class="form-group">
+                          <p class="text-bold-600 font-medium-2">
+                            Collection
+                          </p>
+                          <select class="select2 form-control select2-hidden-accessible" id="ccollection-list"
+                            data-select2-id="default-select" tabindex="-1" aria-hidden="true">
+                            <!-- <option value="AK">Alaska</option>
+                            <option value="HI">Hawaii</option> -->
+                          </select>
+                        </div>
+                      </div>
+                      <div class="col-xl-4 col-lg-12">
+                        <div class="form-group">
+                          <button type="button" class="btn btn-outline-primary" style="margin-top:39px;"
+                            id="browser-load"><i class="ft-upload-cloud"></i> Load</button>
+                        </div>
+                      </div>
+
+                    </div>
+                    <div class="table-responsive">
+                      <table class="table mb-0">
+                        <thead>
+                          <tr>
+                            <th>name</th>
+                            <th>date</th>
+                            <th>time</th>
+                            <th>type</th>
+                            <th>#</th>
+                          </tr>
+                        </thead>
+                        <tbody id="database-models">
+
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal" id="browser-close">Close</button>
+                <button type="button" class="btn btn-primary" id="browser-save">Save</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div
+          style="position:fixed;height:100%;width:100%;background:lightgrey;top:0;left:0;opacity:0.5;z-index:100002;display:none;"
+          id="loading">
+          <div class="spinner-border text-primary" role="status" style="top:50%;left:50%;position:absolute;">
+            <span class="sr-only">Loading...</span>
+          </div>
+        </div>
+
+</body>
+
+</html>

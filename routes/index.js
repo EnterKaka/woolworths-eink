@@ -11,82 +11,66 @@ const Setting = require('../model/Setting');
 var ObjectId = require('mongoose').Types.ObjectId;
 
 
-
-app.get('/', function(req, res) {
+app.get('/', function (req, res) {
 	// render to views/index.ejs template file
-	res.redirect('/dashboard')
+	res.redirect('/editer')
 })
 
-app.get('/viewer', auth, async function(req, res) {
+app.get('/viewer', auth, function (req, res) {
 	// render to views/index.ejs template file
-	console.log('******** load view ************');
-	// const client = new MongoClient('mongodb://localhost:27017/', { useUnifiedTopology: true });
 
-	// if(loadedData !== ''){
-		// var result = [];
-		// loadedData.filter((obj)=>{
-		// 	if(obj.name.toLowerCase() === 'general')
-		// 		result.push(obj);
-		// });
-		// var mysortfunction = (a, b) => {
-
-		// 	var o1 = a['date'].toLowerCase();
-		// 	var o2 = b['date'].toLowerCase();
-		  
-		// 	var p1 = a['time'].toLowerCase();
-		// 	var p2 = b['time'].toLowerCase();
-		  
-		// 	if (o1 < o2) return -1;
-		// 	if (o1 > o2) return 1;
-		// 	if (p1 < p2) return -1;
-		// 	if (p1 > p2) return 1;
-		// 	return 0;
-		// }
-		// var latest = result.shift();
-		// let setobj = await Setting.findOne({_id: new ObjectId(latest.setid) });
-		// let dbname = setobj.dbname;
-		// let collectionname = setobj.collectionname;
-		// await client.connect();
-		// const database = client.db(dbname);
-		// const datas = database.collection(collectionname);
-		// // query for movies that have a runtime less than 15 minutes
-		// const cursor = await datas.findOne({_id: new ObjectId(latest._id) });
-		// // console.log(cursor);
-		// // print a message if no documents were found
-		// if (cursor) {
-		// 	// replace console.dir with your callback to access individual elements
-		// 	var pcl = cursor.measurement[0].pointcloud;
-		// 	req.flash("pointcloud", JSON.stringify(pcl));
-		// 	req.flash('pcl_name', cursor.measurement[0].name);
-
-		// }
-		res.render('pages/viewer', {
-			title: '3D Viewer - Owl Studio Web App',
-			priv: req.user.privilege,
-			model_data: '',
-		});
-	// }
-	// else{
-	// 	res.redirect('/data/');
-	// }
-
+	res.render('pages/viewer', {
+		title: '3D Viewer - Owl Studio Web App',
+		priv: req.user.privilege,
+		model_data: '',
+	})
 })
 
-app.get('/dashboard', auth, function(req, res) {
+app.get('/editer', auth, function (req, res) {
+	// render to views/index.ejs template file
+
+	res.render('pages/editer', {
+		title: 'Owl Eye 3D Editor',
+		priv: req.user.privilege,
+		model_data: '',
+	})
+})
+
+app.get('/dashboard', auth, function (req, res) {
+	// render to views/index.ejs template file
+	console.log('/dashboard----------');
+	if (req.session.dbname)
+		console.log(req.session.dbname, req.session.collectionname);
+	else {
+		req.session.dbname = 'OwlEyeStudioWebInterface';
+		req.session.collectionname = 'models';
+	}
 
 	console.log('********* load dashboard page ************');
 
 	const client = new MongoClient('mongodb://localhost:27017/', { useUnifiedTopology: true });
 	//This is all models that seperated with name.
 	var allmodels = [];
-	var allnames = [];
-	
+
+	const client = new MongoClient('mongodb://localhost:27017/', { useUnifiedTopology: true });
 	async function run() {
 		try {
+			await client.connect();
+			const database = client.db(req.session.dbname);
+			const datas = database.collection(req.session.collectionname);
+			// query for movies that have a runtime less than 15 minutes
+			const cursor = datas.find({});
+			// print a message if no documents were found
+			if ((await cursor.count()) === 0) {
+				console.log("No documents found!");
+				//  process.exit(1)
+				req.flash('error', 'No existed');
+				// redirect to users list page
+				res.header(400).json({ status: 'fail' });
+			} else {
 				// replace console.dir with your callback to access individual elements
-				var lastmodelname;//for current item for update
-				for(const model of  loadedData){
-					let modelname = model.name;
+				await cursor.forEach(function (model) {
+					let modelname = model.measurement[0].name;
 					let eachmodeldata = {
 						_id: model._id,
 						datetime: model.date + ' ' + model.time,
@@ -94,22 +78,21 @@ app.get('/dashboard', auth, function(req, res) {
 						volume: model.volume,
 					}
 					let stored = false;
-					for(const element of allmodels){
-						if(element.name === modelname){
+					for (const element of allmodels) {
+						if (element.name === modelname) {
 							element.log.push(eachmodeldata);
 							stored = true;
 							break;
 						}
 					}
-					
-					if(stored == false){
+
+					if (stored == false) {
 						let temp_model = {
 							name: modelname,
 							log: [],
 						}
 						temp_model.log.push(eachmodeldata);
 						allmodels.push(temp_model);
-						allnames.push(modelname);
 					}
 					lastmodelname = modelname;//for name sort by current datetime
 				}
@@ -176,35 +159,35 @@ app.get('/dashboard', auth, function(req, res) {
 		(err) => {
 			console.log("mongodb connect error ========");
 			console.error(err)
-		   	req.flash('error', err)
-		   	// redirect to users list page
-		   	res.render('pages/dashboard', {
+			req.flash('error', err)
+			// redirect to users list page
+			res.render('pages/dashboard', {
 				title: 'Model DB - Owl Studio Web App',
 			});
 		}
 	);
 
-	
+
 })
 
-app.get('/login', function(req, res) {
+app.get('/login', function (req, res) {
 	// render to views/index.ejs template file
-	res.render('pages/login', {title: 'Login - Owl Studio Web App'})
+	res.render('pages/login', { title: 'Login - Owl Studio Web App' })
 })
 
-app.get('/logout', function(req, res){
+app.get('/logout', function (req, res) {
 	req.session.destroy();
 	loadedData = '';
 	return res.redirect('/');
 })
 
-app.post('/login', async function(req, res) {
+app.post('/login', async function (req, res) {
 	const querySchema = Joi.object({
 		email: Joi.string().required(),
 		pass: Joi.string().required()
 	})
 	const { error } = querySchema.validate(req.body);
-	if(error) {
+	if (error) {
 		return res.redirect('/login');
 	}
 	let user1;
@@ -224,16 +207,16 @@ app.post('/login', async function(req, res) {
 			await req.session.save();
 			res.redirect('/');
 		}
-		else{
+		else {
 			for (const key in req.body) {
 				if (Object.hasOwnProperty.call(req.body, key)) {
 					req.flash(key, req.body[key])
 				}
 			}
 			req.flash('error', 'Password is incorrect.');
-			res.render('pages/login', {title: '3D Viewer - Owl Studio Web App'});
+			res.render('pages/login', { title: '3D Viewer - Owl Studio Web App' });
 		}
-	}else{
+	} else {
 		// default login feature
 		// var email = req.body.email.trim();
 		// var pass = req.body.pass.trim();
@@ -288,5 +271,5 @@ function makeSortedDatasbytime(lastmodelname, allmodels){
  * 
  * module.exports should be used to return the object 
  * when this file is required in another module like app.js
- */ 
+ */
 module.exports = app;

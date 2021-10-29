@@ -7,12 +7,13 @@ const Joi = require('joi');
 var ObjectId = require('mongoose').Types.ObjectId;
 
 // SHOW LIST OF USERS
-app.get('/', auth, admin, async function(req, res, next) {	
+app.get('/', auth, admin, async function (req, res, next) {
 	// fetch and sort users collection by id in descending order
-    
+
 	let allmembers = await Setting.find();
 	res.render('pages/setting/list', {
-		data : allmembers,	
+		title: 'Add New Setting - Owl Studio',
+		data: allmembers,
 	})
 });
 app.post('/settime', auth, admin, async function(req, res, next) {
@@ -32,35 +33,34 @@ app.post('/settime', auth, admin, async function(req, res, next) {
 	res.send();
 });
 // SHOW ADD USER FORM
-app.get('/add', auth, admin, function(req, res, next){	
+app.get('/add', auth, admin, function (req, res, next) {
 	// render to views/pages/members/add.ejs
 	res.render('pages/setting/add', {
 		title: 'Add New Setting - Owl Studio',
-		dbname:'',
+		dbname: '',
 		collectionname: '',
 	})
 });
 
 // ADD NEW USER POST ACTION
-app.post('/add', auth, admin, async function(req, res, next){	
+app.post('/add', auth, admin, async function (req, res, next) {
 	const querySchema = Joi.object({
 		dbname: Joi.string().required(),
 		collectionname: Joi.string().required(),
 	})
 	const { error } = querySchema.validate(req.body);
-	if(error) {
+	if (error) {
 		req.flash('error', error);
 		res.render('pages/setting/add');
-	}else{
+	} else {
 		//find an existing user
 		let onesetting = await Setting.findOne({ dbname: req.body.dbname, collectionname: req.body.collectionname });
-		if (onesetting)
-		{
+		if (onesetting) {
 			req.flash('error', 'This Setting is already existed in database');
 			res.render('pages/setting/add');
 			return;
-		} 
-		
+		}
+
 		let v_setting = new Setting({
 			dbname: req.body.dbname,
 			collectionname: req.body.collectionname,
@@ -68,60 +68,60 @@ app.post('/add', auth, admin, async function(req, res, next){
 		await v_setting.save();
 		req.flash('success', 'New User is added successfully!');
 		res.redirect('/setting');
-	
+
 		// const token = user.generateAuthToken();
 	}
 })
 
 
 // SHOW EDIT USER FORM
-app.get('/edit/(:_id)', auth, admin, async function(req, res, next){
+app.get('/edit/(:_id)', auth, admin, async function (req, res, next) {
 	let mem = await Setting.findOne({ _id: new ObjectId(req.params._id) });
-	if(mem){
-		res.render('pages/setting/edit',{
-            _id: mem._id,
+	if (mem) {
+		res.render('pages/setting/edit', {
+			_id: mem._id,
 			dbname: mem.dbname,
 			collectionname: mem.collectionname,
 		})
-	}else{
+	} else {
 		res.redirect('/setting');
 	}
 })
 
 // EDIT USER POST ACTION
-app.post('/edit/(:_id)', auth, admin, async function(req, res, next) {
+app.post('/edit/(:_id)', auth, admin, async function (req, res, next) {
 	const querySchema = Joi.object({
 		dbname: Joi.string().required(),
 		collectionname: Joi.string().required(),
 	})
 	const { error } = querySchema.validate(req.body);
-	if(error) {
+	if (error) {
 		req.flash('error', error);
 		res.redirect('/setting/edit/<%- res.params._id %>');
-	}else{
+	} else {
 		let v_user = {
 			dbname: req.body.dbname,
 			collectionname: req.body.collectionname,
 		};
-		let mem = await Setting.findOneAndUpdate({_id: new ObjectId(req.params._id) }, v_user);
+		let mem = await Setting.findOneAndUpdate({ _id: new ObjectId(req.params._id) }, v_user);
 		req.flash('success', 'The Setting Information has updated successfully');
 		return res.redirect('/setting')
 	}
 })
 
 // DELETE USER
-app.get('/delete/(:_id)', auth, admin, function(req, res, next) {	
+app.get('/delete/(:_id)', auth, admin, function (req, res, next) {
 	var _id = new ObjectId(req.params._id);
 	Setting.findOneAndDelete({ _id: _id }, function (err, docs) {
-		if (err){
+		if (err) {
 			req.flash('error', err)
 			// redirect to users list page
-			res.header(400).json({status: 'fail'});
+			res.header(400).json({ status: 'fail' });
 		}
-		else{
+		else {
 			req.flash('success', 'User deleted successfully! email = ' + req.params._id)
 			// redirect to users list page
-			res.header(200).json({status: 'success'});
+			res.header(200).json({ status: 'success' });
 		}
 	});
 })
@@ -135,5 +135,5 @@ app.get('/delete/(:_id)', auth, admin, function(req, res, next) {
  * 
  * module.exports should be used to return the object 
  * when this file is required in another module like app.js
- */ 
+ */
 module.exports = app;
