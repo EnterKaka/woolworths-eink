@@ -7,6 +7,9 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const config = require("config");
 const MongoClient = require("mongodb").MongoClient;
+const Setting = require('../model/Setting');
+var ObjectId = require('mongoose').Types.ObjectId;
+
 
 app.get('/', function (req, res) {
 	// render to views/index.ejs template file
@@ -43,6 +46,9 @@ app.get('/dashboard', auth, function (req, res) {
 		req.session.collectionname = 'models';
 	}
 
+	console.log('********* load dashboard page ************');
+
+	const client = new MongoClient('mongodb://localhost:27017/', { useUnifiedTopology: true });
 	//This is all models that seperated with name.
 	var allmodels = [];
 
@@ -67,9 +73,9 @@ app.get('/dashboard', auth, function (req, res) {
 					let modelname = model.measurement[0].name;
 					let eachmodeldata = {
 						_id: model._id,
-						datetime: model.datetime,
-						mass: model.measurement[0].mass,
-						volume: model.measurement[0].volume,
+						datetime: model.date + ' ' + model.time,
+						mass: model.mass,
+						volume: model.volume,
 					}
 					let stored = false;
 					for (const element of allmodels) {
@@ -88,16 +94,65 @@ app.get('/dashboard', auth, function (req, res) {
 						temp_model.log.push(eachmodeldata);
 						allmodels.push(temp_model);
 					}
+					lastmodelname = modelname;//for name sort by current datetime
+				}
+				allmodels = makeSortedDatasbytime(lastmodelname, allmodels);
+				// //sucess
+				if(loadedData !== ''){
 
-				});
-				//sucess
-				console.log(allmodels.log[0].mass);
-				res.render('pages/dashboard', {
-					title: 'Dashboard - Owl Studio Web App',
-				});
-			}
+					/* load general data default */
+					var result = [];
+					loadedData.filter((obj)=>{
+						if(obj.name.toLowerCase() === 'general')
+							result.push(obj);
+					});
+					var mysortfunction = (a, b) => {
+			
+						var o1 = a['date'].toLowerCase();
+						var o2 = b['date'].toLowerCase();
+					  
+						var p1 = a['time'].toLowerCase();
+						var p2 = b['time'].toLowerCase();
+					  
+						if (o1 < o2) return -1;
+						if (o1 > o2) return 1;
+						if (p1 < p2) return -1;
+						if (p1 > p2) return 1;
+						return 0;
+					}
+					var latest = result.shift();
+					let setobj = await Setting.findOne({_id: new ObjectId(latest.setid) });
+					let dbname = setobj.dbname;
+					let collectionname = setobj.collectionname;
+					await client.connect();
+					const database = client.db(dbname);
+					const datas = database.collection(collectionname);
+					// query for movies that have a runtime less than 15 minutes
+					const cursor = await datas.findOne({_id: new ObjectId(latest._id) });
+					// console.log(cursor);
+					// print a message if no documents were found
+					if (cursor) {
+						// replace console.dir with your callback to access individual elements
+						var pcl = cursor.measurement[0].pointcloud;
+						req.flash("pointcloud", JSON.stringify(pcl));
+						var format = (Math.round(cursor.measurement[0].volume * 100) / 100).toFixed(2);
+						req.flash('pcl_name', cursor.measurement[0].name + ' : ' + cursor.measurement[0].date + ' ' + cursor.measurement[0].time);
+			
+					}
+			
+
+					res.render('pages/dashboard', {
+						title: 'Dashboard - Owl Studio Web App',
+						data: allmodels,
+						loadedData: loadedData,
+						names: allnames,
+						delaytime:delaytime
+					});
+				}
+				else{
+					res.redirect('/data/');
+				}
 		} finally {
-			await client.close();
 		}
 	}
 	run().catch(
@@ -122,6 +177,7 @@ app.get('/login', function (req, res) {
 
 app.get('/logout', function (req, res) {
 	req.session.destroy();
+	loadedData = '';
 	return res.redirect('/');
 })
 
@@ -134,13 +190,22 @@ app.post('/login', async function (req, res) {
 	if (error) {
 		return res.redirect('/login');
 	}
-	let user1 = await User.findOne({ email: req.body.email });
-	let token = jwt.sign({ ...user1 }, config.get("myprivatekey"));
-	if (user1) {
-		if (bcrypt.compareSync(req.body.pass, user1.pass)) {
+	let user1;
+	console.log(req.body.email);
+	if(req.body.email.includes('@')){
+		console.log('email')
+		user1 = await User.findOne({ email: req.body.email });
+	}else{
+		console.log('name')
+		user1 = await User.findOne({ name: req.body.email });
+	}
+	console.log(user1);
+	let token = jwt.sign({...user1}, config.get("myprivatekey"));
+	if(user1) {
+		if(bcrypt.compareSync(req.body.pass, user1.pass)) {
 			req.session.accessToken = token;
 			await req.session.save();
-			res.redirect('/editer');
+			res.redirect('/');
 		}
 		else {
 			for (const key in req.body) {
@@ -153,34 +218,52 @@ app.post('/login', async function (req, res) {
 		}
 	} else {
 		// default login feature
-		var email = req.body.email.trim();
-		var pass = req.body.pass.trim();
-		if ((email == 'admin@oe-web.com') && (pass == 'admin1234')) {
-			let v_user = new User({
-				name: 'Quirin Kraus',
-				pass: 'admin1234',
-				email: 'admin@oe-web.com',
-				privilege: 'admin',
-			});
-			v_user.pass = await bcrypt.hash(v_user.pass, 10);
-			await v_user.save();
-			let user1 = await User.findOne({ email: req.body.email });
-			let token = jwt.sign({ ...user1 }, config.get("myprivatekey"));
-			req.session.accessToken = token;
-			await req.session.save();
-			res.redirect('/viewer');
+		// var email = req.body.email.trim();
+		// var pass = req.body.pass.trim();
+		// if((email == 'admin@oe-web.com' ) && (pass == 'admin1234' )){
+		// 	let v_user = new User({
+		// 		name: 'Quirin Kraus',
+		// 		pass: 'admin1234',
+		// 		email: 'admin@oe-web.com',
+		// 		privilege: 'admin',
+		// 	});
+		// 	v_user.pass = await bcrypt.hash(v_user.pass, 10);
+		// 	await v_user.save();
+		// 	let user1 = await User.findOne({ email: req.body.email });
+		// 	let token = jwt.sign({...user1}, config.get("myprivatekey"));
+		// 	req.session.accessToken = token;
+		// 	await req.session.save();
+		// 	res.redirect('/');
+		// }
+		// for (const key in req.body) {
+		// 	if (Object.hasOwnProperty.call(req.body, key)) {
+		// 		req.flash(key, req.body[key])
+		// 	}
+		// }
+		if(req.body.email.includes('@')){
+			req.flash('error', 'Email is not registered');
 		}
-		for (const key in req.body) {
-			if (Object.hasOwnProperty.call(req.body, key)) {
-				req.flash(key, req.body[key])
-			}
+		else{
+			req.flash('error', 'UserName is not registered');
 		}
-		req.flash('error', 'Email is not registered');
-		res.render('pages/login', { title: '3D Viewer - Owl Studio Web App' });
+		res.render('pages/login', {title: '3D Viewer - Owl Studio Web App'});
 	}
 });
 
-
+function makeSortedDatasbytime(lastmodelname, allmodels){
+	var sorteddata = allmodels, tmp_data,i = 0;
+	for(const element of allmodels){
+		if(element.name === lastmodelname){
+			tmp_data = sorteddata.slice(i, i+1);
+			sorteddata.splice(i,1);
+			break;
+		}
+		i = i + 1;
+	}
+	sorteddata = sorteddata.concat(tmp_data);
+	sorteddata.reverse();
+	return sorteddata;
+}
 /** 
  * We assign app object to module.exports
  * 

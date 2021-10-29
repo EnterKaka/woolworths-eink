@@ -7,6 +7,13 @@ const env = require('config');
 var app = express();
 var flash = require('express-flash');
 var config = require('./config');
+
+const cron = require('node-cron');
+const http = require('http').Server(app);
+const io = require('socket.io')(http);
+
+global.loadedData = '';
+global.delaytime = 60000*60;
 /**
  * Store database credentials in a separate config.js file
  * Load the file/module and its values
@@ -37,6 +44,7 @@ var index = require('./routes/index');
 var user = require('./routes/users');
 var data = require('./routes/data');
 var setting = require('./routes/setting');
+var database_ei = require('./routes/database');
 /**
  * Express Validator Middleware for Form Validation
  */
@@ -95,20 +103,60 @@ app.use('/', index);
 app.use('/user', user);
 app.use('/data', data);
 app.use('/setting', setting);
+app.use('/database', database_ei);
 
 mongoose
-  .connect(config.database.url, { // 'mongodb://127.0.0.1:27017'            process.env.MONGO_URI
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  })
-  .then(() => {
-    console.log('connected to db');
-    app.listen(3000, function () {
-      console.log('Server running at port 3000: http://127.0.0.1:3000')
+    .connect(config.database.url, { // 'mongodb://127.0.0.1:27017'            process.env.MONGO_URI
+        useNewUrlParser: true,
+        useUnifiedTopology: true,
+    })
+    .then(() => {
+      console.log('connected to db');
+      http.listen(3000, "0.0.0.0", () => {
+        console.log(`Socket.IO server running at http://localhost:3000/`);
+      });
+    })
+    .catch((err) => {
+      console.log("mongodb connect error ========");
+      console.error(err)
+      process.exit(1)
     });
-  }).catch((err) => {
-    console.log("mongodb connect error ========");
-    console.error(err)
-    process.exit(1)
-  })
+
+    //all models scan and broadcast to all 
+const Settings = require('./model/Setting');
+const MongoClient = require("mongodb").MongoClient;
+var ObjectId = require('mongoose').Types.ObjectId;
+    
+// cron.schedule('* * * * *', function () {
+// 	console.log("Mongdb Scan Task is running every minute " + new Date());
+//   const client = new MongoClient('mongodb://localhost:27017/', { useUnifiedTopology: true });
+// 	var alldatas = [];
+//   Settings.find({}, function (err, docs) {
+//     // docs is an array
+//     if(docs){
+//       docs.forEach( function(mem){
+//         let db = mem.dbname.trim();
+//         let col = mem.collectionname.trim();
+//         client.connect((err) => {
+//           var workdb = client.db(db);
+//           var datas = workdb.collection(col);
+// 			    const cursor = datas.find({}).sort([['datetime', -1]]).toArray(function(err, result) {
+//             if (err) {
+//               throw err;
+//             }
+//             var fulldata = result;
+//             var jsontype = {
+//               modelname: db,
+//               collectionname: col,
+//               datas: fulldata
+//             };
+// 	          io.emit('broad message', {data: jsontype});
+//             client.close();
+//           });
+//         });
+//       });
+     
+//     }
+//   });
+// });
 

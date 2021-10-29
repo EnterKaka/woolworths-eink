@@ -42,10 +42,7 @@
                             <a class="heading-elements-toggle"><i class="la la-ellipsis-v font-medium-3"></i></a>
                             <div class="heading-elements">
                                 <ul class="list-inline mb-0">
-                                    <li><a data-action="collapse"><i class="ft-minus"></i></a></li>
-                                    <li><a data-action="reload"><i class="ft-rotate-cw"></i></a></li>
                                     <li><a data-action="expand"><i class="ft-maximize"></i></a></li>
-                                    <li><a data-action="close"><i class="ft-x"></i></a></li>
                                 </ul>
                             </div>
                         </div>
@@ -80,7 +77,30 @@
                                   </script>
                                 <% } %>	      
                             </div>
-                            <a href="/setting/add" class="btn btn-success btn-min-width mr-1 mb-1" style="float : right;">Add</a>
+                            <div class="row" style="padding: 0 25px">
+                              <div class="col-md-6">
+                                <form action="/setting/settime" method="post" target="iframe">
+                                  <!-- <fieldset>
+                                  <legend>Set Delay Time</legend> -->
+                                  <iframe name="iframe" style="display: none;"></iframe>
+                                  <div class="row">
+                                    <div class="col-md-6 col-6">
+                                      <div class="form-group bmd-form-group">
+                                          <!-- <label for="collectionname" class="bmd-label-floating">Delay time</label> -->
+                                          <input type="text" class="form-control" name="delaytime" placeholder="Delay Time">
+                                      </div>
+                                    </div>
+                                    <div class="col-md-6 col-6">
+                                      <button type="submit" id="delaytimeset" class="btn btn-info btn-min-width mr-1 mb-1">Set</button>
+                                    </div>
+                                  </div>
+                                <!-- </fieldset> -->
+                                </form>
+                              </div>
+                              <div class="col-md-6">
+                                <a href="/setting/add" class="btn btn-success btn-min-width mr-1 mb-1" style="float : right;">Add</a>
+                              </div>
+                            </div>
                             <div class='table-padding-set'>
                                 <div class="table-responsive">
                                     <table class="table table-striped">
@@ -99,6 +119,11 @@
                                         <tbody>
                                           <% if (data) { %>
                                             <% data.forEach(function(member){ %>
+                                              <% if (member.dbname === 'delaytime') { %>
+                                                <script>
+                                                  $('input[name="delaytime"]').val(<%= member.collectionname %>);
+                                                </script>
+                                              <% }else{ %>
                                               <tr>
                                                 <td><%= member.dbname %></td>
                                                 <td><%= member.collectionname %></td>
@@ -109,6 +134,7 @@
                                                   </div>
                                                 </td>
                                               </tr>
+                                              <% } %>
                                             <% }) %>
                                           <% } %>
                                         </tbody>
