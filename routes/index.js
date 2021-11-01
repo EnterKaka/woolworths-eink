@@ -38,7 +38,7 @@ app.get('/editer', function (req, res) {
 	res.render('pages/editer', {
 		title: 'Owl Eye 3D Editor',
 		// priv: req.user.privilege,
-		priv: 'moscow',
+		// priv: 'moscow',
 		model_data: '',
 	})
 })
