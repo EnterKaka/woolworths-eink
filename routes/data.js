@@ -156,6 +156,69 @@ app.post('/view/(:id)', auth, async function(req, res, next) {
 	
 });
 
+app.get('/edit/(:_id)', auth, async function (req, res, next) {
+	// let model = await Model.findOne({datetime: req.params.datetime})
+	const client = new MongoClient('mongodb://localhost:27017/', { useUnifiedTopology: true });
+
+	async function run() {
+		try {
+
+			/* find object in loaded data*/
+			var id = req.params._id;
+			let obj = loadedData.find((o)=>{
+				if(o._id.toString()===id)
+					return true;
+			});
+
+			/* find setting data by setting id*/
+			let setobj = await Setting.findOne({_id: new ObjectId(obj.setid) });
+			
+			/* get pointcloud from collection */
+			let dbname = setobj.dbname;
+			let collectionname = setobj.collectionname;
+
+			await client.connect();
+			const database = client.db(dbname);
+			const datas = database.collection(collectionname);
+			// query for movies that have a runtime less than 15 minutes
+			const cursor = await datas.findOne({ _id: new ObjectId(req.params._id) });
+			// console.log(cursor);
+			// print a message if no documents were found
+			if (cursor) {
+				// replace console.dir with your callback to access individual elements
+				console.log('success get data');
+				req.flash('success', 'Data loaded successfully! DB = ' + dbname)
+				// redirect to users list page
+				var pcl = cursor.measurement[0].pointcloud;
+				console.log('point cloud ========================');
+				req.flash("pointcloud", JSON.stringify(pcl));
+				req.flash('pcl_name', cursor.measurement[0].name)
+				res.redirect('/editer');
+			} else {
+				console.log("No documents found!");
+				req.flash('error', 'No existed');
+				// redirect to users list page
+				res.redirect('/data/');
+			}
+		} finally {
+			await client.close();
+		}
+	}
+	run().catch(
+		(err) => {
+			console.log("mongodb connect error ========");
+			console.error(err)
+			//  process.exit(1)
+			req.flash('error', err)
+			// redirect to users list page
+			res.redirect('/data/');
+		}
+	);
+
+
+});
+
+
 app.post('/getdatabaselist', async function (req, res, next) {
 	const client = new MongoClient('mongodb://localhost:27017/', { useUnifiedTopology: true });
 	async function run() {
