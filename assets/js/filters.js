@@ -1,5 +1,4 @@
 export const gridMinimumFilter = (size, array) => {
-    // startProgress()
     let gridData = {};
     let resultArray = [];
     // var pct = 0;
@@ -24,7 +23,6 @@ export const gridMinimumFilter = (size, array) => {
         // pct++;
         // setProgress(pct, m);
     }
-    // finishProgress();
     return resultArray;
 }
 
@@ -88,7 +86,6 @@ export const outlierRemovalFilter = (num, dev, array) => {
         }
         if ((len / num) < dev) resultArray.push(array[i * 3], array[i * 3 + 1], array[i * 3 + 2]);
     }
-    alert("looped completed")
 }
 
 export const updatedRemovalFilter = (num, dis, array) => {
@@ -169,7 +166,6 @@ export const updatedRemovalFilter = (num, dis, array) => {
     for (let i = 0; i < resultIndex.length; i++) {
         resultArray.push(array[resultIndex[i]], array[resultIndex[i] + 1], array[resultIndex[i] + 2]);
     }
-
     return resultArray;
 
 }
@@ -223,16 +219,6 @@ export const passThroughFilter = (pass, limit1, limit2, array) => {
     return resultArray;
 }
 
-function startProgress() {
-    document.getElementById('fprgs').style.display = "flex";
-}
 
-function setProgress(percent, m) {
-    document.getElementById('fprgsBar').style.width = percent / m * 100 + "%";
-}
-
-function finishProgress() {
-    document.getElementById('fprgs').style.display = "none";
-}
 
 

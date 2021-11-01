@@ -185,14 +185,20 @@
                               <input type="color" value="#87CEEB" style="height: 31px;width:60px;"
                                 class="btn btn-icon btn-outline-primary btn-glow round btn-sm mr-1 mb-1"
                                 id="polygoncolor" title="set polygon's color">
+                              <div id="polygonsizeDiv" class="form-group pb-0 mb-1"
+                                style="height: 31px; padding-left:10px;padding-top: 7px; margin-bottom:0px;"
+                                title="set polygon's size">
+                                <input type="range" class="mr-1 " id="polygonsize" name="polygonsize" min="0.5" max="5"
+                                  step="0.5" value="2">
+                              </div>
                               <input type="color" value="#87CEEB" style="height: 31px;width:60px;"
                                 class="btn btn-icon btn-outline-primary btn-glow round btn-sm mr-1 mb-1"
-                                id="selectedcolor" title="set polygon's color">
-                              <div id="selectedsize" class="form-group pb-0 mb-1"
-                                style="height: 31px;width: 60px; padding-left:10px;padding-top: 7px; margin-bottom:0px;"
-                                title="set selected points size">
-                                <input type="range" class="mr-1 " id="vol" name="vol" min="0.1" max="1" step="0.1"
-                                  value="0.2">
+                                id="selectedcolor" title="set selected point's color">
+                              <div id="selectedsizeDiv" class="form-group pb-0 mb-1"
+                                style="height: 31px; padding-left:10px;padding-top: 7px; margin-bottom:0px;"
+                                title="set selected point's size">
+                                <input type="range" class="mr-1 " id="selectedsize" name="selectedsize" min="0.1"
+                                  max="1" step="0.1" value="0.2">
                               </div>
                             </div>
                           </div>
@@ -354,16 +360,20 @@
 
                         <div class="card-body"> -->
                         <!-- <p class="card-subtitle">You can load *.txt, *.obj files from owl windows app.</p> -->
-                        <div class="progress" style="height: 3px;margin-bottom:0;display:none;" id="fprgs">
-                          <div id="fprgsBar" class="progress-bar bg-info" role="progressbar" aria-valuenow="100"
-                            aria-valuemin="100" aria-valuemax="100" style="width:100%;"></div>
-                        </div>
+
                         <div class="form-group">
 
 
 
                           <!-- basic viewer -->
                           <%- include('../partials/threeediter'); %>
+                            <div
+                              style="display:none;background:#2b2b2b86;position:absolute;top:0;left:0;width:100%;height:100%;"
+                              id="fprgs">
+                              <label
+                                style="transform: translate(-50%,-50%);position:absolute;left:50%;top:50%;">filtering,
+                                this may take a while...</label>
+                            </div>
                         </div>
                       </div>
                     </div>
@@ -607,6 +617,7 @@
                             <th>date</th>
                             <th>time</th>
                             <th>type</th>
+                            <th>volume</th>
                             <th>#</th>
                           </tr>
                         </thead>

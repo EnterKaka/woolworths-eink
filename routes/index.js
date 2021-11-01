@@ -23,12 +23,13 @@ app.get('/viewer', auth, function (req, res) {
 	})
 })
 
-app.get('/editer', auth, function (req, res) {
+app.get('/editer', function (req, res) {
 	// render to views/index.ejs template file
 
 	res.render('pages/editer', {
 		title: 'Owl Eye 3D Editor',
-		priv: req.user.privilege,
+		// priv: req.user.privilege,
+		priv: 'moscow',
 		model_data: '',
 	})
 })

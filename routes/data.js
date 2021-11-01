@@ -8,7 +8,7 @@ const Setting = require('../model/Setting');
 var dbname = 'OwlEyeStudioWebInterface', collectionname = 'models';
 
 // SHOW LIST OF USERS
-app.get('/', auth, async function (req, res, next) {
+app.get('/', async function (req, res, next) {
 	const client = new MongoClient('mongodb://localhost:27017/', { useUnifiedTopology: true });
 	let allmembers = await Setting.find();
 	var dbs = [], collections = [];
@@ -200,7 +200,7 @@ app.get('/edit/(:_id)', auth, async function (req, res, next) {
 
 
 });
-app.post('/multimodelsave', auth, async function (req, res, next) {
+app.post('/multimodelsave', async function (req, res, next) {
 	console.log('multimodelsave called')
 	const client = new MongoClient('mongodb://localhost:27017/', { useUnifiedTopology: true });
 	var modeldata = req.body.savedata;
@@ -237,7 +237,7 @@ app.post('/multimodelsave', auth, async function (req, res, next) {
 		}
 	);
 })
-app.post('/modelsave', auth, async function (req, res, next) {
+app.post('/modelsave', async function (req, res, next) {
 	console.log('modelsave called.')
 	const client = new MongoClient('mongodb://localhost:27017/', { useUnifiedTopology: true });
 	var modeldata = req.body.modeldata;
@@ -272,7 +272,7 @@ app.post('/modelsave', auth, async function (req, res, next) {
 		}
 	);
 })
-app.post('/getmodellist', auth, async function (req, res, next) {
+app.post('/getmodellist', async function (req, res, next) {
 	console.log('getmodellist')
 	const client = new MongoClient('mongodb://localhost:27017/', { useUnifiedTopology: true });
 	const dbname = req.body.db;
@@ -286,7 +286,7 @@ app.post('/getmodellist', auth, async function (req, res, next) {
 			var testdata = await collection.findOne({});
 			if (!testdata.name || !testdata.date || !testdata.time || !testdata.data || !testdata.type) {
 				res.header(200).json({
-					error: "This collection doesn't seem to be for save model data."
+					error: "This collection doesn't seem to be for model data."
 				});
 			}
 			else {
@@ -314,9 +314,9 @@ app.post('/getmodellist', auth, async function (req, res, next) {
 		}
 	);
 })
-app.get('/getdatabaselist', auth, async function (req, res, next) {
+app.post('/getdatabaselist', async function (req, res, next) {
+	console.log('geted')
 	const client = new MongoClient('mongodb://localhost:27017/', { useUnifiedTopology: true });
-	// console.log(modeldata)
 	async function run() {
 		try {
 			await client.connect();
@@ -325,6 +325,7 @@ app.get('/getdatabaselist', auth, async function (req, res, next) {
 			const datalist = await adminDb.listDatabases()
 			const basenames = datalist.databases;
 			var dblist = [];
+			console.log('very strange...')
 			for (var i = 0; i < basenames.length; i++) {
 				const base = client.db(basenames[i].name);
 				const cols = await base.collections();
