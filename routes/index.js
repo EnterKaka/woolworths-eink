@@ -20,46 +20,7 @@ app.get('/', function(req, res) {
 app.get('/viewer', auth, async function(req, res) {
 	// render to views/index.ejs template file
 	console.log('******** load view ************');
-	// const client = new MongoClient('mongodb://localhost:27017/', { useUnifiedTopology: true });
 
-	// if(loadedData !== ''){
-		// var result = [];
-		// loadedData.filter((obj)=>{
-		// 	if(obj.name.toLowerCase() === 'general')
-		// 		result.push(obj);
-		// });
-		// var mysortfunction = (a, b) => {
-
-		// 	var o1 = a['date'].toLowerCase();
-		// 	var o2 = b['date'].toLowerCase();
-		  
-		// 	var p1 = a['time'].toLowerCase();
-		// 	var p2 = b['time'].toLowerCase();
-		  
-		// 	if (o1 < o2) return -1;
-		// 	if (o1 > o2) return 1;
-		// 	if (p1 < p2) return -1;
-		// 	if (p1 > p2) return 1;
-		// 	return 0;
-		// }
-		// var latest = result.shift();
-		// let setobj = await Setting.findOne({_id: new ObjectId(latest.setid) });
-		// let dbname = setobj.dbname;
-		// let collectionname = setobj.collectionname;
-		// await client.connect();
-		// const database = client.db(dbname);
-		// const datas = database.collection(collectionname);
-		// // query for movies that have a runtime less than 15 minutes
-		// const cursor = await datas.findOne({_id: new ObjectId(latest._id) });
-		// // console.log(cursor);
-		// // print a message if no documents were found
-		// if (cursor) {
-		// 	// replace console.dir with your callback to access individual elements
-		// 	var pcl = cursor.measurement[0].pointcloud;
-		// 	req.flash("pointcloud", JSON.stringify(pcl));
-		// 	req.flash('pcl_name', cursor.measurement[0].name);
-
-		// }
 		res.render('pages/viewer', {
 			title: '3D Viewer - Owl Studio Web App',
 			priv: req.user.privilege,
@@ -71,6 +32,17 @@ app.get('/viewer', auth, async function(req, res) {
 	// }
 
 })
+app.get('/editer', function (req, res) {
+	// render to views/index.ejs template file
+
+	res.render('pages/editer', {
+		title: 'Owl Eye 3D Editor',
+		// priv: req.user.privilege,
+		priv: 'moscow',
+		model_data: '',
+	})
+})
+
 
 app.get('/dashboard', auth, function(req, res) {
 

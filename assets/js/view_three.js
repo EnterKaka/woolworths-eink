@@ -44,10 +44,6 @@ function main() {
 	  mouseX = 0,
 	  mouseY = 0,
 	  timerflag = 0;
-	  document.addEventListener('touchmove',(e)=>{
-		console.log(e);
-
-	  });
 	  /* touch mode */
 	  canvas.addEventListener('touchmove', function (e) {
 		  if(timerflag) onTransfer(e);
@@ -68,22 +64,10 @@ function main() {
 			onTouchEnd(e);
 		}, false);
 		
-		
-		canvas.addEventListener('gestureend', function(e) {
-			console.log('here');
-			if (e.scale < 1.0) {
-				// User moved fingers closer together
-			} else if (e.scale > 1.0) {
-				// User moved fingers further apart
-			}
-		}, false);
-		
-	
-	
-        canvas.addEventListener('mousemove', function (e) {
+    canvas.addEventListener('mousemove', function (e) {
 			onMouseMove(e);
         }, false);
-        canvas.addEventListener('mousedown', function (e) {
+    canvas.addEventListener('mousedown', function (e) {
 			if(e.button == 0) {
 				onMouseDown(e);
 			}

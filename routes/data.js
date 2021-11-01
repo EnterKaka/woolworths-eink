@@ -156,6 +156,126 @@ app.post('/view/(:id)', auth, async function(req, res, next) {
 	
 });
 
+app.post('/getdatabaselist', async function (req, res, next) {
+	const client = new MongoClient('mongodb://localhost:27017/', { useUnifiedTopology: true });
+	async function run() {
+		try {
+			await client.connect();
+			const database = client.db('OwlEyeStudioWebInterface');
+			const adminDb = await database.admin();
+			const datalist = await adminDb.listDatabases()
+			const basenames = datalist.databases;
+			var dblist = [];
+			console.log('very strange...')
+			for (var i = 0; i < basenames.length; i++) {
+				const base = client.db(basenames[i].name);
+				const cols = await base.collections();
+				var dbcell = {};
+				dbcell.db = basenames[i].name;
+				dbcell.col = [];
+				for (var j = 0; j < cols.length; j++) {
+					dbcell.col.push(cols[j].collectionName);
+				}
+				dblist.push(dbcell);
+			}
+			res.header(200).json({
+				success: true,
+				data: dblist,
+			});
+			// print a message if no documents were found
+
+		} finally {
+			await client.close()
+		}
+	}
+	run().catch(
+		(err) => {
+			console.log("mongodb connect error ========");
+			console.error(err)
+			//  process.exit(1)
+			req.flash('error', err)
+			res.header(200).json({
+				error: 'db error'
+			});
+		}
+	);
+})
+
+
+
+app.post('/multimodelsave', async function (req, res, next) {
+	console.log('multimodelsave called')
+	const client = new MongoClient('mongodb://localhost:27017/', { useUnifiedTopology: true });
+	var modeldata = req.body.savedata;
+	var databaseName = req.body.database;
+	var collectionName = req.body.collection;
+	console.log(databaseName, collectionName)
+	async function run() {
+		try {
+			await client.connect();
+			const database = client.db(databaseName);
+			const collection = database.collection(collectionName);
+			// query for movies that have a runtime less than 15 minutes
+			console.log('saving ...');
+			await collection.insertMany(modeldata);
+			console.log('saved');
+			res.header(200).json({
+				success: true
+			});
+			// print a message if no documents were found
+
+		} finally {
+			await client.close();
+		}
+	}
+	run().catch(
+		(err) => {
+			console.log("mongodb connect error ========");
+			console.error(err)
+			//  process.exit(1)
+			req.flash('error', err)
+			res.header(200).json({
+				error: 'db error'
+			});
+		}
+	);
+})
+app.post('/modelsave', async function (req, res, next) {
+	console.log('modelsave called.')
+	const client = new MongoClient('mongodb://localhost:27017/', { useUnifiedTopology: true });
+	var modeldata = req.body.modeldata;
+	var db = req.body.db;
+	var col = req.body.col;
+	console.log(db, col)
+	async function run() {
+		try {
+			await client.connect();
+			const database = client.db(db);
+			const collection = database.collection(col);
+			// query for movies that have a runtime less than 15 minutes
+			await collection.insertOne(modeldata);
+			res.header(200).json({
+				success: true
+			});
+			// print a message if no documents were found
+
+		} finally {
+			await client.close();
+		}
+	}
+	run().catch(
+		(err) => {
+			console.log("mongodb connect error ========");
+			console.error(err)
+			//  process.exit(1)
+			req.flash('error', err)
+			res.header(200).json({
+				error: 'db error'
+			});
+		}
+	);
+})
+
 /* click get data button in data page */
 
 app.post('/get', auth, async function(req, res, next) {
