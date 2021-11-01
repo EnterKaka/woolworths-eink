@@ -121,6 +121,11 @@
                             </div>
                           </li>
                           <li class="nav-item">
+                            <a class="nav-link" id="baseIcon-tab5" data-toggle="tab" aria-controls="tabIcon3"
+                              href="#tabIcon5" aria-expanded="false" data-nsfw-filter-status="swf"><i
+                                class="ft-move mr-1"></i> Move</a>
+                          </li>
+                          <li class="nav-item">
                             <a class="nav-link" href="javascript:void(0)" data-toggle="modal" data-target="#editerModal"
                               id="btn-emb">Editor Model Browser</a>
                           </li>
@@ -244,6 +249,78 @@
                               <input type="file" id="ground-file" style="display:none;" accept=".txt">
 
 
+                            </div>
+                          </div>
+                          <div class="tab-pane" id="tabIcon5" aria-labelledby="baseIcon-tab5">
+                            <div class="row toolbar">
+                              <button type='button'
+                                class="btn btn-icon btn-outline-success btn-glow round btn-sm mr-1 mb-1"
+                                title='translate tool' id='btn-translate'>
+                                <i class="ft-move"></i>
+                              </button>
+                              <button type='button'
+                                class="btn btn-icon btn-outline-success btn-glow round btn-sm mr-3 mb-1"
+                                title='rotate tool' id='btn-rotate'>
+                                <i class="ft-rotate-cw"></i>
+                              </button>
+
+                              <div class="badge badge-pill badge-success mb-1"
+                                style="border-top-right-radius: 0px;border-bottom-right-radius: 0px;">
+                                Translate
+                              </div>
+                              <input type="number" class="form-control btn-glow mb-1" id="trans-x"
+                                style="height: 32px;padding-left: 15px;width: 60px;padding-right:0;border:1px solid #5ed84f; border-radius: 0;"
+                                min="0.1" max="10" step="0.1" value="0.5" title="x">
+                              <input type="number" class="form-control btn-glow mb-1" id="trans-y"
+                                style="height: 32px;padding-left: 15px;width: 60px;padding-right:0;border:1px solid #5ed84f;border-radius: 0;"
+                                min="0.1" max="10" step="0.1" value="0.5" title="y">
+                              <input type="number" class="form-control btn-glow mb-1" id="trans-z"
+                                style="height: 32px;padding-left: 15px;width: 60px;padding-right:0;border:1px solid #5ed84f;border-radius: 0;"
+                                min="0.1" max="10" step="0.1" value="0.5" title="z">
+                              <button type='button'
+                                class="btn btn-icon btn-outline-success btn-glow round btn-sm mr-3 mb-1"
+                                title='translate' id='absTranslate'
+                                style="border-top-left-radius: 0px;border-bottom-left-radius: 0px;">
+                                <i class="ft-check"></i>
+                              </button>
+
+                              <div class="badge badge-pill badge-success mb-1"
+                                style="border-top-right-radius: 0px;border-bottom-right-radius: 0px;">Rotate
+                              </div>
+                              <select class="form-control round btn-glow mb-1" style="height: 32px;padding-left: 15px;
+                              width: 60px;padding-right: 0;border:1px solid #5ed84f;border-radius: 0;" id="rotate-pass"
+                                title="axis">
+                                <option value="x">X</option>
+                                <option value="y">Y</option>
+                                <option value="z">Z</option>
+                              </select>
+                              <input type="number" class="form-control round btn-glow mb-1" id="rotate-degree"
+                                style="height: 32px;padding-left: 15px;width: 60px;padding-right:0;border:1px solid #5ed84f;border-radius: 0;"
+                                min="0.1" max="10" step="0.1" value="0.5" title="degree">
+                              <button type='button'
+                                class="btn btn-icon btn-outline-success btn-glow round btn-sm mr-3 mb-1" title='rotate'
+                                id='absRotate' style="border-top-left-radius: 0px;border-bottom-left-radius: 0px;">
+                                <i class="ft-check"></i>
+                              </button>
+
+                              <button type='button' class="btn btn-icon btn-outline-success btn-glow round btn-sm mb-1"
+                                title='flip-left' id='flip-left'
+                                style="border-top-right-radius: 0px;border-bottom-right-radius: 0px;">
+                                <i class="ft-corner-up-left"></i>
+                              </button>
+                              <select class="form-control round btn-glow mb-1" style="height: 32px;padding-left: 15px;
+                              width: 60px;padding-right: 0;border:1px solid #5ed84f;border-radius: 0;" id="flip-pass"
+                                title="axis">
+                                <option value="x">X</option>
+                                <option value="y">Y</option>
+                                <option value="z">Z</option>
+                              </select>
+                              <button type='button'
+                                class="btn btn-icon btn-outline-success btn-glow round btn-sm mr-1 mb-1"
+                                title='flip-right' id='flip-right'
+                                style="border-top-left-radius: 0px;border-bottom-left-radius: 0px;">
+                                <i class="ft-corner-up-right"></i>
+                              </button>
                             </div>
                           </div>
                           <div class="tab-pane active" id="tabIcon4" aria-expanded="true"
@@ -498,7 +575,7 @@
 
         <div class="modal fade text-left" id="editerModal" tabindex="-1" role="dialog"
           aria-labelledby="editerModalLabel" aria-hidden="true" style="z-index:100000;">
-          <div class="modal-dialog" role="document" style="max-width:1100px;height:90%;">
+          <div class="modal-dialog" role="document" style="max-width:1400px;height:90%;">
             <div class="modal-content" style="height:100%;">
               <div class="modal-header">
                 <!-- <h5 class="modal-title" id="editerModalLabel" style="font-weight:800;">Editor Model Browser</h5> -->
@@ -547,6 +624,7 @@
                       <table class="table mb-0">
                         <thead>
                           <tr>
+                            <th>view</th>
                             <th>name</th>
                             <th>date</th>
                             <th>time</th>

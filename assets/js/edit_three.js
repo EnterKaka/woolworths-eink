@@ -2,6 +2,8 @@ import * as THREE from './three.module.js';
 import { owlStudio } from './owlStudio.js';
 
 const cloudmachine = new owlStudio('viewer_3d', 'tool_2d', 'main_canvas');
+// const cloudmachine2 = new owlStudio('viewer_3d2', 'tool_2d2', 'main_canvas2');
+// cloudmachine2.init();
 
 function startApp() {
     let tempvaluetag = document.getElementById('pointcloud');
@@ -13,6 +15,7 @@ function startApp() {
         const loader = new THREE.FileLoader();
         loader.load('./3dmodels/Weissspat_1632872292.txt', (text) => {
             cloudmachine.reloadModelFromData('Weissspat_1632872292.txt', text);
+            // cloudmachine2.reloadModelFromData('Weissspat_1632872292.txt', text);
         });
     }
 }
@@ -216,6 +219,18 @@ window.onload = function () {
         document.getElementById('btn-' + cloudmachine.toolState).classList.remove('active')
         document.getElementById('btn-pencil').classList.add('active')
         cloudmachine.setToolState('pencil')
+    });
+
+    document.getElementById('btn-translate').addEventListener('click', function () {
+        document.getElementById('btn-' + cloudmachine.toolState).classList.remove('active')
+        document.getElementById('btn-translate').classList.add('active')
+        cloudmachine.setToolState('translate')
+    });
+
+    document.getElementById('btn-rotate').addEventListener('click', function () {
+        document.getElementById('btn-' + cloudmachine.toolState).classList.remove('active')
+        document.getElementById('btn-rotate').classList.add('active')
+        cloudmachine.setToolState('rotate')
     });
 
     document.getElementById('btn-check').addEventListener('click', function () {
@@ -430,14 +445,18 @@ window.onload = function () {
         for (let i = sessionHistory.length - 1; i >= 0; i--) {
             if (!sessionHistory[i].deleted) {
                 htable.innerHTML += `<tr>
+              <td style="width:180px;padding:10px"><canvas id = "preview${i}" style="height:160px;width:100px;"></canvas></td>
               <td contenteditable="true" data-id=${i}>${sessionHistory[i].name}</td>
               <td>${sessionHistory[i].date}</td>
               <td>${sessionHistory[i].time}</td>
               <td>${sessionHistory[i].type}</td>
               <td>${sessionHistory[i].volume}</td>
-              <td style="width:170px;">
-                <button data-id=${i} type='button' class="hload-btn btn btn-icon btn-outline-primary  round btn-sm mr-1"
+              <td style="width:230px;">
+                <button data-id=${i} type='button' class="hload-btn btn btn-icon btn-outline-primary  round btn-sm"
                   title='loading'><i class="ft-upload"></i>
+                </button>
+                <button data-id=${i} type='button' class="hdown-btn btn btn-icon btn-outline-primary round btn-sm"
+                    title='download model with txt file'><i class="ft-download"></i>
                 </button>
                 <button data-id=${i} type='button' class="hdel-btn btn btn-icon btn-outline-primary  round btn-sm"
                   title='delete'><i class="ft-x-square"></i>
@@ -452,12 +471,19 @@ window.onload = function () {
             cloudmachine.reloadModelFromArray(sessionHistory[this.dataset.id].name, sessionHistory[this.dataset.id].data);
             $('#browser-close').trigger('click');
         })
+        $('.hdown-btn').click(function () {
+            const result = sessionHistory[this.dataset.id].data;
+            download('model.txt', 'text', result);
+        })
         $('.hdel-btn').click(function () {
             console.log({ this: this })
             sessionHistory[this.dataset.id].deleted = true;
             $(this.parentElement.parentElement).remove();
             // $('#browser-close').trigger('click');
         })
+        for (let i = 0; i < sessionHistory.length; i++) {
+            cloudmachine.previewCloud('preview' + i, sessionHistory[i].data)
+        }
     })
 
     document.getElementById('browser-load').addEventListener('click', () => {
@@ -569,5 +595,30 @@ window.onload = function () {
         let volume = Math.abs(cloudmachine.calculateVolume(h, v));
         $("#btn-vClose").trigger('click');
         alert(volume)
+    })
+
+    document.getElementById('absTranslate').addEventListener('click', () => {
+        let x = document.getElementById('trans-x').value;
+        let y = document.getElementById('trans-y').value;
+        let z = document.getElementById('trans-z').value;
+        cloudmachine.translateAbs(x, y, z)
+    })
+
+    document.getElementById('absRotate').addEventListener('click', () => {
+        let axis = document.getElementById('rotate-pass').value;
+        let degree = document.getElementById('rotate-degree').value;
+        cloudmachine.rotateAbs(axis, degree)
+    })
+
+    document.getElementById('flip-left').addEventListener('click', () => {
+        let axis = document.getElementById('flip-pass').value;
+        let degree = Math.PI / 2;
+        cloudmachine.rotateAbs(axis, degree)
+    })
+
+    document.getElementById('flip-right').addEventListener('click', () => {
+        let axis = document.getElementById('flip-pass').value;
+        let degree = -Math.PI / 2;
+        cloudmachine.rotateAbs(axis, degree)
     })
 };

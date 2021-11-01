@@ -384,15 +384,52 @@ export const owlStudio = function (cv1, cv2, parent) {
         this.render()
     }
 
-    this.rotateGroup = (x, y, z) => {
-        this.group.rotation.z += deltaX / 100;
-        this.group.rotation.x += deltaY / 100;
+    this.rotateGroup = (evt) => {
+        let deltaX = evt.clientX - this.mouse.x,
+            deltaY = evt.clientY - this.mouse.y;
+        this.mouse.x = evt.clientX;
+        this.mouse.y = evt.clientY;
+        this.group.children[0].geometry.rotateX(deltaY / 100)
+        this.group.children[0].geometry.rotateZ(deltaX / 100)
+        this.group.children[3].geometry.rotateX(deltaY / 100)
+        this.group.children[3].geometry.rotateZ(deltaX / 100)
         this.render()
     }
 
-    this.translateGroup = (x, y, z) => {
-        this.group.rotation.z += deltaX / 100;
-        this.group.rotation.x += deltaY / 100;
+    this.translateGroup = (evt) => {
+        let deltaX = evt.clientX - this.mouse.x,
+            deltaY = evt.clientY - this.mouse.y;
+        this.mouse.x = evt.clientX;
+        this.mouse.y = evt.clientY;
+        this.group.children[0].geometry.translate(deltaX / 100, 0, -deltaY / 100)
+        this.group.children[3].geometry.translate(deltaX / 100, 0, -deltaY / 100)
+        this.render()
+    }
+
+    this.rotateAbs = (axis, degree) => {
+        let x = 0, y = 0, z = 0;
+        if (axis == 'x') {
+            x = degree;
+        } else if (axis == 'y') {
+            y = degree;
+        } else if (axis == 'z') {
+            z = degree;
+        }
+        this.group.children[0].geometry.rotateX(x)
+        this.group.children[0].geometry.rotateY(y)
+        this.group.children[0].geometry.rotateZ(z)
+        this.group.children[3].geometry.rotateX(x)
+        this.group.children[3].geometry.rotateY(y)
+        this.group.children[3].geometry.rotateZ(z)
+        this.render()
+    }
+
+    this.translateAbs = (x, y, z) => {
+        x = parseFloat(x)
+        y = parseFloat(y)
+        z = parseFloat(z)
+        this.group.children[0].geometry.translate(x, y, z)
+        this.group.children[3].geometry.translate(x, y, z)
         this.render()
     }
 
@@ -415,8 +452,7 @@ export const owlStudio = function (cv1, cv2, parent) {
             this.mouse.x = evt.clientX;
             this.mouse.y = evt.clientY;
             this.rotateScene(deltaX, deltaY);
-        }
-        else if (this.mouse.rightDown) {
+        } else if (this.mouse.rightDown) {
             let deltaX = evt.clientX - this.mouse.x,
                 deltaY = evt.clientY - this.mouse.y;
             this.mouse.x = evt.clientX;
@@ -693,6 +729,12 @@ export const owlStudio = function (cv1, cv2, parent) {
             switch (this.toolState) {
                 case 'move':
                     this.mouseMove(e);
+                    break;
+                case 'translate':
+                    if (this.mouse.down) this.translateGroup(e)
+                    break;
+                case 'rotate':
+                    if (this.mouse.down) this.rotateGroup(e)
                     break;
                 case 'pencil':
                     if (this.mouse.down) this.drawPencil(e)
@@ -1082,6 +1124,66 @@ export const owlStudio = function (cv1, cv2, parent) {
         r.y = p1.y - (p1.z / (p1.z - p3.z) * (p1.y - p3.y));
         r.z = 0;
         return this.signedVolumeOfTriangle(q, e, r) + this.signedVolumeOfTriangle(new THREE.Vector3().copy(w), new THREE.Vector3().copy(e), new THREE.Vector3().copy(r))
+    }
+
+    this.previewCloud = function (id, data) {
+        console.log(id, data);
+        let canvas = document.getElementById(id);
+        let renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
+        let scene = new THREE.Scene();
+        let camera = new THREE.PerspectiveCamera(60, 160 / 100, 0.01, 1000);
+
+        var light = new THREE.DirectionalLight(0xffffff, 1.5);
+        light.position.set(0, 0, 56);
+        scene.add(light);
+        scene.add(new THREE.AmbientLight(0xffffff, 0.5));
+
+        renderer.setPixelRatio(window.devicePixelRatio);
+        renderer.setSize(160, 100);
+        camera.position.set(0, -20, 6);
+        camera.lookAt(0, 0, 0);
+
+        scene.add(camera);
+        scene.background = new THREE.Color(0x111111);
+
+        let colors = [];
+        let points3d = [];
+        let values = getminmaxhegihtfromarray(data);
+        let min = values[0];
+        let max = values[1];
+
+        for (let i = 0; i < data.length; i += 3) {
+            points3d.push(new THREE.Vector3(parseFloat(data[i]), parseFloat(data[i + 1]), parseFloat(data[i + 2])));
+
+            let zvalue = parseFloat(data[i + 2]);
+            let k = (zvalue - min) / (max - min);
+            let rgb = getrgb(k);
+            //set color from xyz
+            colors.push(rgb[0]);
+            colors.push(rgb[1]);
+            colors.push(rgb[2]);
+        }
+
+        let geometry = new THREE.BufferGeometry().setFromPoints(points3d);
+
+        if (colors.length > 0) {
+            geometry.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
+        }
+
+        geometry.center();
+
+        let material;
+        material = new THREE.PointsMaterial({ size: 0.1, vertexColors: true });
+
+        let points2 = new THREE.Points(geometry, material);
+        let group = new THREE.Object3D();
+        group.add(points2)
+        scene.add(group);
+
+        renderer.render(scene, camera);
+        // setTimeout(() => {
+        //     renderer.render(scene, camera);
+        // }, 100)
     }
 }
 
