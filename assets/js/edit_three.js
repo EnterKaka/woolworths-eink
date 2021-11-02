@@ -108,7 +108,7 @@ function openGround_Fromlocal(e) {
 window.onload = function () {
     cloudmachine.init();
     cloudmachine.cloudController();
-    cloudmachine.preview('previewCanvas', 'previewParent');
+    // cloudmachine.preview('previewCanvas', 'previewParent');
     startApp();
     //app controller/////////////////////////////////////////////////////////////////////////////////////////////////////////
     $('#btn-openfromLocal').click(function () {
@@ -451,20 +451,22 @@ window.onload = function () {
         for (let i = sessionHistory.length - 1; i >= 0; i--) {
             if (!sessionHistory[i].deleted) {
                 htable.innerHTML += `<tr>
-              <td style="width:180px;padding:10px"><span id = "preview${i}" class="rect" style=""></span></td>
+              <td style="width:180px;padding:10px;display:none;"><span id = "preview${i}" class="rect" style=""></span></td>
               <td contenteditable="true" data-id=${i}>${sessionHistory[i].name}</td>
               <td>${sessionHistory[i].date}</td>
               <td>${sessionHistory[i].time}</td>
               <td>${sessionHistory[i].type}</td>
               <td>${sessionHistory[i].volume}</td>
+              <td ><button data-id=${i} class="matrixview btn btn-icon btn-outline-primary round btn-sm"
+                    title='view and edit matrix' data-toggle="modal" data-target="#matrixModal" >matrix</button></td>
               <td style="width:230px;">
-                <button data-id=${i} type='button' class="hload-btn btn btn-icon btn-outline-primary  round btn-sm"
+                <button data-id=${i} class="hload-btn btn btn-icon btn-outline-primary  round btn-sm"
                   title='loading'><i class="ft-upload"></i>
                 </button>
-                <button data-id=${i} type='button' class="hdown-btn btn btn-icon btn-outline-primary round btn-sm"
+                <button data-id=${i} class="hdown-btn btn btn-icon btn-outline-primary round btn-sm"
                     title='download model with txt file'><i class="ft-download"></i>
                 </button>
-                <button data-id=${i} type='button' class="hdel-btn btn btn-icon btn-outline-primary  round btn-sm"
+                <button data-id=${i} class="hdel-btn btn btn-icon btn-outline-primary  round btn-sm"
                   title='delete'><i class="ft-x-square"></i>
                 </button>
               </td>
@@ -477,6 +479,14 @@ window.onload = function () {
             cloudmachine.reloadModelFromArray(sessionHistory[this.dataset.id].name, sessionHistory[this.dataset.id].data);
             $('#browser-close').trigger('click');
         })
+        $('.matrixview').click(function () {
+            console.log({ this: this })
+            let matrix = cloudmachine.sessionHistory[this.dataset.id].matrix;
+            document.getElementById('matrix-id').value = this.dataset.id;
+            for (var i = 0; i < 16; i++) {
+                document.getElementById('mtx' + i).innerText = matrix[i];
+            }
+        })
         $('.hdown-btn').click(function () {
             const result = sessionHistory[this.dataset.id].data;
             download('model.txt', 'text', result);
@@ -487,11 +497,11 @@ window.onload = function () {
             $(this.parentElement.parentElement).remove();
             // $('#browser-close').trigger('click');
         })
-        setTimeout(() => {
-            for (let i = 0; i < sessionHistory.length; i++) {
-                cloudmachine.previewCloud('preview' + i, sessionHistory[i].data)
-            }
-        }, 1000)
+        // setTimeout(() => {
+        //     for (let i = 0; i < sessionHistory.length; i++) {
+        //         cloudmachine.previewCloud('preview' + i, sessionHistory[i].data)
+        //     }
+        // }, 1000)
     })
 
     document.getElementById('browser-load').addEventListener('click', () => {
@@ -628,6 +638,24 @@ window.onload = function () {
         let axis = document.getElementById('flip-pass').value;
         let degree = -Math.PI / 2;
         cloudmachine.rotateAbs(axis, degree)
+    })
+
+    document.getElementById('set-matrix').addEventListener("click", function (event) {
+        cloudmachine.setCurrentMatrix();
+        alert('success')
+    });
+
+    document.getElementById('matrix-save').addEventListener('click', function () {
+        let array = [$('#mtx0').text(), $('#mtx1').text(), $('#mtx2').text(), $('#mtx3').text(), $('#mtx4').text(), $('#mtx5').text(), $('#mtx6').text(), $('#mtx7').text(), $('#mtx8').text(), $('#mtx9').text(), $('#mtx10').text(), $('#mtx11').text(), $('#mtx12').text(), $('#mtx13').text(), $('#mtx14').text(), $('#mtx15').text(),]
+        let id = document.getElementById('matrix-id').value;
+        cloudmachine.setMatrixToHistory(id, array)
+        $('#matrix-close').trigger('click')
+        alert('success')
+    })
+
+    document.getElementById('matrix-download').addEventListener('click', () => {
+        let array = [$('#mtx0').text(), $('#mtx1').text(), $('#mtx2').text(), $('#mtx3').text(), $('#mtx4').text(), $('#mtx5').text(), $('#mtx6').text(), $('#mtx7').text(), $('#mtx8').text(), $('#mtx9').text(), $('#mtx10').text(), $('#mtx11').text(), $('#mtx12').text(), $('#mtx13').text(), $('#mtx14').text(), $('#mtx15').text(),]
+        download('matrix.txt', 'text', array);
     })
 
     //drag and drop

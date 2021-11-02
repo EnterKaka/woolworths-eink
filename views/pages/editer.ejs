@@ -330,6 +330,12 @@
                                 style="border-top-left-radius: 0px;border-bottom-left-radius: 0px;">
                                 <i class="ft-corner-up-right"></i>
                               </button>
+
+                              <button type='button'
+                                class="btn btn-icon btn-outline-success btn-glow round btn-sm mr-1 mb-1"
+                                title='set current matrix' id='set-matrix'>
+                                set matrix
+                              </button>
                             </div>
                           </div>
                           <div class="tab-pane active" id="tabIcon4" aria-expanded="true"
@@ -581,6 +587,53 @@
           </div>
         </div>
 
+        <div class="modal fade text-left" id="matrixModal" tabindex="-1" role="dialog" aria-labelledby="matrixLabel"
+          aria-hidden="true" style="z-index:100001;">
+          <div class="modal-dialog" role="document" style="margin-top:50px">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="directSaveLabel">M A T R I X</h5>
+                <input id="matrix-id" style="display: none;">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">×</span>
+                </button>
+              </div>
+              <div class="modal-body">
+                <div class="row mb-1" style="border-bottom:1px solid lightgrey;">
+                  <div contenteditable="true" id="mtx0" class="col-xl-3 col-lg-3"></div>
+                  <div contenteditable="true" id="mtx1" class="col-xl-3 col-lg-3"></div>
+                  <div contenteditable="true" id="mtx2" class="col-xl-3 col-lg-3"></div>
+                  <div contenteditable="true" id="mtx3" class="col-xl-3 col-lg-3"></div>
+                </div>
+                <div class="row mb-1" style="border-bottom:1px solid lightgrey;">
+                  <div contenteditable="true" id="mtx4" class="col-xl-3 col-lg-3"></div>
+                  <div contenteditable="true" id="mtx5" class="col-xl-3 col-lg-3"></div>
+                  <div contenteditable="true" id="mtx6" class="col-xl-3 col-lg-3"></div>
+                  <div contenteditable="true" id="mtx7" class="col-xl-3 col-lg-3"></div>
+                </div>
+                <div class="row mb-1" style="border-bottom:1px solid lightgrey;">
+                  <div contenteditable="true" id="mtx8" class="col-xl-3 col-lg-3"></div>
+                  <div contenteditable="true" id="mtx9" class="col-xl-3 col-lg-3"></div>
+                  <div contenteditable="true" id="mtx10" class="col-xl-3 col-lg-3"></div>
+                  <div contenteditable="true" id="mtx11" class="col-xl-3 col-lg-3"></div>
+                </div>
+                <div class="row mb-1" style="border-bottom:1px solid lightgrey;">
+                  <div contenteditable="true" id="mtx12" class="col-xl-3 col-lg-3"></div>
+                  <div contenteditable="true" id="mtx13" class="col-xl-3 col-lg-3"></div>
+                  <div contenteditable="true" id="mtx14" class="col-xl-3 col-lg-3"></div>
+                  <div contenteditable="true" id="mtx15" class="col-xl-3 col-lg-3"></div>
+                </div>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary mr-1" data-dismiss="modal"
+                  id="matrix-close">Close</button>
+                <button type="button" class="btn btn-primary mr-1" id="matrix-download">Download</button>
+                <button type="button" class="btn btn-success mr-1" id="matrix-save">Save</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
 
         <div class="modal fade text-left" id="editerModal" tabindex="-1" role="dialog"
           aria-labelledby="editerModalLabel" aria-hidden="true" style="z-index:100000;">
@@ -608,7 +661,7 @@
                   <i class="ft-save"></i> Save
                 </button> -->
 
-                <canvas id="previewCanvas"></canvas>
+                <!-- <canvas id="previewCanvas"></canvas> -->
                 <div class="tab-content px-1 pt-1">
                   <div role="tabpanel" class="tab-pane active" id="bhistory" aria-labelledby="bhistory-tab"
                     aria-expanded="true">
@@ -634,12 +687,13 @@
                       <table class="table mb-0">
                         <thead>
                           <tr>
-                            <th>view</th>
+                            <!-- <th style="display: none;">view</th> -->
                             <th>name</th>
                             <th>date</th>
                             <th>time</th>
                             <th>type</th>
                             <th>volume</th>
+                            <th>matrix</th>
                             <th>#</th>
                           </tr>
                         </thead>

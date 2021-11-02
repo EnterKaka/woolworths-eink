@@ -105,6 +105,7 @@ export const owlStudio = function (cv1, cv2, parent) {
             time: getTime(),
             type: type,
             data: arrayData,
+            matrix: this.group.matrix.elements
         })
     }
 
@@ -355,6 +356,17 @@ export const owlStudio = function (cv1, cv2, parent) {
         this.renderer.render(this.scene, this.camera);
     }
 
+    this.setCurrentMatrix = function () {
+        this.group.matrix.makeRotationFromQuaternion(this.group.quaternion);
+        this.group.matrix.setPosition(this.group.position);
+        this.group.matrixAutoUpdate = false;
+        this.sessionHistory[this.sessionHistory.length - 1].matrix = this.group.matrix.elements;
+    }
+
+    this.setMatrixToHistory = function (id, array) {
+        this.sessionHistory[id].matrix = array;
+    }
+
     this.polygonRender = function () {
         this.canvas2.height = this.canvas.clientHeight;
         this.canvas2.width = this.canvas.clientWidth;
@@ -390,10 +402,12 @@ export const owlStudio = function (cv1, cv2, parent) {
             deltaY = evt.clientY - this.mouse.y;
         this.mouse.x = evt.clientX;
         this.mouse.y = evt.clientY;
-        this.group.children[0].geometry.rotateX(deltaY / 100)
-        this.group.children[0].geometry.rotateZ(deltaX / 100)
-        this.group.children[3].geometry.rotateX(deltaY / 100)
-        this.group.children[3].geometry.rotateZ(deltaX / 100)
+        // this.group.children[0].geometry.rotateX(deltaY / 100)
+        // this.group.children[0].geometry.rotateZ(deltaX / 100)
+        // this.group.children[3].geometry.rotateX(deltaY / 100)
+        // this.group.children[3].geometry.rotateZ(deltaX / 100)
+        this.group.rotation.z += deltaX / 100;
+        this.group.rotation.x += deltaY / 100;
         this.render()
     }
 
@@ -403,14 +417,20 @@ export const owlStudio = function (cv1, cv2, parent) {
         this.mouse.x = evt.clientX;
         this.mouse.y = evt.clientY;
         if (this.transDir == 'xy') {
-            this.group.children[0].geometry.translate(deltaX / 100, -deltaY / 100, 0)
-            this.group.children[3].geometry.translate(deltaX / 100, -deltaY / 100, 0)
+            // this.group.children[0].geometry.translate(deltaX / 100, -deltaY / 100, 0)
+            // this.group.children[3].geometry.translate(deltaX / 100, -deltaY / 100, 0)
+            this.group.translateX(deltaX / 100)
+            this.group.translateY(-deltaY / 100)
         } else if (this.transDir == 'yz') {
-            this.group.children[0].geometry.translate(0, deltaX / 100, -deltaY / 100)
-            this.group.children[3].geometry.translate(0, deltaX / 100, -deltaY / 100)
+            // this.group.children[0].geometry.translate(0, deltaX / 100, -deltaY / 100)
+            // this.group.children[3].geometry.translate(0, deltaX / 100, -deltaY / 100)
+            this.group.translateY(deltaX / 100)
+            this.group.translateZ(-deltaY / 100)
         } else if (this.transDir == 'xz') {
-            this.group.children[0].geometry.translate(deltaX / 100, 0, -deltaY / 100)
-            this.group.children[3].geometry.translate(deltaX / 100, 0, -deltaY / 100)
+            // this.group.children[0].geometry.translate(deltaX / 100, 0, -deltaY / 100)
+            // this.group.children[3].geometry.translate(deltaX / 100, 0, -deltaY / 100)
+            this.group.translateX(deltaX / 100)
+            this.group.translateZ(-deltaY / 100)
         }
         this.render()
     }
@@ -424,12 +444,15 @@ export const owlStudio = function (cv1, cv2, parent) {
         } else if (axis == 'z') {
             z = degree;
         }
-        this.group.children[0].geometry.rotateX(x)
-        this.group.children[0].geometry.rotateY(y)
-        this.group.children[0].geometry.rotateZ(z)
-        this.group.children[3].geometry.rotateX(x)
-        this.group.children[3].geometry.rotateY(y)
-        this.group.children[3].geometry.rotateZ(z)
+        this.group.rotation.x += x;
+        this.group.rotation.y += y;
+        this.group.rotation.z += z;
+        // this.group.children[0].geometry.rotateX(x)
+        // this.group.children[0].geometry.rotateY(y)
+        // this.group.children[0].geometry.rotateZ(z)
+        // this.group.children[3].geometry.rotateX(x)
+        // this.group.children[3].geometry.rotateY(y)
+        // this.group.children[3].geometry.rotateZ(z)
         this.render()
     }
 
@@ -437,8 +460,11 @@ export const owlStudio = function (cv1, cv2, parent) {
         x = parseFloat(x)
         y = parseFloat(y)
         z = parseFloat(z)
-        this.group.children[0].geometry.translate(x, y, z)
-        this.group.children[3].geometry.translate(x, y, z)
+        // this.group.children[0].geometry.translate(x, y, z)
+        // this.group.children[3].geometry.translate(x, y, z)
+        this.group.translateX(x)
+        this.group.translateY(y)
+        this.group.translateZ(z)
         this.render()
     }
 
