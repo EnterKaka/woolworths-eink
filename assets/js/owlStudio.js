@@ -105,7 +105,7 @@ export const owlStudio = function (cv1, cv2, parent) {
             time: getTime(),
             type: type,
             data: arrayData,
-            matrix: this.group.matrix.elements
+            matrix: [...this.group.matrix.elements]
         })
     }
 
@@ -359,8 +359,8 @@ export const owlStudio = function (cv1, cv2, parent) {
     this.setCurrentMatrix = function () {
         this.group.matrix.makeRotationFromQuaternion(this.group.quaternion);
         this.group.matrix.setPosition(this.group.position);
-        this.group.matrixAutoUpdate = false;
-        this.sessionHistory[this.sessionHistory.length - 1].matrix = this.group.matrix.elements;
+        // this.group.matrixAutoUpdate = false;
+        this.sessionHistory[this.sessionHistory.length - 1].matrix = [...this.group.matrix.elements];
     }
 
     this.setMatrixToHistory = function (id, array) {
