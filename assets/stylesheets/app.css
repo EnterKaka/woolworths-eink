@@ -27,7 +27,7 @@ div.container_main{
     /* max-height: 500px; */
     display: block;
     z-index: -1;
-    padding: 15px;
+    /* padding: 15px; */
 }
 
 div.table-padding-set{
@@ -154,7 +154,33 @@ div.container_main.small{
     height: 100%;
     display: block;
     z-index: -1;
+    /* position:absolute; */
     /*padding: 15px;*/
+}
+
+#editer .btn{
+    margin: 0;
+}
+
+#editer td{
+    vertical-align: middle;
+}
+
+#previewCanvas{
+    left:0;
+    top:0;
+    position: fixed;
+    width:100%;
+    height:100%;
+    display: block;
+}
+
+.rect{
+    /* float:left; */
+    height:100px;
+    width:160px;
+    display:block;
+    border:1px solid black;
 }
 
 #viewer_3d2{

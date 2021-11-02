@@ -13,7 +13,7 @@
     </style>
 </head>
 
-<body class="vertical-layout vertical-menu 2-columns   menu-expanded fixed-navbar" data-open="click"
+<body id="editer" class="vertical-layout vertical-menu 2-columns   menu-expanded fixed-navbar" data-open="click"
   data-menu="vertical-menu" data-color="bg-gradient-x-purple-blue" data-col="2-columns">
   <!-- fixed-top-->
   <%- include('../partials/header'); %>
@@ -253,11 +253,20 @@
                           </div>
                           <div class="tab-pane" id="tabIcon5" aria-labelledby="baseIcon-tab5">
                             <div class="row toolbar">
-                              <button type='button'
-                                class="btn btn-icon btn-outline-success btn-glow round btn-sm mr-1 mb-1"
-                                title='translate tool' id='btn-translate'>
+                              <button type='button' class="btn btn-icon btn-outline-success btn-glow round btn-sm mb-1"
+                                title='translate tool' id='btn-translate'
+                                style="border-top-right-radius: 0px;border-bottom-right-radius: 0px;">
                                 <i class="ft-move"></i>
                               </button>
+                              <select class="form-control round btn-glow mb-1 mr-1"
+                                style="height: 32px;padding-left: 3px;
+                              width: 45px;padding-right: 0;border:1px solid #5ed84f;border-top-left-radius: 0px;border-bottom-left-radius: 0px;" id="trans-axis"
+                                title="axis">
+                                <option value="xy">XY</option>
+                                <option value="xz">XZ</option>
+                                <option value="yz">YZ</option>
+                              </select>
+
                               <button type='button'
                                 class="btn btn-icon btn-outline-success btn-glow round btn-sm mr-3 mb-1"
                                 title='rotate tool' id='btn-rotate'>
@@ -577,7 +586,7 @@
           aria-labelledby="editerModalLabel" aria-hidden="true" style="z-index:100000;">
           <div class="modal-dialog" role="document" style="max-width:1400px;height:90%;">
             <div class="modal-content" style="height:100%;">
-              <div class="modal-header">
+              <div class="modal-header" style="position:relative;z-index: 1;">
                 <!-- <h5 class="modal-title" id="editerModalLabel" style="font-weight:800;">Editor Model Browser</h5> -->
                 <ul class="nav nav-tabs">
                   <li class="nav-item">
@@ -593,12 +602,13 @@
                   <span aria-hidden="true">×</span>
                 </button>
               </div>
-              <div class="modal-body" style="overflow-y: auto;padding-top:0;">
+              <div class="modal-body" id="previewParent" style="overflow-y: auto;padding-top:0;">
                 <!-- <button type='button' style="margin:10px;" class="btn btn-outline-primary btn-glow round"
                   title='Open model from local pc'>
                   <i class="ft-save"></i> Save
                 </button> -->
 
+                <canvas id="previewCanvas"></canvas>
                 <div class="tab-content px-1 pt-1">
                   <div role="tabpanel" class="tab-pane active" id="bhistory" aria-labelledby="bhistory-tab"
                     aria-expanded="true">
@@ -620,7 +630,7 @@
                         </div>
                       </div>
                     </div>
-                    <div class="table-responsive">
+                    <div class="table-responsive" style="position:relative">
                       <table class="table mb-0">
                         <thead>
                           <tr>
@@ -706,11 +716,10 @@
                     </div>
                   </div>
                 </div>
-
               </div>
-              <div class="modal-footer">
+              <div class="modal-footer" style="z-index:1;">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal" id="browser-close">Close</button>
-                <button type="button" class="btn btn-primary" id="browser-save">Save</button>
+                <button type="button" class="btn btn-primary ml-1" id="browser-save">Save</button>
               </div>
             </div>
           </div>

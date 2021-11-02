@@ -44,6 +44,7 @@ export const owlStudio = function (cv1, cv2, parent) {
     this.selectedCount = 0;
     this.toolState = 'move';
     this.drawState = false;
+    this.transDir = 'xy';
 
     this.init = function () {
 
@@ -401,8 +402,16 @@ export const owlStudio = function (cv1, cv2, parent) {
             deltaY = evt.clientY - this.mouse.y;
         this.mouse.x = evt.clientX;
         this.mouse.y = evt.clientY;
-        this.group.children[0].geometry.translate(deltaX / 100, 0, -deltaY / 100)
-        this.group.children[3].geometry.translate(deltaX / 100, 0, -deltaY / 100)
+        if (this.transDir == 'xy') {
+            this.group.children[0].geometry.translate(deltaX / 100, -deltaY / 100, 0)
+            this.group.children[3].geometry.translate(deltaX / 100, -deltaY / 100, 0)
+        } else if (this.transDir == 'yz') {
+            this.group.children[0].geometry.translate(0, deltaX / 100, -deltaY / 100)
+            this.group.children[3].geometry.translate(0, deltaX / 100, -deltaY / 100)
+        } else if (this.transDir == 'xz') {
+            this.group.children[0].geometry.translate(deltaX / 100, 0, -deltaY / 100)
+            this.group.children[3].geometry.translate(deltaX / 100, 0, -deltaY / 100)
+        }
         this.render()
     }
 
@@ -1126,25 +1135,37 @@ export const owlStudio = function (cv1, cv2, parent) {
         return this.signedVolumeOfTriangle(q, e, r) + this.signedVolumeOfTriangle(new THREE.Vector3().copy(w), new THREE.Vector3().copy(e), new THREE.Vector3().copy(r))
     }
 
-    this.previewCloud = function (id, data) {
-        console.log(id, data);
+    this.preview = function (id, parent) {
         let canvas = document.getElementById(id);
-        let renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
+        let parentDiv = document.getElementById(parent);
+        this.renderer2 = new THREE.WebGLRenderer({ canvas, alpha: true });
+        this.renderer2.setPixelRatio(window.devicePixelRatio);
+        console.log({ parentDiv }, { canvas })
+        let w = canvas.clientWidth;
+        let h = canvas.clientHeight;
+        console.log(w, h)
+        this.renderer2.setSize(w, h, false);
+    }
+
+    this.previewCloud = function (id, data) {
+        // return;
+        let elem = document.querySelector('#' + id);
         let scene = new THREE.Scene();
-        let camera = new THREE.PerspectiveCamera(60, 160 / 100, 0.01, 1000);
+        let camera = new THREE.PerspectiveCamera(60, elem.clientWidth / elem.clientHeight, 0.01, 1000);
 
         var light = new THREE.DirectionalLight(0xffffff, 1.5);
         light.position.set(0, 0, 56);
         scene.add(light);
         scene.add(new THREE.AmbientLight(0xffffff, 0.5));
 
-        renderer.setPixelRatio(window.devicePixelRatio);
-        renderer.setSize(160, 100);
+
         camera.position.set(0, -20, 6);
         camera.lookAt(0, 0, 0);
+        // camera.aspect = rect.width / rect.height;
+        // camera.updateProjectionMatrix();
 
         scene.add(camera);
-        scene.background = new THREE.Color(0x111111);
+        scene.background = new THREE.Color(0x999999);
 
         let colors = [];
         let points3d = [];
@@ -1176,14 +1197,25 @@ export const owlStudio = function (cv1, cv2, parent) {
         material = new THREE.PointsMaterial({ size: 0.1, vertexColors: true });
 
         let points2 = new THREE.Points(geometry, material);
-        let group = new THREE.Object3D();
-        group.add(points2)
-        scene.add(group);
+        scene.add(points2);
 
-        renderer.render(scene, camera);
-        // setTimeout(() => {
-        //     renderer.render(scene, camera);
-        // }, 100)
+
+        const renderer = this.renderer2;
+        console.log({ elem }, { rect: this.canvas.getBoundingClientRect() })
+        const rect = elem.getBoundingClientRect();
+        const { left, right, top, bottom, width, height } = rect;
+
+        const isOffscreen =
+            bottom < 0 || top > renderer.domElement.clientHeight ||
+            right < 0 || left > renderer.domElement.clientWidth;
+
+        if (!isOffscreen) {
+            const positiveYUpBottom = renderer.domElement.clientHeight - bottom;
+            renderer.setScissor(left, positiveYUpBottom, width, height);
+            renderer.setViewport(left, positiveYUpBottom, width, height);
+            console.log('rendered', left, positiveYUpBottom, width, height, rect)
+            renderer.render(scene, camera);;
+        }
     }
 }
 

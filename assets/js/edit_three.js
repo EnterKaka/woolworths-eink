@@ -108,6 +108,7 @@ function openGround_Fromlocal(e) {
 window.onload = function () {
     cloudmachine.init();
     cloudmachine.cloudController();
+    cloudmachine.preview('previewCanvas', 'previewParent');
     startApp();
     //app controller/////////////////////////////////////////////////////////////////////////////////////////////////////////
     $('#btn-openfromLocal').click(function () {
@@ -224,8 +225,13 @@ window.onload = function () {
     document.getElementById('btn-translate').addEventListener('click', function () {
         document.getElementById('btn-' + cloudmachine.toolState).classList.remove('active')
         document.getElementById('btn-translate').classList.add('active')
+        cloudmachine.transDir = document.getElementById('trans-axis').value;
         cloudmachine.setToolState('translate')
     });
+
+    document.getElementById('trans-axis').addEventListener('change', function () {
+        cloudmachine.transDir = this.value;
+    })
 
     document.getElementById('btn-rotate').addEventListener('click', function () {
         document.getElementById('btn-' + cloudmachine.toolState).classList.remove('active')
@@ -445,7 +451,7 @@ window.onload = function () {
         for (let i = sessionHistory.length - 1; i >= 0; i--) {
             if (!sessionHistory[i].deleted) {
                 htable.innerHTML += `<tr>
-              <td style="width:180px;padding:10px"><canvas id = "preview${i}" style="height:160px;width:100px;"></canvas></td>
+              <td style="width:180px;padding:10px"><span id = "preview${i}" class="rect" style=""></span></td>
               <td contenteditable="true" data-id=${i}>${sessionHistory[i].name}</td>
               <td>${sessionHistory[i].date}</td>
               <td>${sessionHistory[i].time}</td>
@@ -481,9 +487,11 @@ window.onload = function () {
             $(this.parentElement.parentElement).remove();
             // $('#browser-close').trigger('click');
         })
-        for (let i = 0; i < sessionHistory.length; i++) {
-            cloudmachine.previewCloud('preview' + i, sessionHistory[i].data)
-        }
+        setTimeout(() => {
+            for (let i = 0; i < sessionHistory.length; i++) {
+                cloudmachine.previewCloud('preview' + i, sessionHistory[i].data)
+            }
+        }, 1000)
     })
 
     document.getElementById('browser-load').addEventListener('click', () => {
@@ -557,8 +565,8 @@ window.onload = function () {
         let savedata = [];
         let clonelist = document.getElementById('history-models').children;
         for (let i = 0; i < clonelist.length; i++) {
-            let n = clonelist[i].children[0].dataset.id;
-            sessionHistory[n].name = clonelist[i].children[0].innerText.trim();
+            let n = clonelist[i].children[1].dataset.id;
+            sessionHistory[n].name = clonelist[i].children[1].innerText.trim();
             savedata.push(sessionHistory[n]);
         }
         // loading.style.display = 'block';
@@ -606,7 +614,7 @@ window.onload = function () {
 
     document.getElementById('absRotate').addEventListener('click', () => {
         let axis = document.getElementById('rotate-pass').value;
-        let degree = document.getElementById('rotate-degree').value;
+        let degree = document.getElementById('rotate-degree').value * Math.PI / 180;
         cloudmachine.rotateAbs(axis, degree)
     })
 
@@ -621,4 +629,64 @@ window.onload = function () {
         let degree = -Math.PI / 2;
         cloudmachine.rotateAbs(axis, degree)
     })
+
+    //drag and drop
+    // While dragging the p element, change the color of the output text
+    document.addEventListener("drag", function (event) {
+        document.getElementById("viewer_3d").style.color = "red";
+    });
+
+    // Output some text when finished dragging the p element and reset the opacity
+    document.addEventListener("dragend", function (event) {
+        document.getElementById("viewer_3d").innerHTML = "Finished dragging the p element.";
+        cloudmachine.canvas.style.opacity = "1";
+    });
+
+    /* Events fired on the drop target */
+
+    // When the draggable p element enters the droptarget, change the DIVS's border style
+    document.addEventListener("dragenter", function (event) {
+        if (event.target.className == "dviewer") {
+            cloudmachine.canvas.style.border = "3px dotted red";
+        }
+    });
+
+    // By default, data/elements cannot be dropped in other elements. To allow a drop, we must prevent the default handling of the element
+    document.addEventListener("dragover", function (event) {
+        event.preventDefault();
+    });
+
+    // When the draggable p element leaves the droptarget, reset the DIVS's border style
+    document.addEventListener("dragleave", function (event) {
+        if (event.target.className == "dviewer") {
+            cloudmachine.canvas.style.border = "";
+        }
+    });
+
+    /* On drop - Prevent the browser default handling of the data (default is open as link on drop)
+      Reset the color of the output text and DIV's border color
+      Get the dragged data with the dataTransfer.getData() method
+      The dragged data is the id of the dragged element ("drag1")
+      Append the dragged element into the drop element
+    */
+    document.addEventListener("drop", function (event) {
+        event.preventDefault();
+        if (event.target.className == "dviewer") {
+            document.getElementById("viewer_3d").style.color = "";
+            cloudmachine.canvas.style.border = "";
+            let file = event.dataTransfer.files[0];
+            let reader = new FileReader();
+            reader.onload = function (ev) {
+                let model_text = ev.target.result;
+                if (file.name.split('.').pop() == 'obj') {
+                    cloudmachine.reloadModelFromObjData(file.name, model_text)
+                }
+                else {
+                    cloudmachine.reloadModelFromData(file.name, model_text);
+                }
+            };
+
+            reader.readAsText(file);
+        }
+    });
 };
