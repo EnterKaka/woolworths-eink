@@ -4,11 +4,23 @@ const MongoClient = require("mongodb").MongoClient;
 var ObjectId = require('mongoose').Types.ObjectId;
 const Setting = require('../model/Setting');
 
+
+/*
+ * API - all models (timeinterval or latest) 
+ * @param-from: to: latest:
+*/
 app.post('/allmodels/timeinterval', async function(req, res, next) {
 
 	console.log("*********** API **** allmodel ****** timeinterval  ********");
-	let fromTime = new Date(req.body.from);
-	let toTime = new Date(req.body.to);
+	let fromTime = req.body.from;
+	if(typeof fromTime === 'undefined')
+		fromTime = '1900.01.01 00:00:00';
+	fromTime = new Date(fromTime);
+	let toTime = req.body.to;
+	if(typeof toTime === 'undefined')
+		toTime = new Date();
+	else
+		toTime = new Date(toTime);
 	if(fromTime > toTime) {
 		res.header(400).json({status: 'failed', reason: 'No document found.'});
 		console.log('here');
@@ -64,9 +76,24 @@ app.post('/allmodels/timeinterval', async function(req, res, next) {
 				if(fromTime <= timestamp && timestamp <= toTime)
 					sendData.push(o);
 			});
+			var mysortfunction = (a, b) => {
+			
+				var o1 = a['date'].toLowerCase();
+				var o2 = b['date'].toLowerCase();
+			  
+				var p1 = a['time'].toLowerCase();
+				var p2 = b['time'].toLowerCase();
+			  
+				if (o1 < o2) return -1;
+				if (o1 > o2) return 1;
+				if (p1 < p2) return -1;
+				if (p1 > p2) return 1;
+				return 0;
+			}
+			sendData.sort(mysortfunction);
 			res.header(200).json({
 				status: 'success',
-				data: sendData,
+				data: (req.body.latest*1 == 1)? sendData.pop():sendData,
 			});
 	} finally {
 			await client.close();
