@@ -552,8 +552,8 @@ export const owlStudio = function (cv1, cv2, parent) {
 
                 for (let i = 0; i < lop; i++) {
                     pointOnPlane.copy(new THREE.Vector3(position.array[i * 3], position.array[i * 3 + 1], position.array[i * 3 + 2]))
-                    raycaster.ray.closestPointToPoint(new THREE.Vector3().copy(pointOnPlane).applyEuler(group.rotation), target)
-                    let distanceSq = new THREE.Vector3().copy(pointOnPlane).applyEuler(group.rotation).distanceToSquared(target);
+                    raycaster.ray.closestPointToPoint(new THREE.Vector3().copy(pointOnPlane).applyMatrix4(this.group.matrix), target)
+                    let distanceSq = new THREE.Vector3().copy(pointOnPlane).applyMatrix4(this.group.matrix).distanceToSquared(target);
 
                     if (distanceSq < minDistance) {
                         minDistance = distanceSq;
@@ -584,8 +584,8 @@ export const owlStudio = function (cv1, cv2, parent) {
                 let closestPoint = new THREE.Vector3();
                 let unselectedPoints = this.unselectedPoints;
                 for (let i = 0; i < unselectedPoints.length; i += 3) {
-                    raycaster.ray.closestPointToPoint(new THREE.Vector3(unselectedPoints[i], unselectedPoints[i + 1], unselectedPoints[i + 2]).applyEuler(group.rotation), target)
-                    let distanceSq = new THREE.Vector3(unselectedPoints[i], unselectedPoints[i + 1], unselectedPoints[i + 2]).applyEuler(group.rotation).distanceToSquared(target);
+                    raycaster.ray.closestPointToPoint(new THREE.Vector3(unselectedPoints[i], unselectedPoints[i + 1], unselectedPoints[i + 2]).applyMatrix4(this.group.matrix), target)
+                    let distanceSq = new THREE.Vector3(unselectedPoints[i], unselectedPoints[i + 1], unselectedPoints[i + 2]).applyMatrix4(this.group.matrix).distanceToSquared(target);
 
                     if (distanceSq < minDistance) {
                         closestPoint.set(unselectedPoints[i], unselectedPoints[i + 1], unselectedPoints[i + 2]);
@@ -615,8 +615,8 @@ export const owlStudio = function (cv1, cv2, parent) {
                 let sind;
                 let closestPoint = new THREE.Vector3();
                 for (let i = 0; i < array.length; i += 3) {
-                    raycaster.ray.closestPointToPoint(new THREE.Vector3(array[i], array[i + 1], array[i + 2]).applyEuler(group.rotation), target)
-                    let distanceSq = new THREE.Vector3(array[i], array[i + 1], array[i + 2]).applyEuler(group.rotation).distanceToSquared(target);
+                    raycaster.ray.closestPointToPoint(new THREE.Vector3(array[i], array[i + 1], array[i + 2]).applyMatrix4(this.group.matrix), target)
+                    let distanceSq = new THREE.Vector3(array[i], array[i + 1], array[i + 2]).applyMatrix4(this.group.matrix).distanceToSquared(target);
 
                     if (distanceSq < minDistance) {
                         closestPoint.set(array[i], array[i + 1], array[i + 2]);
@@ -694,7 +694,7 @@ export const owlStudio = function (cv1, cv2, parent) {
 
                 for (let i = 0; i < lop; i++) {
                     let direct = new THREE.Vector3(position.array[i * 3], position.array[i * 3 + 1], position.array[i * 3 + 2])
-                    raycaster.set(camera.position, new THREE.Vector3().copy(direct).applyEuler(group.rotation).sub(camera.position).normalize());
+                    raycaster.set(camera.position, new THREE.Vector3().copy(direct).applyMatrix4(this.group.matrix).sub(camera.position).normalize());
                     raycaster.ray.intersectPlane(plane, pointOnPlane);
 
                     if (!isInside(pointOnPlane, vs)) {
@@ -713,7 +713,7 @@ export const owlStudio = function (cv1, cv2, parent) {
 
                 for (let i = 0; i < this.unselectedPoints.length; i += 3) {
                     let direct = new THREE.Vector3(this.unselectedPoints[i], this.unselectedPoints[i + 1], this.unselectedPoints[i + 2])
-                    raycaster.set(camera.position, new THREE.Vector3().copy(direct).applyEuler(group.rotation).sub(camera.position).normalize());
+                    raycaster.set(camera.position, new THREE.Vector3().copy(direct).applyMatrix4(this.group.matrix).sub(camera.position).normalize());
                     raycaster.ray.intersectPlane(plane, pointOnPlane);
 
                     if (isInside(pointOnPlane, vs)) {
@@ -735,7 +735,7 @@ export const owlStudio = function (cv1, cv2, parent) {
                 this.unselectedPoints = [];
 
                 for (let i = 0; i < array.length; i += 3) {
-                    raycaster.set(camera.position, new THREE.Vector3(array[i], array[i + 1], array[i + 2]).applyEuler(group.rotation).sub(camera.position).normalize());
+                    raycaster.set(camera.position, new THREE.Vector3(array[i], array[i + 1], array[i + 2]).applyMatrix4(this.group.matrix).sub(camera.position).normalize());
                     raycaster.ray.intersectPlane(plane, pointOnPlane);
 
                     if (isInside(pointOnPlane, vs)) {
