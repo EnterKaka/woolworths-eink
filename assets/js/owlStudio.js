@@ -257,13 +257,15 @@ export const owlStudio = function (cv1, cv2, parent) {
 
         this.addToSessionHistory(filename, 'model', saveData);
 
-        // if (neededCenter) {
-        //     this.changedCloudZ = geometry.attributes.position.array[2];
-        //     geometry.center();
-        //     this.changedCloudZ -= geometry.attributes.position.array[2];
-        // }
+        if (neededCenter) {
+            //     this.changedCloudZ = geometry.attributes.position.array[2];
+            //     geometry.center();
+            //     this.changedCloudZ -= geometry.attributes.position.array[2];
+            this.cameraPositionSetFromArray(geometry.attributes.position.array)
+            this.group.position.copy(new THREE.Vector3())
+            this.group.quaternion.copy(new THREE.Quaternion())
+        }
 
-        this.cameraPositionSetFromArray(geometry.attributes.position.array)
 
         let material;
         if (heightmapColor()) {
@@ -337,8 +339,7 @@ export const owlStudio = function (cv1, cv2, parent) {
         mesh5.visible = delauny3();
         this.group.add(mesh5);
 
-        this.group.position.copy(new THREE.Vector3())
-        this.group.quaternion.copy(new THREE.Quaternion())
+
 
         this.render();
         console.log(this.group)
