@@ -66,7 +66,7 @@ async function loadAllData() {
 
 /*
  * API - all models (timeinterval or latest)
- * @param-from: to: latest:
+ * @param-from: to: latest: name:
  */
 app.post("/allmodels/timeinterval", async function (req, res, next) {
     console.log("*********** API **** allmodel ****** timeinterval  ********");
@@ -84,6 +84,11 @@ app.post("/allmodels/timeinterval", async function (req, res, next) {
             reason: "No document found.",
         });
     }
+    /* model name */
+    let name = req.body.name;
+    if (typeof name === "undefined") name = "all";
+    else name = name.toLowerCase();
+
     async function run() {
         try {
             /* if loadedData is empty, get data from db */
@@ -100,27 +105,32 @@ app.post("/allmodels/timeinterval", async function (req, res, next) {
             let sendData = [];
             /* sort loaded_data asc */
             loadedData.sort(mysortfunction);
+            /* find data in time interval */
+            loadedData.find((o) => {
+                var date = o.date.split(".");
+                var timestamp = new Date(
+                    date[2] + "." + date[1] + "." + date[0] + " " + o.time
+                );
+                if (fromTime <= timestamp && timestamp <= toTime) {
+                    if (name !== "all") {
+                        if (o.name === req.body.name) sendData.push(o);
+                    } else {
+                        sendData.push(o);
+                    }
+                }
+            });
             /* If set latest value is true get latest value of each model */
             if (req.body.latest * 1 == 1) {
-                let cache_arr = { ...loadedData };
-                var divided_arr = loadedData.reduce(function (obj, value) {
+                var divided_arr = sendData.reduce(function (obj, value) {
                     var key = value.name;
                     if (obj[key] == null) obj[key] = [];
                     obj[key].push(value);
                     return obj;
                 }, {});
+                sendData = [];
                 for (var key in divided_arr) {
                     sendData.push(divided_arr[key].pop());
                 }
-            } else {
-                loadedData.find((o) => {
-                    var date = o.date.split(".");
-                    var timestamp = new Date(
-                        date[2] + "." + date[1] + "." + date[0] + " " + o.time
-                    );
-                    if (fromTime <= timestamp && timestamp <= toTime)
-                        sendData.push(o);
-                });
             }
             res.header(200).json({
                 status: "success",
@@ -150,6 +160,11 @@ app.post("/allmodels/number", async function (req, res, next) {
         });
     }
 
+    /* model name */
+    let name = req.body.name;
+    if (typeof name === "undefined") name = "all";
+    else name = name.toLowerCase();
+
     async function run() {
         try {
             /* if loadedData is empty, get data from db */
@@ -166,8 +181,14 @@ app.post("/allmodels/number", async function (req, res, next) {
             let sendData = [];
             /* sort loaded_data asc */
             loadedData.sort(mysortfunction);
+            /* find model name */
+            if (name !== "all")
+                loadedData.find((o) => {
+                    if (o.name === req.body.name) sendData.push(o);
+                });
+            else sendData = loadedData;
             /* get latest number of values from all data */
-            sendData = loadedData.slice(-1 * number);
+            sendData = sendData.slice(-1 * number);
             res.header(200).json({
                 status: "success",
                 data: sendData,
