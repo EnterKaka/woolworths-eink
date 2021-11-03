@@ -89,6 +89,7 @@ export const owlStudio = function (cv1, cv2, parent) {
 
         // var gridYZ = new THREE.GridHelper(30, 60);
         // gridYZ.rotation.z = Math.PI / 2;
+        // scene.add(gridYZ);
 
         window.addEventListener('resize', this.windowResize);
     }
@@ -339,7 +340,20 @@ export const owlStudio = function (cv1, cv2, parent) {
         mesh5.visible = delauny3();
         this.group.add(mesh5);
 
+        //set axis helper
+        var axes = new THREE.AxesHelper(20);
+        this.group.add(axes);
+        // //set grid helper
+        var gridXZ = new THREE.GridHelper(0, 0);
+        this.group.add(gridXZ);
 
+        var gridXY = new THREE.GridHelper(30, 60);
+        gridXY.rotation.x = Math.PI / 2;
+        this.group.add(gridXY);
+
+        var gridYZ = new THREE.GridHelper(30, 60);
+        gridYZ.rotation.z = Math.PI / 2;
+        this.group.add(gridYZ);
 
         this.render();
         console.log(this.group)
