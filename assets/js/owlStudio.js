@@ -48,6 +48,9 @@ export const owlStudio = function (cv1, cv2, parent) {
     this.position = new THREE.Vector3();
     this.quaternion = new THREE.Quaternion();
     this.matrixElements = new THREE.Matrix4().elements;
+    this.changedPosition = {
+        x: 0, y: 0, z: 0
+    };
 
     this.init = function () {
 
@@ -241,24 +244,26 @@ export const owlStudio = function (cv1, cv2, parent) {
 
         $("#modelpath").text(filename);
         let saveData = [];
-        if (neededCenter) {
-            points3d.map((e) => {
-                saveData.push(e.x, e.y, e.z);
-            })
-        }
-        else {
-            points3d.map((e) => {
-                saveData.push(e.x, e.y, e.z + this.changedCloudZ);
-            })
-        }
+        // if (neededCenter) {
+        points3d.map((e) => {
+            saveData.push(e.x, e.y, e.z);
+        })
+        // }
+        // else {
+        // points3d.map((e) => {
+        // saveData.push(e.x, e.y, e.z + this.changedCloudZ);
+        // })
+        // }
 
         this.addToSessionHistory(filename, 'model', saveData);
 
-        if (neededCenter) {
-            this.changedCloudZ = geometry.attributes.position.array[2];
-            geometry.center();
-            this.changedCloudZ -= geometry.attributes.position.array[2];
-        }
+        // if (neededCenter) {
+        //     this.changedCloudZ = geometry.attributes.position.array[2];
+        //     geometry.center();
+        //     this.changedCloudZ -= geometry.attributes.position.array[2];
+        // }
+
+        this.cameraPositionSetFromArray(geometry.attributes.position.array)
 
         let material;
         if (heightmapColor()) {
@@ -320,9 +325,9 @@ export const owlStudio = function (cv1, cv2, parent) {
         let geometry5 = new ConvexGeometry(points3d);
 
         geometry5.computeBoundingSphere();
-        if (neededCenter) {
-            geometry5.center()
-        }
+        // if (neededCenter) {
+        //     geometry5.center()
+        // }
 
         let mesh5 = new THREE.Mesh(
             geometry5,
@@ -479,6 +484,28 @@ export const owlStudio = function (cv1, cv2, parent) {
         this.camera.lookAt(this.cameraLookAt);
         this.render()
 
+    }
+
+    this.cameraPositionSetFromArray = (array) => {
+        let x = 0;
+        let y = 0;
+        let z = 0;
+        for (let i = 0; i < array.length; i += 3) {
+            x += array[i];
+            y += array[i + 1];
+            z += array[i + 2];
+        }
+        let na = array.length / 3;
+        x /= na;
+        y /= na;
+        z /= na;
+        this.camera.position.x = x;
+        this.camera.position.y = y - 20;
+        this.camera.position.z = z + 6;
+        this.cameraLookAt.x = x;
+        this.cameraLookAt.y = y;
+        this.cameraLookAt.z = z;
+        this.camera.lookAt(this.cameraLookAt);
     }
 
     this.mouseMove = (evt) => {
@@ -833,7 +860,7 @@ export const owlStudio = function (cv1, cv2, parent) {
         }, false);
 
         this.canvas2.addEventListener('mousewheel', (e) => {
-            if (this.toolState === 'move')
+            if (this.toolState == 'rotate' || this.toolState == 'rotate2' || this.toolState == 'translate' || this.toolState == 'translate2')
                 this.mouseWheel(e);
         }, false);
 
@@ -846,9 +873,9 @@ export const owlStudio = function (cv1, cv2, parent) {
         const exporter = new OBJExporter();
         let clone = this.group.children[1].clone();
         let array = clone.geometry.attributes.position.array;
-        for (var i = 2; i < array.length; i += 3) {
-            array[i] += this.changedCloudZ;
-        }
+        // for (var i = 2; i < array.length; i += 3) {
+        //     array[i] += this.changedCloudZ;
+        // }
         return exporter.parse(clone);
     }
 
@@ -856,9 +883,9 @@ export const owlStudio = function (cv1, cv2, parent) {
         const exporter = new OBJExporter();
         let clone = this.group.children[3].clone();
         let array = clone.geometry.attributes.position.array;
-        for (var i = 2; i < array.length; i += 3) {
-            array[i] += this.changedCloudZ;
-        }
+        // for (var i = 2; i < array.length; i += 3) {
+        //     array[i] += this.changedCloudZ;
+        // }
         return exporter.parse(clone);
     }
 
@@ -868,7 +895,8 @@ export const owlStudio = function (cv1, cv2, parent) {
         if (!param) {
             array = this.group.children[0].geometry.attributes.position.array;
             for (let i = 0; i < array.length; i += 3) {
-                result += `        ${array[i]},        ${array[i + 1]},        ${array[i + 2] + this.changedCloudZ}\n`;
+                result += `        ${array[i]},        ${array[i + 1]},        ${array[i + 2]}\n`;
+                // result += `        ${array[i]},        ${array[i + 1]},        ${array[i + 2] + this.changedCloudZ}\n`;
             }
         } else {
             if (!matrix) {
@@ -953,7 +981,8 @@ export const owlStudio = function (cv1, cv2, parent) {
         }
 
         let array = [...this.group.children[0].geometry.attributes.position.array];
-        this.addToHistory(array, this.changedCloudZ);
+        this.addToHistory(array);
+        // this.addToHistory(array, this.changedCloudZ);
 
         let updatePoints = [];
         for (let i = 0; i < this.selectedCount; i++) {
@@ -1080,10 +1109,15 @@ export const owlStudio = function (cv1, cv2, parent) {
 
     this.getSavePoints = function () {
         let array = [...this.group.children[0].geometry.attributes.position.array];
-        for (let i = 2; i < array.length; i += 3) {
-            array[i] += this.changedCloudZ;
-        }
+        // for (let i = 2; i < array.length; i += 3) {
+        //     array[i] += this.changedCloudZ;
+        // }
         return array;
+    }
+
+    this.getSaveMatrixArray = function () {
+        let result = this.sessionHistory[this.sessionHistory.length - 1].matrix;
+        return [...result];
     }
 
     this.calculateVolume = function (h, v) {

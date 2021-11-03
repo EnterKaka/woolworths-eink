@@ -361,6 +361,7 @@ window.onload = function () {
 
     document.getElementById('directSaveBtn').addEventListener('click', () => {
         let savedata = cloudmachine.getSavePoints();
+        let matrix = cloudmachine.getSaveMatrixArray();
         const dateobj = new Date();
         let year = dateobj.getFullYear();
         let month = dateobj.getMonth() + 1;
@@ -412,6 +413,7 @@ window.onload = function () {
                     "data": savedata,
                     "type": `model`,
                     "volume": document.getElementById('ds-modelVolume').value,
+                    "matrix": matrix,
                 }
             },
             type: "post"
@@ -543,6 +545,8 @@ window.onload = function () {
                         <td>${res.data[i].time}</td>
                         <td>${res.data[i].type}</td>
                         <td>${res.data[i].volume}</td>
+                        <td ><button data-id=${i} class="dbmatrixview btn btn-icon btn-outline-primary round btn-sm"
+                            title='view matrix' data-toggle="modal" data-target="#dbMatrix" >matrix</button></td>
                         <td style="width:170px;">
                             <button data-id=${i} type='button' class="dload-btn btn btn-icon btn-outline-primary  round btn-sm mr-1"
                             title='loading'><i class="ft-upload"></i>
@@ -555,6 +559,13 @@ window.onload = function () {
                     document.getElementById('modelpath').innerText = this.parentElement.parentElement.children[0].innerText;
                     cloudmachine.reloadModelFromArray(res.data[this.dataset.id].name, res.data[this.dataset.id].data);
                     $('#browser-close').trigger('click');
+                })
+                $('.dbmatrixview').click(function () {
+                    console.log({ this: this })
+                    let matrix = res.data[this.dataset.id].matrix;
+                    for (var i = 0; i < 16; i++) {
+                        document.getElementById('dbmtx' + i).innerText = matrix[i];
+                    }
                 })
             }
             else alert(res.error);
@@ -668,6 +679,11 @@ window.onload = function () {
 
     document.getElementById('matrix-download').addEventListener('click', () => {
         let text = `${$('#mtx0').text()}, ${$('#mtx4').text()}, ${$('#mtx8').text()}, ${$('#mtx12').text()}\n${$('#mtx1').text()}, ${$('#mtx5').text()}, ${$('#mtx9').text()}, ${$('#mtx13').text()}\n${$('#mtx2').text()}, ${$('#mtx6').text()}, ${$('#mtx10').text()}, ${$('#mtx14').text()}\n${$('#mtx3').text()}, ${$('#mtx7').text()}, ${$('#mtx11').text()}, ${$('#mtx15').text()}`;
+        download('matrix.txt', 'text', text);
+    })
+
+    document.getElementById('dbmatrix-download').addEventListener('click', () => {
+        let text = `${$('#dbmtx0').text()}, ${$('#dbmtx4').text()}, ${$('#dbmtx8').text()}, ${$('#dbmtx12').text()}\n${$('#dbmtx1').text()}, ${$('#dbmtx5').text()}, ${$('#dbmtx9').text()}, ${$('#dbmtx13').text()}\n${$('#dbmtx2').text()}, ${$('#dbmtx6').text()}, ${$('#dbmtx10').text()}, ${$('#dbmtx14').text()}\n${$('#dbmtx3').text()}, ${$('#dbmtx7').text()}, ${$('#dbmtx11').text()}, ${$('#dbmtx15').text()}`;
         download('matrix.txt', 'text', text);
     })
 
