@@ -198,10 +198,17 @@ window.onload = function () {
         cloudmachine.setSelectedColor(this.value)
     });
 
-    document.getElementById('btn-move').addEventListener('click', function () {
+    document.getElementById('btn-rotate2').addEventListener('click', function () {
         document.getElementById('btn-' + cloudmachine.toolState).classList.remove('active')
-        document.getElementById('btn-move').classList.add('active')
-        cloudmachine.setToolState('move')
+        document.getElementById('btn-rotate2').classList.add('active')
+        cloudmachine.setToolState('rotate2')
+    });
+
+    document.getElementById('btn-translate2').addEventListener('click', function () {
+        document.getElementById('btn-' + cloudmachine.toolState).classList.remove('active')
+        document.getElementById('btn-translate2').classList.add('active')
+        cloudmachine.transDir = document.getElementById('trans-axis2').value;
+        cloudmachine.setToolState('translate2')
     });
 
     document.getElementById('btn-point').addEventListener('click', function () {
@@ -230,6 +237,10 @@ window.onload = function () {
     });
 
     document.getElementById('trans-axis').addEventListener('change', function () {
+        cloudmachine.transDir = this.value;
+    })
+
+    document.getElementById('trans-axis2').addEventListener('change', function () {
         cloudmachine.transDir = this.value;
     })
 
@@ -311,7 +322,7 @@ window.onload = function () {
         }
         else if (e.keyCode == 65 && e.shiftKey) {
             console.log(5)
-            $("#btn-move").trigger('click');
+            $("#btn-rotate2").trigger('click');
         }
         else if (e.keyCode == 83 && e.shiftKey) {
             console.log(6)
@@ -488,7 +499,9 @@ window.onload = function () {
             }
         })
         $('.hdown-btn').click(function () {
-            const result = sessionHistory[this.dataset.id].data;
+            let array = sessionHistory[this.dataset.id].data;
+            let matrix = sessionHistory[this.dataset.id].matrix;
+            let result = cloudmachine.getTextData(array, matrix);
             download('model.txt', 'text', result);
         })
         $('.hdel-btn').click(function () {
@@ -654,8 +667,12 @@ window.onload = function () {
     })
 
     document.getElementById('matrix-download').addEventListener('click', () => {
-        let array = [$('#mtx0').text(), $('#mtx1').text(), $('#mtx2').text(), $('#mtx3').text(), $('#mtx4').text(), $('#mtx5').text(), $('#mtx6').text(), $('#mtx7').text(), $('#mtx8').text(), $('#mtx9').text(), $('#mtx10').text(), $('#mtx11').text(), $('#mtx12').text(), $('#mtx13').text(), $('#mtx14').text(), $('#mtx15').text(),]
-        download('matrix.txt', 'text', array);
+        let text = `${$('#mtx0').text()}, ${$('#mtx4').text()}, ${$('#mtx8').text()}, ${$('#mtx12').text()}\n${$('#mtx1').text()}, ${$('#mtx5').text()}, ${$('#mtx9').text()}, ${$('#mtx13').text()}\n${$('#mtx2').text()}, ${$('#mtx6').text()}, ${$('#mtx10').text()}, ${$('#mtx14').text()}\n${$('#mtx3').text()}, ${$('#mtx7').text()}, ${$('#mtx11').text()}, ${$('#mtx15').text()}`;
+        download('matrix.txt', 'text', text);
+    })
+
+    document.getElementById('baseIcon-tab5').addEventListener('click', () => {
+        cloudmachine.setFromRealMatrix();
     })
 
     //drag and drop

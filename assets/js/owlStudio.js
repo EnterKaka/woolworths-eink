@@ -42,9 +42,12 @@ export const owlStudio = function (cv1, cv2, parent) {
     this.unselectedPoints = [];
     this.selectedPoints = [];
     this.selectedCount = 0;
-    this.toolState = 'move';
+    this.toolState = 'rotate';
     this.drawState = false;
     this.transDir = 'xy';
+    this.position = new THREE.Vector3();
+    this.quaternion = new THREE.Quaternion();
+    this.matrixElements = new THREE.Matrix4().elements;
 
     this.init = function () {
 
@@ -105,7 +108,7 @@ export const owlStudio = function (cv1, cv2, parent) {
             time: getTime(),
             type: type,
             data: arrayData,
-            matrix: [...this.group.matrix.elements]
+            matrix: [...this.matrixElements]
         })
     }
 
@@ -329,6 +332,9 @@ export const owlStudio = function (cv1, cv2, parent) {
         mesh5.visible = delauny3();
         this.group.add(mesh5);
 
+        this.group.position.copy(new THREE.Vector3())
+        this.group.quaternion.copy(new THREE.Quaternion())
+
         this.render();
         console.log(this.group)
     }
@@ -357,14 +363,25 @@ export const owlStudio = function (cv1, cv2, parent) {
     }
 
     this.setCurrentMatrix = function () {
-        this.group.matrix.makeRotationFromQuaternion(this.group.quaternion);
-        this.group.matrix.setPosition(this.group.position);
+        // this.group.matrix.makeRotationFromQuaternion(this.group.quaternion);
+        // this.group.matrix.setPosition(this.group.position);
         // this.group.matrixAutoUpdate = false;
+        this.quaternion.copy(this.group.quaternion)
+        this.position.copy(this.group.position)
         this.sessionHistory[this.sessionHistory.length - 1].matrix = [...this.group.matrix.elements];
     }
 
     this.setMatrixToHistory = function (id, array) {
         this.sessionHistory[id].matrix = array;
+    }
+
+    this.setFromRealMatrix = function () {
+        this.group.position.copy(this.position)
+        this.group.quaternion.copy(this.quaternion)
+        // this.group.matrix.makeRotationFromQuaternion(this.quaternion);
+        // this.group.matrix.setPosition(this.position);
+        // this.group.applyMatrix(this.group.matrix);
+        this.render();
     }
 
     this.polygonRender = function () {
@@ -402,10 +419,6 @@ export const owlStudio = function (cv1, cv2, parent) {
             deltaY = evt.clientY - this.mouse.y;
         this.mouse.x = evt.clientX;
         this.mouse.y = evt.clientY;
-        // this.group.children[0].geometry.rotateX(deltaY / 100)
-        // this.group.children[0].geometry.rotateZ(deltaX / 100)
-        // this.group.children[3].geometry.rotateX(deltaY / 100)
-        // this.group.children[3].geometry.rotateZ(deltaX / 100)
         this.group.rotation.z += deltaX / 100;
         this.group.rotation.x += deltaY / 100;
         this.render()
@@ -417,18 +430,12 @@ export const owlStudio = function (cv1, cv2, parent) {
         this.mouse.x = evt.clientX;
         this.mouse.y = evt.clientY;
         if (this.transDir == 'xy') {
-            // this.group.children[0].geometry.translate(deltaX / 100, -deltaY / 100, 0)
-            // this.group.children[3].geometry.translate(deltaX / 100, -deltaY / 100, 0)
             this.group.translateX(deltaX / 100)
             this.group.translateY(-deltaY / 100)
         } else if (this.transDir == 'yz') {
-            // this.group.children[0].geometry.translate(0, deltaX / 100, -deltaY / 100)
-            // this.group.children[3].geometry.translate(0, deltaX / 100, -deltaY / 100)
             this.group.translateY(deltaX / 100)
             this.group.translateZ(-deltaY / 100)
         } else if (this.transDir == 'xz') {
-            // this.group.children[0].geometry.translate(deltaX / 100, 0, -deltaY / 100)
-            // this.group.children[3].geometry.translate(deltaX / 100, 0, -deltaY / 100)
             this.group.translateX(deltaX / 100)
             this.group.translateZ(-deltaY / 100)
         }
@@ -447,12 +454,6 @@ export const owlStudio = function (cv1, cv2, parent) {
         this.group.rotation.x += x;
         this.group.rotation.y += y;
         this.group.rotation.z += z;
-        // this.group.children[0].geometry.rotateX(x)
-        // this.group.children[0].geometry.rotateY(y)
-        // this.group.children[0].geometry.rotateZ(z)
-        // this.group.children[3].geometry.rotateX(x)
-        // this.group.children[3].geometry.rotateY(y)
-        // this.group.children[3].geometry.rotateZ(z)
         this.render()
     }
 
@@ -460,16 +461,17 @@ export const owlStudio = function (cv1, cv2, parent) {
         x = parseFloat(x)
         y = parseFloat(y)
         z = parseFloat(z)
-        // this.group.children[0].geometry.translate(x, y, z)
-        // this.group.children[3].geometry.translate(x, y, z)
         this.group.translateX(x)
         this.group.translateY(y)
         this.group.translateZ(z)
         this.render()
     }
 
-    this.cameraMove = (deltaX, deltaY) => {
-
+    this.cameraMove = (evt) => {
+        let deltaX = evt.clientX - this.mouse.x,
+            deltaY = evt.clientY - this.mouse.y;
+        this.mouse.x = evt.clientX;
+        this.mouse.y = evt.clientY;
         this.camera.position.x -= deltaX / 35;
         this.camera.position.z += deltaY / 35;
         this.cameraLookAt.x -= deltaX / 35;
@@ -762,14 +764,21 @@ export const owlStudio = function (cv1, cv2, parent) {
 
         this.canvas2.addEventListener('mousemove', (e) => {
             switch (this.toolState) {
-                case 'move':
-                    this.mouseMove(e);
+                case 'translate2':
+                    if (this.mouse.down) this.translateGroup(e)
+                    else if (this.mouse.rightDown) this.cameraMove(e)
+                    break;
+                case 'rotate2':
+                    if (this.mouse.down) this.rotateGroup(e)
+                    else if (this.mouse.rightDown) this.cameraMove(e)
                     break;
                 case 'translate':
                     if (this.mouse.down) this.translateGroup(e)
+                    else if (this.mouse.rightDown) this.cameraMove(e)
                     break;
                 case 'rotate':
                     if (this.mouse.down) this.rotateGroup(e)
+                    else if (this.mouse.rightDown) this.cameraMove(e)
                     break;
                 case 'pencil':
                     if (this.mouse.down) this.drawPencil(e)
@@ -853,11 +862,28 @@ export const owlStudio = function (cv1, cv2, parent) {
         return exporter.parse(clone);
     }
 
-    this.getTextData = function () {
+    this.getTextData = function (param = false, matrix = false) {
         let result = "";
-        let array = this.group.children[0].geometry.attributes.position.array;
-        for (let i = 0; i < array.length; i += 3) {
-            result += `        ${array[i]},        ${array[i + 1]},        ${array[i + 2] + this.changedCloudZ}\n`;
+        let array;
+        if (!param) {
+            array = this.group.children[0].geometry.attributes.position.array;
+            for (let i = 0; i < array.length; i += 3) {
+                result += `        ${array[i]},        ${array[i + 1]},        ${array[i + 2] + this.changedCloudZ}\n`;
+            }
+        } else {
+            if (!matrix) {
+                array = param;
+                for (let i = 0; i < array.length; i += 3) {
+                    result += `        ${array[i]},        ${array[i + 1]},        ${array[i + 2]}\n`;
+                }
+            }
+            else {
+                let m = new THREE.Matrix4().fromArray(matrix);
+                for (let i = 0; i < param.length; i += 3) {
+                    let v = new THREE.Vector3(parseFloat(param[i]), parseFloat(param[i + 1]), parseFloat(param[i + 2])).applyMatrix4(m)
+                    result += `        ${v.x},        ${v.y},        ${v.z}\n`;
+                }
+            }
         }
         return result;
     }

@@ -209,11 +209,29 @@
                           </div>
                           <div class="tab-pane" id="tabIcon3" aria-labelledby="baseIcon-tab3">
                             <div class="row toolbar">
+                              <button type='button' class="btn btn-icon btn-outline-success btn-glow round btn-sm mb-1"
+                                title='translate tool' id='btn-translate2'
+                                style="border-top-right-radius: 0px;border-bottom-right-radius: 0px;">
+                                <i class="ft-move"></i>
+                              </button>
+                              <select class="form-control round btn-glow mb-1 mr-1"
+                                style="height: 32px;padding-left: 3px;
+                              width: 55px;padding-right: 0;border:1px solid #5ed84f;border-top-left-radius: 0px;border-bottom-left-radius: 0px;" id="trans-axis2"
+                                title="axis">
+                                <option value="xy">XY</option>
+                                <option value="xz">XZ</option>
+                                <option value="yz">YZ</option>
+                              </select>
                               <button type='button'
+                                class="btn btn-icon btn-outline-success btn-glow round btn-sm mr-3 mb-1"
+                                title='rotate tool (shift+a)' id='btn-rotate2'>
+                                <i class="ft-rotate-cw"></i>
+                              </button>
+                              <!-- <button type='button'
                                 class="btn btn-icon btn-outline-success btn-glow round active btn-sm mr-1 mb-1"
                                 title='move tool (shift+a)' id='btn-move'>
                                 <i class="ft-move"></i>
-                              </button>
+                              </button> -->
                               <button type='button'
                                 class="btn btn-icon btn-outline-success btn-glow round btn-sm mr-1 mb-1"
                                 title='point select tool (shift+z)' id='btn-point'>
@@ -260,7 +278,7 @@
                               </button>
                               <select class="form-control round btn-glow mb-1 mr-1"
                                 style="height: 32px;padding-left: 3px;
-                              width: 45px;padding-right: 0;border:1px solid #5ed84f;border-top-left-radius: 0px;border-bottom-left-radius: 0px;" id="trans-axis"
+                              width: 55px;padding-right: 0;border:1px solid #5ed84f;border-top-left-radius: 0px;border-bottom-left-radius: 0px;" id="trans-axis"
                                 title="axis">
                                 <option value="xy">XY</option>
                                 <option value="xz">XZ</option>
@@ -597,26 +615,26 @@
               <div class="modal-body">
                 <div class="row mb-1" style="border-bottom:1px solid lightgrey;">
                   <div contenteditable="true" id="mtx0" class="col-xl-3 col-lg-3"></div>
-                  <div contenteditable="true" id="mtx1" class="col-xl-3 col-lg-3"></div>
-                  <div contenteditable="true" id="mtx2" class="col-xl-3 col-lg-3"></div>
-                  <div contenteditable="true" id="mtx3" class="col-xl-3 col-lg-3"></div>
-                </div>
-                <div class="row mb-1" style="border-bottom:1px solid lightgrey;">
                   <div contenteditable="true" id="mtx4" class="col-xl-3 col-lg-3"></div>
-                  <div contenteditable="true" id="mtx5" class="col-xl-3 col-lg-3"></div>
-                  <div contenteditable="true" id="mtx6" class="col-xl-3 col-lg-3"></div>
-                  <div contenteditable="true" id="mtx7" class="col-xl-3 col-lg-3"></div>
-                </div>
-                <div class="row mb-1" style="border-bottom:1px solid lightgrey;">
                   <div contenteditable="true" id="mtx8" class="col-xl-3 col-lg-3"></div>
-                  <div contenteditable="true" id="mtx9" class="col-xl-3 col-lg-3"></div>
-                  <div contenteditable="true" id="mtx10" class="col-xl-3 col-lg-3"></div>
-                  <div contenteditable="true" id="mtx11" class="col-xl-3 col-lg-3"></div>
+                  <div contenteditable="true" id="mtx12" class="col-xl-3 col-lg-3"></div>
                 </div>
                 <div class="row mb-1" style="border-bottom:1px solid lightgrey;">
-                  <div contenteditable="true" id="mtx12" class="col-xl-3 col-lg-3"></div>
+                  <div contenteditable="true" id="mtx1" class="col-xl-3 col-lg-3"></div>
+                  <div contenteditable="true" id="mtx5" class="col-xl-3 col-lg-3"></div>
+                  <div contenteditable="true" id="mtx9" class="col-xl-3 col-lg-3"></div>
                   <div contenteditable="true" id="mtx13" class="col-xl-3 col-lg-3"></div>
+                </div>
+                <div class="row mb-1" style="border-bottom:1px solid lightgrey;">
+                  <div contenteditable="true" id="mtx2" class="col-xl-3 col-lg-3"></div>
+                  <div contenteditable="true" id="mtx6" class="col-xl-3 col-lg-3"></div>
+                  <div contenteditable="true" id="mtx10" class="col-xl-3 col-lg-3"></div>
                   <div contenteditable="true" id="mtx14" class="col-xl-3 col-lg-3"></div>
+                </div>
+                <div class="row mb-1" style="border-bottom:1px solid lightgrey;">
+                  <div contenteditable="true" id="mtx3" class="col-xl-3 col-lg-3"></div>
+                  <div contenteditable="true" id="mtx7" class="col-xl-3 col-lg-3"></div>
+                  <div contenteditable="true" id="mtx11" class="col-xl-3 col-lg-3"></div>
                   <div contenteditable="true" id="mtx15" class="col-xl-3 col-lg-3"></div>
                 </div>
               </div>
