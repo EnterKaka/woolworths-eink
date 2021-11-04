@@ -11,7 +11,6 @@ import { ConvexGeometry } from './ConvexGeometry.js';
 // import { PCDLoader } from './PCDLoader.js';
 import { XYZLoader, getminmaxhegiht, getminmaxhegihtfromarray, getminmaxheightfromjson, getrgb, init_highlow } from './XYZLoader.js';
 import { TrackballControls } from './TrackballControls.js';
-import { runInThisContext } from 'vm';
 
 
 export const owlStudio = function (cv1, cv2, parent) {
@@ -732,11 +731,39 @@ export const owlStudio = function (cv1, cv2, parent) {
         this.polygonRender()
     }
 
-    this.setRotatePosition = function (vector) {
-        this.group.translateX(vector.x)
-        this.group.translateY(vector.y)
-        this.group.translateZ(vector.z)
+    this.setRotatePosition = function (evt) {
+        this.mouse.target.x = (evt.offsetX / this.canvas.clientWidth) * 2 - 1;
+        this.mouse.target.y = - (evt.offsetY / this.canvas.clientHeight) * 2 + 1;
+        let raycaster = new THREE.Raycaster();
+        raycaster.setFromCamera(this.mouse.target, this.camera);
+        let target = new THREE.Vector3();
+        let group = this.group;
+        let array = group.children[0].geometry.attributes.position.array;
+        let minDistance = Infinity;
+        let sind;
+        let closestPoint = new THREE.Vector3();
+        for (let i = 0; i < array.length; i += 3) {
+            raycaster.ray.closestPointToPoint(new THREE.Vector3(array[i], array[i + 1], array[i + 2]).applyMatrix4(this.group.matrix), target)
+            let distanceSq = new THREE.Vector3(array[i], array[i + 1], array[i + 2]).applyMatrix4(this.group.matrix).distanceToSquared(target);
 
+            if (distanceSq < minDistance) {
+                closestPoint.set(array[i], array[i + 1], array[i + 2]);
+                minDistance = distanceSq;
+                sind = i;
+            }
+        }
+        let x = array[sind];
+        let y = array[sind + 1];
+        let z = array[sind + 2];
+        this.group.children[0].geometry.translate(-x, -y, -z)
+        this.group.children[3].geometry.translate(-x, -y, -z)
+
+        let vector = new THREE.Vector3(x, y, z).applyMatrix4(this.group.matrix);
+        this.group.position.x = vector.x;
+        this.group.position.y = vector.y;
+        this.group.position.z = vector.z;
+
+        this.render();
     }
 
     this.finishdraw = (evt) => {
@@ -873,6 +900,9 @@ export const owlStudio = function (cv1, cv2, parent) {
                         break;
                     case 'pencil':
                         this.startPencil(e)
+                        break;
+                    case 'reset':
+                        this.setRotatePosition(e)
                         break;
                     default:
                 }
