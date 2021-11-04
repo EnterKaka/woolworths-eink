@@ -51,6 +51,9 @@ export const owlStudio = function (cv1, cv2, parent) {
     this.changedPosition = {
         x: 0, y: 0, z: 0
     };
+    this.rotatePosition = {
+        x: 0, y: 0, z: 0
+    };
 
     this.init = function () {
 
@@ -271,6 +274,13 @@ export const owlStudio = function (cv1, cv2, parent) {
             this.setCameraPosition(this.position);
             this.group.position.copy(this.position)
             this.group.quaternion.copy(this.quaternion)
+
+            this.changedPosition.x = 0;
+            this.changedPosition.y = 0;
+            this.changedPosition.z = 0;
+            this.rotatePosition.x = 0;
+            this.rotatePosition.y = 0;
+            this.rotatePosition.z = 0;
         }
 
 
@@ -394,6 +404,7 @@ export const owlStudio = function (cv1, cv2, parent) {
         // this.group.matrix.makeRotationFromQuaternion(this.group.quaternion);
         // this.group.matrix.setPosition(this.group.position);
         // this.group.matrixAutoUpdate = false;
+        this.rotatePosition = { x: this.changedPosition.x, y: this.changedPosition.y, z: this.changedPosition.z }
         this.quaternion.copy(this.group.quaternion)
         this.position.copy(this.group.position)
         this.sessionHistory[this.sessionHistory.length - 1].matrix = [...this.group.matrix.elements];
@@ -404,6 +415,7 @@ export const owlStudio = function (cv1, cv2, parent) {
     }
 
     this.setFromRealMatrix = function () {
+        this.setRotatePosition2(this.rotatePosition)
         this.group.position.copy(this.position)
         this.group.quaternion.copy(this.quaternion)
         // this.group.matrix.makeRotationFromQuaternion(this.quaternion);
@@ -731,6 +743,15 @@ export const owlStudio = function (cv1, cv2, parent) {
         this.polygonRender()
     }
 
+    this.setRotatePosition2 = function ({ x, y, z }) {
+        this.group.children[0].geometry.translate(x - this.changedPosition.x, y - this.changedPosition.y, z - this.changedPosition.z)
+        this.group.children[3].geometry.translate(x - this.changedPosition.x, y - this.changedPosition.y, z - this.changedPosition.z)
+
+        this.changedPosition.x = x;
+        this.changedPosition.y = y;
+        this.changedPosition.z = z;
+    }
+
     this.setRotatePosition = function (evt) {
         this.mouse.target.x = (evt.offsetX / this.canvas.clientWidth) * 2 - 1;
         this.mouse.target.y = - (evt.offsetY / this.canvas.clientHeight) * 2 + 1;
@@ -757,6 +778,10 @@ export const owlStudio = function (cv1, cv2, parent) {
         let z = array[sind + 2];
         this.group.children[0].geometry.translate(-x, -y, -z)
         this.group.children[3].geometry.translate(-x, -y, -z)
+
+        this.changedPosition.x -= x;
+        this.changedPosition.y -= y;
+        this.changedPosition.z -= z;
 
         let vector = new THREE.Vector3(x, y, z).applyMatrix4(this.group.matrix);
         this.group.position.x = vector.x;
