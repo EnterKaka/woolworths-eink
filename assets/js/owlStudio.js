@@ -929,6 +929,9 @@ export const owlStudio = function (cv1, cv2, parent) {
                     case 'reset':
                         this.setRotatePosition(e)
                         break;
+                    case 'reset2':
+                        this.setRotatePosition(e)
+                        break;
                     default:
                 }
             }

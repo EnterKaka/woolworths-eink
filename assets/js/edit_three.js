@@ -220,6 +220,12 @@ window.onload = function () {
         cloudmachine.setToolState('reset')
     });
 
+    document.getElementById('btn-reset2').addEventListener('click', function () {
+        document.getElementById('btn-' + cloudmachine.toolState).classList.remove('active')
+        document.getElementById('btn-reset2').classList.add('active')
+        cloudmachine.setToolState('reset2')
+    });
+
     document.getElementById('btn-translate2').addEventListener('click', function () {
         document.getElementById('btn-' + cloudmachine.toolState).classList.remove('active')
         document.getElementById('btn-translate2').classList.add('active')
