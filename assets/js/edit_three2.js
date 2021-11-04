@@ -794,11 +794,9 @@ function finishdraw(evt) {
     console.log(count, closestPoint)
     selectedGroup.geometry.attributes.position.needsUpdate = true;
 
+    render()
+    polygonRender()
   }
-
-  render()
-  polygonRender()
-
 }
 
 function customTriangulate(points3d) {

@@ -174,6 +174,16 @@ window.onload = function () {
         };
     });
 
+    document.getElementById('coordinateDiv').addEventListener('click', function () {
+        let two = document.getElementById('coordinate');
+        if (!two.checked) {
+            cloudmachine.setCoordinate(false);
+        }
+        else {
+            cloudmachine.setCoordinate(true);
+        };
+    });
+
     document.getElementById('pointcolor').addEventListener('input', function () {
         cloudmachine.setPointColor(this.value)
     });

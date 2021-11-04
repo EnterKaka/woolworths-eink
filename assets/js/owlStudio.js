@@ -11,6 +11,7 @@ import { ConvexGeometry } from './ConvexGeometry.js';
 // import { PCDLoader } from './PCDLoader.js';
 import { XYZLoader, getminmaxhegiht, getminmaxhegihtfromarray, getminmaxheightfromjson, getrgb, init_highlow } from './XYZLoader.js';
 import { TrackballControls } from './TrackballControls.js';
+import { runInThisContext } from 'vm';
 
 
 export const owlStudio = function (cv1, cv2, parent) {
@@ -77,19 +78,19 @@ export const owlStudio = function (cv1, cv2, parent) {
         // controls.enableRotate = false;
 
         // //set axis
-        // var axes = new THREE.AxesHelper(20);
-        // scene.add(axes);
-        // // //set grid helper
+        var axes = new THREE.AxesHelper(50);
+        this.scene.add(axes);
+        // //set grid helper
         // var gridXZ = new THREE.GridHelper(0, 0);
-        // scene.add(gridXZ);
+        // this.scene.add(gridXZ);
 
         // var gridXY = new THREE.GridHelper(30, 60);
         // gridXY.rotation.x = Math.PI / 2;
-        // scene.add(gridXY);
+        // this.scene.add(gridXY);
 
         // var gridYZ = new THREE.GridHelper(30, 60);
         // gridYZ.rotation.z = Math.PI / 2;
-        // scene.add(gridYZ);
+        // this.scene.add(gridYZ);
 
         window.addEventListener('resize', this.windowResize);
     }
@@ -241,30 +242,36 @@ export const owlStudio = function (cv1, cv2, parent) {
         this.reloadModelTool(filename, geometry, points3d, neededCenter)
     }
 
-    this.reloadModelTool = function (filename, geometry, points3d, neededCenter = true) {
+    this.reloadModelTool = function (filename, geometry, points3d, newModel = true) {
 
         $("#modelpath").text(filename);
         let saveData = [];
-        // if (neededCenter) {
-        points3d.map((e) => {
-            saveData.push(e.x, e.y, e.z);
-        })
-        // }
-        // else {
-        // points3d.map((e) => {
-        // saveData.push(e.x, e.y, e.z + this.changedCloudZ);
-        // })
-        // }
+        if (newModel) {
+            points3d.map((e) => {
+                saveData.push(e.x, e.y, e.z);
+            })
+        }
+        else {
+            points3d.map((e) => {
+                saveData.push(e.x + this.position.z, e.y + this.position.z, e.z + this.position.z);
+            })
+        }
 
         this.addToSessionHistory(filename, 'model', saveData);
 
-        if (neededCenter) {
-            //     this.changedCloudZ = geometry.attributes.position.array[2];
-            //     geometry.center();
-            //     this.changedCloudZ -= geometry.attributes.position.array[2];
-            this.cameraPositionSetFromArray(geometry.attributes.position.array)
-            this.group.position.copy(new THREE.Vector3())
-            this.group.quaternion.copy(new THREE.Quaternion())
+        if (newModel) {
+            this.position.x = geometry.attributes.position.array[0];
+            this.position.y = geometry.attributes.position.array[1];
+            this.position.z = geometry.attributes.position.array[2];
+            geometry.center();
+            this.position.x -= geometry.attributes.position.array[0];
+            this.position.y -= geometry.attributes.position.array[1];
+            this.position.z -= geometry.attributes.position.array[2];
+            this.quaternion = new THREE.Quaternion()
+            // this.cameraPositionSetFromArray(geometry.attributes.position.array)
+            this.setCameraPosition(this.position);
+            this.group.position.copy(this.position)
+            this.group.quaternion.copy(this.quaternion)
         }
 
 
@@ -328,9 +335,9 @@ export const owlStudio = function (cv1, cv2, parent) {
         let geometry5 = new ConvexGeometry(points3d);
 
         geometry5.computeBoundingSphere();
-        // if (neededCenter) {
-        //     geometry5.center()
-        // }
+        if (newModel) {
+            geometry5.center()
+        }
 
         let mesh5 = new THREE.Mesh(
             geometry5,
@@ -341,22 +348,24 @@ export const owlStudio = function (cv1, cv2, parent) {
         this.group.add(mesh5);
 
         //set axis helper
-        var axes = new THREE.AxesHelper(20);
+        var axes = new THREE.AxesHelper(5);
         this.group.add(axes);
         // //set grid helper
-        var gridXZ = new THREE.GridHelper(0, 0);
-        this.group.add(gridXZ);
+        // var gridXZ = new THREE.GridHelper(0, 0);
+        // this.group.add(gridXZ);
 
-        var gridXY = new THREE.GridHelper(30, 60);
-        gridXY.rotation.x = Math.PI / 2;
-        this.group.add(gridXY);
+        // var gridXY = new THREE.GridHelper(30, 60);
+        // gridXY.rotation.x = Math.PI / 2;
+        // this.group.add(gridXY);
 
-        var gridYZ = new THREE.GridHelper(30, 60);
-        gridYZ.rotation.z = Math.PI / 2;
-        this.group.add(gridYZ);
-
+        // var gridYZ = new THREE.GridHelper(30, 60);
+        // gridYZ.rotation.z = Math.PI / 2;
+        // this.group.add(gridYZ);
+        if (!coordinate()) {
+            axes.visible = false;
+        }
         this.render();
-        console.log(this.group)
+        // console.log(this.group)
     }
 
     this.reloadGroundFromData = function (filename, data) {
@@ -514,6 +523,19 @@ export const owlStudio = function (cv1, cv2, parent) {
         x /= na;
         y /= na;
         z /= na;
+        this.camera.position.x = x;
+        this.camera.position.y = y - 20;
+        this.camera.position.z = z + 6;
+        this.cameraLookAt.x = x;
+        this.cameraLookAt.y = y;
+        this.cameraLookAt.z = z;
+        this.camera.lookAt(this.cameraLookAt);
+    }
+
+    this.setCameraPosition = (v) => {
+        let x = v.x;
+        let y = v.y;
+        let z = v.z;
         this.camera.position.x = x;
         this.camera.position.y = y - 20;
         this.camera.position.z = z + 6;
@@ -710,6 +732,13 @@ export const owlStudio = function (cv1, cv2, parent) {
         this.polygonRender()
     }
 
+    this.setRotatePosition = function (vector) {
+        this.group.translateX(vector.x)
+        this.group.translateY(vector.y)
+        this.group.translateZ(vector.z)
+
+    }
+
     this.finishdraw = (evt) => {
         this.drawState = false;
         let raycaster = new THREE.Raycaster();
@@ -720,6 +749,8 @@ export const owlStudio = function (cv1, cv2, parent) {
         let group = this.group;
 
         if (this.polygon.length > 2) {
+            this.plane.set(new THREE.Vector3(0, 1, 0), -this.cameraLookAt.y)
+
             let vs = [];
             for (let i = 0; i < this.polygon.length; i++) {
                 let mouse = new THREE.Vector2()
@@ -729,7 +760,7 @@ export const owlStudio = function (cv1, cv2, parent) {
                 raycaster.ray.intersectPlane(plane, pointOnPlane);
                 vs.push({ x: pointOnPlane.x, z: pointOnPlane.z })
             }
-
+            console.log(vs)
             if (evt.ctrlKey && this.selectedCount > 0) {
                 let geometry = this.selectedGroup.geometry;
                 let position = geometry.attributes.position;
@@ -797,9 +828,10 @@ export const owlStudio = function (cv1, cv2, parent) {
 
             this.selectedGroup.geometry.setDrawRange(0, this.selectedCount);
             this.selectedGroup.geometry.attributes.position.needsUpdate = true;
+
+            this.render()
+            this.polygonRender()
         }
-        this.render()
-        this.polygonRender()
     }
 
     this.cloudController = function () {
@@ -956,6 +988,11 @@ export const owlStudio = function (cv1, cv2, parent) {
         this.render();
     }
 
+    this.setCoordinate = function (v) {
+        this.group.children[4].visible = v;
+        this.render();
+    }
+
     this.setPointColor = function (c) {
         this.group.children[0].material.color.set(c);
         this.group.children[1].material.color.set(c);
@@ -982,7 +1019,7 @@ export const owlStudio = function (cv1, cv2, parent) {
         this.polygon = [];
         this.selectedCount = 0;
         this.unselectedPoints = [...this.group.children[0].geometry.attributes.position.array];
-        console.log('unselected', this.unselectedPoints)
+        // console.log('unselected', this.unselectedPoints)
         this.selectedGroup.geometry.setDrawRange(0, this.selectedCount);
         this.render()
         this.polygonRender()
@@ -1373,6 +1410,10 @@ function delauny3() {
 
 function heightmapColor() {
     return document.getElementById('heightmapColor').checked;
+}
+
+function coordinate() {
+    return document.getElementById('coordinate').checked;
 }
 
 function surface() {
