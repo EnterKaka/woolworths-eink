@@ -1269,7 +1269,23 @@ export const owlStudio = function (cv1, cv2, parent) {
 
     this.calculateVolume = function (h, v) {
         let sessionHistory = this.sessionHistory;
-        let volume = Math.abs(this.getSelVolume(sessionHistory[h].data, sessionHistory[v].data));
+        let heap = sessionHistory[h].data;
+        let ground = sessionHistory[v].data;
+        let hmatrix = new THREE.Matrix4().fromArray(sessionHistory[h].matrix);
+        let gmatrix = new THREE.Matrix4().fromArray(sessionHistory[v].matrix);
+
+        let hclone = [];
+        let gclone = [];
+        for (var i = 0; i < heap.length; i += 3) {
+            let v = new THREE.Vector3(heap[i], heap[i + 1], heap[i + 2]).applyMatrix4(hmatrix)
+            hclone.push(v.x, v.y, v.z)
+        }
+        for (var i = 0; i < ground.length; i += 3) {
+            let v = new THREE.Vector3(ground[i], ground[i + 1], ground[i + 2]).applyMatrix4(gmatrix)
+            gclone.push(v.x, v.y, v.z)
+        }
+
+        let volume = Math.abs(this.getSelVolume(hclone, gclone));
         sessionHistory[h].volume = volume;
         return volume;
     }
