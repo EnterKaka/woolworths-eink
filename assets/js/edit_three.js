@@ -789,10 +789,13 @@ window.onload = function () {
     });
 
     document.getElementById('sidenav').addEventListener('click', function () {
-        console.log(document.getElementById("core").style.marginRight)
+        cloudmachine.polygon = [];
+        cloudmachine.polygonRender();
         if (document.getElementById("core").style.marginRight == "0px") {
             openNav()
-        } else closeNav()
+        } else {
+            closeNav()
+        }
         setTimeout(() => { cloudmachine.windowResize() }, 500)
     })
 };
