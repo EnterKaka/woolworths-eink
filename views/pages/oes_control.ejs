@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html class="loading" lang="en" data-textdirection="ltr">
+	<head>
+		<link rel="stylesheet" type="text/css" href="/stylesheets/material-kit.css">
+		<%- include('../partials/head'); %>
+		<!-- END Three.js Load -->
+	</head>
+	<body class="vertical-layout vertical-menu 2-columns   menu-expanded fixed-navbar" data-open="click" data-menu="vertical-menu" data-color="bg-gradient-x-purple-blue" data-col="2-columns">
+		<!-- fixed-top-->
+		<%- include('../partials/header'); %>
+		<!-- ////////////////////////////////////////////////////////////////////////////-->
+		<%- include('../partials/sidebar'); %>
+		
+		<!-- dashboard -->
+		<div class="app-content content">
+			<div class="content-wrapper">
+				<div class="content-wrapper-before"></div>
+				<div class="content-header row">
+					<div class="content-header-left col-md-4 col-12 mb-2">
+						<h3 class="content-header-title">Oes Control</h3>
+					</div>
+					<div class="content-header-right col-md-8 col-12">
+						<div class="breadcrumbs-top float-md-right">
+							<div class="breadcrumb-wrapper mr-1">
+								<ol class="breadcrumb">
+									<li class="breadcrumb-item"><a href="/">Home</a>
+									</li>
+									<li class="breadcrumb-item active">Oes Control
+									</li>
+								</ol>
+							</div>
+						</div>
+					</div>
+				</div>
+				
+				<div class="content-body">
+					<section id="basic-buttons">
+					<!-- 3d viewer card body start -->
+						<div class="row">
+							<div class="col-lg-12 col-md-12">
+								<div class="card" id="canvas-container">
+									<div class="card-header">
+										<a class="heading-elements-toggle"><i class="la la-ellipsis font-medium-3"></i></a>
+										<div class="heading-elements">
+											<a data-action="expand"><i class="ft-maximize"></i></a>
+										</div>
+									</div>
+									<div class="card-content collapse show"  style="position: relative;">
+										<div class="card-body">
+											<button type="button" id="start_scan" class="btn btn-info btn-min-width" style="margin: auto;"><i class="ft-eye"></i> Scan</button>
+											<!-- <div>
+												<img src="/img/loading.gif" id="loadingimg" style="position: absolute;top: 0px;right: 0;left: 0;margin: 0 auto; z-index: 100;">
+											</div>	 -->
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</section>
+				</div>
+
+
+			</div>
+		</div>
+<!-- ////////////////////////////////////////////////////////////////////////////-->
+
+<!-- page content end -->
+<%- include('../partials/footer'); %>
+<script type="text/javascript" src="/js/simplewebsocket.min.js"></script>
+
+<script>
+	function SocketWrapper(init)
+	{
+		this.socket = new SimpleWebsocket(init);
+		this.messageHandlers = {};
+		
+		var that = this;
+		this.socket.on('data', function(data)
+		{
+			//Extract the message type
+			var messageData = JSON.parse(data);
+			var messageType = messageData['__MESSAGE__'];
+			delete messageData['__MESSAGE__'];
+			
+			//If any handlers have been registered for the message type, invoke them
+			if (that.messageHandlers[messageType] !== undefined)
+			{
+				for (index in that.messageHandlers[messageType]) {
+					that.messageHandlers[messageType][index](messageData);
+				}
+			}
+		});
+	}
+	
+	SocketWrapper.prototype.on = function(event, handler)
+	{
+		//If a standard event was specified, forward the registration to the socket's event emitter
+		if (['connect', 'close', 'data', 'error'].indexOf(event) != -1) {
+			this.socket.on(event, handler);
+		}
+		else
+		{
+			//The event names a message type
+			if (this.messageHandlers[event] === undefined) {
+				this.messageHandlers[event] = [];
+			}
+			this.messageHandlers[event].push(handler);
+		}
+	}
+	
+	SocketWrapper.prototype.send = function(message)
+	{
+		//Copy the values from the payload object, if one was supplied
+		var message_data = {};
+		message_data['__MESSAGE__'] = 'message';
+		this.socket.send(JSON.stringify(message_data));
+	}
+		
+	$(document).ready(function()
+	{
+		var socket = new SocketWrapper("ws://127.0.0.1:8080");
+		
+		//Generic events
+		
+		socket.on('connect', function() {
+			alert("socket is connected!");
+		});
+		
+		socket.on('data', function(data) {
+			alert('got message: ' + data)
+		});
+		
+		socket.on('close', function() {
+			alert("socket is disconnected!");
+		});
+		
+		socket.on('error', function(err) {
+			alert("Error: " + err);
+		});
+		
+		//Specific message type handlers
+		
+		socket.on('userInput', function(args) {
+			alert("Received user input: \"" + args['input'] + "\"");
+		});
+		$('#start_scan').click(()=>{
+			socket.send('start scan');
+		})
+	});
+</script>
+</body>
+</html>
