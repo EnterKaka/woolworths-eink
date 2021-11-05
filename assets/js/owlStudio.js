@@ -33,25 +33,30 @@ export const owlStudio = function (cv1, cv2, parent) {
         y: 0,
     };
     this.polygon = [];
+
     this.history = {
         step: 0,
         data: []
     }
     this.sessionHistory = [];
+
     this.selectedGroup;//points
     this.unselectedPoints = [];
     this.selectedPoints = [];
     this.selectedCount = 0;
+
     this.toolState = 'rotate';
     this.drawState = false;
+
     this.transDir = 'xy';
+
     this.position = new THREE.Vector3();
     this.quaternion = new THREE.Quaternion();
-    this.matrixElements = new THREE.Matrix4().elements;
-    this.changedPosition = {
+    this.rotatePosition = {
         x: 0, y: 0, z: 0
     };
-    this.rotatePosition = {
+    this.matrixElements = new THREE.Matrix4().elements;
+    this.changedPosition = {
         x: 0, y: 0, z: 0
     };
 
@@ -80,13 +85,13 @@ export const owlStudio = function (cv1, cv2, parent) {
         // controls.enableRotate = false;
 
         // //set axis
-        var axes = new THREE.AxesHelper(50);
-        this.scene.add(axes);
+        // var axes = new THREE.AxesHelper(50);
+        // this.scene.add(axes);
         // //set grid helper
         // var gridXZ = new THREE.GridHelper(0, 0);
         // this.scene.add(gridXZ);
 
-        // var gridXY = new THREE.GridHelper(30, 60);
+        // var gridXY = new THREE.GridHelper(60, 120);
         // gridXY.rotation.x = Math.PI / 2;
         // this.scene.add(gridXY);
 
@@ -115,7 +120,7 @@ export const owlStudio = function (cv1, cv2, parent) {
             time: getTime(),
             type: type,
             data: arrayData,
-            matrix: [...this.matrixElements]
+            matrix: type != "ground" ? [...this.group.matrix.elements] : this.matrixElements
         })
     }
 
@@ -259,8 +264,6 @@ export const owlStudio = function (cv1, cv2, parent) {
             })
         }
 
-        this.addToSessionHistory(filename, 'model', saveData);
-
         if (newModel) {
             this.position.x = geometry.attributes.position.array[0];
             this.position.y = geometry.attributes.position.array[1];
@@ -282,6 +285,8 @@ export const owlStudio = function (cv1, cv2, parent) {
             this.rotatePosition.y = 0;
             this.rotatePosition.z = 0;
         }
+
+        this.addToSessionHistory(filename, 'model', saveData);
 
 
         let material;
@@ -415,12 +420,18 @@ export const owlStudio = function (cv1, cv2, parent) {
     }
 
     this.setFromRealMatrix = function () {
+        this.polygon = [];
+        this.selectedCount = 0;
+        this.unselectedPoints = [...this.group.children[0].geometry.attributes.position.array];
+        this.selectedGroup.geometry.setDrawRange(0, this.selectedCount);
+
         this.setRotatePosition2(this.rotatePosition)
         this.group.position.copy(this.position)
         this.group.quaternion.copy(this.quaternion)
         // this.group.matrix.makeRotationFromQuaternion(this.quaternion);
         // this.group.matrix.setPosition(this.position);
         // this.group.applyMatrix(this.group.matrix);
+        this.polygonRender();
         this.render();
     }
 
