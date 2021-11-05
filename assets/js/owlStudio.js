@@ -120,7 +120,7 @@ export const owlStudio = function (cv1, cv2, parent) {
             time: getTime(),
             type: type,
             data: arrayData,
-            matrix: type != "ground" ? [...this.group.matrix.elements] : this.matrixElements
+            matrix: type != "ground" ? [...this.matrixElements] : new THREE.Matrix4().elements
         })
     }
 
@@ -220,7 +220,7 @@ export const owlStudio = function (cv1, cv2, parent) {
         this.reloadModelTool(filename, geometry, points3d)
     }
 
-    this.reloadModelFromArray = function (filename, data, neededCenter = true) {
+    this.reloadModelFromArray = function (filename, data, type = true) {
         console.log(data.length)
         let colors = [];
         let points3d = [];
@@ -246,25 +246,25 @@ export const owlStudio = function (cv1, cv2, parent) {
             geometry.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
         }
 
-        this.reloadModelTool(filename, geometry, points3d, neededCenter)
+        this.reloadModelTool(filename, geometry, points3d, type)
     }
 
     this.reloadModelTool = function (filename, geometry, points3d, newModel = true) {
 
         $("#modelpath").text(filename);
-        let saveData = [];
-        if (newModel) {
-            points3d.map((e) => {
-                saveData.push(e.x, e.y, e.z);
-            })
-        }
-        else {
-            points3d.map((e) => {
-                saveData.push(e.x + this.position.z, e.y + this.position.z, e.z + this.position.z);
-            })
-        }
 
-        if (newModel) {
+        // if (newModel) {
+        //     points3d.map((e) => {
+        //         saveData.push(e.x, e.y, e.z);
+        //     })
+        // }
+        // else {
+        //     points3d.map((e) => {
+        //         saveData.push(e.x + this.position.z, e.y + this.position.z, e.z + this.position.z);
+        //     })
+        // }
+
+        if (newModel == true) {
             this.position.x = geometry.attributes.position.array[0];
             this.position.y = geometry.attributes.position.array[1];
             this.position.z = geometry.attributes.position.array[2];
@@ -285,8 +285,27 @@ export const owlStudio = function (cv1, cv2, parent) {
             this.rotatePosition.y = 0;
             this.rotatePosition.z = 0;
         }
+        else if (newModel) {
+            console.log('it is history or database model')
+            this.group.matrix.fromArray(newModel)
+            this.matrixElements = [...this.group.matrix.elements];
 
-        this.addToSessionHistory(filename, 'model', saveData);
+            this.changedPosition.x = 0;
+            this.changedPosition.y = 0;
+            this.changedPosition.z = 0;
+            this.rotatePosition.x = 0;
+            this.rotatePosition.y = 0;
+            this.rotatePosition.z = 0;
+
+            this.group.position.setFromMatrixPosition(this.group.matrix);
+            this.group.quaternion.setFromRotationMatrix(this.group.matrix)
+            this.position.copy(this.group.position)
+            this.quaternion.copy(this.group.quaternion)
+            // this.cameraPositionSetFromArray(geometry.attributes.position.array)
+            this.setCameraPosition(this.position);
+        }
+
+
 
 
         let material;
@@ -349,7 +368,7 @@ export const owlStudio = function (cv1, cv2, parent) {
         let geometry5 = new ConvexGeometry(points3d);
 
         geometry5.computeBoundingSphere();
-        if (newModel) {
+        if (newModel == true) {
             geometry5.center()
         }
 
@@ -379,7 +398,12 @@ export const owlStudio = function (cv1, cv2, parent) {
             axes.visible = false;
         }
         this.render();
-        // console.log(this.group)
+
+        if (newModel == true) {
+            this.matrixElements = [...this.group.matrix.elements];
+        }
+        let saveData = [...geometry.attributes.position.array];
+        this.addToSessionHistory(filename, 'model', saveData);
     }
 
     this.reloadGroundFromData = function (filename, data) {
@@ -412,7 +436,9 @@ export const owlStudio = function (cv1, cv2, parent) {
         this.rotatePosition = { x: this.changedPosition.x, y: this.changedPosition.y, z: this.changedPosition.z }
         this.quaternion.copy(this.group.quaternion)
         this.position.copy(this.group.position)
+        this.matrixElements = [...this.group.matrix.elements];
         this.sessionHistory[this.sessionHistory.length - 1].matrix = [...this.group.matrix.elements];
+        this.sessionHistory[this.sessionHistory.length - 1].data = [...this.group.children[0].geometry.attributes.position.array];
     }
 
     this.setMatrixToHistory = function (id, array) {

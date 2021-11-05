@@ -511,7 +511,7 @@ window.onload = function () {
         $('.hload-btn').click(function () {
             console.log({ this: this })
             document.getElementById('modelpath').innerText = this.parentElement.parentElement.children[0].innerText;
-            cloudmachine.reloadModelFromArray(sessionHistory[this.dataset.id].name, sessionHistory[this.dataset.id].data);
+            cloudmachine.reloadModelFromArray(sessionHistory[this.dataset.id].name, sessionHistory[this.dataset.id].data, sessionHistory[this.dataset.id].matrix);
             $('#browser-close').trigger('click');
         })
         $('.matrixview').click(function () {
@@ -579,7 +579,7 @@ window.onload = function () {
                 $('.dload-btn').click(function () {
                     console.log({ data: res.data })
                     document.getElementById('modelpath').innerText = this.parentElement.parentElement.children[0].innerText;
-                    cloudmachine.reloadModelFromArray(res.data[this.dataset.id].name, res.data[this.dataset.id].data);
+                    cloudmachine.reloadModelFromArray(res.data[this.dataset.id].name, res.data[this.dataset.id].data, res.data[this.dataset.id].matrix);
                     $('#browser-close').trigger('click');
                 })
                 $('.dbmatrixview').click(function () {
@@ -771,5 +771,10 @@ window.onload = function () {
 
             reader.readAsText(file);
         }
+    });
+
+    $('a[data-action="expand"]').on('click', async function (e) {
+        await new Promise(r => setTimeout(r, 10));
+        cloudmachine.windowResize();
     });
 };
