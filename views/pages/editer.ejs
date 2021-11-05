@@ -140,7 +140,7 @@
                             <a class="nav-link disabled" data-nsfw-filter-status="swf"><i class="ft-gitlab"></i> Disabled</a>
                           </li> -->
                         </ul>
-                        <div class="tab-content px-1 pt-1">
+                        <div class="tab-content px-1 pt-1" style="display: inline-block;width:calc(100% - 50px);">
                           <div role="tabpanel" class="tab-pane" id="tabIcon1" aria-labelledby="baseIcon-tab1">
                             <div class="row toolbar">
                               <!-- <p data-nsfw-filter-status="swf">Oat cake marzipan cake lollipop caramels wafer pie jelly beans. Icing halvah chocolate cake carrot cake. Jelly beans carrot cake marshmallow gingerbread chocolate cake. Gummies cupcake croissant.</p> -->
@@ -480,6 +480,9 @@
                             </div>
                           </div>
                         </div>
+                        <div style="display:inline-block;width:45px;font-size:16px;"><a id="sidenav"
+                            class="nav-link nav-menu-main menu-toggle hidden-xs is-active" href="#"><i
+                              class="ft-menu"></i></a></div>
                         <!-- </div>
 
 
@@ -487,8 +490,17 @@
                         <div class="card-body"> -->
                         <!-- <p class="card-subtitle">You can load *.txt, *.obj files from owl windows app.</p> -->
 
-                        <div class="form-group">
+                        <div class="form-group" style="position:relative">
+                          <div id="modellist" style="
+                              transition:width 0.5s;
+                              position: absolute;
+                              right: 0;
+                              width: 0px;
+                              background: lightgrey;
+                              height: 100%;
+                          ">
 
+                          </div>
 
 
                           <!-- basic viewer -->

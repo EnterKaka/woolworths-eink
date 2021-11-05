@@ -849,7 +849,7 @@ export const owlStudio = function (cv1, cv2, parent) {
                 raycaster.ray.intersectPlane(plane, pointOnPlane);
                 vs.push({ x: pointOnPlane.x, z: pointOnPlane.z })
             }
-            console.log(vs)
+            // console.log(vs)
             if (evt.ctrlKey && this.selectedCount > 0) {
                 let geometry = this.selectedGroup.geometry;
                 let position = geometry.attributes.position;

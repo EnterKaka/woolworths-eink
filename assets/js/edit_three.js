@@ -105,6 +105,16 @@ function openGround_Fromlocal(e) {
     }
 }
 
+function openNav() {
+    document.getElementById("modellist").style.width = "250px";
+    document.getElementById("core").style.marginRight = "250px";
+}
+
+function closeNav() {
+    document.getElementById("modellist").style.width = "0";
+    document.getElementById("core").style.marginRight = "0";
+}
+
 window.onload = function () {
     cloudmachine.init();
     cloudmachine.cloudController();
@@ -455,7 +465,7 @@ window.onload = function () {
         }).done((res) => {
             if (res.error) alert('db error');
             else if (res.success) {
-                console.log(res.data)
+                // console.log(res.data)
                 let dblist = res.data;
                 gdblist = dblist;
                 if (dblist.length == 0) return;
@@ -777,4 +787,12 @@ window.onload = function () {
         await new Promise(r => setTimeout(r, 10));
         cloudmachine.windowResize();
     });
+
+    document.getElementById('sidenav').addEventListener('click', function () {
+        console.log(document.getElementById("core").style.marginRight)
+        if (document.getElementById("core").style.marginRight == "0px") {
+            openNav()
+        } else closeNav()
+        setTimeout(() => { cloudmachine.windowResize() }, 500)
+    })
 };
