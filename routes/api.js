@@ -182,13 +182,23 @@ app.post("/allmodels/number", async function (req, res, next) {
             /* sort loaded_data asc */
             loadedData.sort(mysortfunction);
             /* find model name */
-            if (name !== "all")
+            if (name !== "all") {
                 loadedData.find((o) => {
                     if (o.name === req.body.name) sendData.push(o);
                 });
-            else sendData = loadedData;
+                sendData = sendData.slice(-1 * number);
+            } else {
+                var divided_arr = loadedData.reduce(function (obj, value) {
+                    var key = value.name;
+                    if (obj[key] == null) obj[key] = [];
+                    obj[key].push(value);
+                    return obj;
+                }, {});
+                for (var key in divided_arr) {
+                    sendData.push(divided_arr[key].slice(-1 * number));
+                }
+            }
             /* get latest number of values from all data */
-            sendData = sendData.slice(-1 * number);
             res.header(200).json({
                 status: "success",
                 data: sendData,
