@@ -1,0 +1,104 @@
+Step 1: 500 USD
+- Extra page called: Owl Eye 3D Editor
+- Open File by drag and drop or button and open file dialog (open .txt file, open .obj file)
+- open file from DataList (extra Button beside "View" called "Edit") -> opens the pointcloud in the editor page and editor viewer
+- Add a tool (find good position for this, maybe above maybe beside we have to discuss this when i can see it)
+- colore: all points same colore or heightmap (like in the "old" viewer)
+- Single point selection: selecte single points by clicking on them (selecte nearest point to clicked coordinates) (multiple selection must be possible by holding SHIFT)
+- Polygon Selection (Polygon tool, pencil tool) to draw polygon, mark selected. Multi selection: Draw new polygon, hold SHIFT to add points
+from new polygon to the selected one, press CTR to unmarke marked points
+Left from STEP 1:
+- press CTR to unmarke marked points
+Step 2: 500 USD
+- filter: add filter libs to filter pointcloud data -> can you do this? i need a "GridMinimumFilter" 
+and a "Statistical Outliere Removal" Filter and a "pass through" filter
+- When filtering data or deleting points -> update the viewed pointcloud. but the steps must be revertable (ctr + z) !
+- delauny 3D triangulate pointcloud
+- selection of vertices like pointcloud selection must be possible. also same actions (delete, save, chane selection)
+- triangulation view: surface and mesh
+- Export pointclouds as .txt file, triangulation as .obj file
+
+- Actions with marked points: right click on selected points in viewer:1. change marked and unmarked points  2. delete points 
+3. save points in new pointcloud 
+- When save pointclouds we need some kind of model browser (a list where the loaded pointclouds are stored 
+(maybe a button with dropdown in toolbar). there we can save a pointcloud inside. and we can select it to edit it from here)
+- rename models in modelbrowser 
+- calculate volume between two files. selecte to pointcloud, calculate volume between these files.
+
+STEP 3:
+- Volume Calculation (selecte heap file and ground file, calculate volume between two files)
+- Add extra Editor Model Browser (there all loaded models to Editro are stored and shown, all loaded in one session, u can save session to extra DB by insterting collection name)
+- In Model Browser are many files like model file, ground file, loaded files from drag and drop, but also marked points with save
+- rename models in model browser, delete models from model browser, open models from model browser to editor
+- save modelbrowser session (save all stored models from this sessions to db), load model browser session by name of collection
+- Hotkeys for tool buttons
+- tooltip of each button (make it right)
+
+
+STEP 4:
+- Translate, Rotate of Data (by drag and drop, by input of parameters (x,y,z,...,), and by "selecte from point" -> "selecte to point"
+translate pointcloud about this vectore. Rotate: rotate by drag and drop, values (around which axes and degree as step, 
+button for apply one step forward, backward (turn forward / backward about the step in degree and add default 
+flips (selecte axe, flip around 90 degree clock wise or counter clockwise)
+
+- CANCEL!!!!!: Point Cloud matching algorithm (selecte all pointclouds which should be matched) 
+
+- each pointcloud has translation matrix, when translation, rotation or pointcloud matching calculate these into 
+the matrix and return it when required (button)
+- matrix can be viewed, exported as txt file (downloaded) and edited (change values) from model browser
+
+- ADD instead of Pointcloud matching - EXTRA FEatures Pointcloud Moving
+DONE: 1. Show a small coordinatesystem at rotation point if pointcloud. show this always in move mode. but add a button for normal view mode to disable and enable it 
+DONE: 2. Set Point for rotation: select point, when rotating turn around this point, show the small cordinate system in this point, 
+add a button to reset it (this should be possible in movement mode but also NORMAL VIEW MODE NEEDS THIS ACTION!!!)
+
+3. Multi View Files -> load button in model browser loads file into list view of loaded files. In this list view u see Modelname,
+u can mark mulitple models to process them and u can disable/ enable them with a button. when disable, the model is not show, can not be marked
+
+a Add this to Modelbrowser, open all selected file in 3D Viewer
+b. How to show multiple files: add a extra list menu on the right side with model name, and a checkbox to mark the pointcloud, in this pointcloud all obecjts are stored which ae in viewer shown 
+mark one (or multiple) for movement mode or view settings mode) and disable enable button. 
+c When double click an model, the setting popup from the Model appear for setting colore, matrix, ... (front end issues point 2)
+4. Move Mode: Selecte all pointclouds u want to move, multiple should be possible, save matrix in each
+5. Transaltion by point select: selecte two point (point from, point to) and calcualte vectore between these points, translate points with this vectore (button for forward translation and backward translation is necessary)
+
+- Front end issues (some haptic changes, agil feedback
+1. complete the volume calculation dialog: add a is value for mass (weight in t) (if user has this value) and return the denisty. 
+and other way round, add density is value field to dialog to calculate mass (weight in t)
+2. add View settings in ModelBrowser to each Model (double click) -> extra popup with View settings: point size, colore, 2D Delauny, surface, wireframe , ....
+BUT: let the view settings also be in View page: When we have multiple files u can set the settings from these buttons on al selected models
+3. labels for colroe setting (we discuss this later!
+
+STEP 5:
+
+- pointcloud matching (ICP algorithm)
+
+- timelaps tool (tab page in model browser) step by step:
+1. selecte model Name
+2. selecte time area
+3. selecte time intervall (all, every min, every hour, day, week)
+4. show all data from this in a list, u can view pointcloud by view button, and delete it from the timelaps tool with delete button
+5. set camera, open a pointcloud (first pointcloud, turn it how u want it, save camera position 
+6. set view settings, filter, delauny, wireframe or surface, colore
+7. set time of timelaps video 
+8 create video, show preview in the page download it as mp4
+
+- some database actions (save and load automatcally etc)
+
+STEP 6:
+- measurement distance tool: selecte some points, draw line between points, calculate distance
+- filter marked points
+- compute volume of marked points
+- save polygon for 
+- add points to pointcloud 
+- cross section tool
+- some pointcloud processing tools
+
+STEP 7: automated procssing of datasets
+- save polygons
+- add filterstory for saved polygons (chronological order of filters)
+- add ground data
+- calculate volume
+- write data in main project DB
+- some database action -> save data automatically, load automatically ...
+

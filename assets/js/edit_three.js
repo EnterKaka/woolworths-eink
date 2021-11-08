@@ -2,8 +2,118 @@ import * as THREE from './three.module.js';
 import { owlStudio } from './owlStudio.js';
 
 const cloudmachine = new owlStudio('viewer_3d', 'tool_2d', 'main_canvas');
-// const cloudmachine2 = new owlStudio('viewer_3d2', 'tool_2d2', 'main_canvas2');
-// cloudmachine2.init();
+
+cloudmachine.setListViewFunc((list, activeId) => {
+
+    const dom = document.getElementById('modellist');
+
+    dom.innerHTML = '';
+
+    for (let i = 0; i < list.length; i++) {
+
+        dom.innerHTML += `<div data-id="${i}" class="model ${activeId == i ? 'active' : ''} btn btn-outline-primary round">
+            <span data-id="${i}" class="modelname">${list[i].name}</span>
+            <i data-id="${i}" class="${list[i].group.visible ? 'ft-eye' : 'ft-eye-off'} modeleye"></i>
+            <a data-id="${i}" id="m-eye" class="modeldel" href="javascript:void(0)"><i class="ft-x"></i></a>
+        </div>`;
+
+        if (i != activeId) {
+            list[i].group.children[4].visible = false;
+        } else if (document.getElementById('coordinate').checked) {
+            list[i].group.children[4].visible = true;
+        }
+
+    }
+
+    $(".modelname").on('click', function () {
+        console.log('click')
+        cloudmachine.setTarget(this.dataset.id)
+
+        setCurrentViewSetting()
+
+        cloudmachine.render();
+    })
+
+    $(".modelname").on('dblclick', function () {
+        console.log('dblclicked')
+        cloudmachine.setCameraPosition(cloudmachine.target.position)
+        cloudmachine.setTarget(this.dataset.id)
+        cloudmachine.render();
+    })
+
+    $(".modeleye").on('click', function () {
+        console.log({ this: this })
+        let visible = this.classList.contains('ft-eye');
+        cloudmachine.setVisible(this.dataset.id, !visible)
+        if (visible) {
+            this.classList.replace('ft-eye', 'ft-eye-off')
+            // if (this.dataset.id == cloudmachine.activeId)
+            // cloudmachine.target = undefined;
+        }
+        else {
+            this.classList.replace('ft-eye-off', 'ft-eye')
+            // if (this.dataset.id == cloudmachine.activeId)
+            // cloudmachine.target = cloudmachine.groupList[cloudmachine.activeId];
+        }
+        cloudmachine.render();
+    })
+
+    $(".modeldel").on('click', function () {
+        var r = confirm("do you really want to delete this point cloud?");
+        if (r == true) {
+            cloudmachine.deletePC(this.dataset.id)
+        }
+        cloudmachine.render();
+    })
+
+})
+
+function setCurrentViewSetting() {
+
+    let info = cloudmachine.getTargetInfo()
+
+    console.log(info)
+
+    const pcolor = $('#pointcolor')
+    const dcolor = $('#delaunycolor')
+    const delauny = $('#delauny')
+    const delauny3 = $('#delauny3')
+    const surface = $('#surface')
+    const heightmap = $('#heightmapColor')
+    // const coordinate = $('#coordinate')
+
+    if (info.heightmap) {
+        if (!heightmap[0].checked) {
+            heightmap.trigger('click')
+        }
+        pcolor[0].disabled = true;
+    } else {
+        if (heightmap[0].checked) {
+            heightmap.trigger('click')
+        }
+        pcolor[0].disabled = false;
+        pcolor[0].value = "#" + info.pointcolor;
+    }
+
+    dcolor[0].value = "#" + info.meshcolor;
+
+    if ((delauny[0].checked && !info.visible2) || (!delauny[0].checked && info.visible2)) {
+        delauny.trigger('click')
+    }
+
+    if ((delauny3[0].checked && !info.visible3) || (!delauny3[0].checked && info.visible3)) {
+        delauny3.trigger('click')
+    }
+
+    if ((surface[0].checked && info.wireframe) || (!surface[0].checked && !info.wireframe)) {
+        surface.trigger('click')
+    }
+
+    // if ((coordinate[0].checked && !info.coordinate) || (!coordinate[0].checked && info.coordinate)) {
+    //     coordinate.trigger('click')
+    // }
+
+}
 
 function startApp() {
     let tempvaluetag = document.getElementById('pointcloud');
@@ -15,7 +125,6 @@ function startApp() {
         const loader = new THREE.FileLoader();
         loader.load('./3dmodels/Weissspat_1632872292.txt', (text) => {
             cloudmachine.reloadModelFromData('Weissspat_1632872292.txt', text);
-            // cloudmachine2.reloadModelFromData('Weissspat_1632872292.txt', text);
         });
     }
 }
@@ -236,12 +345,12 @@ window.onload = function () {
         cloudmachine.setToolState('reset2')
     });
 
-    document.getElementById('btn-translate2').addEventListener('click', function () {
-        document.getElementById('btn-' + cloudmachine.toolState).classList.remove('active')
-        document.getElementById('btn-translate2').classList.add('active')
-        cloudmachine.transDir = document.getElementById('trans-axis2').value;
-        cloudmachine.setToolState('translate2')
-    });
+    // document.getElementById('btn-translate2').addEventListener('click', function () {
+    //     document.getElementById('btn-' + cloudmachine.toolState).classList.remove('active')
+    //     document.getElementById('btn-translate2').classList.add('active')
+    //     cloudmachine.transDir = document.getElementById('trans-axis2').value;
+    //     cloudmachine.setToolState('translate2')
+    // });
 
     document.getElementById('btn-point').addEventListener('click', function () {
         document.getElementById('btn-' + cloudmachine.toolState).classList.remove('active')
@@ -272,9 +381,9 @@ window.onload = function () {
         cloudmachine.transDir = this.value;
     })
 
-    document.getElementById('trans-axis2').addEventListener('change', function () {
-        cloudmachine.transDir = this.value;
-    })
+    // document.getElementById('trans-axis2').addEventListener('change', function () {
+    //     cloudmachine.transDir = this.value;
+    // })
 
     document.getElementById('btn-rotate').addEventListener('click', function () {
         document.getElementById('btn-' + cloudmachine.toolState).classList.remove('active')
@@ -332,6 +441,7 @@ window.onload = function () {
     })
 
     document.getElementById('editArea').addEventListener('keypress', (e) => {
+        console.log(e)
         if (e.keyCode == 26 && e.ctrlKey) {
             console.log('ctrl+z')
             cloudmachine.popupHistory(e);
@@ -383,6 +493,10 @@ window.onload = function () {
         else if (e.keyCode == 86 && e.shiftKey) {
             console.log(12)
             $("#btn-check").trigger('click');
+        }
+        else if (e.keyCode == 99) {
+            $("#baseIcon-tab3").trigger("click");
+            $("#btn-point").trigger('click');
         }
     }, false);
 
@@ -710,12 +824,12 @@ window.onload = function () {
     })
 
     document.getElementById('matrix-download').addEventListener('click', () => {
-        let text = `${$('#mtx0').text()}, ${$('#mtx4').text()}, ${$('#mtx8').text()}, ${$('#mtx12').text()}\n${$('#mtx1').text()}, ${$('#mtx5').text()}, ${$('#mtx9').text()}, ${$('#mtx13').text()}\n${$('#mtx2').text()}, ${$('#mtx6').text()}, ${$('#mtx10').text()}, ${$('#mtx14').text()}\n${$('#mtx3').text()}, ${$('#mtx7').text()}, ${$('#mtx11').text()}, ${$('#mtx15').text()}`;
+        let text = `${$('#mtx0').text()} ${$('#mtx4').text()} ${$('#mtx8').text()} ${$('#mtx12').text()}\n${$('#mtx1').text()} ${$('#mtx5').text()} ${$('#mtx9').text()} ${$('#mtx13').text()}\n${$('#mtx2').text()} ${$('#mtx6').text()} ${$('#mtx10').text()} ${$('#mtx14').text()}\n${$('#mtx3').text()} ${$('#mtx7').text()} ${$('#mtx11').text()} ${$('#mtx15').text()}`;
         download('matrix.txt', 'text', text);
     })
 
     document.getElementById('dbmatrix-download').addEventListener('click', () => {
-        let text = `${$('#dbmtx0').text()}, ${$('#dbmtx4').text()}, ${$('#dbmtx8').text()}, ${$('#dbmtx12').text()}\n${$('#dbmtx1').text()}, ${$('#dbmtx5').text()}, ${$('#dbmtx9').text()}, ${$('#dbmtx13').text()}\n${$('#dbmtx2').text()}, ${$('#dbmtx6').text()}, ${$('#dbmtx10').text()}, ${$('#dbmtx14').text()}\n${$('#dbmtx3').text()}, ${$('#dbmtx7').text()}, ${$('#dbmtx11').text()}, ${$('#dbmtx15').text()}`;
+        let text = `${$('#dbmtx0').text()} ${$('#dbmtx4').text()} ${$('#dbmtx8').text()} ${$('#dbmtx12').text()}\n${$('#dbmtx1').text()} ${$('#dbmtx5').text()} ${$('#dbmtx9').text()} ${$('#dbmtx13').text()}\n${$('#dbmtx2').text()} ${$('#dbmtx6').text()} ${$('#dbmtx10').text()} ${$('#dbmtx14').text()}\n${$('#dbmtx3').text()} ${$('#dbmtx7').text()} ${$('#dbmtx11').text()} ${$('#dbmtx15').text()}`;
         download('matrix.txt', 'text', text);
     })
 

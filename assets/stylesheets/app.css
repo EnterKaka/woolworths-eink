@@ -162,6 +162,49 @@ div.container_main.small{
     margin: 0;
 }
 
+#editer .model{
+    display:flex;
+    margin:5px;
+    overflow: hidden;
+}
+
+#editer .model span{
+    text-align: left;
+    overflow: hidden;
+    display:inline-block;
+    flex-grow: 1;
+    margin-right: 10px;
+}
+
+#editer .model:hover a{
+    color:white;
+}
+
+#editer .model a{
+    transition: 0.2s;
+}
+
+#editer .model a:hover{
+    transform: scale(1.5);
+}
+
+#editer .model i{
+    line-height: 1.25;
+}
+
+#editer .model>i{
+    transition: 0.2s;
+    margin-right: 10px;
+}
+
+#editer .model>i:hover{
+    transform: scale(1.5);
+}
+
+#editer .model:hover span{
+    color:white;
+}
+
 #editer td{
     vertical-align: middle;
 }

@@ -217,7 +217,7 @@
                           </div>
                           <div class="tab-pane" id="tabIcon3" aria-labelledby="baseIcon-tab3">
                             <div class="row toolbar">
-                              <button type='button' class="btn btn-icon btn-outline-success btn-glow round btn-sm mb-1"
+                              <!-- <button type='button' class="btn btn-icon btn-outline-success btn-glow round btn-sm mb-1"
                                 title='translate tool' id='btn-translate2'
                                 style="border-top-right-radius: 0px;border-bottom-right-radius: 0px;">
                                 <i class="ft-move"></i>
@@ -229,7 +229,7 @@
                                 <option value="xy">XY</option>
                                 <option value="xz">XZ</option>
                                 <option value="yz">YZ</option>
-                              </select>
+                              </select> -->
                               <button type='button' class="btn btn-icon btn-outline-success btn-glow round btn-sm mb-1"
                                 style="border-top-right-radius: 0px;border-bottom-right-radius: 0px;"
                                 title='rotate tool (shift+a)' id='btn-rotate2'>
@@ -239,7 +239,7 @@
                                 class="btn btn-icon btn-outline-success btn-glow round btn-sm mr-3 mb-1"
                                 style="border-top-left-radius: 0px;border-bottom-left-radius: 0px;"
                                 title='reset rotate position' id='btn-reset'>
-                                Reset
+                                Set Origin
                               </button>
                               <!-- <button type='button'
                                 class="btn btn-icon btn-outline-success btn-glow round active btn-sm mr-1 mb-1"
@@ -308,7 +308,7 @@
                                 class="btn btn-icon btn-outline-success btn-glow round btn-sm mr-3 mb-1"
                                 style="border-top-left-radius: 0px;border-bottom-left-radius: 0px;"
                                 title='reset rotate position' id='btn-reset2'>
-                                Reset
+                                Set Origin
                               </button>
 
                               <div class="badge badge-pill badge-success mb-1"
@@ -481,11 +481,8 @@
                           </div>
                         </div>
                         <div style="display:inline-block;width:45px;font-size:16px;"><a id="sidenav"
-                            class="nav-link hidden-xs" href="#"><i class="ft-menu"></i></a></div>
+                            class="nav-link hidden-xs" href="javascript:void(0)"><i class="ft-menu"></i></a></div>
                         <!-- </div>
-
-
-
                         <div class="card-body"> -->
                         <!-- <p class="card-subtitle">You can load *.txt, *.obj files from owl windows app.</p> -->
 
@@ -495,9 +492,42 @@
                               position: absolute;
                               right: 0;
                               width: 0px;
-                              background: lightgrey;
+                              /* background: lightgrey; */
                               height: 100%;
+                              overflow-x:hidden;
+                              overflow-y: auto;
                           ">
+
+                            <div class="model btn btn-outline-primary round">
+                              <span>model1</span>
+                              <i class="ft-eye"></i>
+                              <a id="m-eye" href="javascript:void(0)"><i class="ft-x"></i></a>
+                            </div>
+                            <div class="model btn btn-outline-primary round">
+                              <span>model1</span>
+                              <i class="ft-eye"></i>
+                              <a id="m-eye" href="javascript:void(0)"><i class="ft-x"></i></a>
+                            </div>
+                            <div class="model active btn btn-outline-primary round">
+                              <span>model1</span>
+                              <i class="ft-eye"></i>
+                              <a id="m-eye" href="javascript:void(0)"><i class="ft-x"></i></a>
+                            </div>
+                            <div class="model btn btn-outline-primary round">
+                              <span>model1</span>
+                              <i class="ft-eye"></i>
+                              <a id="m-eye" href="javascript:void(0)"><i class="ft-x"></i></a>
+                            </div>
+                            <div class="model btn btn-outline-primary round">
+                              <span>model1</span>
+                              <i class="ft-eye"></i>
+                              <a id="m-eye" href="javascript:void(0)"><i class="ft-x"></i></a>
+                            </div>
+                            <div class="model btn btn-outline-primary round">
+                              <span>model1</span>
+                              <i class="ft-eye"></i>
+                              <a id="m-eye" href="javascript:void(0)"><i class="ft-x"></i></a>
+                            </div>
 
                           </div>
 
