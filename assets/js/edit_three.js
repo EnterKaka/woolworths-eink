@@ -11,13 +11,13 @@ cloudmachine.setListViewFunc((list, activeId) => {
 
     for (let i = 0; i < list.length; i++) {
 
-        dom.innerHTML += `<div data-id="${i}" class="model ${activeId == i ? 'active' : ''} btn btn-outline-primary round">
+        dom.innerHTML += `<div data-id="${i}" class="model ${actived(activeId, i) ? 'active' : ''} btn btn-outline-primary round">
             <span data-id="${i}" class="modelname">${list[i].name}</span>
             <i data-id="${i}" class="${list[i].group.visible ? 'ft-eye' : 'ft-eye-off'} modeleye"></i>
             <a data-id="${i}" id="m-eye" class="modeldel" href="javascript:void(0)"><i class="ft-x"></i></a>
         </div>`;
 
-        if (i != activeId) {
+        if (!actived(activeId, i)) {
             list[i].group.children[4].visible = false;
         } else if (document.getElementById('coordinate').checked) {
             list[i].group.children[4].visible = true;
@@ -25,34 +25,47 @@ cloudmachine.setListViewFunc((list, activeId) => {
 
     }
 
-    $(".modelname").on('click', function () {
-        console.log('click')
-        cloudmachine.setTarget(this.dataset.id)
+    $(".modelname").on('click', function (e) {
 
-        setCurrentViewSetting()
+        if (!e.ctrlKey) {
+            console.log('click')
+
+            cloudmachine.setTarget(parseInt(this.dataset.id))
+            setCurrentViewSetting()
+
+        } else {
+
+            cloudmachine.addTarget(parseInt(this.dataset.id))
+            setCurrentViewSetting()
+
+        }
 
         cloudmachine.render();
     })
 
-    $(".modelname").on('dblclick', function () {
+    $(".modelname").on('dblclick', function (e) {
         console.log('dblclicked')
-        cloudmachine.setCameraPosition(cloudmachine.target.position)
-        cloudmachine.setTarget(this.dataset.id)
+        let target = cloudmachine.groupList[parseInt(this.dataset.id)];
+        if (!e.ctrlKey) {
+            cloudmachine.setCameraPosition(target.position)
+        } else {
+            cloudmachine.setCameraPosition(target.position)
+        }
+
         cloudmachine.render();
     })
 
     $(".modeleye").on('click', function () {
-        console.log({ this: this })
         let visible = this.classList.contains('ft-eye');
-        cloudmachine.setVisible(this.dataset.id, !visible)
+        cloudmachine.setVisible(parseInt(this.dataset.id), !visible)
         if (visible) {
             this.classList.replace('ft-eye', 'ft-eye-off')
-            // if (this.dataset.id == cloudmachine.activeId)
+            // if (parseInt(this.dataset.id) == cloudmachine.activeId)
             // cloudmachine.target = undefined;
         }
         else {
             this.classList.replace('ft-eye-off', 'ft-eye')
-            // if (this.dataset.id == cloudmachine.activeId)
+            // if (parseInt(this.dataset.id) == cloudmachine.activeId)
             // cloudmachine.target = cloudmachine.groupList[cloudmachine.activeId];
         }
         cloudmachine.render();
@@ -61,12 +74,20 @@ cloudmachine.setListViewFunc((list, activeId) => {
     $(".modeldel").on('click', function () {
         var r = confirm("do you really want to delete this point cloud?");
         if (r == true) {
-            cloudmachine.deletePC(this.dataset.id)
+            cloudmachine.deletePC(parseInt(this.dataset.id))
         }
         cloudmachine.render();
     })
 
 })
+
+
+function actived(activeId, i) {
+    for (let target of activeId) {
+        if (target == i) return true;
+    }
+    return false;
+}
 
 function setCurrentViewSetting() {
 
@@ -385,6 +406,12 @@ window.onload = function () {
     //     cloudmachine.transDir = this.value;
     // })
 
+    document.getElementById('btn-lineTrans').addEventListener('click', function () {
+        document.getElementById('btn-' + cloudmachine.toolState).classList.remove('active')
+        document.getElementById('btn-lineTrans').classList.add('active')
+        cloudmachine.setToolState('lineTrans')
+    });
+
     document.getElementById('btn-rotate').addEventListener('click', function () {
         document.getElementById('btn-' + cloudmachine.toolState).classList.remove('active')
         document.getElementById('btn-rotate').classList.add('active')
@@ -635,26 +662,26 @@ window.onload = function () {
         $('.hload-btn').click(function () {
             console.log({ this: this })
             document.getElementById('modelpath').innerText = this.parentElement.parentElement.children[0].innerText;
-            cloudmachine.reloadModelFromArray(sessionHistory[this.dataset.id].name, sessionHistory[this.dataset.id].data, sessionHistory[this.dataset.id].matrix);
+            cloudmachine.reloadModelFromArray(sessionHistory[parseInt(this.dataset.id)].name, sessionHistory[parseInt(this.dataset.id)].data, sessionHistory[parseInt(this.dataset.id)].matrix);
             $('#browser-close').trigger('click');
         })
         $('.matrixview').click(function () {
             console.log({ this: this })
-            let matrix = cloudmachine.sessionHistory[this.dataset.id].matrix;
-            document.getElementById('matrix-id').value = this.dataset.id;
+            let matrix = cloudmachine.sessionHistory[parseInt(this.dataset.id)].matrix;
+            document.getElementById('matrix-id').value = parseInt(this.dataset.id);
             for (var i = 0; i < 16; i++) {
                 document.getElementById('mtx' + i).innerText = matrix[i];
             }
         })
         $('.hdown-btn').click(function () {
-            let array = sessionHistory[this.dataset.id].data;
-            let matrix = sessionHistory[this.dataset.id].matrix;
+            let array = sessionHistory[parseInt(this.dataset.id)].data;
+            let matrix = sessionHistory[parseInt(this.dataset.id)].matrix;
             let result = cloudmachine.getTextData(array, matrix);
             download('model.txt', 'text', result);
         })
         $('.hdel-btn').click(function () {
             console.log({ this: this })
-            sessionHistory[this.dataset.id].deleted = true;
+            sessionHistory[parseInt(this.dataset.id)].deleted = true;
             $(this.parentElement.parentElement).remove();
             // $('#browser-close').trigger('click');
         })
@@ -703,12 +730,12 @@ window.onload = function () {
                 $('.dload-btn').click(function () {
                     console.log({ data: res.data })
                     document.getElementById('modelpath').innerText = this.parentElement.parentElement.children[0].innerText;
-                    cloudmachine.reloadModelFromArray(res.data[this.dataset.id].name, res.data[this.dataset.id].data, res.data[this.dataset.id].matrix);
+                    cloudmachine.reloadModelFromArray(res.data[parseInt(this.dataset.id)].name, res.data[parseInt(this.dataset.id)].data, res.data[parseInt(this.dataset.id)].matrix);
                     $('#browser-close').trigger('click');
                 })
                 $('.dbmatrixview').click(function () {
                     console.log({ this: this })
-                    let matrix = res.data[this.dataset.id].matrix;
+                    let matrix = res.data[parseInt(this.dataset.id)].matrix;
                     for (var i = 0; i < 16; i++) {
                         document.getElementById('dbmtx' + i).innerText = matrix[i];
                     }

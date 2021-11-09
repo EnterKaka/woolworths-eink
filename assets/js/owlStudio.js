@@ -50,7 +50,16 @@ export const owlStudio = function (cv1, cv2, parent) {
 
     this.activeId = [];
 
-    this.target;
+    // this.target;
+
+    // this.multiGroup = {
+    //     list: [],
+    //     group: new THREE.Object3D(),
+    //     changePosition: { x: 0, y: 0, z: 0 },
+    //     position: new THREE.Vector3(),
+    //     quaternion: new THREE.Quaternion(),
+    //     rotatePosition: { x: 0, y: 0, z: 0 },
+    // };
 
     this.init = function () {
 
@@ -67,6 +76,7 @@ export const owlStudio = function (cv1, cv2, parent) {
         this.scene.add(light);
         this.scene.add(new THREE.AmbientLight(0xffffff, 0.5));
         this.scene.add(this.camera);
+        // this.scene.add(this.multiGroup.group)
 
         this.scene.background = new THREE.Color(0x111111);
 
@@ -190,7 +200,11 @@ export const owlStudio = function (cv1, cv2, parent) {
 
             this.scene.add(target.group)
 
-        } else if (newModel) {
+        } else if (Array.isArray(newModel)) {
+
+            newModel = newModel.map((e) => {
+                return parseFloat(e);
+            })
 
             target = this.CustomPointCloud(filename);//it is history or database model
 
@@ -212,7 +226,7 @@ export const owlStudio = function (cv1, cv2, parent) {
 
         } else {
 
-            target = this.groupList[this.activeId];
+            target = this.groupList[newModel];
 
             if (target.group.children.length > 0) {
 
@@ -222,7 +236,7 @@ export const owlStudio = function (cv1, cv2, parent) {
 
         }
 
-        this.target = target;
+        // this.target = target;
 
         let colors = [];
 
@@ -426,17 +440,21 @@ export const owlStudio = function (cv1, cv2, parent) {
 
     this.setCurrentMatrix = function () {
 
-        let target = this.target;
+        for (let id of this.activeId) {
 
-        target.rotatePosition = { x: target.changedPosition.x, y: target.changedPosition.y, z: target.changedPosition.z }
+            let target = this.groupList[id];
 
-        target.quaternion.copy(target.group.quaternion)
+            target.rotatePosition = { x: target.changePosition.x, y: target.changePosition.y, z: target.changePosition.z }
 
-        target.position.copy(target.group.position)
+            target.quaternion.copy(target.group.quaternion)
 
-        target.matrix = [...target.group.matrix.elements];
+            target.position.copy(target.group.position)
 
-        this.addToSessionHistory(target.name, 'model', [...target.group.children[0].geometry.attributes.position.array], [...target.matrix]);
+            target.matrix = [...target.group.matrix.elements];
+
+            this.addToSessionHistory(target.name, 'model', [...target.group.children[0].geometry.attributes.position.array], [...target.matrix]);
+
+        }
 
     }
 
@@ -448,23 +466,23 @@ export const owlStudio = function (cv1, cv2, parent) {
 
     this.setFromRealMatrix = function () {
 
-        let target = this.target;
+        this.groupList.map((target) => {
 
-        let { x, y, z } = target.rotatePosition;
+            let { x, y, z } = target.rotatePosition;
 
-        target.group.children[0].geometry.translate(x - target.changedPosition.x, y - target.changedPosition.y, z - target.changedPosition.z)
-        target.group.children[3].geometry.translate(x - target.changedPosition.x, y - target.changedPosition.y, z - target.changedPosition.z)
+            target.group.children[0].geometry.translate(x - target.changePosition.x, y - target.changePosition.y, z - target.changePosition.z)
+            target.group.children[3].geometry.translate(x - target.changePosition.x, y - target.changePosition.y, z - target.changePosition.z)
 
-        target.changedPosition.x = x;
-        target.changedPosition.y = y;
-        target.changedPosition.z = z;
+            target.changePosition.x = x;
+            target.changePosition.y = y;
+            target.changePosition.z = z;
 
-        target.group.position.copy(target.position)
-        target.group.quaternion.copy(target.quaternion)
-        target.group.matrix.fromArray(target.matrix)
-        // this.group.matrix.makeRotationFromQuaternion(this.quaternion);
-        // this.group.matrix.setPosition(this.position);
-        // this.group.applyMatrix(this.group.matrix);
+            target.group.position.copy(target.position)
+            target.group.quaternion.copy(target.quaternion)
+            target.group.matrix.fromArray(target.matrix)
+
+        })
+
         this.initDraw();
         this.initSelectedPoints();
         this.render();
@@ -520,10 +538,14 @@ export const owlStudio = function (cv1, cv2, parent) {
         this.mouse.x = evt.clientX;
         this.mouse.y = evt.clientY;
 
-        let target = this.target;
+        for (let id of this.activeId) {
 
-        target.group.rotation.z += deltaX / 100;
-        target.group.rotation.x += deltaY / 100;
+            let target = this.groupList[id];
+
+            target.group.rotation.z += deltaX / 100;
+            target.group.rotation.x += deltaY / 100;
+
+        }
 
         this.render()
 
@@ -537,22 +559,38 @@ export const owlStudio = function (cv1, cv2, parent) {
         this.mouse.x = evt.clientX;
         this.mouse.y = evt.clientY;
 
-        let target = this.target;
-
         if (this.transDir == 'xy') {
 
-            target.group.translateX(deltaX / 100)
-            target.group.translateY(-deltaY / 100)
+            for (let id of this.activeId) {
+
+                let target = this.groupList[id];
+
+                target.group.position.x += deltaX / 100;
+                target.group.position.y -= deltaY / 100;
+
+            }
 
         } else if (this.transDir == 'yz') {
 
-            target.group.translateY(deltaX / 100)
-            target.group.translateZ(-deltaY / 100)
+            for (let id of this.activeId) {
+
+                let target = this.groupList[id];
+
+                target.group.position.y += deltaX / 100;
+                target.group.position.z -= deltaY / 100;
+
+            }
 
         } else if (this.transDir == 'xz') {
 
-            target.group.translateX(deltaX / 100)
-            target.group.translateZ(-deltaY / 100)
+            for (let id of this.activeId) {
+
+                let target = this.groupList[id];
+
+                target.group.position.x += deltaX / 100;
+                target.group.position.z -= deltaY / 100;
+
+            }
 
         }
 
@@ -561,8 +599,6 @@ export const owlStudio = function (cv1, cv2, parent) {
     }
 
     this.rotateAbs = (axis, degree) => {
-
-        let target = this.target;
 
         let x = 0, y = 0, z = 0;
 
@@ -580,9 +616,15 @@ export const owlStudio = function (cv1, cv2, parent) {
 
         }
 
-        target.group.rotation.x += x;
-        target.group.rotation.y += y;
-        target.group.rotation.z += z;
+        for (let id of this.activeId) {
+
+            let target = this.groupList[id];
+
+            target.group.rotation.x += x;
+            target.group.rotation.y += y;
+            target.group.rotation.z += z;
+
+        }
 
         this.render()
 
@@ -590,15 +632,19 @@ export const owlStudio = function (cv1, cv2, parent) {
 
     this.translateAbs = (x, y, z) => {
 
-        let target = this.target;
-
         x = parseFloat(x)
         y = parseFloat(y)
         z = parseFloat(z)
 
-        target.group.translateX(x)
-        target.group.translateY(y)
-        target.group.translateZ(z)
+        for (let id of this.activeId) {
+
+            let target = this.groupList[id];
+
+            target.group.position.x += x;
+            target.group.position.y += y;
+            target.group.position.z += z;
+
+        }
 
         this.render()
 
@@ -741,7 +787,9 @@ export const owlStudio = function (cv1, cv2, parent) {
 
         let point = new THREE.Vector3();
 
-        let target = this.target;
+        if (this.activeId.length < 1) return;
+
+        let target = this.groupList[this.activeId[0]];
 
         let group = target.group;
 
@@ -954,13 +1002,7 @@ export const owlStudio = function (cv1, cv2, parent) {
 
         raycaster.setFromCamera(this.mouse.target, this.camera);
 
-        let target = this.target;
-
         let point = new THREE.Vector3();
-
-        let group = target.group;
-
-        let array = group.children[0].geometry.attributes.position.array;
 
         let minDistance = Infinity;
 
@@ -968,44 +1010,187 @@ export const owlStudio = function (cv1, cv2, parent) {
 
         let closestPoint = new THREE.Vector3();
 
-        for (let i = 0; i < array.length; i += 3) {
+        for (let id of this.activeId) {
 
-            raycaster.ray.closestPointToPoint(new THREE.Vector3(array[i], array[i + 1], array[i + 2]).applyMatrix4(target.group.matrix), point)
+            let target = this.groupList[id];
 
-            let distanceSq = new THREE.Vector3(array[i], array[i + 1], array[i + 2]).applyMatrix4(target.group.matrix).distanceToSquared(point);
+            let group = target.group;
 
-            if (distanceSq < minDistance) {
+            let array = group.children[0].geometry.attributes.position.array;
 
-                closestPoint.set(array[i], array[i + 1], array[i + 2]);
+            for (let i = 0; i < array.length; i += 3) {
 
-                minDistance = distanceSq;
+                raycaster.ray.closestPointToPoint(new THREE.Vector3(array[i], array[i + 1], array[i + 2]).applyMatrix4(target.group.matrix), point)
 
-                sind = i;
+                let distanceSq = new THREE.Vector3(array[i], array[i + 1], array[i + 2]).applyMatrix4(target.group.matrix).distanceToSquared(point);
+
+                if (distanceSq < minDistance) {
+
+                    closestPoint.set(array[i], array[i + 1], array[i + 2]);
+
+                    minDistance = distanceSq;
+
+                    sind = [id, i];
+
+                }
 
             }
 
         }
 
-        let x = array[sind];
-        let y = array[sind + 1];
-        let z = array[sind + 2];
+        let array = this.groupList[sind[0]].group.children[0].geometry.attributes.position.array;
 
-        target.group.children[0].geometry.translate(-x, -y, -z)
-        target.group.children[3].geometry.translate(-x, -y, -z)
+        let x = array[sind[1]];
+        let y = array[sind[1] + 1];
+        let z = array[sind[1] + 2];
 
-        target.changedPosition.x -= x;
-        target.changedPosition.y -= y;
-        target.changedPosition.z -= z;
+        let vector = new THREE.Vector3(x, y, z).applyMatrix4(this.groupList[sind[0]].group.matrix);
 
-        let vector = new THREE.Vector3(x, y, z).applyMatrix4(target.group.matrix);
+        for (let id of this.activeId) {
 
-        target.group.position.x = vector.x;
-        target.group.position.y = vector.y;
-        target.group.position.z = vector.z;
+            let target = this.groupList[id];
+
+            let om = target.group.matrix;
+
+            let p = new THREE.Vector3().setFromMatrixPosition(om)
+            let q = new THREE.Quaternion().setFromRotationMatrix(om)
+
+            // p.x = -p.x; p.y = -p.y; p.z = -p.z;
+            q.x = -q.x; q.y = -q.y; q.z = -q.z;
+
+            let v = new THREE.Vector3().copy(vector).sub(p).applyQuaternion(q);
+
+            target.group.children[0].geometry.translate(-v.x, -v.y, -v.z)
+            target.group.children[3].geometry.translate(-v.x, -v.y, -v.z)
+
+            target.changePosition.x -= v.x;
+            target.changePosition.y -= v.y;
+            target.changePosition.z -= v.z;
+
+            target.group.position.x = vector.x;
+            target.group.position.y = vector.y;
+            target.group.position.z = vector.z;
+
+        }
 
         this.render();
 
         backToRotateMode(this.toolState)
+
+    }
+
+    this.translateByLine = (evt) => {
+
+        this.mouse.target.x = (evt.offsetX / this.canvas.clientWidth) * 2 - 1;
+        this.mouse.target.y = - (evt.offsetY / this.canvas.clientHeight) * 2 + 1;
+
+        let raycaster = new THREE.Raycaster();
+
+        raycaster.setFromCamera(this.mouse.target, this.camera);
+
+        let point = new THREE.Vector3();
+
+        let minDistance = Infinity;
+
+        let sind;
+
+        let closestPoint = new THREE.Vector3();
+        console.log(this.activeId)
+        for (let id of this.activeId) {
+
+            let target = this.groupList[id];
+
+            let group = target.group;
+
+            let array = group.children[0].geometry.attributes.position.array;
+
+            for (let i = 0; i < array.length; i += 3) {
+
+                raycaster.ray.closestPointToPoint(new THREE.Vector3(array[i], array[i + 1], array[i + 2]).applyMatrix4(target.group.matrix), point)
+
+                let distanceSq = new THREE.Vector3(array[i], array[i + 1], array[i + 2]).applyMatrix4(target.group.matrix).distanceToSquared(point);
+
+                if (distanceSq < minDistance) {
+
+                    closestPoint.set(array[i], array[i + 1], array[i + 2]);
+
+                    minDistance = distanceSq;
+
+                    sind = [id, i];
+
+                }
+
+            }
+
+        }
+
+        let array = this.groupList[sind[0]].group.children[0].geometry.attributes.position.array;
+
+        let x = array[sind[1]];
+        let y = array[sind[1] + 1];
+        let z = array[sind[1] + 2];
+
+        let vector = new THREE.Vector3(x, y, z)
+        let matrix = this.groupList[sind[0]].group.matrix;
+
+        if (!this.line) {
+
+            let geometry = new THREE.BufferGeometry().setFromPoints([vector]);
+
+            let material;
+
+            document.getElementById('pointcolor').disabled = true;
+
+            material = new THREE.PointsMaterial({ size: 0.5, vertexColors: false, color: "#1acaff" });
+
+            let points = new THREE.Points(geometry, material);
+            points.frustumCulled = false;
+
+            this.line = new THREE.Object3D().add(points);
+
+            this.line.applyMatrix4(matrix)
+
+            this.scene.add(this.line);
+
+        } else if (!this.line.visible) {
+
+            let array = this.line.children[0].geometry.attributes.position.array;
+
+            array[0] = vector.x;
+            array[1] = vector.y;
+            array[2] = vector.z;
+
+            this.line.children[0].geometry.attributes.position.needsUpdate = true;
+            this.line.matrix.copy(matrix)
+            this.line.position.setFromMatrixPosition(matrix);
+            this.line.quaternion.setFromRotationMatrix(matrix)
+
+            this.line.visible = true;
+
+        } else {
+
+            let array = this.line.children[0].geometry.attributes.position.array;
+            vector.applyMatrix4(matrix)
+            let v = new THREE.Vector3(array[0], array[1], array[2]).applyMatrix4(this.line.matrix)
+            let tx = vector.x - v.x;
+            let ty = vector.y - v.y;
+            let tz = vector.z - v.z;
+
+            for (let id of this.activeId) {
+
+                let target = this.groupList[id];
+
+                target.group.position.x += tx;
+                target.group.position.y += ty;
+                target.group.position.z += tz;
+
+            }
+
+            this.line.visible = false;
+
+        }
+
+        this.render()
 
     }
 
@@ -1023,7 +1208,9 @@ export const owlStudio = function (cv1, cv2, parent) {
 
         let canvas = this.canvas;
 
-        let target = this.target;
+        if (this.activeId.length < 1) return;
+
+        let target = this.groupList[this.activeId[0]];
 
         let group = target.group;
 
@@ -1162,7 +1349,7 @@ export const owlStudio = function (cv1, cv2, parent) {
 
         this.canvas2.addEventListener('mousemove', (e) => {
 
-            if (!this.target.group.visible && !this.mouse.rightDown) return;
+            // if (!this.target.group.visible && !this.mouse.rightDown) return;
 
             switch (this.toolState) {
 
@@ -1190,6 +1377,10 @@ export const owlStudio = function (cv1, cv2, parent) {
                     if (this.mouse.down) this.drawPencil(e)
                     break;
 
+                case 'lineTrans':
+                    if (this.mouse.rightDown) this.cameraMove(e)
+                    break;
+
                 default:
 
             }
@@ -1199,7 +1390,7 @@ export const owlStudio = function (cv1, cv2, parent) {
 
             if (e.button == 0) {
 
-                if (!this.target.group.visible) return;
+                // if (!this.target.group.visible) return;
 
                 this.mouseDown(e);
 
@@ -1225,6 +1416,10 @@ export const owlStudio = function (cv1, cv2, parent) {
                         this.setRotatePosition(e)
                         break;
 
+                    case 'lineTrans':
+                        this.translateByLine(e)
+                        break;
+
                     default:
 
                 }
@@ -1241,7 +1436,7 @@ export const owlStudio = function (cv1, cv2, parent) {
 
             if (e.button == 0) {
 
-                if (!this.target.group.visible) return;
+                // if (!this.target.group.visible) return;
 
                 this.mouseUp(e);
 
@@ -1263,7 +1458,7 @@ export const owlStudio = function (cv1, cv2, parent) {
 
         this.canvas2.addEventListener('dblclick', (e) => {
 
-            if (!this.target.group.visible) return;
+            // if (!this.target.group.visible) return;
 
             switch (this.toolState) {
 
@@ -1277,7 +1472,7 @@ export const owlStudio = function (cv1, cv2, parent) {
 
         this.canvas2.addEventListener('mousewheel', (e) => {
 
-            if (this.toolState == 'rotate' || this.toolState == 'rotate2' || this.toolState == 'translate' || this.toolState == 'translate2')
+            if (this.toolState == 'rotate' || this.toolState == 'rotate2' || this.toolState == 'translate' || this.toolState == 'translate2' || this.toolState == 'lineTrans')
                 this.mouseWheel(e);
 
         }, false);
@@ -1292,7 +1487,9 @@ export const owlStudio = function (cv1, cv2, parent) {
 
     this.getObjDataOf2D = function () {
 
-        let target = this.target;
+        if (this.activeId.length < 1) return;
+
+        let target = this.groupList[this.activeId[0]];
 
         const exporter = new OBJExporter();
 
@@ -1304,7 +1501,9 @@ export const owlStudio = function (cv1, cv2, parent) {
 
     this.getObjDataOf3D = function () {
 
-        let target = this.target;
+        if (this.activeId.length < 1) return;
+
+        let target = this.groupList[this.activeId[0]];
 
         const exporter = new OBJExporter();
 
@@ -1316,7 +1515,9 @@ export const owlStudio = function (cv1, cv2, parent) {
 
     this.getTextData = function (param = false, matrix = false) {
 
-        let target = this.target;
+        if (this.activeId.length < 1) return;
+
+        let target = this.groupList[this.activeId[0]];
 
         let result = "";
 
@@ -1366,9 +1567,13 @@ export const owlStudio = function (cv1, cv2, parent) {
 
     this.set2dMeshVisibility = function (v) {
 
-        let target = this.target;
+        for (let id of this.activeId) {
 
-        target.group.children[1].visible = v;
+            let target = this.groupList[id];
+
+            target.group.children[1].visible = v;
+
+        }
 
         this.render();
 
@@ -1376,9 +1581,13 @@ export const owlStudio = function (cv1, cv2, parent) {
 
     this.set3dMeshVisibility = function (v) {
 
-        let target = this.target;
+        for (let id of this.activeId) {
 
-        target.group.children[3].visible = v;
+            let target = this.groupList[id];
+
+            target.group.children[3].visible = v;
+
+        }
 
         this.render();
 
@@ -1386,10 +1595,14 @@ export const owlStudio = function (cv1, cv2, parent) {
 
     this.setMeshWireframe = function (v) {
 
-        let target = this.target;
+        for (let id of this.activeId) {
 
-        target.group.children[1].material.wireframe = v;
-        target.group.children[3].material.wireframe = v;
+            let target = this.groupList[id];
+
+            target.group.children[1].material.wireframe = v;
+            target.group.children[3].material.wireframe = v;
+
+        }
 
         this.render();
 
@@ -1397,24 +1610,32 @@ export const owlStudio = function (cv1, cv2, parent) {
 
     this.setHeightMapColor = function (v) {
 
-        let target = this.target;
+        for (let id of this.activeId) {
+
+            let target = this.groupList[id];
+
+            target.group.children[0].material.vertexColors = v;
+            target.group.children[0].material.needsUpdate = true;
+
+            target.group.children[1].material.vertexColors = v;
+            target.group.children[1].material.needsUpdate = true;
+
+        }
 
         this.setPointColor(v ? "#ffffff" : pointcolor())
-
-        target.group.children[0].material.vertexColors = v;
-        target.group.children[0].material.needsUpdate = true;
-
-        target.group.children[1].material.vertexColors = v;
-        target.group.children[1].material.needsUpdate = true;
 
         this.render();
     }
 
     this.setCoordinate = function (v) {
 
-        let target = this.target;
+        for (let id of this.activeId) {
 
-        target.group.children[4].visible = v;
+            let target = this.groupList[id];
+
+            target.group.children[4].visible = v;
+
+        }
 
         this.render();
 
@@ -1422,10 +1643,14 @@ export const owlStudio = function (cv1, cv2, parent) {
 
     this.setPointColor = function (c) {
 
-        let target = this.target;
+        for (let id of this.activeId) {
 
-        target.group.children[0].material.color.set(c);
-        target.group.children[1].material.color.set(c);
+            let target = this.groupList[id];
+
+            target.group.children[0].material.color.set(c);
+            target.group.children[1].material.color.set(c);
+
+        }
 
         this.render();
 
@@ -1433,9 +1658,13 @@ export const owlStudio = function (cv1, cv2, parent) {
 
     this.setDelaunyColor = function (c) {
 
-        let target = this.target;
+        for (let id of this.activeId) {
 
-        target.group.children[3].material.color.set(c);
+            let target = this.groupList[id];
+
+            target.group.children[3].material.color.set(c);
+
+        }
 
         this.render();
 
@@ -1443,10 +1672,14 @@ export const owlStudio = function (cv1, cv2, parent) {
 
     this.setSelectedSize = function (c) {
 
-        let target = this.target;
+        for (let id of this.activeId) {
 
-        target.group.children[2].material.size = c;
-        target.group.children[2].material.needsUpdate = true;
+            let target = this.groupList[id];
+
+            target.group.children[2].material.size = c;
+            target.group.children[2].material.needsUpdate = true;
+
+        }
 
         this.render();
 
@@ -1454,9 +1687,13 @@ export const owlStudio = function (cv1, cv2, parent) {
 
     this.setSelectedColor = function (c) {
 
-        let target = this.target;
+        for (let id of this.activeId) {
 
-        target.group.children[2].material.color.set(c);
+            let target = this.groupList[id];
+
+            target.group.children[2].material.color.set(c);
+
+        }
 
         this.render();
 
@@ -1474,59 +1711,68 @@ export const owlStudio = function (cv1, cv2, parent) {
 
     this.setModelFromSelectedPoints = function () {
 
-        let target = this.target;
+        for (let id of this.activeId) {
 
-        if (target.selectedCount < 4) {
+            let target = this.groupList[id];
 
-            alert("Delaunay 3D triangulation requires 4 or more points.")
+            if (target.selectedCount < 4) {
 
-            return;
+                alert("Delaunay 3D triangulation requires 4 or more points.")
+
+                return;
+
+            }
+
+            let array = [...target.group.children[0].geometry.attributes.position.array];
+
+            this.addToHistory(target.history, array);
+
+            let updatePoints = [];
+
+            for (let i = 0; i < target.selectedCount; i++) {
+
+                updatePoints.push(target.selectedPoints[i * 3], target.selectedPoints[i * 3 + 1], target.selectedPoints[i * 3 + 2])
+
+            }
+
+            this.reloadModelFromArray(getCurrentFilename(), updatePoints, id);
 
         }
 
-        let array = [...target.group.children[0].geometry.attributes.position.array];
-
-        this.addToHistory(target.history, array);
-
-        let updatePoints = [];
-
-        for (let i = 0; i < target.selectedCount; i++) {
-
-            updatePoints.push(target.selectedPoints[i * 3], target.selectedPoints[i * 3 + 1], target.selectedPoints[i * 3 + 2])
-
-        }
-
-        this.reloadModelFromArray(getCurrentFilename(), updatePoints, false);
         this.initDraw();
     }
 
     this.changeBtnSU = function () {
 
-        let target = this.target;
+        for (let id of this.activeId) {
 
-        let unselec2 = [...target.unselectedPoints];
+            let target = this.groupList[id];
 
-        target.unselectedPoints = [];
+            let unselec2 = [...target.unselectedPoints];
 
-        for (let i = 0; i < target.selectedCount; i++) {
+            target.unselectedPoints = [];
 
-            target.unselectedPoints.push(target.selectedPoints[i * 3], target.selectedPoints[i * 3 + 1], target.selectedPoints[i * 3 + 2])
+            for (let i = 0; i < target.selectedCount; i++) {
+
+                target.unselectedPoints.push(target.selectedPoints[i * 3], target.selectedPoints[i * 3 + 1], target.selectedPoints[i * 3 + 2])
+
+            }
+
+            target.selectedCount = unselec2.length / 3;
+
+            for (let i = 0; i < unselec2.length; i += 3) {
+
+                target.selectedPoints[i] = unselec2[i];
+                target.selectedPoints[i + 1] = unselec2[i + 1];
+                target.selectedPoints[i + 2] = unselec2[i + 2];
+
+            }
+
+            target.selectedGroup.geometry.setDrawRange(0, target.selectedCount);
+
+            target.selectedGroup.geometry.attributes.position.needsUpdate = true;
 
         }
-
-        target.selectedCount = unselec2.length / 3;
-
-        for (let i = 0; i < unselec2.length; i += 3) {
-
-            target.selectedPoints[i] = unselec2[i];
-            target.selectedPoints[i + 1] = unselec2[i + 1];
-            target.selectedPoints[i + 2] = unselec2[i + 2];
-
-        }
-
-        target.selectedGroup.geometry.setDrawRange(0, target.selectedCount);
-
-        target.selectedGroup.geometry.attributes.position.needsUpdate = true;
 
         this.initDraw();
         this.render()
@@ -1535,21 +1781,25 @@ export const owlStudio = function (cv1, cv2, parent) {
 
     this.deleteSelectedPoints = function () {
 
-        let target = this.target;
+        for (let id of this.activeId) {
 
-        if (target.unselectedPoints.length < 12) {
+            let target = this.groupList[id];
 
-            alert("Delaunay 3D triangulation requires 4 or more points.")
+            if (target.unselectedPoints.length < 12) {
 
-            return;
+                alert("Delaunay 3D triangulation requires 4 or more points.")
+
+                return;
+
+            }
+
+            let array = [...target.group.children[0].geometry.attributes.position.array];
+
+            this.addToHistory(target.history, array)
+
+            this.reloadModelFromArray(getCurrentFilename(), [...target.unselectedPoints], id);
 
         }
-
-        let array = [...target.group.children[0].geometry.attributes.position.array];
-
-        this.addToHistory(target.history, array)
-
-        this.reloadModelFromArray(getCurrentFilename(), [...target.unselectedPoints], false);
 
         this.initDraw();
 
@@ -1570,23 +1820,26 @@ export const owlStudio = function (cv1, cv2, parent) {
 
     this.gridMinimumFilter = function (cellSize) {
 
-        let target = this.target;
+        for (let id of this.activeId) {
 
-        let array = target.group.children[0].geometry.attributes.position.array;
+            let target = this.groupList[id];
 
-        let filteredPoints = filters.gridMinimumFilter(cellSize, array)
+            let array = target.group.children[0].geometry.attributes.position.array;
 
-        if (filteredPoints.length < 12) {
+            let filteredPoints = filters.gridMinimumFilter(cellSize, array)
 
-            alert("Delaunay 3D triangulation requires 4 or more points.")
+            if (filteredPoints.length < 12) {
 
-            return;
+                alert("Delaunay 3D triangulation requires 4 or more points.")
 
+                continue;
+
+            }
+
+            this.addToHistory(target.history, array)
+
+            this.reloadModelFromArray(getCurrentFilename(), filteredPoints, id)
         }
-
-        this.addToHistory(target.history, array)
-
-        this.reloadModelFromArray(getCurrentFilename(), filteredPoints, false)
 
         this.initDraw();
 
@@ -1594,25 +1847,26 @@ export const owlStudio = function (cv1, cv2, parent) {
 
     this.voxelGridFilter = function (cellSize) {
 
-        let target = this.target;
+        for (let id of this.activeId) {
 
-        let array = target.group.children[0].geometry.attributes.position.array;
+            let target = this.groupList[id];
 
-        let filteredPoints = filters.voxelGridFilter(cellSize, array)
+            let array = target.group.children[0].geometry.attributes.position.array;
 
-        if (filteredPoints.length < 12) {
+            let filteredPoints = filters.voxelGridFilter(cellSize, array)
 
-            alert("Delaunay 3D triangulation requires 4 or more points.")
+            if (filteredPoints.length < 12) {
 
-            return;
+                alert("Delaunay 3D triangulation requires 4 or more points.")
 
+                continue;
+
+            }
+
+            this.addToHistory(target.history, array)
+
+            this.reloadModelFromArray(getCurrentFilename(), filteredPoints, id)
         }
-
-        this.addToHistory(target.history, array)
-
-        this.reloadModelFromArray(getCurrentFilename(), filteredPoints, false)
-
-        this.render()
 
         this.initDraw();
 
@@ -1620,25 +1874,27 @@ export const owlStudio = function (cv1, cv2, parent) {
 
     this.outlierRemovalFilter = function (num, dev) {
 
-        let target = this.target;
+        for (let id of this.activeId) {
 
-        let array = target.group.children[0].geometry.attributes.position.array;
+            let target = this.groupList[id];
 
-        let filteredPoints = filters.updatedRemovalFilter(num, dev, array)
+            let array = target.group.children[0].geometry.attributes.position.array;
 
-        if (filteredPoints.length < 12) {
+            let filteredPoints = filters.updatedRemovalFilter(num, dev, array)
 
-            alert("Delaunay 3D triangulation requires 4 or more points.")
+            if (filteredPoints.length < 12) {
 
-            return;
+                alert("Delaunay 3D triangulation requires 4 or more points.")
+
+                continue;
+
+            }
+
+            this.addToHistory(target.history, array)
+
+            this.reloadModelFromArray(getCurrentFilename(), filteredPoints, id)
 
         }
-
-        this.addToHistory(target.history, array)
-
-        this.reloadModelFromArray(getCurrentFilename(), filteredPoints, false)
-
-        this.render()
 
         this.initDraw();
 
@@ -1646,25 +1902,27 @@ export const owlStudio = function (cv1, cv2, parent) {
 
     this.passThroughFilter = function (pass, limit1, limit2) {
 
-        let target = this.target;
+        for (let id of this.activeId) {
 
-        let array = target.group.children[0].geometry.attributes.position.array;
+            let target = this.groupList[id];
 
-        let filteredPoints = filters.passThroughFilter(pass, limit1, limit2, array)
+            let array = target.group.children[0].geometry.attributes.position.array;
 
-        if (filteredPoints.length < 12) {
+            let filteredPoints = filters.passThroughFilter(pass, limit1, limit2, array)
 
-            alert("Delaunay 3D triangulation requires 4 or more points.")
+            if (filteredPoints.length < 12) {
 
-            return;
+                alert("Delaunay 3D triangulation requires 4 or more points.")
+
+                return;
+
+            }
+
+            this.addToHistory(target.history, array)
+
+            this.reloadModelFromArray(getCurrentFilename(), filteredPoints, id)
 
         }
-
-        this.addToHistory(target.history, array)
-
-        this.reloadModelFromArray(getCurrentFilename(), filteredPoints, false)
-
-        this.render()
 
         this.initDraw();
 
@@ -1672,19 +1930,23 @@ export const owlStudio = function (cv1, cv2, parent) {
 
     this.popupHistory = function (e) {
 
-        let target = this.target;
+        for (let id of this.activeId) {
 
-        if (target.history.step > 0) {
+            let target = this.groupList[id];
 
-            e.preventDefault();
+            if (target.history.step > 0) {
 
-            this.reloadModelFromArray(getCurrentFilename(), target.history.data[target.history.step - 1], false)
+                e.preventDefault();
 
-            this.render()
+                this.reloadModelFromArray(getCurrentFilename(), target.history.data[target.history.step - 1], id)
 
-            this.initDraw();
+                this.render()
 
-            target.history.step--;
+                this.initDraw();
+
+                target.history.step--;
+
+            }
 
         }
 
@@ -1692,7 +1954,7 @@ export const owlStudio = function (cv1, cv2, parent) {
 
     this.getSavePoints = function () {
 
-        let target = this.target;
+        let target = this.groupList[this.activeId[0]];
 
         let array = [...target.group.children[0].geometry.attributes.position.array];
 
@@ -1702,7 +1964,7 @@ export const owlStudio = function (cv1, cv2, parent) {
 
     this.getSaveMatrixArray = function () {
 
-        let target = this.target;
+        let target = this.groupList[this.activeId[0]];
 
         let result = target.group.matrix.elements;
 
@@ -1915,7 +2177,7 @@ export const owlStudio = function (cv1, cv2, parent) {
 
         let obj = new THREE.Object3D();
 
-        this.activeId = this.groupList.length;
+        this.activeId = [this.groupList.length];
 
         this.groupList.push({
             name: name,
@@ -1927,7 +2189,7 @@ export const owlStudio = function (cv1, cv2, parent) {
             unselectedPoints: [],
             selectedPoints: [],
             selectedCount: 0,
-            changedPosition: {
+            changePosition: {
                 x: 0, y: 0, z: 0
             },
 
@@ -1939,17 +2201,35 @@ export const owlStudio = function (cv1, cv2, parent) {
             },
         })
 
-        return this.groupList[this.activeId];
+        return this.groupList[this.activeId[0]];
 
     }
 
     this.setTarget = function (id) {
 
-        this.activeId = id;
+        this.initSelectedPoints();
 
-        this.target = this.groupList[id];
+        this.activeId = [id];
 
-        this.listViewEngine(this.groupList, id);
+        // this.target = this.groupList[id];
+
+        this.listViewEngine(this.groupList, this.activeId);
+
+        this.initDraw();
+
+    }
+
+    this.addTarget = function (id) {
+
+        this.initSelectedPoints();
+
+        for (let e of this.activeId) {
+            if (e == id) return;
+        }
+
+        this.activeId.push(id)
+
+        this.listViewEngine(this.groupList, this.activeId);
 
         this.initDraw();
 
@@ -1971,11 +2251,16 @@ export const owlStudio = function (cv1, cv2, parent) {
             return id != index;
         })
 
-        if (this.activeId > id) this.activeId--;
-        else if (this.activeId == id) this.activeId = this.groupList.length - 1;
+        this.activeId = this.activeId.filter((target, index) => {
+            return target != id;
+        })
 
-        // if (this.groupList[activeId])
-        this.target = this.groupList[this.activeId];
+        this.activeId = this.activeId.map((target, index) => {
+            if (target > id) return target - 1;
+            else return target;
+        })
+
+        // this.target = this.groupList[this.activeId[0]];
 
         this.listViewEngine(this.groupList, this.activeId)
 
@@ -1985,8 +2270,10 @@ export const owlStudio = function (cv1, cv2, parent) {
 
     this.getTargetInfo = function () {
 
-        let group = this.target.group;
-        let d = {};
+        if (this.activeId.length < 1) return;
+
+        let group = this.groupList[this.activeId[0]].group;
+
         return {
             pointcolor: group.children[0].material.color.getHexString(),
             meshcolor: group.children[3].material.color.getHexString(),
@@ -2005,19 +2292,29 @@ export const owlStudio = function (cv1, cv2, parent) {
 
         this.polygonRender();
 
+        if (this.line) this.line.visible = false;
+
     }
 
     this.initSelectedPoints = function () {
 
-        let target = this.target;
+        for (let id of this.activeId) {
 
-        target.selectedCount = 0;
+            let target = this.groupList[id];
 
-        target.unselectedPoints = [...target.group.children[0].geometry.attributes.position.array];
+            target.selectedCount = 0;
 
-        target.selectedGroup.geometry.setDrawRange(0, target.selectedCount);
+            target.unselectedPoints = [...target.group.children[0].geometry.attributes.position.array];
+
+            target.selectedGroup.geometry.setDrawRange(0, target.selectedCount);
+
+        }
 
     }
+
+    // this.addToMultiGroup = function (id) {
+
+    // }
 
 }
 
