@@ -63,90 +63,119 @@
 			</div>
 		</div>
 <!-- ////////////////////////////////////////////////////////////////////////////-->
-
+<footer class="footer footer-static footer-light navbar-border navbar-shadow">
+    <div class="clearfix blue-grey lighten-2 text-sm-center mb-0 px-2">
+      <span class="float-md-left d-block d-md-inline-block">2021  &copy; Copyright 
+        <a class="text-bold-800 grey darken-2" href="https://themeselection.com" target="_blank"> &nbsp;Quirin Kraus</a>
+      </span>
+    </div>
+  </footer>
+  <script src="./theme-assets/vendors/js/forms/toggle/switchery.min.js"></script>
+  <script src="./theme-assets/js/scripts/forms/switch.min.js"></script>
+  <script src="./theme-assets/vendors/js/forms/tags/form-field.js"></script>
+  
+  <!-- BEGIN: Vendor JS-->
+  <!-- <script src="./theme-assets/js/core/app-menu.min.js" type="text/javascript"></script>
+  <script src="./theme-assets/js/core/app.min.js" type="text/javascript"></script> -->
+  <script src="./theme-assets/js/scripts/customizer.min.js" type="text/javascript"></script>
+  <script src="./theme-assets/vendors/js/jquery.sharrre.js" type="text/javascript"></script>
+  <!-- END: Theme JS -->
 <!-- page content end -->
-<%- include('../partials/footer'); %>
-<script type="text/javascript" src="/js/simplewebsocket.min.js"></script>
-
-<script>
-	function SocketWrapper(init)
-	{
-		this.socket = new SimpleWebsocket(init);
-		this.messageHandlers = {};
-		
-		var that = this;
-		this.socket.on('data', function(data)
+<script type="text/javascript">
+	$(document).ready(()=>{
+		initWebSocket();
+	});
+	$("#start_scan").click(()=>{
+		var state = checkSocket();
+		if(state === 1){
+			sendMessage("start scan")
+		}
+	});
+	function showMessage(status,head,text){
+		$.toast({
+			heading: head,
+			text: text,
+			showHideTransition: 'slide',
+			icon: status,
+			hideAfter: 5000   // in milli seconds
+		});
+	}
+	function sendMessage(msg) {
+		if ( websocket != null )
 		{
-			//Extract the message type
-			var messageData = JSON.parse(data);
-			var messageType = messageData['__MESSAGE__'];
-			delete messageData['__MESSAGE__'];
-			
-			//If any handlers have been registered for the message type, invoke them
-			if (that.messageHandlers[messageType] !== undefined)
-			{
-				for (index in that.messageHandlers[messageType]) {
-					that.messageHandlers[messageType][index](messageData);
+			websocket.send( msg );
+			console.log( "string sent :", '"'+msg+'"' );
+		}
+	}
+	
+	var wsUri = "ws://localhost:1234";
+	var websocket = null;
+
+	function initWebSocket() {
+		try {
+			if (typeof MozWebSocket == 'function')
+				WebSocket = MozWebSocket;
+			if ( websocket && websocket.readyState == 1 )
+				websocket.close();
+			websocket = new WebSocket( wsUri );
+			websocket.onopen = function (evt) {
+				showMessage('success','SOCKET', 'CONNECTED');
+			};
+			websocket.onclose = function (evt) {
+				showMessage('warning','SOCKET', 'DISCONNECTED');
+			};
+			websocket.onmessage = function (evt) {
+				showMessage('info','Message', evt.data);
+			};
+			websocket.onerror = function (evt) {
+				showMessage('error','SOCKET', 'FAILED');
+			};
+		} catch (exception) {
+			showMessage('error','SOCKET', 'FAILED');
+		}
+	}
+
+	function stopWebSocket() {
+		if (websocket)
+		websocket.close();
+	}
+	
+	function checkSocket() {
+		if (websocket != null) {
+			var stateStr;
+			switch (websocket.readyState) {
+				case 0: {
+					stateStr = "CONNECTING";
+					showMessage('success','STATUS', 'CONNECTING');
+					break;
+				}
+				case 1: {
+					stateStr = "OPEN";
+					showMessage('success','STATUS', 'OPEN');
+					break;
+				}
+				case 2: {
+					stateStr = "CLOSING";
+					showMessage('warning','STATUS', 'CLOSING');
+					break;
+				}
+				case 3: {
+					stateStr = "CLOSED";
+					showMessage('warning','STATUS', 'CLOSED');
+					break;
+				}
+				default: {
+					stateStr = "UNKNOW";
+					showMessage('error','STATUS', 'UNKNOW');
+					break;
 				}
 			}
-		});
-	}
-	
-	SocketWrapper.prototype.on = function(event, handler)
-	{
-		//If a standard event was specified, forward the registration to the socket's event emitter
-		if (['connect', 'close', 'data', 'error'].indexOf(event) != -1) {
-			this.socket.on(event, handler);
-		}
-		else
-		{
-			//The event names a message type
-			if (this.messageHandlers[event] === undefined) {
-				this.messageHandlers[event] = [];
-			}
-			this.messageHandlers[event].push(handler);
+			return websocket.readyState;
+		} else {
+			showMessage('error','SOCKET', 'FAILED');
+			return 'no';
 		}
 	}
-	
-	SocketWrapper.prototype.send = function(message)
-	{
-		//Copy the values from the payload object, if one was supplied
-		var message_data = {};
-		message_data['__MESSAGE__'] = 'message';
-		this.socket.send(JSON.stringify(message_data));
-	}
-		
-	$(document).ready(function()
-	{
-		var socket = new SocketWrapper("ws://127.0.0.1:8080");
-		
-		//Generic events
-		
-		socket.on('connect', function() {
-			alert("socket is connected!");
-		});
-		
-		socket.on('data', function(data) {
-			alert('got message: ' + data)
-		});
-		
-		socket.on('close', function() {
-			alert("socket is disconnected!");
-		});
-		
-		socket.on('error', function(err) {
-			alert("Error: " + err);
-		});
-		
-		//Specific message type handlers
-		
-		socket.on('userInput', function(args) {
-			alert("Received user input: \"" + args['input'] + "\"");
-		});
-		$('#start_scan').click(()=>{
-			socket.send('start scan');
-		})
-	});
 </script>
 </body>
 </html>
