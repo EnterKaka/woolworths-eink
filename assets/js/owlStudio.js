@@ -1096,7 +1096,7 @@ export const owlStudio = function (cv1, cv2, parent) {
 
         let closestPoint = new THREE.Vector3();
         console.log(this.activeId)
-        for (let id of this.activeId) {
+        for (let id = 0; id < this.groupList.length; id++) {
 
             let target = this.groupList[id];
 
