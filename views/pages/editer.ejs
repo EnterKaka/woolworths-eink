@@ -652,17 +652,30 @@
                 <label for="ds-modelVolume" class="ml-1">Ground File</label>
                 <select class="select2 form-control select2-hidden-accessible mb-1" id="vground-list"
                   data-select2-id="default-select" tabindex="-1" aria-hidden="true">
-                  <option value="AK">Alaska</option>
-                  <option value="HI">Hawaii</option>
+                  <!-- <option value="AK">Alaska</option>
+                  <option value="HI">Hawaii</option> -->
                 </select>
                 <button type='button' class="btn btn-icon btn-outline-primary btn-glow round btn-sm mr-1 mb-1"
                   title='set ground file from PC' id='btn-ground'> set ground file from PC
                 </button>
-
+                <div style="display: flex;justify-content: space-around;">
+                  <label for="id-volume" class="ml-1" style="width:30%;">volume(m<sup>3</sup>)</label>
+                  <label for="id-mass" class="ml-1" style="width:30%;">mass(t)</label>
+                  <label for="id-densty" class="ml-1" style="width:30%;">densty(kg/m<sup>3</sup>)</label>
+                </div>
+                <div style="display: flex;justify-content: space-around;">
+                  <input type="number" value=0 class="form-control" style="width:30%;display: inline-block;"
+                    id="id-volume" placeholder="volume">
+                  <input type="number" value=0 class="form-control" style="width:30%;display: inline-block;"
+                    id="id-mass" placeholder="mass">
+                  <input type="number" value=0 class="form-control" style="width:30%;display: inline-block;"
+                    id="id-densty" placeholder="densty">
+                </div>
               </div>
               <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal" id="btn-vClose">Close</button>
                 <button type="button" class="btn btn-primary ml-1" id="btn-volume">Calculate</button>
+                <button type="button" class="btn btn-success ml-1" id="btn-vSave">save</button>
               </div>
             </div>
           </div>
@@ -811,17 +824,19 @@
                       </div>
                     </div>
                     <div class="table-responsive" style="position:relative">
-                      <table class="table mb-0">
+                      <table class="table mb-0" style="table-layout: fixed;">
                         <thead>
                           <tr>
                             <!-- <th style="display: none;">view</th> -->
-                            <th>name</th>
+                            <th style="width:205px;">name</th>
                             <th>date</th>
                             <th>time</th>
                             <th>type</th>
                             <th>volume</th>
+                            <th>mass</th>
+                            <th>densty</th>
                             <th>matrix</th>
-                            <th>#</th>
+                            <th style="width:205px;">#</th>
                           </tr>
                         </thead>
                         <tbody id="history-models">
@@ -879,14 +894,16 @@
 
                     </div>
                     <div class="table-responsive">
-                      <table class="table mb-0">
+                      <table class="table mb-0" style="table-layout: fixed;">
                         <thead>
                           <tr>
-                            <th>name</th>
+                            <th style="width:205px;">name</th>
                             <th>date</th>
                             <th>time</th>
                             <th>type</th>
                             <th>volume</th>
+                            <th>mass</th>
+                            <th>densty</th>
                             <th>matrix</th>
                             <th>#</th>
                           </tr>

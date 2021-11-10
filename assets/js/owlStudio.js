@@ -2008,6 +2008,14 @@ export const owlStudio = function (cv1, cv2, parent) {
 
     }
 
+    this.setVolumeMassDensty = function (id, v, m, d) {
+
+        this.sessionHistory[id].volume = v;
+        this.sessionHistory[id].mass = m;
+        this.sessionHistory[id].densty = d;
+
+    }
+
     this.getSelVolume = function (heap, ground) {
 
         let geometry = this.getIndexedGeom(heap);
@@ -2217,6 +2225,8 @@ export const owlStudio = function (cv1, cv2, parent) {
 
         this.initDraw();
 
+        this.updateModelname();
+
     }
 
     this.addTarget = function (id) {
@@ -2232,6 +2242,18 @@ export const owlStudio = function (cv1, cv2, parent) {
         this.listViewEngine(this.groupList, this.activeId);
 
         this.initDraw();
+
+        this.updateModelname();
+
+    }
+
+    this.updateModelname = () => {
+
+        let namelist = this.activeId.map((id) => {
+            return this.groupList[id].name;
+        })
+
+        $("#modelpath").text(namelist)
 
     }
 

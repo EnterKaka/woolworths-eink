@@ -245,6 +245,21 @@ function closeNav() {
     document.getElementById("core").style.marginRight = "0";
 }
 
+function inputedVolume() {
+    let mass = parseFloat(document.getElementById('id-mass').value)
+    document.getElementById('id-densty').value = mass * 1000 / parseFloat(document.getElementById('id-volume').value);
+}
+
+function inputedMass() {
+    let volume = parseFloat(document.getElementById('id-volume').value)
+    document.getElementById('id-densty').value = parseFloat(document.getElementById('id-mass').value) * 1000 / volume;
+}
+
+function inputedDensty() {
+    let volume = parseFloat(document.getElementById('id-volume').value)
+    document.getElementById('id-mass').value = parseFloat(document.getElementById('id-densty').value) * volume / 1000;
+}
+
 window.onload = function () {
     cloudmachine.init();
     cloudmachine.cloudController();
@@ -643,6 +658,8 @@ window.onload = function () {
               <td>${sessionHistory[i].time}</td>
               <td>${sessionHistory[i].type}</td>
               <td>${sessionHistory[i].volume}</td>
+              <td>${sessionHistory[i].mass}</td>
+              <td>${sessionHistory[i].densty}</td>
               <td ><button data-id=${i} class="matrixview btn btn-icon btn-outline-primary round btn-sm"
                     title='view and edit matrix' data-toggle="modal" data-target="#matrixModal" >matrix</button></td>
               <td style="width:230px;">
@@ -718,6 +735,8 @@ window.onload = function () {
                         <td>${res.data[i].time}</td>
                         <td>${res.data[i].type}</td>
                         <td>${res.data[i].volume}</td>
+                        <td>${res.data[i].mass}</td>
+                        <td>${res.data[i].densty}</td>
                         <td ><button data-id=${i} class="dbmatrixview btn btn-icon btn-outline-primary round btn-sm"
                             title='view matrix' data-toggle="modal" data-target="#dbMatrix" >matrix</button></td>
                         <td style="width:170px;">
@@ -808,8 +827,52 @@ window.onload = function () {
         let h = document.getElementById('vheap-list').value;
         let v = document.getElementById('vground-list').value;
         let volume = Math.abs(cloudmachine.calculateVolume(h, v));
-        $("#btn-vClose").trigger('click');
-        alert(volume)
+        document.getElementById('id-volume').value = volume;
+        inputedVolume();
+        // $("#btn-vClose").trigger('click');
+        // alert(volume)
+    })
+
+    document.getElementById('id-volume').addEventListener('change', function () {
+        console.log('volume change')
+        inputedVolume();
+    })
+
+    document.getElementById('id-volume').addEventListener('input', function () {
+        console.log('volume input')
+        inputedVolume();
+    })
+
+    document.getElementById('id-mass').addEventListener('change', function () {
+        console.log('mass change')
+        inputedMass();
+    })
+
+    document.getElementById('id-mass').addEventListener('input', function () {
+        console.log('mass input')
+        inputedMass();
+    })
+
+    document.getElementById('id-densty').addEventListener('change', function () {
+        console.log('densty change')
+        inputedDensty()
+    })
+
+    document.getElementById('id-densty').addEventListener('input', function () {
+        console.log('densty input')
+        inputedDensty()
+    })
+
+    document.getElementById('btn-vSave').addEventListener('click', function () {
+        console.log('volume saved')
+        let id = document.getElementById('vheap-list').value;
+        let v = document.getElementById('id-volume').value;
+        let m = document.getElementById('id-mass').value;
+        let d = document.getElementById('id-densty').value;
+
+        cloudmachine.setVolumeMassDensty(id, v, m, d)
+        alert('success')
+
     })
 
     document.getElementById('absTranslate').addEventListener('click', () => {
