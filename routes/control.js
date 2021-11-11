@@ -6,22 +6,23 @@ const Setting = require("../model/Setting");
 const Joi = require("joi");
 const exec = require("child_process").execFile;
 const { spawn } = require("child_process");
-const { networkInterfaces } = require("os");
+// const { networkInterfaces } = require("os");
+const ip = require("ip");
 var children = [];
 app.get("/", auth, async function (req, res) {
     // render to views/index.ejs template file
     console.log("******** load oes_control ************");
-    const nets = networkInterfaces();
-    let server_ip;
+    // const nets = networkInterfaces();
+    let server_ip = ip.address();
 
-    for (const name of Object.keys(nets)) {
-        for (const net of nets[name]) {
-            // Skip over non-IPv4 and internal (i.e. 127.0.0.1) addresses
-            if (net.family === "IPv4" && !net.internal) {
-                if (name == "Ethernet") server_ip = net.address;
-            }
-        }
-    }
+    // for (const name of Object.keys(nets)) {
+    //     for (const net of nets[name]) {
+    //         // Skip over non-IPv4 and internal (i.e. 127.0.0.1) addresses
+    //         if (net.family === "IPv4" && !net.internal) {
+    //             if (name == "Ethernet" || name == "") server_ip = net.address;
+    //         }
+    //     }
+    // }
     res.render("pages/oes_control", {
         title: "3D Viewer - Owl Studio Web App",
         priv: req.user.privilege,
