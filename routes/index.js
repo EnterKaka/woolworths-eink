@@ -239,21 +239,6 @@ app.post("/login", async function (req, res) {
     }
 });
 
-app.get("/oes_control", auth, async function (req, res) {
-    // render to views/index.ejs template file
-    console.log("******** load oes_control ************");
-
-    res.render("pages/oes_control", {
-        title: "3D Viewer - Owl Studio Web App",
-        priv: req.user.privilege,
-        model_data: "",
-    });
-    // }
-    // else{
-    // 	res.redirect('/data/');
-    // }
-});
-
 function makeSortedDatasbytime(lastmodelname, allmodels) {
     var sorteddata = allmodels,
         tmp_data,
