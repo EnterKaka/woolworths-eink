@@ -653,14 +653,14 @@ window.onload = function () {
             if (!sessionHistory[i].deleted) {
                 htable.innerHTML += `<tr>
               <td style="width:180px;padding:10px;display:none;"><span id = "preview${i}" class="rect" style=""></span></td>
-              <td contenteditable="true" data-id=${i}>${sessionHistory[i].name}</td>
+              <td data-id=${i} style="padding:0"><input data-id=${i} class="m-namelist" style="border:0;padding:10px" value="${sessionHistory[i].name}"></td>
               <td>${sessionHistory[i].date}</td>
               <td>${sessionHistory[i].time}</td>
               <td>${sessionHistory[i].type}</td>
               <td>${sessionHistory[i].volume}</td>
               <td>${sessionHistory[i].mass}</td>
               <td>${sessionHistory[i].densty}</td>
-              <td ><button data-id=${i} class="matrixview btn btn-icon btn-outline-primary round btn-sm"
+              <td><button data-id=${i} class="matrixview btn btn-icon btn-outline-primary round btn-sm"
                     title='view and edit matrix' data-toggle="modal" data-target="#matrixModal" >matrix</button></td>
               <td style="width:230px;">
                 <button data-id=${i} class="hload-btn btn btn-icon btn-outline-primary  round btn-sm"
@@ -701,6 +701,12 @@ window.onload = function () {
             sessionHistory[parseInt(this.dataset.id)].deleted = true;
             $(this.parentElement.parentElement).remove();
             // $('#browser-close').trigger('click');
+        })
+        $('.m-namelist').on('change', function () {
+            cloudmachine.sessionHistory[parseInt(this.dataset.id)].name = this.value;
+        })
+        $('.m-namelist').on('input', function () {
+            cloudmachine.sessionHistory[parseInt(this.dataset.id)].name = this.value;
         })
         // setTimeout(() => {
         //     for (let i = 0; i < sessionHistory.length; i++) {
@@ -792,7 +798,7 @@ window.onload = function () {
         let clonelist = document.getElementById('history-models').children;
         for (let i = 0; i < clonelist.length; i++) {
             let n = clonelist[i].children[1].dataset.id;
-            sessionHistory[n].name = clonelist[i].children[1].innerText.trim();
+            // sessionHistory[n].name = clonelist[i].children[1].innerText.trim();
             savedata.push(sessionHistory[n]);
         }
         // loading.style.display = 'block';

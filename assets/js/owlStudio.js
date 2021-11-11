@@ -106,9 +106,9 @@ export const owlStudio = function (cv1, cv2, parent) {
 
     }
 
-    this.addToHistory = function (history, array) {
+    this.addToHistory = function (history, data) {
 
-        history.data[history.step] = array;
+        history.data[history.step] = data;
 
         history.step++;
 
@@ -224,7 +224,7 @@ export const owlStudio = function (cv1, cv2, parent) {
 
             this.scene.add(target.group)
 
-        } else {
+        } else if (Array.isArray(arrayData)) {
 
             target = this.groupList[newModel];
 
@@ -234,6 +234,13 @@ export const owlStudio = function (cv1, cv2, parent) {
 
             }
 
+        } else {
+            target = this.groupList[newModel];
+            if (arrayData.position) {
+                target.group.position.copy(arrayData.position)
+            }
+            this.render()
+            return;
         }
 
         // this.target = target;
@@ -1176,9 +1183,15 @@ export const owlStudio = function (cv1, cv2, parent) {
             let ty = vector.y - v.y;
             let tz = vector.z - v.z;
 
+            if (tx == 0 && ty == 0 && tz == 0) {
+                return;
+            }
+
             for (let id of this.activeId) {
 
                 let target = this.groupList[id];
+
+                this.addToHistory(target.history, { position: new THREE.Vector3().copy(target.group.position) })
 
                 target.group.position.x += tx;
                 target.group.position.y += ty;
