@@ -44,7 +44,7 @@
 				background-color: #28afd0;
 				color: white;
 			}
-			table{
+			.table-responsive{
 				border-radius: 10px;
 			}
 		</style>
@@ -116,30 +116,32 @@
 													</div>
 												</div>
 											</fieldset>
-											<table class="table table-striped table-hover table-border table-responsive">
-												<thead>
-													<tr>
-														<th>Day</th>
-														<th>Interval Value</th>
-														<th>Interval Unit</th>
-														<th>Start time</th>
-														<th>End time</th>
-														<th style="text-align: center;" onclick="openTable()"><i class="la la-angle-up"></i></th>
-													</tr>
-												</thead>
-												<tbody>
-													<% for(var i=0; i<schedule_data.length; i++) {%>
+											<div class="table-responsive">
+												<table class="table table-striped table-hover table-border">
+													<thead>
 														<tr>
-															<td><%=schedule_data[i].day%></td>
-															<td>1</td>
-															<td>hr</td>
-															<td>09</td>
-															<td>22</td>
-															<td style="padding:0rem"><button class="btn btn-info" style="padding: 0.5rem;"><i class="la la-pencil"></i></button></td>
+															<th>Day</th>
+															<th>Interval Value</th>
+															<th>Interval Unit</th>
+															<th>Start time</th>
+															<th>End time</th>
+															<th style="text-align: center;" onclick="openTable()"><i class="la la-angle-up"></i></th>
 														</tr>
-														<%}%>
-												</tbody>
-											</table>
+													</thead>
+													<tbody>
+														<% for(var i=0; i<schedule_data.length; i++) {%>
+															<tr>
+																<td><%=schedule_data[i].day%></td>
+																<td>1</td>
+																<td>hr</td>
+																<td>09</td>
+																<td>22</td>
+																<td style="text-align: center;"><button class="btn btn-info" style="padding: 0.5rem;"><i class="la la-pencil"></i></button></td>
+															</tr>
+															<%}%>
+													</tbody>
+												</table>
+											</div>
 											<!-- <div>
 												<img src="/img/loading.gif" id="loadingimg" style="position: absolute;top: 0px;right: 0;left: 0;margin: 0 auto; z-index: 100;">
 											</div>	 -->
