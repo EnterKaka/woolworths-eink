@@ -14,7 +14,15 @@ app.get("/", auth, async function (req, res) {
     console.log("******** load oes_control ************");
     // const nets = networkInterfaces();
     let server_ip = ip.address();
-
+    let schedule_data = [
+        { day: "Monday" },
+        { day: "Tuesday" },
+        { day: "Wednesday" },
+        { day: "Thursday" },
+        { day: "Friday" },
+        { day: "Saturday" },
+        { day: "Sunday" },
+    ];
     // for (const name of Object.keys(nets)) {
     //     for (const net of nets[name]) {
     //         // Skip over non-IPv4 and internal (i.e. 127.0.0.1) addresses
@@ -27,6 +35,7 @@ app.get("/", auth, async function (req, res) {
         title: "3D Viewer - Owl Studio Web App",
         priv: req.user.privilege,
         server_ip: server_ip,
+        schedule_data: schedule_data,
         path: "C:\\Windows\\notepad.exe",
     });
 });

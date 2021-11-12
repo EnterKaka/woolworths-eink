@@ -37,6 +37,16 @@
 			.alert .close{
 				line-height: 0rem;
 			}
+			th,td{
+				vertical-align: middle !important;
+			}
+			thead{
+				background-color: #28afd0;
+				color: white;
+			}
+			table{
+				border-radius: 10px;
+			}
 		</style>
 	</head>
 	<body class="vertical-layout vertical-menu 2-columns   menu-expanded fixed-navbar" data-open="click" data-menu="vertical-menu" data-color="bg-gradient-x-purple-blue" data-col="2-columns">
@@ -106,6 +116,30 @@
 													</div>
 												</div>
 											</fieldset>
+											<table class="table table-striped table-hover table-border table-responsive">
+												<thead>
+													<tr>
+														<th>Day</th>
+														<th>Interval Value</th>
+														<th>Interval Unit</th>
+														<th>Start time</th>
+														<th>End time</th>
+														<th style="text-align: center;" onclick="openTable()"><i class="la la-angle-up"></i></th>
+													</tr>
+												</thead>
+												<tbody>
+													<% for(var i=0; i<schedule_data.length; i++) {%>
+														<tr>
+															<td><%=schedule_data[i].day%></td>
+															<td>1</td>
+															<td>hr</td>
+															<td>09</td>
+															<td>22</td>
+															<td style="padding:0rem"><button class="btn btn-info" style="padding: 0.5rem;"><i class="la la-pencil"></i></button></td>
+														</tr>
+														<%}%>
+												</tbody>
+											</table>
 											<!-- <div>
 												<img src="/img/loading.gif" id="loadingimg" style="position: absolute;top: 0px;right: 0;left: 0;margin: 0 auto; z-index: 100;">
 											</div>	 -->
@@ -155,6 +189,8 @@
 	});
 	let socket_state;
 	let terminal = false;
+	let expandTable = true;
+	/******************************  app  section  ******************/
 	/*
 		run app along path
 	*/
@@ -180,6 +216,7 @@
 				showMessage('warning', 'Close APP', "There isn't opened App");
 		});
 	}
+	/******************************  socket  section  ******************/
 	/*
 		scan pointcloud if socket live
 	*/
@@ -329,6 +366,7 @@
 			}
 		objTerminal.scrollTop = objTerminal.scrollHeight;
 	}
+	/******************************  Terminal  ***********************/
 	function openTerminal(){
 		terminal = !terminal;
 		if(terminal){
@@ -338,6 +376,16 @@
 		}else{
 			$('#terminal').hide();
 			$('.la.la-angle-down').removeClass('la-angle-down').addClass('la-angle-up');
+		}
+	}
+	function openTable(){
+		expandTable = !expandTable;
+		if(expandTable){
+			$('tbody').show();
+			$('.la.la-angle-down').removeClass('la-angle-down').addClass('la-angle-up');
+		}else{
+			$('tbody').hide();
+			$('.la.la-angle-up').removeClass('la-angle-up').addClass('la-angle-down');
 		}
 	}
 </script>
