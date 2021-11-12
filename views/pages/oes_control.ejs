@@ -299,6 +299,7 @@
 	/*
 		set socket status
 	*/
+	var objTerminal = document.getElementById("terminal");
 	function setStatus(status){
 		var today = new Date();
 		var date = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate();
@@ -325,15 +326,15 @@
 				break;
 			default:
 				break;
-		}
+			}
+		objTerminal.scrollTop = objTerminal.scrollHeight;
 	}
 	function openTerminal(){
 		terminal = !terminal;
 		if(terminal){
 			$('#terminal').show();
 			$('.la.la-angle-up').removeClass('la-angle-up').addClass('la-angle-down');
-			var objDiv = document.getElementById("terminal");
-			objDiv.scrollTop = objDiv.scrollHeight;
+			objTerminal.scrollTop = objTerminal.scrollHeight;
 		}else{
 			$('#terminal').hide();
 			$('.la.la-angle-down').removeClass('la-angle-down').addClass('la-angle-up');
