@@ -23,8 +23,16 @@
 				bottom: 0%;
 				width: calc(100% - 260px);
 			}
+			@media (max-width: 768px){
+				footer.footer{
+					width: 100%;
+				}
+			}
 			#mini{
-				float: right;
+				/* float: right; */
+				position: fixed;
+				bottom: 8px;
+				right: 30px;
 			}
 			button.close:focus{
 				outline: none;
@@ -136,7 +144,7 @@
 																<td>hr</td>
 																<td>09</td>
 																<td>22</td>
-																<td style="text-align: center;"><button class="btn btn-info" style="padding: 0.5rem;"><i class="la la-pencil"></i></button></td>
+																<td style="text-align: center;"><button class="btn btn-info" style="padding: 0.5rem;" onclick="openModal('<%=schedule_data[i].day%>')"><i class="la la-pencil"></i></button></td>
 															</tr>
 															<%}%>
 													</tbody>
@@ -157,239 +165,304 @@
 			</div>
 		</div>
 <!-- ////////////////////////////////////////////////////////////////////////////-->
+		<!-- Modal -->
+		<div class="modal fade" id="dayModal" role="dialog" style="z-index: 1052;">
+			<div class="modal-dialog modal-lg">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h4 class="modal-title">Modal Header</h4>
+						<button type="button" class="close" data-dismiss="modal">&times;</button>
+					</div>
+					<div class="modal-body">
+						<div class="row">
+							<div class="col-lg-3 col-md-6 col-6">
+								<div class="input-group" style="margin: 5px;">
+									<div class="input-group-prepend">
+										<span class="input-group-text" style="cursor: pointer;">Value</span>
+									</div>
+									<input type="text" id="interval_value" class="form-control" value="1" aria-label="Recipient's username" aria-describedby="basic-addon2">
+								</div>
+							</div>
+							<div class="col-lg-3 col-md-6 col-6">
+								<div class="input-group" style="margin: 5px;">
+									<div class="input-group-prepend">
+									 	<label class="input-group-text" for="unit">Unit</label>
+									</div>
+									<select class="custom-select" id="unit">
+										<option value="hr" selected>hr</option>
+									  	<option value="min">min</option>
+									</select>
+								</div>
+							</div>
+							<div class="col-lg-3 col-md-6 col-6">
+								<div class="input-group" style="margin: 5px;">
+									<div class="input-group-prepend">
+									 	<label class="input-group-text" for="startime">Time</label>
+									</div>
+									<select class="custom-select" id="starttime">
+										  <% for(var i=0; i<24; i++) {%>
+											<option value="<%=i%>"><%=i%></option>
+										<%}%>
+									</select>
+								</div>
+							</div>
+							<div class="col-lg-3 col-md-6 col-6">
+								<div class="input-group" style="margin: 5px;">
+									<div class="input-group-prepend">
+									 	<label class="input-group-text" for="endtime">Time</label>
+									</div>
+									<select class="custom-select" id="endtime">
+										<% for(var i=0; i<24; i++) {%>
+										  <option value="<%=i%>"><%=i%></option>
+									  <%}%>
+									</select>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="modal-footer" style="justify-content: center;">
+						<button type="button" class="btn btn-info" data-dismiss="modal">Save</button>
+					</div>
+				</div>
+			</div>
+		</div>
+<!-- /////////////////////////////////////////////////////////////////////////// -->
+		<footer class="footer footer-light navbar-border navbar-shadow">
+			<div id="terminal">
 
-<footer class="footer footer-light navbar-border navbar-shadow">
-	<div id="terminal">
+			</div>
+			<div class="clearfix blue-grey lighten-2 text-sm-center mb-0 px-2">
+				<span class="float-md-left d-block d-md-inline-block">2021  &copy; Copyright 
+					<a class="text-bold-800 grey darken-2" href="https://themeselection.com" target="_blank"> &nbsp;Quirin Kraus</a>
+				</span>
+				<span id="mini" onclick="openTerminal()"><i class="la la-angle-up"></i></span>
+			</div>
+		</footer>
+		<script src="./theme-assets/js/core/libraries/bootstrap.min.js"></script>
+		<script src="./theme-assets/vendors/js/forms/toggle/switchery.min.js"></script>
+		<script src="./theme-assets/js/scripts/forms/switch.min.js"></script>
+		<script src="./theme-assets/vendors/js/forms/tags/form-field.js"></script>
 
-	</div>
-    <div class="clearfix blue-grey lighten-2 text-sm-center mb-0 px-2">
-      <span class="float-md-left d-block d-md-inline-block">2021  &copy; Copyright 
-        <a class="text-bold-800 grey darken-2" href="https://themeselection.com" target="_blank"> &nbsp;Quirin Kraus</a>
-      </span>
-	  <span id="mini" onclick="openTerminal()"><i class="la la-angle-up"></i></span>
-    </div>
-  </footer>
-  <script src="./theme-assets/js/core/libraries/bootstrap.min.js"></script>
-  <script src="./theme-assets/vendors/js/forms/toggle/switchery.min.js"></script>
-  <script src="./theme-assets/js/scripts/forms/switch.min.js"></script>
-  <script src="./theme-assets/vendors/js/forms/tags/form-field.js"></script>
-  
-  <!-- BEGIN: Vendor JS-->
-  <!-- <script src="./theme-assets/js/core/app-menu.min.js" type="text/javascript"></script>
-  <script src="./theme-assets/js/core/app.min.js" type="text/javascript"></script> -->
-  <script src="./theme-assets/js/scripts/customizer.min.js" type="text/javascript"></script>
-  <script src="./theme-assets/vendors/js/jquery.sharrre.js" type="text/javascript"></script>
-  <!-- END: Theme JS -->
-<!-- page content end -->
-<script>
-	var server_ip = <%- JSON.stringify(server_ip) %>; 
-</script>
-<script type="text/javascript">
-	$(document).ready(()=>{
-		initWebSocket();
-		$('#terminal').hide();
-	});
-	let socket_state;
-	let terminal = false;
-	let expandTable = true;
-	/******************************  app  section  ******************/
-	/*
-		run app along path
-	*/
-	function runApp(){
-		let param = {path:$('#filepath').val()};
-		$.post( '/control/runApp', param, function( result ) {
-			if(result === 'success')
-				showMessage('success','OPEN APP', "Open Successfully.");
-			else
-				showMessage('error', 'OPEN APP', "Input correct *.exe file path");
+		<!-- BEGIN: Vendor JS-->
+		<!-- <script src="./theme-assets/js/core/app-menu.min.js" type="text/javascript"></script>
+		<script src="./theme-assets/js/core/app.min.js" type="text/javascript"></script> -->
+		<script src="./theme-assets/js/scripts/customizer.min.js" type="text/javascript"></script>
+		<script src="./theme-assets/vendors/js/jquery.sharrre.js" type="text/javascript"></script>
+		<!-- END: Theme JS -->
+		<!-- page content end -->
+		<script>
+			var server_ip = <%- JSON.stringify(server_ip) %>; 
+		</script>
+		<script type="text/javascript">
+			$(document).ready(()=>{
+				initWebSocket();
+				$('#terminal').hide();
+			});
+			let socket_state;
+			let terminal = false;
+			let expandTable = true;
+			/******************************  app  section  ******************/
+			/*
+				run app along path
+			*/
+			function runApp(){
+				let param = {path:$('#filepath').val()};
+				$.post( '/control/runApp', param, function( result ) {
+					if(result === 'success')
+						showMessage('success','OPEN APP', "Open Successfully.");
+					else
+						showMessage('error', 'OPEN APP', "Input correct *.exe file path");
 
-		});
-	}
-	/*
-		kill app
-	*/
-	function killApp(){
-		let param = [];
-		$.post( '/control/killApp', param, function( result ) {
-			if(result === 'success')
-				showMessage('success','Close APP', "Closed Successfully.");
-			else
-				showMessage('warning', 'Close APP', "There isn't opened App");
-		});
-	}
-	/******************************  socket  section  ******************/
-	/*
-		scan pointcloud if socket live
-	*/
-	function scan(){
-		var state = checkSocket();
-		if(state === 1){
-			sendMessage("start scan");
-		}else{
-			showMessage('warning','SOCKET', 'Socket disconnected');
-		}
-	}
-	/*
-		message show
-	*/
-	function showMessage(status,head,text){
-		$.toast({
-			heading: head,
-			text: text,
-			showHideTransition: 'fade',
-			icon: status,
-			hideAfter: 5000   // in milli seconds
-		});
-	}
-	/*
-		send data to socket server and receive message from websocket server.
-	*/
-	function sendMessage(msg) {
-	if ( websocket != null )
-		{
-			websocket.send( msg );
-			console.log( "string sent :", '"'+msg+'"' );
-		}
-	}
-	
-	var wsUri = "ws://" + server_ip + ":1234";
-	var websocket = null;
-	/*
-		link socket server.
-	*/
-	function initWebSocket() {
-		try {
-			if (typeof MozWebSocket == 'function')
-				WebSocket = MozWebSocket;
-			if ( websocket && websocket.readyState == 1 ){
-				showMessage('success','STATUS', 'Socket is already connected');
-				return;
+				});
 			}
-			websocket = new WebSocket( wsUri );
-			websocket.onopen = function (evt) {
-				setStatus('Connected');
-				showMessage('success','SOCKET', 'Socket connected');
-			};
-			websocket.onclose = function (evt) {
-				setStatus('Disconnected');
-				showMessage('warning','SOCKET', 'Socket disconnected');
-			};
-			websocket.onmessage = function (evt) {
-				setStatus('Scan');
-				showMessage('info','MESSAGE', evt.data);
-			};
-			websocket.onerror = function (evt) {
-				showMessage('error','SOCKET', 'FAILED');
-			};
-		} catch (exception) {
-			showMessage('error','SOCKET', 'FAILED');
-		}
-	}
-	/*
-		disconnect socket server.
-	*/
-	function stopWebSocket() {
-		if (websocket){
-			websocket.close();
-			showMessage('success','STATUS', 'Disconnect successfully');
-		}else{
-			showMessage('warning','STATUS', 'Socket is already disconnected');
-		}
-	}
-	/*
-		display status message
-	*/
-	function checkSocket_message(status){
-		switch(status){
-			case 0: {
-				showMessage('success','STATUS', 'Socket connecting');
-				break;
+			/*
+				kill app
+			*/
+			function killApp(){
+				let param = [];
+				$.post( '/control/killApp', param, function( result ) {
+					if(result === 'success')
+						showMessage('success','Close APP', "Closed Successfully.");
+					else
+						showMessage('warning', 'Close APP', "There isn't opened App");
+				});
 			}
-			case 1: {
-				showMessage('success','STATUS', 'Socket open');
-				break;
+			/******************************  socket  section  ******************/
+			/*
+				scan pointcloud if socket live
+			*/
+			function scan(){
+				var state = checkSocket();
+				if(state === 1){
+					sendMessage("start scan");
+				}else{
+					showMessage('warning','SOCKET', 'Socket disconnected');
+				}
 			}
-			case 2: {
-				showMessage('warning','STATUS', 'Socket closing');
-				break;
+			/*
+				message show
+			*/
+			function showMessage(status,head,text){
+				$.toast({
+					heading: head,
+					text: text,
+					showHideTransition: 'fade',
+					icon: status,
+					hideAfter: 5000   // in milli seconds
+				});
 			}
-			case 3: {
-				showMessage('warning','STATUS', 'Socket closed');
-				break;
+			/*
+				send data to socket server and receive message from websocket server.
+			*/
+			function sendMessage(msg) {
+			if ( websocket != null )
+				{
+					websocket.send( msg );
+					console.log( "string sent :", '"'+msg+'"' );
+				}
 			}
-			default: {
-				showMessage('error','STATUS', 'UNKNOW');
-				break;
+			
+			var wsUri = "ws://" + server_ip + ":1234";
+			var websocket = null;
+			/*
+				link socket server.
+			*/
+			function initWebSocket() {
+				try {
+					if (typeof MozWebSocket == 'function')
+						WebSocket = MozWebSocket;
+					if ( websocket && websocket.readyState == 1 ){
+						showMessage('success','STATUS', 'Socket is already connected');
+						return;
+					}
+					websocket = new WebSocket( wsUri );
+					websocket.onopen = function (evt) {
+						setStatus('Connected');
+						showMessage('success','SOCKET', 'Socket connected');
+					};
+					websocket.onclose = function (evt) {
+						setStatus('Disconnected');
+						showMessage('warning','SOCKET', 'Socket disconnected');
+					};
+					websocket.onmessage = function (evt) {
+						setStatus('Scan');
+						showMessage('info','MESSAGE', evt.data);
+					};
+					websocket.onerror = function (evt) {
+						showMessage('error','SOCKET', 'FAILED');
+					};
+				} catch (exception) {
+					showMessage('error','SOCKET', 'FAILED');
+				}
 			}
-		}
-	}
-	/*
-		check socket status
-	*/
-	function checkSocket() {
-		if (websocket != null) {
-			return websocket.readyState;
-		} else {
-			showMessage('error','SOCKET', 'FAILED');
-			return 'no';
-		}
-	}
-	/*
-		set socket status
-	*/
-	var objTerminal = document.getElementById("terminal");
-	function setStatus(status){
-		var today = new Date();
-		var date = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate();
-		var time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
-		var dateTime = date+' '+time;
-		switch(status){
-			case 'Connected':
-				if(socket_state === 'connect') return;
-				socket_state = 'connect';
-				var str = 'Connected ( ' + dateTime + ' )';
-				$('#status').html(str).css('color','green');
-				$('#terminal').append('<div class="alert alert-success alert-dismissible fade show" role="alert"><strong>' + str + '</strong><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>');
-				break;
-			case 'Disconnected':
-				if(socket_state === 'disconnect') return;
-				socket_state = 'disconnect';
-				var str = 'Disconnected ( ' + dateTime + ' )';
-				$('#status').html(str).css('color','red');
-				$('#terminal').append('<div class="alert alert-danger alert-dismissible fade show" role="alert"><strong>' + str + '</strong><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>');
-				break;
-			case 'Scan':
-				var str = 'Scan successfully ( ' + dateTime + ' )';
-				$('#terminal').append('<div class="alert alert-info alert-dismissible fade show" role="alert"><strong>' + str + '</strong><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>');
-				break;
-			default:
-				break;
+			/*
+				disconnect socket server.
+			*/
+			function stopWebSocket() {
+				if (websocket){
+					websocket.close();
+					showMessage('success','STATUS', 'Disconnect successfully');
+				}else{
+					showMessage('warning','STATUS', 'Socket is already disconnected');
+				}
 			}
-		objTerminal.scrollTop = objTerminal.scrollHeight;
-	}
-	/******************************  Terminal  ***********************/
-	function openTerminal(){
-		terminal = !terminal;
-		if(terminal){
-			$('#terminal').show();
-			$('.la.la-angle-up').removeClass('la-angle-up').addClass('la-angle-down');
-			objTerminal.scrollTop = objTerminal.scrollHeight;
-		}else{
-			$('#terminal').hide();
-			$('.la.la-angle-down').removeClass('la-angle-down').addClass('la-angle-up');
-		}
-	}
-	function openTable(){
-		expandTable = !expandTable;
-		if(expandTable){
-			$('tbody').show();
-			$('.la.la-angle-down').removeClass('la-angle-down').addClass('la-angle-up');
-		}else{
-			$('tbody').hide();
-			$('.la.la-angle-up').removeClass('la-angle-up').addClass('la-angle-down');
-		}
-	}
-</script>
-</body>
+			/*
+				display status message
+			*/
+			function checkSocket_message(status){
+				switch(status){
+					case 0: {
+						showMessage('success','STATUS', 'Socket connecting');
+						break;
+					}
+					case 1: {
+						showMessage('success','STATUS', 'Socket open');
+						break;
+					}
+					case 2: {
+						showMessage('warning','STATUS', 'Socket closing');
+						break;
+					}
+					case 3: {
+						showMessage('warning','STATUS', 'Socket closed');
+						break;
+					}
+					default: {
+						showMessage('error','STATUS', 'UNKNOW');
+						break;
+					}
+				}
+			}
+			/*
+				check socket status
+			*/
+			function checkSocket() {
+				if (websocket != null) {
+					return websocket.readyState;
+				} else {
+					showMessage('error','SOCKET', 'FAILED');
+					return 'no';
+				}
+			}
+			/*
+				set socket status
+			*/
+			var objTerminal = document.getElementById("terminal");
+			function setStatus(status){
+				var today = new Date();
+				var date = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate();
+				var time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
+				var dateTime = date+' '+time;
+				switch(status){
+					case 'Connected':
+						if(socket_state === 'connect') return;
+						socket_state = 'connect';
+						var str = 'Connected ( ' + dateTime + ' )';
+						$('#status').html(str).css('color','green');
+						$('#terminal').append('<div class="alert alert-success alert-dismissible fade show" role="alert"><strong>' + str + '</strong><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>');
+						break;
+					case 'Disconnected':
+						if(socket_state === 'disconnect') return;
+						socket_state = 'disconnect';
+						var str = 'Disconnected ( ' + dateTime + ' )';
+						$('#status').html(str).css('color','red');
+						$('#terminal').append('<div class="alert alert-danger alert-dismissible fade show" role="alert"><strong>' + str + '</strong><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>');
+						break;
+					case 'Scan':
+						var str = 'Scan successfully ( ' + dateTime + ' )';
+						$('#terminal').append('<div class="alert alert-info alert-dismissible fade show" role="alert"><strong>' + str + '</strong><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>');
+						break;
+					default:
+						break;
+					}
+				objTerminal.scrollTop = objTerminal.scrollHeight;
+			}
+			/******************************  Terminal  ***********************/
+			function openTerminal(){
+				terminal = !terminal;
+				if(terminal){
+					$('#terminal').fadeIn();
+					$('.la.la-angle-up').removeClass('la-angle-up').addClass('la-angle-down');
+					objTerminal.scrollTop = objTerminal.scrollHeight;
+				}else{
+					$('#terminal').fadeOut();
+					$('.la.la-angle-down').removeClass('la-angle-down').addClass('la-angle-up');
+				}
+			}
+			function openTable(){
+				expandTable = !expandTable;
+				if(expandTable){
+					$('tbody').fadeIn();
+					$('.la.la-angle-down').removeClass('la-angle-down').addClass('la-angle-up');
+				}else{
+					$('tbody').fadeOut();
+					$('.la.la-angle-up').removeClass('la-angle-up').addClass('la-angle-down');
+				}
+			}
+			function openModal(day){
+				$('#dayModal').modal('show');
+				$('.modal-title').html(day);
+			}
+		</script>
+	</body>
 </html>
