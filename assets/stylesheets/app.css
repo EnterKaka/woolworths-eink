@@ -103,6 +103,7 @@ div#DataTables_Table_0_length{
 }
 footer.footer.expand{
     margin-left: 0px !important;
+    width: 100%;
 }
 
 .dashborad_three #viewer_3d.expand{

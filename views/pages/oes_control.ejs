@@ -5,11 +5,33 @@
 		<%- include('../partials/head'); %>
 		<!-- END Three.js Load -->
 		<style>
-			button{
+			button.btn-min-width{
 				width: 130px;
 				padding: 0.75rem !important;
 				margin: 5px !important;
 				/* text-align: left !important; */
+			}
+			.content{
+				min-height: auto !important;
+			}
+			footer.footer{
+				position: fixed;
+				bottom: 0%;
+				width: calc(100% - 260px);
+			}
+			#mini{
+				float: right;
+			}
+			button.close:focus{
+				outline: none;
+			}
+			.alert{
+				width: calc(100% - 10px);
+				padding: 0.5rem 1.25rem;
+				margin-bottom: 0.5rem;
+			}
+			.alert .close{
+				line-height: 0rem;
 			}
 		</style>
 	</head>
@@ -95,13 +117,19 @@
 			</div>
 		</div>
 <!-- ////////////////////////////////////////////////////////////////////////////-->
-<footer class="footer footer-static footer-light navbar-border navbar-shadow">
+
+<footer class="footer footer-light navbar-border navbar-shadow">
+	<div id="terminal">
+
+	</div>
     <div class="clearfix blue-grey lighten-2 text-sm-center mb-0 px-2">
       <span class="float-md-left d-block d-md-inline-block">2021  &copy; Copyright 
         <a class="text-bold-800 grey darken-2" href="https://themeselection.com" target="_blank"> &nbsp;Quirin Kraus</a>
       </span>
+	  <span id="mini" onclick="openTerminal()"><i class="la la-angle-up"></i></span>
     </div>
   </footer>
+  <script src="./theme-assets/js/core/libraries/bootstrap.min.js"></script>
   <script src="./theme-assets/vendors/js/forms/toggle/switchery.min.js"></script>
   <script src="./theme-assets/js/scripts/forms/switch.min.js"></script>
   <script src="./theme-assets/vendors/js/forms/tags/form-field.js"></script>
@@ -119,8 +147,10 @@
 <script type="text/javascript">
 	$(document).ready(()=>{
 		initWebSocket();
+		$('#terminal').hide();
 	});
 	let socket_state;
+	let terminal = false;
 	/*
 		run app along path
 	*/
@@ -274,17 +304,34 @@
 			case 'Connected':
 				if(socket_state === 'connect') return;
 				socket_state = 'connect';
-				$('#status').html('Connected ( ' + dateTime + ' )').css('color','green');
+				var str = 'Connected ( ' + dateTime + ' )';
+				$('#status').html(str).css('color','green');
+				$('#terminal').append('<div class="alert alert-success alert-dismissible fade show" role="alert"><strong>' + str + '</strong><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>');
 				break;
 			case 'Disconnected':
 				if(socket_state === 'disconnect') return;
 				socket_state = 'disconnect';
-				$('#status').html('Disconnected ( ' + dateTime + ' )').css('color','red');
+				var str = 'Disconnected ( ' + dateTime + ' )';
+				$('#status').html(str).css('color','red');
+				$('#terminal').append('<div class="alert alert-danger alert-dismissible fade show" role="alert"><strong>' + str + '</strong><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>');
 				break;
 			case 'Scan':
+				var str = 'Scan successfully ( ' + dateTime + ' )';
+				$('#terminal').append('<div class="alert alert-info alert-dismissible fade show" role="alert"><strong>' + str + '</strong><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>');
 				break;
 			default:
 				break;
+		}
+	}
+	function openTerminal(){
+		terminal = !terminal;
+		console.log(terminal)
+		if(terminal){
+			$('#terminal').show();
+			$('.la.la-angle-up').removeClass('la-angle-up').addClass('la-angle-down');
+		}else{
+			$('#terminal').hide();
+			$('.la.la-angle-down').removeClass('la-angle-down').addClass('la-angle-up');
 		}
 	}
 </script>
