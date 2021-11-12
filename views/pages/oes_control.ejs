@@ -329,10 +329,11 @@
 	}
 	function openTerminal(){
 		terminal = !terminal;
-		console.log(terminal)
 		if(terminal){
 			$('#terminal').show();
 			$('.la.la-angle-up').removeClass('la-angle-up').addClass('la-angle-down');
+			var objDiv = document.getElementById("terminal");
+			objDiv.scrollTop = objDiv.scrollHeight;
 		}else{
 			$('#terminal').hide();
 			$('.la.la-angle-down').removeClass('la-angle-down').addClass('la-angle-up');
