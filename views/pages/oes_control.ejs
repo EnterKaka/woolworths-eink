@@ -55,9 +55,7 @@
 									</div>
 									<div class="card-content collapse show"  style="position: relative;">
 										<div class="card-body">
-											<fieldset>
-												<legend>Socket Status</legend>
-											</fieldset>
+											<h2>Socket Status : <span style="font-size: smaller;" id="status"></span></h2><br>
 											<fieldset class="close_field">
 												<legend class="close_field">Socket Control</legend>
 												<button type="button" onclick="initWebSocket()" id="connect" class="btn btn-info btn-min-width"><i class="ft-wifi"></i> Connect</button>
@@ -122,19 +120,23 @@
 	$(document).ready(()=>{
 		initWebSocket();
 	});
-	$('#fileopen').click(()=>{
-		$('#customFile').trigger('click');
-	});
-	$("#customFile").on("change", function() {
-		$("#path").val(this.files[0].name);
-	});
-
+	let socket_state;
+	/*
+		run app along path
+	*/
 	function runApp(){
 		let param = {path:$('#filepath').val()};
 		$.post( '/control/runApp', param, function( result ) {
+			if(result === 'success')
+				showMessage('success','OPEN APP', "Open Successfully.");
+			else
+				showMessage('error', 'OPEN APP', "Input correct *.exe file path");
+
 		});
 	}
-
+	/*
+		kill app
+	*/
 	function killApp(){
 		let param = [];
 		$.post( '/control/killApp', param, function( result ) {
@@ -144,13 +146,20 @@
 				showMessage('warning', 'Close APP', "There isn't opened App");
 		});
 	}
-
+	/*
+		scan pointcloud if socket live
+	*/
 	function scan(){
 		var state = checkSocket();
 		if(state === 1){
-			sendMessage("start scan")
+			sendMessage("start scan");
+		}else{
+			showMessage('warning','SOCKET', 'Socket disconnected');
 		}
 	}
+	/*
+		message show
+	*/
 	function showMessage(status,head,text){
 		$.toast({
 			heading: head,
@@ -160,8 +169,11 @@
 			hideAfter: 5000   // in milli seconds
 		});
 	}
+	/*
+		send data to socket server and receive message from websocket server.
+	*/
 	function sendMessage(msg) {
-		if ( websocket != null )
+	if ( websocket != null )
 		{
 			websocket.send( msg );
 			console.log( "string sent :", '"'+msg+'"' );
@@ -170,22 +182,29 @@
 	
 	var wsUri = "ws://" + server_ip + ":1234";
 	var websocket = null;
-
+	/*
+		link socket server.
+	*/
 	function initWebSocket() {
 		try {
 			if (typeof MozWebSocket == 'function')
 				WebSocket = MozWebSocket;
-			if ( websocket && websocket.readyState == 1 )
-				websocket.close();
+			if ( websocket && websocket.readyState == 1 ){
+				showMessage('success','STATUS', 'Socket is already connected');
+				return;
+			}
 			websocket = new WebSocket( wsUri );
 			websocket.onopen = function (evt) {
-				showMessage('success','SOCKET', 'CONNECTED');
+				setStatus('Connected');
+				showMessage('success','SOCKET', 'Socket connected');
 			};
 			websocket.onclose = function (evt) {
-				showMessage('warning','SOCKET', 'DISCONNECTED');
+				setStatus('Disconnected');
+				showMessage('warning','SOCKET', 'Socket disconnected');
 			};
 			websocket.onmessage = function (evt) {
-				showMessage('info','Message', evt.data);
+				setStatus('Scan');
+				showMessage('info','MESSAGE', evt.data);
 			};
 			websocket.onerror = function (evt) {
 				showMessage('error','SOCKET', 'FAILED');
@@ -194,46 +213,78 @@
 			showMessage('error','SOCKET', 'FAILED');
 		}
 	}
-
+	/*
+		disconnect socket server.
+	*/
 	function stopWebSocket() {
-		if (websocket)
-		websocket.close();
+		if (websocket){
+			websocket.close();
+			showMessage('success','STATUS', 'Disconnect successfully');
+		}else{
+			showMessage('warning','STATUS', 'Socket is already disconnected');
+		}
 	}
-	
+	/*
+		display status message
+	*/
+	function checkSocket_message(status){
+		switch(status){
+			case 0: {
+				showMessage('success','STATUS', 'Socket connecting');
+				break;
+			}
+			case 1: {
+				showMessage('success','STATUS', 'Socket open');
+				break;
+			}
+			case 2: {
+				showMessage('warning','STATUS', 'Socket closing');
+				break;
+			}
+			case 3: {
+				showMessage('warning','STATUS', 'Socket closed');
+				break;
+			}
+			default: {
+				showMessage('error','STATUS', 'UNKNOW');
+				break;
+			}
+		}
+	}
+	/*
+		check socket status
+	*/
 	function checkSocket() {
 		if (websocket != null) {
-			var stateStr;
-			switch (websocket.readyState) {
-				case 0: {
-					stateStr = "CONNECTING";
-					showMessage('success','STATUS', 'CONNECTING');
-					break;
-				}
-				case 1: {
-					stateStr = "OPEN";
-					showMessage('success','STATUS', 'OPEN');
-					break;
-				}
-				case 2: {
-					stateStr = "CLOSING";
-					showMessage('warning','STATUS', 'CLOSING');
-					break;
-				}
-				case 3: {
-					stateStr = "CLOSED";
-					showMessage('warning','STATUS', 'CLOSED');
-					break;
-				}
-				default: {
-					stateStr = "UNKNOW";
-					showMessage('error','STATUS', 'UNKNOW');
-					break;
-				}
-			}
 			return websocket.readyState;
 		} else {
 			showMessage('error','SOCKET', 'FAILED');
 			return 'no';
+		}
+	}
+	/*
+		set socket status
+	*/
+	function setStatus(status){
+		var today = new Date();
+		var date = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate();
+		var time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
+		var dateTime = date+' '+time;
+		switch(status){
+			case 'Connected':
+				if(socket_state === 'connect') return;
+				socket_state = 'connect';
+				$('#status').html('Connected ( ' + dateTime + ' )').css('color','green');
+				break;
+			case 'Disconnected':
+				if(socket_state === 'disconnect') return;
+				socket_state = 'disconnect';
+				$('#status').html('Disconnected ( ' + dateTime + ' )').css('color','red');
+				break;
+			case 'Scan':
+				break;
+			default:
+				break;
 		}
 	}
 </script>

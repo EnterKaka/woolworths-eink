@@ -34,10 +34,21 @@ app.get("/", auth, async function (req, res) {
 app.post("/runApp", async function (req, res, next) {
     console.log("***************** run app ******************");
     let path = req.body.path;
-    console.log(path);
-    var child = spawn(path);
-    children.push(child);
-    res.send("success");
+    try {
+        var child = spawn(path);
+        var flag = 1;
+        await child.on("error", async function (err) {
+            console.log("Error occurred: " + err);
+            flag = 0;
+            await res.send("failed");
+        });
+        if (flag) {
+            children.push(child);
+            res.send("success");
+        }
+    } catch (error) {
+        res.send("failed");
+    }
 });
 /***** kill app ***/
 app.post("/killApp", async function (req, res, next) {
