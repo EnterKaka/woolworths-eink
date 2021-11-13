@@ -2273,7 +2273,7 @@ export const owlStudio = function (cv1, cv2, parent) {
             tid = Math.floor(p3.x) + '.' + Math.floor(p3.y);
             if (triangleData[tid]) t3 = triangleData[tid]; else t3 = false;
             if (!t3) continue;
-            console.log('fineded 1')
+            // console.log('fineded 1')
             let ray = new THREE.Ray(p1)
             let q1;
             for (let trg of t1) {
