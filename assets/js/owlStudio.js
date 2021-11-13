@@ -129,6 +129,9 @@ export const owlStudio = function (cv1, cv2, parent) {
 
     this.reloadModelFromData = function (filename, data) {
 
+        this.initDraw()
+        this.initSelectedPoints()
+
         let lines = data.split('\n');
 
         let arrayData = [];
@@ -155,6 +158,9 @@ export const owlStudio = function (cv1, cv2, parent) {
 
     this.reloadModelFromJSONData = function (filename, data) {
 
+        this.initDraw()
+        this.initSelectedPoints()
+
         let arrayData = [];
 
         data.forEach(function (xyz) {
@@ -169,6 +175,9 @@ export const owlStudio = function (cv1, cv2, parent) {
 
     this.reloadModelFromObjData = function (filename, data) {
 
+        this.initDraw()
+        this.initSelectedPoints()
+
         let loader = new OBJLoader();
 
         let arrayData = [];
@@ -178,13 +187,14 @@ export const owlStudio = function (cv1, cv2, parent) {
         this.reloadModelFromArray(filename, arrayData)
     }
 
-    this.reloadModelFromArray = function (filename, arrayData, newModel = true) {
+    this.reloadModelFromArray = function (filename, arrayData, newModel = 'new') {
 
         $("#modelpath").text(filename);
 
         let target;
 
-        if (newModel == true) {
+        if (newModel == 'new') {
+            console.log('new')
 
             target = this.CustomPointCloud(filename);
 
@@ -201,6 +211,7 @@ export const owlStudio = function (cv1, cv2, parent) {
             this.scene.add(target.group)
 
         } else if (Array.isArray(newModel)) {
+            console.log('history or database')
 
             newModel = newModel.map((e) => {
                 return parseFloat(e);
@@ -225,7 +236,7 @@ export const owlStudio = function (cv1, cv2, parent) {
             this.scene.add(target.group)
 
         } else if (Array.isArray(arrayData)) {
-
+            console.log('targetted!!!')
             target = this.groupList[newModel];
 
             if (target.group.children.length > 0) {
@@ -235,6 +246,7 @@ export const owlStudio = function (cv1, cv2, parent) {
             }
 
         } else {
+            console.log('pointTopointreturned')
             target = this.groupList[newModel];
             if (arrayData.position) {
                 target.group.position.copy(arrayData.position)
@@ -1106,7 +1118,7 @@ export const owlStudio = function (cv1, cv2, parent) {
         for (let id = 0; id < this.groupList.length; id++) {
 
             let target = this.groupList[id];
-
+            if (!target.group.visible) continue;
             let group = target.group;
 
             let array = group.children[0].geometry.attributes.position.array;
@@ -1205,6 +1217,137 @@ export const owlStudio = function (cv1, cv2, parent) {
 
         this.render()
 
+    }
+
+    this.drawPolyline = function (evt) {
+        this.mouse.target.x = (evt.offsetX / this.canvas.clientWidth) * 2 - 1;
+        this.mouse.target.y = - (evt.offsetY / this.canvas.clientHeight) * 2 + 1;
+
+        let raycaster = new THREE.Raycaster();
+
+        raycaster.setFromCamera(this.mouse.target, this.camera);
+
+        let point = new THREE.Vector3();
+
+        let minDistance = Infinity;
+
+        let sind;
+
+        let closestPoint = new THREE.Vector3();
+        console.log(this.activeId)
+        for (let id = 0; id < this.groupList.length; id++) {
+
+            let target = this.groupList[id];
+            if (!target.group.visible) continue;
+            let group = target.group;
+
+            let array = group.children[0].geometry.attributes.position.array;
+
+            for (let i = 0; i < array.length; i += 3) {
+
+                raycaster.ray.closestPointToPoint(new THREE.Vector3(array[i], array[i + 1], array[i + 2]).applyMatrix4(target.group.matrix), point)
+
+                let distanceSq = new THREE.Vector3(array[i], array[i + 1], array[i + 2]).applyMatrix4(target.group.matrix).distanceToSquared(point);
+
+                if (distanceSq < minDistance) {
+
+                    closestPoint.set(array[i], array[i + 1], array[i + 2]);
+
+                    minDistance = distanceSq;
+
+                    sind = [id, i];
+
+                }
+
+            }
+
+        }
+
+        let array = this.groupList[sind[0]].group.children[0].geometry.attributes.position.array;
+
+        let x = array[sind[1]];
+        let y = array[sind[1] + 1];
+        let z = array[sind[1] + 2];
+
+        let vector = new THREE.Vector3(x, y, z)
+        let matrix = this.groupList[sind[0]].group.matrix;
+        console.log(vector)
+        const material = new THREE.LineBasicMaterial({
+            color: pointcolor(),
+            // size: 0.2
+        });
+        if (!this.addpoints)
+            this.addpoints = [];
+        if (!this.polylineData) {
+            this.polylineData = [];
+        }
+
+        let vvv = new THREE.Vector3().copy(vector).applyMatrix4(matrix);
+        let oldPosition;
+        if (this.polylineData.length != 0) {
+            console.log(this.polyline)
+            oldPosition = new THREE.Vector3().copy(this.polyline.position)
+            vvv.x -= oldPosition.x; vvv.y -= oldPosition.y; vvv.z -= oldPosition.z;
+        }
+        else {
+            oldPosition = new THREE.Vector3().copy(vvv)
+            vvv.x = 0; vvv.y = 0; vvv.z = 0;
+        }
+        if (this.polyline) this.scene.remove(this.polyline);
+
+        // let xa = Math.floor(vvv.x);
+        // this.addpoints.push(xa)
+        // vvv.x -= xa;
+        // let ya = Math.floor(vvv.y);
+        // this.addpoints.push(ya)
+        // vvv.y -= ya;
+        // let za = Math.floor(vvv.z);
+        // this.addpoints.push(za)
+        // vvv.z -= za;
+
+        this.polylineData.push(vvv)
+
+
+        const geometry = new THREE.BufferGeometry().setFromPoints(this.polylineData);
+        // this.subPointToGeom(geometry, this.addpoints)
+        // let garray = geometry.attributes.position.array;
+        // for (let i = 0; i < garray.length; i++) {
+        //     garray[i] += this.addpoints[i];
+        // }
+        // console.log(garray)
+        this.polyline = new THREE.Line(geometry, material);
+        this.polyline.position.copy(oldPosition)
+        this.polyline.frustumCulled = false;
+        this.scene.add(this.polyline);
+        this.render();
+        this.showDistance(this.polylineData, oldPosition);
+    }
+
+    this.showDistance = (lines, position = new THREE.Vector3()) => {
+        $(".distance").remove();
+        for (let i = 1; i < lines.length; i++) {
+            let a = lines[i];
+            let b = lines[i - 1];
+            let distance = a.distanceTo(b);
+            let aa = new THREE.Vector3().copy(a).add(position);
+            let bb = new THREE.Vector3().copy(b).add(position);
+            aa.project(this.camera)
+            bb.project(this.camera)
+            let left = ((aa.x + bb.x) / 2 + 1) * this.parent_canvas.clientWidth / 2;
+            let top = (-(aa.y + bb.y) / 2 + 1) * this.parent_canvas.clientHeight / 2;
+            $(this.parent_canvas).append(`<span class="distance" style="position:absolute;display:inline-block;top:${top}px;left:${left}px;">${distance}</span>`);
+        }
+    }
+
+    this.initPolyline = function () {
+        if (this.polyline) {
+            this.scene.remove(this.polyline)
+            this.polyline = undefined;
+        }
+        this.polylineData = undefined;
+        this.addpoints = undefined;
+        this.showDistance([]);
+        this.render();
     }
 
     this.finishdraw = (evt) => {
@@ -1433,6 +1576,10 @@ export const owlStudio = function (cv1, cv2, parent) {
                         this.translateByLine(e)
                         break;
 
+                    case 'polyline':
+                        this.drawPolyline(e)
+                        break;
+
                     default:
 
                 }
@@ -1440,7 +1587,9 @@ export const owlStudio = function (cv1, cv2, parent) {
             } else if (e.button == 2) {
 
                 this.mouseRightDown(e)
-
+                if (this.toolState == "polyline") {
+                    this.initPolyline();
+                }
             }
 
         }, false);
@@ -1831,7 +1980,7 @@ export const owlStudio = function (cv1, cv2, parent) {
 
     }
 
-    this.gridMinimumFilter = function (cellSize) {
+    this.gridMinimumFilter = function (cellSize, all = true) {
 
         for (let id of this.activeId) {
 
@@ -1839,61 +1988,20 @@ export const owlStudio = function (cv1, cv2, parent) {
 
             let array = target.group.children[0].geometry.attributes.position.array;
 
-            let filteredPoints = filters.gridMinimumFilter(cellSize, array)
+            let filteredPoints;
 
-            if (filteredPoints.length < 12) {
-
-                alert("Delaunay 3D triangulation requires 4 or more points.")
-
-                continue;
-
+            if (all) {
+                filteredPoints = filters.gridMinimumFilter(cellSize, array)
             }
-
-            this.addToHistory(target.history, array)
-
-            this.reloadModelFromArray(getCurrentFilename(), filteredPoints, id)
-        }
-
-        this.initDraw();
-
-    }
-
-    this.voxelGridFilter = function (cellSize) {
-
-        for (let id of this.activeId) {
-
-            let target = this.groupList[id];
-
-            let array = target.group.children[0].geometry.attributes.position.array;
-
-            let filteredPoints = filters.voxelGridFilter(cellSize, array)
-
-            if (filteredPoints.length < 12) {
-
-                alert("Delaunay 3D triangulation requires 4 or more points.")
-
-                continue;
-
+            else {
+                let array = [];
+                let count = target.selectedCount * 3;
+                for (let i = 0; i < count; i++) {
+                    array.push(target.selectedPoints[i])
+                }
+                filteredPoints = filters.gridMinimumFilter(cellSize, array)
+                filteredPoints = [...target.unselectedPoints, ...filteredPoints];
             }
-
-            this.addToHistory(target.history, array)
-
-            this.reloadModelFromArray(getCurrentFilename(), filteredPoints, id)
-        }
-
-        this.initDraw();
-
-    }
-
-    this.outlierRemovalFilter = function (num, dev) {
-
-        for (let id of this.activeId) {
-
-            let target = this.groupList[id];
-
-            let array = target.group.children[0].geometry.attributes.position.array;
-
-            let filteredPoints = filters.updatedRemovalFilter(num, dev, array)
 
             if (filteredPoints.length < 12) {
 
@@ -1913,7 +2021,7 @@ export const owlStudio = function (cv1, cv2, parent) {
 
     }
 
-    this.passThroughFilter = function (pass, limit1, limit2) {
+    this.voxelGridFilter = function (cellSize, all = true) {
 
         for (let id of this.activeId) {
 
@@ -1921,7 +2029,100 @@ export const owlStudio = function (cv1, cv2, parent) {
 
             let array = target.group.children[0].geometry.attributes.position.array;
 
-            let filteredPoints = filters.passThroughFilter(pass, limit1, limit2, array)
+            let filteredPoints;
+            if (all) {
+                filteredPoints = filters.voxelGridFilter(cellSize, array)
+            }
+            else {
+                let array = [];
+                let count = target.selectedCount * 3;
+                for (let i = 0; i < count; i++) {
+                    array.push(target.selectedPoints[i])
+                }
+                filteredPoints = filters.voxelGridFilter(cellSize, array)
+                filteredPoints = [...target.unselectedPoints, ...filteredPoints];
+            }
+
+            if (filteredPoints.length < 12) {
+
+                alert("Delaunay 3D triangulation requires 4 or more points.")
+
+                continue;
+
+            }
+
+            this.addToHistory(target.history, array)
+            console.log("reloaded", id)
+            this.reloadModelFromArray(getCurrentFilename(), filteredPoints, id)
+        }
+
+        this.initDraw();
+
+    }
+
+    this.outlierRemovalFilter = function (num, dev, all = true) {
+
+        for (let id of this.activeId) {
+
+            let target = this.groupList[id];
+
+            let array = target.group.children[0].geometry.attributes.position.array;
+
+            let filteredPoints
+
+            if (all) {
+                filteredPoints = filters.updatedRemovalFilter(num, dev, array)
+            }
+            else {
+                let array = [];
+                let count = target.selectedCount * 3;
+                for (let i = 0; i < count; i++) {
+                    array.push(target.selectedPoints[i])
+                }
+                filteredPoints = filters.updatedRemovalFilter(num, dev, array)
+                filteredPoints = [...target.unselectedPoints, ...filteredPoints];
+            }
+
+            if (filteredPoints.length < 12) {
+
+                alert("Delaunay 3D triangulation requires 4 or more points.")
+
+                continue;
+
+            }
+
+            this.addToHistory(target.history, array)
+
+            this.reloadModelFromArray(getCurrentFilename(), filteredPoints, id)
+
+        }
+
+        this.initDraw();
+
+    }
+
+    this.passThroughFilter = function (pass, limit1, limit2, all = true) {
+
+        for (let id of this.activeId) {
+
+            let target = this.groupList[id];
+
+            let array = target.group.children[0].geometry.attributes.position.array;
+
+            let filteredPoints
+
+            if (all) {
+                filteredPoints = filters.passThroughFilter(pass, limit1, limit2, array)
+            }
+            else {
+                let array = [];
+                let count = target.selectedCount * 3;
+                for (let i = 0; i < count; i++) {
+                    array.push(target.selectedPoints[i])
+                }
+                filteredPoints = filters.passThroughFilter(pass, limit1, limit2, array)
+                filteredPoints = [...target.unselectedPoints, ...filteredPoints];
+            }
 
             if (filteredPoints.length < 12) {
 
@@ -2031,41 +2232,77 @@ export const owlStudio = function (cv1, cv2, parent) {
 
     this.getSelVolume = function (heap, ground) {
 
-        let geometry = this.getIndexedGeom(heap);
+        let indexedHeap = this.getIndexedGeom(heap);
+        let indexedGround = this.getIndexedGeom(ground);
+
+        let added = { x: indexedHeap.x, y: indexedHeap.y, z: indexedHeap.z };
+
+        let triangleData = this.specialTriangleData(indexedGround);
 
         let sum2 = 0;
-
-        let GT = 0;
 
         let p1 = new THREE.Vector3(),
             p2 = new THREE.Vector3(),
             p3 = new THREE.Vector3();
 
-        for (let i = 2; i < ground.length; i += 3) {
+        let position = indexedHeap.geometry.attributes.position;
 
-            GT += parseFloat(ground[i]);
-
-        }
-
-        GT /= (ground.length / 3);
-
-        let position = geometry.attributes.position;
-
-        let index = geometry.index;
+        let index = indexedHeap.geometry.index;
 
         let faces = index.count / 3;
+
+        let v = new THREE.Vector3();
+
+        let tid, t;
 
         for (let i = 0; i < faces; i++) {
 
             let result = 0;
 
-            p1.fromBufferAttribute(position, index.array[i * 3 + 0]);
-            p2.fromBufferAttribute(position, index.array[i * 3 + 1]);
-            p3.fromBufferAttribute(position, index.array[i * 3 + 2]);
+            p1.fromBufferAttribute(position, index.array[i * 3 + 0]).add(added);
+            p2.fromBufferAttribute(position, index.array[i * 3 + 1]).add(added);
+            p3.fromBufferAttribute(position, index.array[i * 3 + 2]).add(added);
 
-            p1.z -= GT;
-            p2.z -= GT;
-            p3.z -= GT;
+            tid = Math.floor(p1.x) + '.' + Math.floor(p1.y);
+            let t1, t2, t3;
+            if (triangleData[tid]) t1 = triangleData[tid]; else t1 = false;
+            if (!t1) continue;
+            tid = Math.floor(p2.x) + '.' + Math.floor(p2.y);
+            if (triangleData[tid]) t2 = triangleData[tid]; else t2 = false;
+            if (!t2) continue;
+            tid = Math.floor(p3.x) + '.' + Math.floor(p3.y);
+            if (triangleData[tid]) t3 = triangleData[tid]; else t3 = false;
+            if (!t3) continue;
+            console.log('fineded 1')
+            let ray = new THREE.Ray(p1)
+            let q1;
+            for (let trg of t1) {
+                // console.log('trg for')
+                q1 = ray.intersectTriangle(trg.a, trg.b, trg.c, false, v)
+                if (q1) break;
+            }
+            if (!q1) continue;
+            // console.log('fineded 2')
+
+            let ray2 = new THREE.Ray(p2)
+            let q2;
+            for (let trg of t2) {
+                q2 = ray2.intersectTriangle(trg.a, trg.b, trg.c, false, v)
+                if (q2) break;
+            }
+            if (!q2) continue;
+
+            let ray3 = new THREE.Ray(p3)
+            let q3;
+            for (let trg of t3) {
+                q3 = ray3.intersectTriangle(trg.a, trg.b, trg.c, false, v)
+                if (q3) break;
+            }
+            if (!q3) continue;
+
+            p1.z -= q1.z;
+            p2.z -= q2.z;
+            p3.z -= q3.z;
 
             if (p1.z > 0 && p2.z <= 0 && p3.z <= 0) result = this.e1Volume(p1, p2, p3);
             else if (p2.z > 0 && p1.z <= 0 && p3.z <= 0) result = this.e1Volume(p2, p1, p3);
@@ -2083,9 +2320,65 @@ export const owlStudio = function (cv1, cv2, parent) {
 
     }
 
+    this.specialTriangleData = ({ geometry, x, y, z }) => {
+
+        let added = { x, y, z };
+        let rData = {};
+
+        let position = geometry.attributes.position;
+
+        let index = geometry.index;
+
+        let faces = index.count / 3;
+
+        let p1 = new THREE.Vector3(),
+            p2 = new THREE.Vector3(),
+            p3 = new THREE.Vector3();
+
+        for (let i = 0; i < faces; i++) {
+            p1.fromBufferAttribute(position, index.array[i * 3 + 0]).add(added);
+            p2.fromBufferAttribute(position, index.array[i * 3 + 1]).add(added);
+            p3.fromBufferAttribute(position, index.array[i * 3 + 2]).add(added);
+
+            let xloop = this.getminmax(p1.x, p2.x, p3.x);
+            let yloop = this.getminmax(p1.y, p2.y, p3.y);
+
+            for (let i = xloop.min; i <= xloop.max; i++) {
+                for (let j = yloop.min; j <= yloop.max; j++) {
+                    let id = i + '.' + j;
+                    if (!rData[id]) rData[id] = [{ a: new THREE.Vector3().copy(p1), b: new THREE.Vector3().copy(p2), c: new THREE.Vector3().copy(p3) }];
+                    else rData[id].push({ a: new THREE.Vector3().copy(p1), b: new THREE.Vector3().copy(p2), c: new THREE.Vector3().copy(p3) });
+                }
+            }
+
+        }
+
+        return rData;
+
+    }
+
+    this.getminmax = function (a, b, c) {
+
+        a = Math.floor(a)
+        b = Math.floor(b)
+        c = Math.floor(c)
+
+        let min = a, max = a;
+
+        if (min > b) min = b;
+        if (min > c) min = c;
+        if (max < b) max = b;
+        if (max < c) max = c;
+
+        return { min, max }
+
+    }
+
     this.getIndexedGeom = function (array) {
 
         let points3d = [];
+
+        let { x, y, z } = this.customCenter(array)
 
         for (let i = 0; i < array.length; i += 3) {
 
@@ -2111,7 +2404,7 @@ export const owlStudio = function (cv1, cv2, parent) {
 
         geometry.setIndex(meshIndex); // add three.js index to the existing geometry
 
-        return geometry;
+        return { geometry, x, y, z };
 
     }
 
@@ -2328,6 +2621,8 @@ export const owlStudio = function (cv1, cv2, parent) {
         this.polygonRender();
 
         if (this.line) this.line.visible = false;
+
+        this.initPolyline()
 
     }
 

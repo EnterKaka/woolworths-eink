@@ -271,3 +271,8 @@ div.table-padding-set{
     border: 1px solid;
     padding-right: 15px;
 }
+
+.distance{
+    color:white;
+    text-shadow: 1px 0px black,-1px 0px black,0px 1px black,0px -1px black;
+}

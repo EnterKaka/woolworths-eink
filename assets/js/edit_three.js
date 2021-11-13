@@ -381,6 +381,12 @@ window.onload = function () {
         cloudmachine.setToolState('reset2')
     });
 
+    document.getElementById('btn-polyline').addEventListener('click', function () {
+        document.getElementById('btn-' + cloudmachine.toolState).classList.remove('active')
+        document.getElementById('btn-polyline').classList.add('active')
+        cloudmachine.setToolState('polyline')
+    });
+
     // document.getElementById('btn-translate2').addEventListener('click', function () {
     //     document.getElementById('btn-' + cloudmachine.toolState).classList.remove('active')
     //     document.getElementById('btn-translate2').classList.add('active')
@@ -480,6 +486,53 @@ window.onload = function () {
             cloudmachine.passThroughFilter(pass, limit1, limit2)
             endProgress()
         }, 20)
+    })
+
+    document.getElementById('f1-mfilter').addEventListener('click', function () {
+        startProgress()
+        setTimeout(() => {
+            cloudmachine.gridMinimumFilter(document.getElementById('f1-cell-size').value, false);
+            endProgress()
+        }, 20)
+    });
+
+    document.getElementById('f2-mfilter').addEventListener('click', function () {
+        startProgress()
+        setTimeout(() => {
+            cloudmachine.voxelGridFilter(document.getElementById('f2-cell-size').value, false)
+            endProgress()
+        }, 20)
+    })
+
+    document.getElementById('f3-mfilter').addEventListener('click', function () {
+        startProgress()
+        setTimeout(() => {
+            let num = document.getElementById('f3-number').value;
+            let dev = document.getElementById('f3-deviation').value;
+            cloudmachine.outlierRemovalFilter(num, dev, false)
+            endProgress()
+        }, 20)
+    })
+
+    document.getElementById('f4-mfilter').addEventListener('click', function () {
+        startProgress()
+        setTimeout(() => {
+            let limit1 = document.getElementById('f4-limit1').value;
+            let limit2 = document.getElementById('f4-limit2').value;
+            let pass = document.getElementById('f4-pass').value;
+            cloudmachine.passThroughFilter(pass, limit1, limit2, false)
+            endProgress()
+        }, 20)
+    })
+
+    document.getElementById('markedVolume').addEventListener('click', function () {
+        if (this.checked) {
+            document.getElementById('vheap-list').disabled = true;
+            document.getElementById('btn-vSave').style.display = 'none';
+        } else {
+            document.getElementById('vheap-list').disabled = false;
+            document.getElementById('btn-vSave').style.display = 'inline-block';
+        }
     })
 
     document.getElementById('editArea').addEventListener('keypress', (e) => {
@@ -830,9 +883,17 @@ window.onload = function () {
     $('#ground-file').change(openGround_Fromlocal);
 
     document.getElementById('btn-volume').addEventListener('click', () => {
-        let h = document.getElementById('vheap-list').value;
-        let v = document.getElementById('vground-list').value;
-        let volume = Math.abs(cloudmachine.calculateVolume(h, v));
+        let b = document.getElementById('markedVolume').checked;
+        let volume;
+        if (!b) {
+            let h = document.getElementById('vheap-list').value;
+            let v = document.getElementById('vground-list').value;
+            volume = Math.abs(cloudmachine.calculateVolume(h, v));
+        } else {
+            let v = document.getElementById('vground-list').value;
+            volume = Math.abs(cloudmachine.calculateVolumeForMarked(v));
+        }
+        console.log('volume', volume)
         document.getElementById('id-volume').value = volume;
         inputedVolume();
         // $("#btn-vClose").trigger('click');

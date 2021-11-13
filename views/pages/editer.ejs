@@ -261,6 +261,11 @@
                                 title='pencil tool for point selection (shift+f)' id='btn-pencil'>
                                 <i class="ft-edit-3"></i>
                               </button>
+                              <button type='button'
+                                class="btn btn-icon btn-outline-success btn-glow round btn-sm mr-3 mb-1"
+                                title='draw polyline and calculate distance' id='btn-polyline'>
+                                <i class="ft-activity"></i>
+                              </button>
 
 
                               <button type='button'
@@ -420,9 +425,14 @@
                                 style="height: 31px;padding-left: 15px;width: 81px;" min="0.1" max="10" step="0.1"
                                 value="0.5" title="set cell size">
                               <button type='button' style="float:right;"
-                                class="btn btn-icon btn-outline-primary btn-glow round btn-sm mb-1"
-                                title='Open model from local pc' id='f1-filter'>
+                                class="btn btn-icon btn-outline-primary btn-glow round btn-sm mb-1 mr-1"
+                                title='grid minimum filter' id='f1-filter'>
                                 filtering
+                              </button>
+                              <button type='button' style="float:right;"
+                                class="btn btn-icon btn-outline-primary btn-glow round btn-sm mb-1"
+                                title='grid minimum filter' id='f1-mfilter'>
+                                marked points filtering
                               </button>
                             </div>
                           </div>
@@ -435,9 +445,14 @@
                                 style="height: 31px;padding-left: 15px;width: 81px;" min="0.1" max="10" step="0.1"
                                 value="0.5" title="set cell size">
                               <button type='button' style="float:right;"
-                                class="btn btn-icon btn-outline-primary btn-glow round btn-sm mb-1"
-                                title='Open model from local pc' id='f2-filter'>
+                                class="btn btn-icon btn-outline-primary btn-glow round btn-sm mb-1 mr-1"
+                                title='voxel grid filter' id='f2-filter'>
                                 filtering
+                              </button>
+                              <button type='button' style="float:right;"
+                                class="btn btn-icon btn-outline-primary btn-glow round btn-sm mb-1"
+                                title='voxel grid filter' id='f2-mfilter'>
+                                marked points filtering
                               </button>
                             </div>
                           </div>
@@ -454,9 +469,14 @@
                                 style="height: 31px;padding-left: 15px;width: 81px;" min="0.1" max="10" step="0.1"
                                 value="0.5" title="Standard Deviation">
                               <button type='button' style="float:right;"
-                                class="btn btn-icon btn-outline-primary btn-glow round btn-sm mb-1"
-                                title='Open model from local pc' id='f3-filter'>
+                                class="btn btn-icon btn-outline-primary btn-glow round btn-sm mb-1 mr-1"
+                                title='Statistical Outlier Removal Filter' id='f3-filter'>
                                 filtering
+                              </button>
+                              <button type='button' style="float:right;"
+                                class="btn btn-icon btn-outline-primary btn-glow round btn-sm mb-1"
+                                title='Statistical Outlier Removal Filter' id='f3-mfilter'>
+                                marked points filtering
                               </button>
                             </div>
                           </div>
@@ -478,9 +498,14 @@
                                 style="height: 31px;padding-left: 15px;width: 81px;" min="1" max="10000" step="1"
                                 value="500" title="set max limit">
                               <button type='button' style="float:right;"
-                                class="btn btn-icon btn-outline-primary btn-glow round btn-sm mb-1"
-                                title='Open model from local pc' id='f4-filter'>
+                                class="btn btn-icon btn-outline-primary btn-glow round btn-sm mb-1 mr-1"
+                                title='Pass Through Filter' id='f4-filter'>
                                 filtering
+                              </button>
+                              <button type='button' style="float:right;"
+                                class="btn btn-icon btn-outline-primary btn-glow round btn-sm mb-1"
+                                title='Pass Through Filter' id='f4-mfilter'>
+                                marked points filtering
                               </button>
 
                             </div>
@@ -562,7 +587,63 @@
       </div>
       <!-- ////////////////////////////////////////////////////////////////////////////-->
       <!-- BEGIN: Customizer-->
+      <div class="modal fade text-left" id="volumeModal" tabindex="-1" role="dialog" aria-labelledby="volumeLabel"
+        aria-hidden="true" style="z-index:100001;">
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="directSaveLabel">Please choose model and ground for volume calculation</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">×</span>
+              </button>
+            </div>
+            <div class="modal-body">
 
+              <div id="markedVolumeDiv" class="form-group pb-0 mb-1"
+                style="padding-top: 3px; padding-left:10px; margin-bottom:0px; flex-grow:20;"
+                title="switch for marked points volume calculation">
+                <input type="checkbox" data-size="sm" id="markedVolume" class="switchery" data-color="primary"
+                  data-secondary-color="primary" data-switchery="true" style="display: none;">
+                <label for="markedVolume" class="font-medium-2 text-bold-600">only marked points</label>
+              </div>
+
+              <label for="ds-modelName" class="ml-1">Heap File</label>
+              <select class="select2 form-control select2-hidden-accessible mb-1" id="vheap-list"
+                data-select2-id="default-select" tabindex="-1" aria-hidden="true">
+                <!-- <option value="AK">Alaska</option>
+                        <option value="HI">Hawaii</option> -->
+              </select>
+              <label for="ds-modelVolume" class="ml-1">Ground File</label>
+              <select class="select2 form-control select2-hidden-accessible mb-1" id="vground-list"
+                data-select2-id="default-select" tabindex="-1" aria-hidden="true">
+                <!-- <option value="AK">Alaska</option>
+              <option value="HI">Hawaii</option> -->
+              </select>
+              <button type='button' class="btn btn-icon btn-outline-primary btn-glow round btn-sm mr-1 mb-1"
+                title='set ground file from PC' id='btn-ground'> set ground file from PC
+              </button>
+              <div style="display: flex;justify-content: space-around;">
+                <label for="id-volume" class="ml-1" style="width:30%;">volume(m<sup>3</sup>)</label>
+                <label for="id-mass" class="ml-1" style="width:30%;">mass(t)</label>
+                <label for="id-densty" class="ml-1" style="width:30%;">densty(kg/m<sup>3</sup>)</label>
+              </div>
+              <div style="display: flex;justify-content: space-around;">
+                <input type="number" value=0 class="form-control" style="width:30%;display: inline-block;"
+                  id="id-volume" placeholder="volume">
+                <input type="number" value=0 class="form-control" style="width:30%;display: inline-block;" id="id-mass"
+                  placeholder="mass">
+                <input type="number" value=0 class="form-control" style="width:30%;display: inline-block;"
+                  id="id-densty" placeholder="densty">
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-dismiss="modal" id="btn-vClose">Close</button>
+              <button type="button" class="btn btn-primary ml-1" id="btn-volume">Calculate</button>
+              <button type="button" class="btn btn-success ml-1" id="btn-vSave">save</button>
+            </div>
+          </div>
+        </div>
+      </div>
       <!-- End: Customizer-->
       <!-- page content end -->
       <%- include('../partials/footer'); %>
@@ -632,54 +713,7 @@
           </div>
         </div>
 
-        <div class="modal fade text-left" id="volumeModal" tabindex="-1" role="dialog" aria-labelledby="volumeLabel"
-          aria-hidden="true" style="z-index:100001;">
-          <div class="modal-dialog" role="document">
-            <div class="modal-content">
-              <div class="modal-header">
-                <h5 class="modal-title" id="directSaveLabel">Please choose model and ground for volume calculation</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                  <span aria-hidden="true">×</span>
-                </button>
-              </div>
-              <div class="modal-body">
-                <label for="ds-modelName" class="ml-1">Heap File</label>
-                <select class="select2 form-control select2-hidden-accessible mb-1" id="vheap-list"
-                  data-select2-id="default-select" tabindex="-1" aria-hidden="true">
-                  <!-- <option value="AK">Alaska</option>
-                            <option value="HI">Hawaii</option> -->
-                </select>
-                <label for="ds-modelVolume" class="ml-1">Ground File</label>
-                <select class="select2 form-control select2-hidden-accessible mb-1" id="vground-list"
-                  data-select2-id="default-select" tabindex="-1" aria-hidden="true">
-                  <!-- <option value="AK">Alaska</option>
-                  <option value="HI">Hawaii</option> -->
-                </select>
-                <button type='button' class="btn btn-icon btn-outline-primary btn-glow round btn-sm mr-1 mb-1"
-                  title='set ground file from PC' id='btn-ground'> set ground file from PC
-                </button>
-                <div style="display: flex;justify-content: space-around;">
-                  <label for="id-volume" class="ml-1" style="width:30%;">volume(m<sup>3</sup>)</label>
-                  <label for="id-mass" class="ml-1" style="width:30%;">mass(t)</label>
-                  <label for="id-densty" class="ml-1" style="width:30%;">densty(kg/m<sup>3</sup>)</label>
-                </div>
-                <div style="display: flex;justify-content: space-around;">
-                  <input type="number" value=0 class="form-control" style="width:30%;display: inline-block;"
-                    id="id-volume" placeholder="volume">
-                  <input type="number" value=0 class="form-control" style="width:30%;display: inline-block;"
-                    id="id-mass" placeholder="mass">
-                  <input type="number" value=0 class="form-control" style="width:30%;display: inline-block;"
-                    id="id-densty" placeholder="densty">
-                </div>
-              </div>
-              <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal" id="btn-vClose">Close</button>
-                <button type="button" class="btn btn-primary ml-1" id="btn-volume">Calculate</button>
-                <button type="button" class="btn btn-success ml-1" id="btn-vSave">save</button>
-              </div>
-            </div>
-          </div>
-        </div>
+
 
         <div class="modal fade text-left" id="matrixModal" tabindex="-1" role="dialog" aria-labelledby="matrixLabel"
           aria-hidden="true" style="z-index:100001;">
