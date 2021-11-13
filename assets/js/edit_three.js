@@ -891,7 +891,7 @@ window.onload = function () {
             volume = Math.abs(cloudmachine.calculateVolume(h, v));
         } else {
             let v = document.getElementById('vground-list').value;
-            volume = Math.abs(cloudmachine.calculateVolumeForMarked(v));
+            volume = Math.abs(cloudmachine.calculateVolume(undefined, v));
         }
         console.log('volume', volume)
         document.getElementById('id-volume').value = volume;

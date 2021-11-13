@@ -1328,14 +1328,14 @@ export const owlStudio = function (cv1, cv2, parent) {
         for (let i = 1; i < lines.length; i++) {
             let a = lines[i];
             let b = lines[i - 1];
-            let distance = a.distanceTo(b);
+            let distance = a.distanceTo(b).toFixed(2);
             let aa = new THREE.Vector3().copy(a).add(position);
             let bb = new THREE.Vector3().copy(b).add(position);
             aa.project(this.camera)
             bb.project(this.camera)
             let left = ((aa.x + bb.x) / 2 + 1) * this.parent_canvas.clientWidth / 2;
             let top = (-(aa.y + bb.y) / 2 + 1) * this.parent_canvas.clientHeight / 2;
-            $(this.parent_canvas).append(`<span class="distance" style="position:absolute;display:inline-block;top:${top}px;left:${left}px;">${distance}</span>`);
+            $(this.parent_canvas).append(`<span class="distance" style="position:absolute;display:inline-block;top:${top}px;left:${left}px;">${distance}m</span>`);
         }
     }
 
@@ -2186,14 +2186,27 @@ export const owlStudio = function (cv1, cv2, parent) {
 
     }
 
-    this.calculateVolume = function (h, v) {
+    this.calculateVolume = function (h = undefined, v) {
 
         let sessionHistory = this.sessionHistory;
-
-        let heap = sessionHistory[h].data;
+        let heap = [];
+        let hmatrix;
+        if (h) {
+            heap = sessionHistory[h].data;
+            hmatrix = new THREE.Matrix4().fromArray(sessionHistory[h].matrix);
+        }
+        else {
+            let target = this.groupList[this.activeId[0]]
+            if (!target) return;
+            let count = 3 * target.selectedCount;
+            for (let i = 0; i < count; i++) {
+                heap.push(target.selectedPoints[i])
+            }
+            hmatrix = new THREE.Matrix4().fromArray(target.matrix);
+        }
         let ground = sessionHistory[v].data;
 
-        let hmatrix = new THREE.Matrix4().fromArray(sessionHistory[h].matrix);
+
         let gmatrix = new THREE.Matrix4().fromArray(sessionHistory[v].matrix);
 
         let hclone = [];
@@ -2216,7 +2229,7 @@ export const owlStudio = function (cv1, cv2, parent) {
 
         let volume = Math.abs(this.getSelVolume(hclone, gclone));
 
-        sessionHistory[h].volume = volume;
+        if (h) sessionHistory[h].volume = volume;
 
         return volume;
 
