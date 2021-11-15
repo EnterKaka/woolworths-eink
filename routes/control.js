@@ -2,10 +2,11 @@ var express = require("express");
 var app = express();
 const auth = require("../middleware/auth");
 const admin = require("../middleware/admin");
-const Setting = require("../model/Setting");
+const Schedule = require("../model/Schedule");
 const Joi = require("joi");
 const exec = require("child_process").execFile;
 const { spawn } = require("child_process");
+
 // const { networkInterfaces } = require("os");
 const ip = require("ip");
 var children = [];
@@ -13,8 +14,7 @@ app.get("/", auth, async function (req, res) {
     // render to views/index.ejs template file
     console.log("******** load oes_control ************");
     // const nets = networkInterfaces();
-    let server_ip = ip.address();
-    let schedule_data = [
+    let days = [
         { day: "Monday" },
         { day: "Tuesday" },
         { day: "Wednesday" },
@@ -23,6 +23,30 @@ app.get("/", auth, async function (req, res) {
         { day: "Saturday" },
         { day: "Sunday" },
     ];
+    let allmembers = await Schedule.find();
+    let sch_obj = [];
+    days.forEach((obj) => {
+        var element = allmembers.find((e) => e.day === obj.day);
+        if (element)
+            sch_obj.push({
+                day: element.day,
+                interval_value: element.interval_value,
+                unit: element.unit,
+                start_time: element.start_time,
+                end_time: element.end_time,
+            });
+        else
+            sch_obj.push({
+                day: obj.day,
+                interval_value: "",
+                unit: "",
+                start_time: "",
+                end_time: "",
+            });
+    });
+    console.log(allmembers);
+
+    let server_ip = ip.address();
     // for (const name of Object.keys(nets)) {
     //     for (const net of nets[name]) {
     //         // Skip over non-IPv4 and internal (i.e. 127.0.0.1) addresses
@@ -35,7 +59,7 @@ app.get("/", auth, async function (req, res) {
         title: "3D Viewer - Owl Studio Web App",
         priv: req.user.privilege,
         server_ip: server_ip,
-        schedule_data: schedule_data,
+        schedule_data: sch_obj,
         path: "C:\\Windows\\notepad.exe",
     });
 });
@@ -81,6 +105,25 @@ app.post("/killApp", async function (req, res, next) {
         res.send("success");
     }
 });
+/********** save schedule *********/
+app.post("/save_sch", async function (req, res, next) {
+    let sch = {
+        day: req.body.day,
+        interval_value: req.body.interval_value,
+        unit: req.body.unit,
+        start_time: req.body.start_time,
+        end_time: req.body.end_time,
+    };
+    try {
+        await Schedule.deleteOne({ day: req.body.day });
+        let v_sch = new Schedule(sch);
+        await v_sch.save();
+        res.send("success");
+    } catch (error) {
+        res.send("failed");
+    }
+});
+
 /**
  * We assign app object to module.exports
  *
