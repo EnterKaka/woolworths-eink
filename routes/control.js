@@ -5,9 +5,8 @@ const admin = require("../middleware/admin");
 const Schedule = require("../model/Schedule");
 const Value = require("../model/Value");
 const Joi = require("joi");
-const exec = require("child_process").execFile;
 const { spawn } = require("child_process");
-// const ws = require('ws');
+const WebSocket = require('ws');
 
 // const { networkInterfaces } = require("os");
 const ip = require("ip");
@@ -102,10 +101,17 @@ app.post("/set_interval", async function (req, res, next) {
     var last_week_day = "";
     week_schedule = await get_week_schedule();
     var daytimer;
-    var daytimer_interval = () => {
-        var child = spawn("C:\\Windows\\notepad.exe");
-        console.log('scan load');
-        setTimeout(() => {
+    let server_ip = ip.address();
+    var daytimer_interval = async () => {
+        var child = await spawn("C:\\Windows\\notepad.exe");
+        var websocket = await new WebSocket( "ws://" + server_ip + ":1234");
+        websocket.onopen = function (evt) {
+                await websocket.send('start scan');
+        };
+        setTimeout(async () => {
+            console.log('scan load');
+            if(websocket.readyState === 1)
+            websocket.close;
             child.kill();
         }, 3000);
 
