@@ -387,6 +387,12 @@ window.onload = function () {
         cloudmachine.setToolState('polyline')
     });
 
+    document.getElementById('btn-addpoint').addEventListener('click', function () {
+        document.getElementById('btn-' + cloudmachine.toolState).classList.remove('active')
+        document.getElementById('btn-addpoint').classList.add('active')
+        cloudmachine.setToolState('addpoint')
+    });
+
     // document.getElementById('btn-translate2').addEventListener('click', function () {
     //     document.getElementById('btn-' + cloudmachine.toolState).classList.remove('active')
     //     document.getElementById('btn-translate2').classList.add('active')
@@ -706,7 +712,7 @@ window.onload = function () {
             if (!sessionHistory[i].deleted) {
                 htable.innerHTML += `<tr>
               <td style="width:180px;padding:10px;display:none;"><span id = "preview${i}" class="rect" style=""></span></td>
-              <td data-id=${i} style="padding:0"><input data-id=${i} class="m-namelist" style="border:0;padding:10px" value="${sessionHistory[i].name}"></td>
+              <td data-id=${i} style="padding:0"><input title="${sessionHistory[i].name}" data-id=${i} class="m-namelist" style="border:0;padding:10px" value="${sessionHistory[i].name}"></td>
               <td>${sessionHistory[i].date}</td>
               <td>${sessionHistory[i].time}</td>
               <td>${sessionHistory[i].type}</td>

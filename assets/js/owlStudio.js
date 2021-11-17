@@ -114,15 +114,15 @@ export const owlStudio = function (cv1, cv2, parent) {
 
     }
 
-    this.addToSessionHistory = function (filename, type, arrayData, matrixElem) {
-
+    this.addToSessionHistory = function (filename, type, arrayData, matrixElem, version) {
+        if (version > 1) filename += '_v' + version;
         this.sessionHistory.push({
             name: filename,
             date: getDate(),
             time: getTime(),
             type: type,
             data: arrayData,
-            matrix: matrixElem
+            matrix: matrixElem,
         })
 
     }
@@ -248,6 +248,7 @@ export const owlStudio = function (cv1, cv2, parent) {
         } else {
             console.log('pointTopointreturned')
             target = this.groupList[newModel];
+
             if (arrayData.position) {
                 target.group.position.copy(arrayData.position)
             }
@@ -395,7 +396,7 @@ export const owlStudio = function (cv1, cv2, parent) {
 
         this.render();
 
-        this.addToSessionHistory(filename, 'model', [...geometry.attributes.position.array], [...target.matrix]);
+        this.addToSessionHistory(filename, 'model', [...geometry.attributes.position.array], [...target.matrix], ++target.version);
 
     }
 
@@ -447,7 +448,7 @@ export const owlStudio = function (cv1, cv2, parent) {
 
         }
 
-        this.addToSessionHistory(filename, 'ground', saveData, new THREE.Matrix4().setPosition(x, y, z).elements)
+        this.addToSessionHistory(filename, 'ground', saveData, new THREE.Matrix4().setPosition(x, y, z).elements, 1)
 
     }
 
@@ -471,7 +472,7 @@ export const owlStudio = function (cv1, cv2, parent) {
 
             target.matrix = [...target.group.matrix.elements];
 
-            this.addToSessionHistory(target.name, 'model', [...target.group.children[0].geometry.attributes.position.array], [...target.matrix]);
+            this.addToSessionHistory(target.name, 'model', [...target.group.children[0].geometry.attributes.position.array], [...target.matrix], ++target.version);
 
         }
 
@@ -739,6 +740,22 @@ export const owlStudio = function (cv1, cv2, parent) {
 
     }
 
+    this.setCameraFromT = (position, lookAt) => {
+        let x = position.x;
+        let y = position.y;
+        let z = position.z;
+
+        this.camera.position.x = x;
+        this.camera.position.y = y;
+        this.camera.position.z = z;
+
+        this.cameraLookAt.x = lookAt.x;
+        this.cameraLookAt.y = lookAt.y;
+        this.cameraLookAt.z = lookAt.z;
+
+        this.camera.lookAt(this.cameraLookAt);
+    }
+
     this.mouseUp = (evt) => {
 
         evt.preventDefault();
@@ -781,11 +798,24 @@ export const owlStudio = function (cv1, cv2, parent) {
 
         event.preventDefault();
 
-        this.camera.position.y -= event.deltaY / 100;
-        this.camera.position.z += event.deltaY / 100 * 3 / 10;
+        // if (this.toolState == "addpoint") {
 
-        this.cameraLookAt.y -= event.deltaY / 100;
-        this.cameraLookAt.z += event.deltaY / 100 * 3 / 10;
+        let normal = new THREE.Vector3(this.cameraLookAt.x - this.camera.position.x, this.cameraLookAt.y - this.camera.position.y, this.cameraLookAt.z - this.camera.position.z).normalize()
+        this.camera.position.x -= event.deltaY / 100 * normal.x;
+        this.camera.position.y -= event.deltaY / 100 * normal.y;
+        this.camera.position.z -= event.deltaY / 100 * normal.z;
+
+        this.cameraLookAt.x -= event.deltaY / 100 * normal.x;
+        this.cameraLookAt.y -= event.deltaY / 100 * normal.y;
+        this.cameraLookAt.z -= event.deltaY / 100 * normal.z;
+        // return;
+        // }
+
+        // this.camera.position.y -= event.deltaY / 100;
+        // this.camera.position.z += event.deltaY / 100 * 3 / 10;
+
+        // this.cameraLookAt.y -= event.deltaY / 100;
+        // this.cameraLookAt.z += event.deltaY / 100 * 3 / 10;
 
         this.camera.lookAt(this.cameraLookAt);
 
@@ -1323,6 +1353,95 @@ export const owlStudio = function (cv1, cv2, parent) {
         this.showDistance(this.polylineData, oldPosition);
     }
 
+    this.addPoint = function (evt) {
+        if (!this.birdEyePlane) {
+            this.mouse.target.x = (evt.offsetX / this.canvas.clientWidth) * 2 - 1;
+            this.mouse.target.y = - (evt.offsetY / this.canvas.clientHeight) * 2 + 1;
+
+            let raycaster = new THREE.Raycaster();
+
+            raycaster.setFromCamera(this.mouse.target, this.camera);
+
+            let point = new THREE.Vector3();
+
+            let minDistance = Infinity;
+
+            let sind;
+
+            let closestPoint = new THREE.Vector3();
+            console.log(this.activeId)
+            let target = this.groupList[this.activeId[0]];
+            if (!target.group.visible) return;
+            let group = target.group;
+
+            let array = group.children[0].geometry.attributes.position.array;
+
+            for (let i = 0; i < array.length; i += 3) {
+
+                raycaster.ray.closestPointToPoint(new THREE.Vector3(array[i], array[i + 1], array[i + 2]).applyMatrix4(target.group.matrix), point)
+
+                let distanceSq = new THREE.Vector3(array[i], array[i + 1], array[i + 2]).applyMatrix4(target.group.matrix).distanceToSquared(point);
+
+                if (distanceSq < minDistance) {
+
+                    closestPoint.set(array[i], array[i + 1], array[i + 2]);
+
+                    minDistance = distanceSq;
+
+                    sind = i;
+
+                }
+
+            }
+
+            let x = array[sind];
+            let y = array[sind + 1];
+            let z = array[sind + 2];
+            let pst = new THREE.Vector3(x, y, z).applyMatrix4(group.matrix)
+            this.birdEyePlane = {};
+            this.birdEyePlane.grid = new THREE.GridHelper(30, 30, "white");
+            let normal = new THREE.Vector3().copy(pst).sub(new THREE.Vector3(x, y, z + 1).applyMatrix4(group.matrix)).normalize()
+
+            this.birdEyePlane.plane = new THREE.Plane(normal, -(pst.x * normal.x + pst.y * normal.y + pst.z * normal.z));
+            let grid = this.birdEyePlane.grid;
+            grid.position.copy(pst);
+            grid.rotation.x += Math.PI / 2;
+            grid.applyQuaternion(group.quaternion)
+            this.scene.add(grid)
+            this.setCameraFromT(new THREE.Vector3(x, y, z + 20).applyMatrix4(group.matrix), new THREE.Vector3(x, y, z).applyMatrix4(group.matrix))
+            this.render()
+        } else {
+            this.mouse.target.x = (evt.offsetX / this.canvas.clientWidth) * 2 - 1;
+            this.mouse.target.y = - (evt.offsetY / this.canvas.clientHeight) * 2 + 1;
+            let pointOnPlane = new THREE.Vector3();
+            let raycaster = new THREE.Raycaster();
+            raycaster.setFromCamera(this.mouse.target, this.camera);
+            raycaster.ray.intersectPlane(this.birdEyePlane.plane, pointOnPlane);
+
+            let target = this.groupList[this.activeId[0]];
+
+            let om = target.group.matrix;
+
+            let p = new THREE.Vector3().setFromMatrixPosition(om)
+            let q = new THREE.Quaternion().setFromRotationMatrix(om)
+
+            q.x = -q.x; q.y = -q.y; q.z = -q.z;
+
+            pointOnPlane.sub(p).applyQuaternion(q);
+            console.log(target)
+            this.reloadModelFromArray(target.name, [...target.group.children[0].geometry.attributes.position.array, pointOnPlane.x, pointOnPlane.y, pointOnPlane.z], this.activeId[0])
+        }
+    }
+
+    this.initAddPoint = function () {
+        if (this.birdEyePlane) {
+            this.scene.remove(this.birdEyePlane.plane)
+            this.scene.remove(this.birdEyePlane.grid)
+            this.birdEyePlane = undefined;
+            this.render();
+        }
+    }
+
     this.showDistance = (lines, position = new THREE.Vector3()) => {
         $(".distance").remove();
         for (let i = 1; i < lines.length; i++) {
@@ -1372,8 +1491,18 @@ export const owlStudio = function (cv1, cv2, parent) {
 
         if (this.polygon.length > 2) {
 
-            this.plane.set(new THREE.Vector3(0, 1, 0), -this.cameraLookAt.y)
+            let cx = this.cameraLookAt.x - this.camera.position.x;
+            let cy = this.cameraLookAt.y - this.camera.position.y;
+            let cz = this.cameraLookAt.z - this.camera.position.z;
 
+            let a = 'x';
+            let b = 'z';
+            if (cx == 0 && cy == 0) b = 'y';
+            if (cy == 0 && cz == 0) a = 'y';
+            console.log(a, b)
+            let normal = new THREE.Vector3(cx, cy, cz).normalize();
+            this.plane.set(normal, -(normal.x * this.cameraLookAt.x + normal.y * this.cameraLookAt.y + normal.z * this.cameraLookAt.z))
+            // console.log(this.plane)
             let vs = [];
 
             for (let i = 0; i < this.polygon.length; i++) {
@@ -1384,12 +1513,14 @@ export const owlStudio = function (cv1, cv2, parent) {
                 mouse.y = - (this.polygon[i][1] / canvas.clientHeight) * 2 + 1;
 
                 raycaster.setFromCamera(mouse, camera);
-
+                // console.log(raycaster.ray)
                 raycaster.ray.intersectPlane(plane, pointOnPlane);
+                console.log(pointOnPlane)
 
-                vs.push({ x: pointOnPlane.x, z: pointOnPlane.z })
+                vs.push({ x: pointOnPlane[a], y: pointOnPlane[b] })
 
             }
+            console.log(vs)
 
             if (evt.ctrlKey && target.selectedCount > 0) {
 
@@ -1409,7 +1540,7 @@ export const owlStudio = function (cv1, cv2, parent) {
 
                     raycaster.ray.intersectPlane(plane, pointOnPlane);
 
-                    if (!isInside(pointOnPlane, vs)) {
+                    if (!isInside({ x: pointOnPlane[a], y: pointOnPlane[b] }, vs)) {
 
                         target.selectedPoints[target.selectedCount * 3 + 0] = direct.x;
                         target.selectedPoints[target.selectedCount * 3 + 1] = direct.y;
@@ -1437,7 +1568,7 @@ export const owlStudio = function (cv1, cv2, parent) {
 
                     raycaster.ray.intersectPlane(plane, pointOnPlane);
 
-                    if (isInside(pointOnPlane, vs)) {
+                    if (isInside({ x: pointOnPlane[a], y: pointOnPlane[b] }, vs)) {
 
                         target.selectedPoints[target.selectedCount * 3 + 0] = direct.x;
                         target.selectedPoints[target.selectedCount * 3 + 1] = direct.y;
@@ -1471,7 +1602,7 @@ export const owlStudio = function (cv1, cv2, parent) {
 
                     raycaster.ray.intersectPlane(plane, pointOnPlane);
 
-                    if (isInside(pointOnPlane, vs)) {
+                    if (isInside({ x: pointOnPlane[a], y: pointOnPlane[b] }, vs)) {
 
                         target.selectedPoints[target.selectedCount * 3 + 0] = array[i];
                         target.selectedPoints[target.selectedCount * 3 + 1] = array[i + 1];
@@ -1579,6 +1710,9 @@ export const owlStudio = function (cv1, cv2, parent) {
                     case 'polyline':
                         this.drawPolyline(e)
                         break;
+                    case 'addpoint':
+                        this.addPoint(e)
+                        break;
 
                     default:
 
@@ -1589,6 +1723,9 @@ export const owlStudio = function (cv1, cv2, parent) {
                 this.mouseRightDown(e)
                 if (this.toolState == "polyline") {
                     this.initPolyline();
+                }
+                else if (this.toolState == "addpoint") {
+                    this.initAddPoint();
                 }
             }
 
@@ -1634,7 +1771,7 @@ export const owlStudio = function (cv1, cv2, parent) {
 
         this.canvas2.addEventListener('mousewheel', (e) => {
 
-            if (this.toolState == 'rotate' || this.toolState == 'rotate2' || this.toolState == 'translate' || this.toolState == 'translate2' || this.toolState == 'lineTrans')
+            if (this.toolState == 'rotate' || this.toolState == 'rotate2' || this.toolState == 'translate' || this.toolState == 'translate2' || this.toolState == 'lineTrans' || this.toolState == 'addpoint')
                 this.mouseWheel(e);
 
         }, false);
@@ -2526,6 +2663,7 @@ export const owlStudio = function (cv1, cv2, parent) {
             rotatePosition: {
                 x: 0, y: 0, z: 0
             },
+            version: 0
         })
 
         return this.groupList[this.activeId[0]];
@@ -2634,6 +2772,12 @@ export const owlStudio = function (cv1, cv2, parent) {
         this.polygonRender();
 
         if (this.line) this.line.visible = false;
+        if (this.birdEyePlane) {
+            this.scene.remove(this.birdEyePlane.plane)
+            this.scene.remove(this.birdEyePlane.grid)
+            this.birdEyePlane = undefined;
+            this.setCameraPosition(this.groupList[this.activeId[0]].group.position)
+        }
 
         this.initPolyline()
 
@@ -2757,17 +2901,17 @@ function surface() {
 function isInside(point, vs) {
 
     let x = point.x,
-        y = point.z;
+        y = point.y;
 
     let inside = false;
 
     for (let i = 0, j = vs.length - 1; i < vs.length; j = i++) {
 
         let xi = vs[i].x,
-            yi = vs[i].z;
+            yi = vs[i].y;
 
         let xj = vs[j].x,
-            yj = vs[j].z;
+            yj = vs[j].y;
 
         let intersect = ((yi > y) != (yj > y)) &&
             (x < (xj - xi) * (y - yi) / (yj - yi) + xi);
