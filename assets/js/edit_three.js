@@ -2,8 +2,139 @@ import * as THREE from './three.module.js';
 import { owlStudio } from './owlStudio.js';
 
 const cloudmachine = new owlStudio('viewer_3d', 'tool_2d', 'main_canvas');
-// const cloudmachine2 = new owlStudio('viewer_3d2', 'tool_2d2', 'main_canvas2');
-// cloudmachine2.init();
+
+cloudmachine.setListViewFunc((list, activeId) => {
+
+    const dom = document.getElementById('modellist');
+
+    dom.innerHTML = '';
+
+    for (let i = 0; i < list.length; i++) {
+
+        dom.innerHTML += `<div data-id="${i}" class="model ${actived(activeId, i) ? 'active' : ''} btn btn-outline-primary round">
+            <span data-id="${i}" class="modelname">${list[i].name}</span>
+            <i data-id="${i}" class="${list[i].group.visible ? 'ft-eye' : 'ft-eye-off'} modeleye"></i>
+            <a data-id="${i}" id="m-eye" class="modeldel" href="javascript:void(0)"><i class="ft-x"></i></a>
+        </div>`;
+
+        if (!actived(activeId, i)) {
+            list[i].group.children[4].visible = false;
+        } else if (document.getElementById('coordinate').checked) {
+            list[i].group.children[4].visible = true;
+        }
+
+    }
+
+    $(".modelname").on('click', function (e) {
+
+        if (!e.ctrlKey) {
+            console.log('click')
+
+            cloudmachine.setTarget(parseInt(this.dataset.id))
+            setCurrentViewSetting()
+
+        } else {
+
+            cloudmachine.addTarget(parseInt(this.dataset.id))
+            setCurrentViewSetting()
+
+        }
+
+        cloudmachine.render();
+    })
+
+    $(".modelname").on('dblclick', function (e) {
+        console.log('dblclicked')
+        let target = cloudmachine.groupList[parseInt(this.dataset.id)];
+        if (!e.ctrlKey) {
+            cloudmachine.setCameraPosition(target.position)
+        } else {
+            cloudmachine.setCameraPosition(target.position)
+        }
+
+        cloudmachine.render();
+    })
+
+    $(".modeleye").on('click', function () {
+        let visible = this.classList.contains('ft-eye');
+        cloudmachine.setVisible(parseInt(this.dataset.id), !visible)
+        if (visible) {
+            this.classList.replace('ft-eye', 'ft-eye-off')
+            // if (parseInt(this.dataset.id) == cloudmachine.activeId)
+            // cloudmachine.target = undefined;
+        }
+        else {
+            this.classList.replace('ft-eye-off', 'ft-eye')
+            // if (parseInt(this.dataset.id) == cloudmachine.activeId)
+            // cloudmachine.target = cloudmachine.groupList[cloudmachine.activeId];
+        }
+        cloudmachine.render();
+    })
+
+    $(".modeldel").on('click', function () {
+        var r = confirm("do you really want to delete this point cloud?");
+        if (r == true) {
+            cloudmachine.deletePC(parseInt(this.dataset.id))
+        }
+        cloudmachine.render();
+    })
+
+})
+
+
+function actived(activeId, i) {
+    for (let target of activeId) {
+        if (target == i) return true;
+    }
+    return false;
+}
+
+function setCurrentViewSetting() {
+
+    let info = cloudmachine.getTargetInfo()
+
+    console.log(info)
+
+    const pcolor = $('#pointcolor')
+    const dcolor = $('#delaunycolor')
+    const delauny = $('#delauny')
+    const delauny3 = $('#delauny3')
+    const surface = $('#surface')
+    const heightmap = $('#heightmapColor')
+    // const coordinate = $('#coordinate')
+
+    if (info.heightmap) {
+        if (!heightmap[0].checked) {
+            heightmap.trigger('click')
+        }
+        pcolor[0].disabled = true;
+    } else {
+        if (heightmap[0].checked) {
+            heightmap.trigger('click')
+        }
+        pcolor[0].disabled = false;
+        pcolor[0].value = "#" + info.pointcolor;
+    }
+
+    dcolor[0].value = "#" + info.meshcolor;
+
+    if ((delauny[0].checked && !info.visible2) || (!delauny[0].checked && info.visible2)) {
+        delauny.trigger('click')
+    }
+
+    if ((delauny3[0].checked && !info.visible3) || (!delauny3[0].checked && info.visible3)) {
+        delauny3.trigger('click')
+    }
+
+    if ((surface[0].checked && info.wireframe) || (!surface[0].checked && !info.wireframe)) {
+        surface.trigger('click')
+    }
+
+    // if ((coordinate[0].checked && !info.coordinate) || (!coordinate[0].checked && info.coordinate)) {
+    //     coordinate.trigger('click')
+    // }
+
+}
 
 function startApp() {
     let tempvaluetag = document.getElementById('pointcloud');
@@ -15,7 +146,6 @@ function startApp() {
         const loader = new THREE.FileLoader();
         loader.load('./3dmodels/Weissspat_1632872292.txt', (text) => {
             cloudmachine.reloadModelFromData('Weissspat_1632872292.txt', text);
-            // cloudmachine2.reloadModelFromData('Weissspat_1632872292.txt', text);
         });
     }
 }
@@ -105,9 +235,35 @@ function openGround_Fromlocal(e) {
     }
 }
 
+function openNav() {
+    document.getElementById("modellist").style.width = "250px";
+    document.getElementById("core").style.marginRight = "250px";
+}
+
+function closeNav() {
+    document.getElementById("modellist").style.width = "0";
+    document.getElementById("core").style.marginRight = "0";
+}
+
+function inputedVolume() {
+    let mass = parseFloat(document.getElementById('id-mass').value)
+    document.getElementById('id-densty').value = mass * 1000 / parseFloat(document.getElementById('id-volume').value);
+}
+
+function inputedMass() {
+    let volume = parseFloat(document.getElementById('id-volume').value)
+    document.getElementById('id-densty').value = parseFloat(document.getElementById('id-mass').value) * 1000 / volume;
+}
+
+function inputedDensty() {
+    let volume = parseFloat(document.getElementById('id-volume').value)
+    document.getElementById('id-mass').value = parseFloat(document.getElementById('id-densty').value) * volume / 1000;
+}
+
 window.onload = function () {
     cloudmachine.init();
     cloudmachine.cloudController();
+    // cloudmachine.preview('previewCanvas', 'previewParent');
     startApp();
     //app controller/////////////////////////////////////////////////////////////////////////////////////////////////////////
     $('#btn-openfromLocal').click(function () {
@@ -173,6 +329,16 @@ window.onload = function () {
         };
     });
 
+    document.getElementById('coordinateDiv').addEventListener('click', function () {
+        let two = document.getElementById('coordinate');
+        if (!two.checked) {
+            cloudmachine.setCoordinate(false);
+        }
+        else {
+            cloudmachine.setCoordinate(true);
+        };
+    });
+
     document.getElementById('pointcolor').addEventListener('input', function () {
         cloudmachine.setPointColor(this.value)
     });
@@ -197,11 +363,42 @@ window.onload = function () {
         cloudmachine.setSelectedColor(this.value)
     });
 
-    document.getElementById('btn-move').addEventListener('click', function () {
+    document.getElementById('btn-rotate2').addEventListener('click', function () {
         document.getElementById('btn-' + cloudmachine.toolState).classList.remove('active')
-        document.getElementById('btn-move').classList.add('active')
-        cloudmachine.setToolState('move')
+        document.getElementById('btn-rotate2').classList.add('active')
+        cloudmachine.setToolState('rotate2')
     });
+
+    document.getElementById('btn-reset').addEventListener('click', function () {
+        document.getElementById('btn-' + cloudmachine.toolState).classList.remove('active')
+        document.getElementById('btn-reset').classList.add('active')
+        cloudmachine.setToolState('reset')
+    });
+
+    document.getElementById('btn-reset2').addEventListener('click', function () {
+        document.getElementById('btn-' + cloudmachine.toolState).classList.remove('active')
+        document.getElementById('btn-reset2').classList.add('active')
+        cloudmachine.setToolState('reset2')
+    });
+
+    document.getElementById('btn-polyline').addEventListener('click', function () {
+        document.getElementById('btn-' + cloudmachine.toolState).classList.remove('active')
+        document.getElementById('btn-polyline').classList.add('active')
+        cloudmachine.setToolState('polyline')
+    });
+
+    document.getElementById('btn-addpoint').addEventListener('click', function () {
+        document.getElementById('btn-' + cloudmachine.toolState).classList.remove('active')
+        document.getElementById('btn-addpoint').classList.add('active')
+        cloudmachine.setToolState('addpoint')
+    });
+
+    // document.getElementById('btn-translate2').addEventListener('click', function () {
+    //     document.getElementById('btn-' + cloudmachine.toolState).classList.remove('active')
+    //     document.getElementById('btn-translate2').classList.add('active')
+    //     cloudmachine.transDir = document.getElementById('trans-axis2').value;
+    //     cloudmachine.setToolState('translate2')
+    // });
 
     document.getElementById('btn-point').addEventListener('click', function () {
         document.getElementById('btn-' + cloudmachine.toolState).classList.remove('active')
@@ -224,7 +421,22 @@ window.onload = function () {
     document.getElementById('btn-translate').addEventListener('click', function () {
         document.getElementById('btn-' + cloudmachine.toolState).classList.remove('active')
         document.getElementById('btn-translate').classList.add('active')
+        cloudmachine.transDir = document.getElementById('trans-axis').value;
         cloudmachine.setToolState('translate')
+    });
+
+    document.getElementById('trans-axis').addEventListener('change', function () {
+        cloudmachine.transDir = this.value;
+    })
+
+    // document.getElementById('trans-axis2').addEventListener('change', function () {
+    //     cloudmachine.transDir = this.value;
+    // })
+
+    document.getElementById('btn-lineTrans').addEventListener('click', function () {
+        document.getElementById('btn-' + cloudmachine.toolState).classList.remove('active')
+        document.getElementById('btn-lineTrans').classList.add('active')
+        cloudmachine.setToolState('lineTrans')
     });
 
     document.getElementById('btn-rotate').addEventListener('click', function () {
@@ -282,7 +494,55 @@ window.onload = function () {
         }, 20)
     })
 
+    document.getElementById('f1-mfilter').addEventListener('click', function () {
+        startProgress()
+        setTimeout(() => {
+            cloudmachine.gridMinimumFilter(document.getElementById('f1-cell-size').value, false);
+            endProgress()
+        }, 20)
+    });
+
+    document.getElementById('f2-mfilter').addEventListener('click', function () {
+        startProgress()
+        setTimeout(() => {
+            cloudmachine.voxelGridFilter(document.getElementById('f2-cell-size').value, false)
+            endProgress()
+        }, 20)
+    })
+
+    document.getElementById('f3-mfilter').addEventListener('click', function () {
+        startProgress()
+        setTimeout(() => {
+            let num = document.getElementById('f3-number').value;
+            let dev = document.getElementById('f3-deviation').value;
+            cloudmachine.outlierRemovalFilter(num, dev, false)
+            endProgress()
+        }, 20)
+    })
+
+    document.getElementById('f4-mfilter').addEventListener('click', function () {
+        startProgress()
+        setTimeout(() => {
+            let limit1 = document.getElementById('f4-limit1').value;
+            let limit2 = document.getElementById('f4-limit2').value;
+            let pass = document.getElementById('f4-pass').value;
+            cloudmachine.passThroughFilter(pass, limit1, limit2, false)
+            endProgress()
+        }, 20)
+    })
+
+    document.getElementById('markedVolume').addEventListener('click', function () {
+        if (this.checked) {
+            document.getElementById('vheap-list').disabled = true;
+            document.getElementById('btn-vSave').style.display = 'none';
+        } else {
+            document.getElementById('vheap-list').disabled = false;
+            document.getElementById('btn-vSave').style.display = 'inline-block';
+        }
+    })
+
     document.getElementById('editArea').addEventListener('keypress', (e) => {
+        console.log(e)
         if (e.keyCode == 26 && e.ctrlKey) {
             console.log('ctrl+z')
             cloudmachine.popupHistory(e);
@@ -305,7 +565,7 @@ window.onload = function () {
         }
         else if (e.keyCode == 65 && e.shiftKey) {
             console.log(5)
-            $("#btn-move").trigger('click');
+            $("#btn-rotate2").trigger('click');
         }
         else if (e.keyCode == 83 && e.shiftKey) {
             console.log(6)
@@ -335,6 +595,10 @@ window.onload = function () {
             console.log(12)
             $("#btn-check").trigger('click');
         }
+        else if (e.keyCode == 99) {
+            $("#baseIcon-tab3").trigger("click");
+            $("#btn-point").trigger('click');
+        }
     }, false);
 
     document.getElementById('btn-directSave').addEventListener('click', () => {
@@ -344,6 +608,7 @@ window.onload = function () {
 
     document.getElementById('directSaveBtn').addEventListener('click', () => {
         let savedata = cloudmachine.getSavePoints();
+        let matrix = cloudmachine.getSaveMatrixArray();
         const dateobj = new Date();
         let year = dateobj.getFullYear();
         let month = dateobj.getMonth() + 1;
@@ -395,6 +660,7 @@ window.onload = function () {
                     "data": savedata,
                     "type": `model`,
                     "volume": document.getElementById('ds-modelVolume').value,
+                    "matrix": matrix,
                 }
             },
             type: "post"
@@ -414,7 +680,7 @@ window.onload = function () {
         }).done((res) => {
             if (res.error) alert('db error');
             else if (res.success) {
-                console.log(res.data)
+                // console.log(res.data)
                 let dblist = res.data;
                 gdblist = dblist;
                 if (dblist.length == 0) return;
@@ -445,20 +711,24 @@ window.onload = function () {
         for (let i = sessionHistory.length - 1; i >= 0; i--) {
             if (!sessionHistory[i].deleted) {
                 htable.innerHTML += `<tr>
-              <td style="width:180px;padding:10px"><canvas id = "preview${i}" style="height:160px;width:100px;"></canvas></td>
-              <td contenteditable="true" data-id=${i}>${sessionHistory[i].name}</td>
+              <td style="width:180px;padding:10px;display:none;"><span id = "preview${i}" class="rect" style=""></span></td>
+              <td data-id=${i} style="padding:0"><input title="${sessionHistory[i].name}" data-id=${i} class="m-namelist" style="border:0;padding:10px" value="${sessionHistory[i].name}"></td>
               <td>${sessionHistory[i].date}</td>
               <td>${sessionHistory[i].time}</td>
               <td>${sessionHistory[i].type}</td>
               <td>${sessionHistory[i].volume}</td>
+              <td>${sessionHistory[i].mass}</td>
+              <td>${sessionHistory[i].densty}</td>
+              <td><button data-id=${i} class="matrixview btn btn-icon btn-outline-primary round btn-sm"
+                    title='view and edit matrix' data-toggle="modal" data-target="#matrixModal" >matrix</button></td>
               <td style="width:230px;">
-                <button data-id=${i} type='button' class="hload-btn btn btn-icon btn-outline-primary  round btn-sm"
+                <button data-id=${i} class="hload-btn btn btn-icon btn-outline-primary  round btn-sm"
                   title='loading'><i class="ft-upload"></i>
                 </button>
-                <button data-id=${i} type='button' class="hdown-btn btn btn-icon btn-outline-primary round btn-sm"
+                <button data-id=${i} class="hdown-btn btn btn-icon btn-outline-primary round btn-sm"
                     title='download model with txt file'><i class="ft-download"></i>
                 </button>
-                <button data-id=${i} type='button' class="hdel-btn btn btn-icon btn-outline-primary  round btn-sm"
+                <button data-id=${i} class="hdel-btn btn btn-icon btn-outline-primary  round btn-sm"
                   title='delete'><i class="ft-x-square"></i>
                 </button>
               </td>
@@ -468,22 +738,40 @@ window.onload = function () {
         $('.hload-btn').click(function () {
             console.log({ this: this })
             document.getElementById('modelpath').innerText = this.parentElement.parentElement.children[0].innerText;
-            cloudmachine.reloadModelFromArray(sessionHistory[this.dataset.id].name, sessionHistory[this.dataset.id].data);
+            cloudmachine.reloadModelFromArray(sessionHistory[parseInt(this.dataset.id)].name, sessionHistory[parseInt(this.dataset.id)].data, sessionHistory[parseInt(this.dataset.id)].matrix);
             $('#browser-close').trigger('click');
         })
+        $('.matrixview').click(function () {
+            console.log({ this: this })
+            let matrix = cloudmachine.sessionHistory[parseInt(this.dataset.id)].matrix;
+            document.getElementById('matrix-id').value = parseInt(this.dataset.id);
+            for (var i = 0; i < 16; i++) {
+                document.getElementById('mtx' + i).innerText = matrix[i];
+            }
+        })
         $('.hdown-btn').click(function () {
-            const result = sessionHistory[this.dataset.id].data;
+            let array = sessionHistory[parseInt(this.dataset.id)].data;
+            let matrix = sessionHistory[parseInt(this.dataset.id)].matrix;
+            let result = cloudmachine.getTextData(array, matrix);
             download('model.txt', 'text', result);
         })
         $('.hdel-btn').click(function () {
             console.log({ this: this })
-            sessionHistory[this.dataset.id].deleted = true;
+            sessionHistory[parseInt(this.dataset.id)].deleted = true;
             $(this.parentElement.parentElement).remove();
             // $('#browser-close').trigger('click');
         })
-        for (let i = 0; i < sessionHistory.length; i++) {
-            cloudmachine.previewCloud('preview' + i, sessionHistory[i].data)
-        }
+        $('.m-namelist').on('change', function () {
+            cloudmachine.sessionHistory[parseInt(this.dataset.id)].name = this.value;
+        })
+        $('.m-namelist').on('input', function () {
+            cloudmachine.sessionHistory[parseInt(this.dataset.id)].name = this.value;
+        })
+        // setTimeout(() => {
+        //     for (let i = 0; i < sessionHistory.length; i++) {
+        //         cloudmachine.previewCloud('preview' + i, sessionHistory[i].data)
+        //     }
+        // }, 1000)
     })
 
     document.getElementById('browser-load').addEventListener('click', () => {
@@ -512,6 +800,10 @@ window.onload = function () {
                         <td>${res.data[i].time}</td>
                         <td>${res.data[i].type}</td>
                         <td>${res.data[i].volume}</td>
+                        <td>${res.data[i].mass}</td>
+                        <td>${res.data[i].densty}</td>
+                        <td ><button data-id=${i} class="dbmatrixview btn btn-icon btn-outline-primary round btn-sm"
+                            title='view matrix' data-toggle="modal" data-target="#dbMatrix" >matrix</button></td>
                         <td style="width:170px;">
                             <button data-id=${i} type='button' class="dload-btn btn btn-icon btn-outline-primary  round btn-sm mr-1"
                             title='loading'><i class="ft-upload"></i>
@@ -522,8 +814,15 @@ window.onload = function () {
                 $('.dload-btn').click(function () {
                     console.log({ data: res.data })
                     document.getElementById('modelpath').innerText = this.parentElement.parentElement.children[0].innerText;
-                    cloudmachine.reloadModelFromArray(res.data[this.dataset.id].name, res.data[this.dataset.id].data);
+                    cloudmachine.reloadModelFromArray(res.data[parseInt(this.dataset.id)].name, res.data[parseInt(this.dataset.id)].data, res.data[parseInt(this.dataset.id)].matrix);
                     $('#browser-close').trigger('click');
+                })
+                $('.dbmatrixview').click(function () {
+                    console.log({ this: this })
+                    let matrix = res.data[parseInt(this.dataset.id)].matrix;
+                    for (var i = 0; i < 16; i++) {
+                        document.getElementById('dbmtx' + i).innerText = matrix[i];
+                    }
                 })
             }
             else alert(res.error);
@@ -557,8 +856,8 @@ window.onload = function () {
         let savedata = [];
         let clonelist = document.getElementById('history-models').children;
         for (let i = 0; i < clonelist.length; i++) {
-            let n = clonelist[i].children[0].dataset.id;
-            sessionHistory[n].name = clonelist[i].children[0].innerText.trim();
+            let n = clonelist[i].children[1].dataset.id;
+            // sessionHistory[n].name = clonelist[i].children[1].innerText.trim();
             savedata.push(sessionHistory[n]);
         }
         // loading.style.display = 'block';
@@ -590,11 +889,63 @@ window.onload = function () {
     $('#ground-file').change(openGround_Fromlocal);
 
     document.getElementById('btn-volume').addEventListener('click', () => {
-        let h = document.getElementById('vheap-list').value;
-        let v = document.getElementById('vground-list').value;
-        let volume = Math.abs(cloudmachine.calculateVolume(h, v));
-        $("#btn-vClose").trigger('click');
-        alert(volume)
+        let b = document.getElementById('markedVolume').checked;
+        let volume;
+        if (!b) {
+            let h = document.getElementById('vheap-list').value;
+            let v = document.getElementById('vground-list').value;
+            volume = Math.abs(cloudmachine.calculateVolume(h, v));
+        } else {
+            let v = document.getElementById('vground-list').value;
+            volume = Math.abs(cloudmachine.calculateVolume(undefined, v));
+        }
+        console.log('volume', volume)
+        document.getElementById('id-volume').value = volume;
+        inputedVolume();
+        // $("#btn-vClose").trigger('click');
+        // alert(volume)
+    })
+
+    document.getElementById('id-volume').addEventListener('change', function () {
+        console.log('volume change')
+        inputedVolume();
+    })
+
+    document.getElementById('id-volume').addEventListener('input', function () {
+        console.log('volume input')
+        inputedVolume();
+    })
+
+    document.getElementById('id-mass').addEventListener('change', function () {
+        console.log('mass change')
+        inputedMass();
+    })
+
+    document.getElementById('id-mass').addEventListener('input', function () {
+        console.log('mass input')
+        inputedMass();
+    })
+
+    document.getElementById('id-densty').addEventListener('change', function () {
+        console.log('densty change')
+        inputedDensty()
+    })
+
+    document.getElementById('id-densty').addEventListener('input', function () {
+        console.log('densty input')
+        inputedDensty()
+    })
+
+    document.getElementById('btn-vSave').addEventListener('click', function () {
+        console.log('volume saved')
+        let id = document.getElementById('vheap-list').value;
+        let v = document.getElementById('id-volume').value;
+        let m = document.getElementById('id-mass').value;
+        let d = document.getElementById('id-densty').value;
+
+        cloudmachine.setVolumeMassDensty(id, v, m, d)
+        alert('success')
+
     })
 
     document.getElementById('absTranslate').addEventListener('click', () => {
@@ -606,7 +957,7 @@ window.onload = function () {
 
     document.getElementById('absRotate').addEventListener('click', () => {
         let axis = document.getElementById('rotate-pass').value;
-        let degree = document.getElementById('rotate-degree').value;
+        let degree = document.getElementById('rotate-degree').value * Math.PI / 180;
         cloudmachine.rotateAbs(axis, degree)
     })
 
@@ -620,5 +971,108 @@ window.onload = function () {
         let axis = document.getElementById('flip-pass').value;
         let degree = -Math.PI / 2;
         cloudmachine.rotateAbs(axis, degree)
+    })
+
+    document.getElementById('set-matrix').addEventListener("click", function (event) {
+        cloudmachine.setCurrentMatrix();
+        alert('success')
+    });
+
+    document.getElementById('matrix-save').addEventListener('click', function () {
+        let array = [$('#mtx0').text(), $('#mtx1').text(), $('#mtx2').text(), $('#mtx3').text(), $('#mtx4').text(), $('#mtx5').text(), $('#mtx6').text(), $('#mtx7').text(), $('#mtx8').text(), $('#mtx9').text(), $('#mtx10').text(), $('#mtx11').text(), $('#mtx12').text(), $('#mtx13').text(), $('#mtx14').text(), $('#mtx15').text(),]
+        let id = document.getElementById('matrix-id').value;
+        cloudmachine.setMatrixToHistory(id, array)
+        $('#matrix-close').trigger('click')
+        alert('success')
+    })
+
+    document.getElementById('matrix-download').addEventListener('click', () => {
+        let text = `${$('#mtx0').text()} ${$('#mtx4').text()} ${$('#mtx8').text()} ${$('#mtx12').text()}\n${$('#mtx1').text()} ${$('#mtx5').text()} ${$('#mtx9').text()} ${$('#mtx13').text()}\n${$('#mtx2').text()} ${$('#mtx6').text()} ${$('#mtx10').text()} ${$('#mtx14').text()}\n${$('#mtx3').text()} ${$('#mtx7').text()} ${$('#mtx11').text()} ${$('#mtx15').text()}`;
+        download('matrix.txt', 'text', text);
+    })
+
+    document.getElementById('dbmatrix-download').addEventListener('click', () => {
+        let text = `${$('#dbmtx0').text()} ${$('#dbmtx4').text()} ${$('#dbmtx8').text()} ${$('#dbmtx12').text()}\n${$('#dbmtx1').text()} ${$('#dbmtx5').text()} ${$('#dbmtx9').text()} ${$('#dbmtx13').text()}\n${$('#dbmtx2').text()} ${$('#dbmtx6').text()} ${$('#dbmtx10').text()} ${$('#dbmtx14').text()}\n${$('#dbmtx3').text()} ${$('#dbmtx7').text()} ${$('#dbmtx11').text()} ${$('#dbmtx15').text()}`;
+        download('matrix.txt', 'text', text);
+    })
+
+    document.getElementById('baseIcon-tab5').addEventListener('click', () => {
+        cloudmachine.setFromRealMatrix();
+    })
+
+    //drag and drop
+    // While dragging the p element, change the color of the output text
+    document.addEventListener("drag", function (event) {
+        document.getElementById("viewer_3d").style.color = "red";
+    });
+
+    // Output some text when finished dragging the p element and reset the opacity
+    document.addEventListener("dragend", function (event) {
+        document.getElementById("viewer_3d").innerHTML = "Finished dragging the p element.";
+        cloudmachine.canvas.style.opacity = "1";
+    });
+
+    /* Events fired on the drop target */
+
+    // When the draggable p element enters the droptarget, change the DIVS's border style
+    document.addEventListener("dragenter", function (event) {
+        if (event.target.className == "dviewer") {
+            cloudmachine.canvas.style.border = "3px dotted red";
+        }
+    });
+
+    // By default, data/elements cannot be dropped in other elements. To allow a drop, we must prevent the default handling of the element
+    document.addEventListener("dragover", function (event) {
+        event.preventDefault();
+    });
+
+    // When the draggable p element leaves the droptarget, reset the DIVS's border style
+    document.addEventListener("dragleave", function (event) {
+        if (event.target.className == "dviewer") {
+            cloudmachine.canvas.style.border = "";
+        }
+    });
+
+    /* On drop - Prevent the browser default handling of the data (default is open as link on drop)
+      Reset the color of the output text and DIV's border color
+      Get the dragged data with the dataTransfer.getData() method
+      The dragged data is the id of the dragged element ("drag1")
+      Append the dragged element into the drop element
+    */
+    document.addEventListener("drop", function (event) {
+        event.preventDefault();
+        if (event.target.className == "dviewer") {
+            document.getElementById("viewer_3d").style.color = "";
+            cloudmachine.canvas.style.border = "";
+            let file = event.dataTransfer.files[0];
+            let reader = new FileReader();
+            reader.onload = function (ev) {
+                let model_text = ev.target.result;
+                if (file.name.split('.').pop() == 'obj') {
+                    cloudmachine.reloadModelFromObjData(file.name, model_text)
+                }
+                else {
+                    cloudmachine.reloadModelFromData(file.name, model_text);
+                }
+            };
+
+            reader.readAsText(file);
+        }
+    });
+
+    $('a[data-action="expand"]').on('click', async function (e) {
+        await new Promise(r => setTimeout(r, 10));
+        cloudmachine.windowResize();
+    });
+
+    document.getElementById('sidenav').addEventListener('click', function () {
+        cloudmachine.polygon = [];
+        cloudmachine.polygonRender();
+        if (document.getElementById("core").style.marginRight == "0px") {
+            openNav()
+        } else {
+            closeNav()
+        }
+        setTimeout(() => { cloudmachine.windowResize() }, 500)
     })
 };
