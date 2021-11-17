@@ -105,13 +105,13 @@ app.post("/set_interval", async function (req, res, next) {
     var daytimer_interval = async () => {
         var child = await spawn("C:\\Windows\\notepad.exe");
         var websocket = await new WebSocket( "ws://" + server_ip + ":1234");
-        websocket.onopen = function (evt) {
-                await websocket.send('start scan');
-        };
+        // websocket.onopen = function (evt) {
+        // };
         setTimeout(async () => {
             console.log('scan load');
             if(websocket.readyState === 1)
-            websocket.close;
+                await websocket.send('start scan');
+            websocket.close();
             child.kill();
         }, 3000);
 
