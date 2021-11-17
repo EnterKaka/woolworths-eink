@@ -18,10 +18,11 @@ app.get('/export', auth, function(req, res) {
 
 	if(loadedData === '')
 		res.redirect('/data');
-	res.render('pages/export', {
-		title: 'Export page - Owl Studio Web App',
-		loadedData: loadedData
-	})
+	else
+		res.render('pages/export', {
+			title: 'Export page - Owl Studio Web App',
+			loadedData: loadedData
+		})
 });
 
 app.post('/exportdb', auth, function(req, res) {

@@ -4,11 +4,44 @@ const MongoClient = require("mongodb").MongoClient;
 var ObjectId = require('mongoose').Types.ObjectId;
 const auth = require("../middleware/auth");
 const Setting = require('../model/Setting');
+const Schedule = require("../model/Schedule");
+
 var interval;
 
 /* load data page */
 app.get('/', auth, async function(req, res, next) {
-	
+	let days = [
+        { day: "Monday" },
+        { day: "Tuesday" },
+        { day: "Wednesday" },
+        { day: "Thursday" },
+        { day: "Friday" },
+        { day: "Saturday" },
+        { day: "Sunday" },
+    ];
+    let allmembers = await Schedule.find();
+    let sch_obj = [];
+    days.forEach((obj) => {
+        var element = allmembers.find((e) => e.day === obj.day);
+        if (element){
+            sch_obj.push({
+                day: element.day,
+                interval_value: element.interval_value,
+                unit: element.unit,
+                start_time: element.start_time,
+                end_time: element.end_time,
+            });
+        }
+        else
+            sch_obj.push({
+                day: obj.day,
+                interval_value: "",
+                unit: "",
+                start_time: "",
+                end_time: "",
+            });
+    });
+	week_schedule = sch_obj;
 	console.log("*********** load data page ************")
 
 	async function run() {

@@ -12,8 +12,6 @@ const cron = require("node-cron");
 const http = require("http").Server(app);
 const io = require("socket.io")(http);
 
-global.loadedData = "";
-global.delaytime = 60000 * 60;
 /**
  * Store database credentials in a separate config.js file
  * Load the file/module and its values
@@ -42,6 +40,9 @@ app.use(
  * import routes/index.js
  * import routes/users.js
  */
+global.loadedData = "";
+global.delaytime = 60000 * 60;
+
 var index = require("./routes/index");
 var user = require("./routes/users");
 var data = require("./routes/data");
@@ -49,6 +50,7 @@ var setting = require("./routes/setting");
 var database_ei = require("./routes/database");
 var api = require("./routes/api");
 var control = require("./routes/control");
+global.week_schedule = "";
 /**
  * Express Validator Middleware for Form Validation
  */

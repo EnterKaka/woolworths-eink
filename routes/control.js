@@ -3,9 +3,11 @@ var app = express();
 const auth = require("../middleware/auth");
 const admin = require("../middleware/admin");
 const Schedule = require("../model/Schedule");
+const Value = require("../model/Value");
 const Joi = require("joi");
 const exec = require("child_process").execFile;
 const { spawn } = require("child_process");
+// const ws = require('ws');
 
 // const { networkInterfaces } = require("os");
 const ip = require("ip");
@@ -14,37 +16,8 @@ app.get("/", auth, async function (req, res) {
     // render to views/index.ejs template file
     console.log("******** load oes_control ************");
     // const nets = networkInterfaces();
-    let days = [
-        { day: "Monday" },
-        { day: "Tuesday" },
-        { day: "Wednesday" },
-        { day: "Thursday" },
-        { day: "Friday" },
-        { day: "Saturday" },
-        { day: "Sunday" },
-    ];
-    let allmembers = await Schedule.find();
-    let sch_obj = [];
-    days.forEach((obj) => {
-        var element = allmembers.find((e) => e.day === obj.day);
-        if (element)
-            sch_obj.push({
-                day: element.day,
-                interval_value: element.interval_value,
-                unit: element.unit,
-                start_time: element.start_time,
-                end_time: element.end_time,
-            });
-        else
-            sch_obj.push({
-                day: obj.day,
-                interval_value: "",
-                unit: "",
-                start_time: "",
-                end_time: "",
-            });
-    });
-    console.log(allmembers);
+    sch_obj = await get_week_schedule();
+    let path = await Value.findOne({name:'path'});
 
     let server_ip = ip.address();
     // for (const name of Object.keys(nets)) {
@@ -60,7 +33,7 @@ app.get("/", auth, async function (req, res) {
         priv: req.user.privilege,
         server_ip: server_ip,
         schedule_data: sch_obj,
-        path: "C:\\Windows\\notepad.exe",
+        path: path.value,
     });
 });
 /***** run app ***/
@@ -118,12 +91,104 @@ app.post("/save_sch", async function (req, res, next) {
         await Schedule.deleteOne({ day: req.body.day });
         let v_sch = new Schedule(sch);
         await v_sch.save();
+        week_schedule = await get_week_schedule();
         res.send("success");
     } catch (error) {
         res.send("failed");
     }
 });
+/***************** auto interval search and load ******************/
+app.post("/set_interval", async function (req, res, next) {
+    var last_week_day = "";
+    week_schedule = await get_week_schedule();
+    var daytimer;
+    var daytimer_interval = () => {
+        var child = spawn("C:\\Windows\\notepad.exe");
+        console.log('scan load');
+        setTimeout(() => {
+            child.kill();
+        }, 3000);
 
+    };
+    var start_flag = 0;
+    //first-set totaltimer
+    totaltimer = setInterval(()=>{
+        let current_day = new Date();
+        const weekday = new Array(7);
+        weekday[0] = "Sunday";
+        weekday[1] = "Monday";
+        weekday[2] = "Tuesday";
+        weekday[3] = "Wednesday";
+        weekday[4] = "Thursday";
+        weekday[5] = "Friday";
+        weekday[6] = "Saturday";
+        let week_day = weekday[current_day.getDay()];
+        if(last_week_day === week_day){
+            var obj = week_schedule.find(e=>e.day === week_day);
+            var arr = obj.start_time.split(':');
+            var arr_end = obj.end_time.split(':');
+            var today = new Date();
+            var today_end = new Date();
+            today_end.setHours(arr_end[0],arr_end[1],0,0);
+            today.setHours(arr[0],arr[1],0,0);
+            //start timer when start time.
+            if((!daytimer) && current_day.getTime()>=today.getTime() && current_day.getTime()<=today_end.getTime()){
+                start_flag = 1;
+                var int_time = obj.interval_value * (obj.unit === 'min'?60:3600)*1000;
+                console.log('start timer');
+                daytimer_interval();
+                daytimer = setInterval(daytimer_interval, int_time);
+            }
+            //kill timer when end time.
+            if(current_day.getTime()>=today_end.getTime()){
+                console.log('kill timer');
+                clearInterval(daytimer);
+            }
+        }
+        else{//when date change reset daytimer
+            console.log('change');
+            console.log('kill timer');
+            last_week_day = week_day;
+            clearInterval(daytimer);
+        }
+    }, 2000);
+    res.send();
+});
+
+async function get_week_schedule(){
+    let days = [
+        { day: "Monday" },
+        { day: "Tuesday" },
+        { day: "Wednesday" },
+        { day: "Thursday" },
+        { day: "Friday" },
+        { day: "Saturday" },
+        { day: "Sunday" },
+    ];
+    let allmembers = await Schedule.find();
+    let sch_obj = [];
+    days.forEach((obj) => {
+        var element = allmembers.find((e) => e.day === obj.day);
+        if (element){
+            sch_obj.push({
+                day: element.day,
+                interval_value: element.interval_value,
+                unit: element.unit,
+                start_time: element.start_time,
+                end_time: element.end_time,
+            });
+        }
+        else
+            sch_obj.push({
+                day: obj.day,
+                interval_value: "",
+                unit: "",
+                start_time: "",
+                end_time: "",
+            });
+    });
+    return sch_obj;
+}
 /**
  * We assign app object to module.exports
  *

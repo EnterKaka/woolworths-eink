@@ -3,32 +3,28 @@ var app = express();
 const auth = require("../middleware/auth");
 const admin = require('../middleware/admin');
 const Setting = require('../model/Setting');
+const Value = require('../model/Value');
 const Joi = require('joi');
 var ObjectId = require('mongoose').Types.ObjectId;
 
 // SHOW LIST OF USERS
 app.get('/', auth, admin, async function(req, res, next) {	
 	// fetch and sort users collection by id in descending order
-    
+    let path = await Value.findOne({name:'path'});
 	let allmembers = await Setting.find();
 	res.render('pages/setting/list', {
 		data : allmembers,	
+		path : path.value
 	})
 });
-app.post('/settime', auth, admin, async function(req, res, next) {
-	let v_user = {
-		dbname: 'delaytime',
-		collectionname: req.body.delaytime,
+app.post('/setpath', auth, admin, async function(req, res, next) {
+	let val = {
+		name: 'path',
+		value: req.body.path,
 	};
-	let mem = await Setting.findOneAndUpdate({dbname: 'delaytime'}, v_user);
-	if(!mem){
-		let v_setting = new Setting({
-			dbname: 'delaytime',
-			collectionname: req.body.delaytime,
-		});
-		await v_setting.save();
-	}
-	delaytime = 60000*req.body.delaytime;
+	await Value.deleteOne({name: 'path'});
+	let v_setting = new Value(val);
+	await v_setting.save();
 	res.send();
 });
 // SHOW ADD USER FORM

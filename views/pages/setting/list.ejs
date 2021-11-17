@@ -79,7 +79,7 @@
                             </div>
                             <div class="row" style="padding: 0 25px">
                               <div class="col-md-6">
-                                <form action="/setting/settime" method="post" target="iframe">
+                                <form action="/setting/setpath" method="post" target="iframe">
                                   <!-- <fieldset>
                                   <legend>Set Delay Time</legend> -->
                                   <iframe name="iframe" style="display: none;"></iframe>
@@ -87,7 +87,7 @@
                                     <div class="col-md-6 col-6">
                                       <div class="form-group bmd-form-group">
                                           <!-- <label for="collectionname" class="bmd-label-floating">Delay time</label> -->
-                                          <input type="text" class="form-control" name="delaytime" placeholder="Delay Time">
+                                          <input type="text" class="form-control" name="path" placeholder="*.exe path" value="<%= path%>">
                                       </div>
                                     </div>
                                     <div class="col-md-6 col-6">
@@ -119,11 +119,6 @@
                                         <tbody>
                                           <% if (data) { %>
                                             <% data.forEach(function(member){ %>
-                                              <% if (member.dbname === 'delaytime') { %>
-                                                <script>
-                                                  $('input[name="delaytime"]').val(<%= member.collectionname %>);
-                                                </script>
-                                              <% }else{ %>
                                               <tr>
                                                 <td><%= member.dbname %></td>
                                                 <td><%= member.collectionname %></td>
@@ -134,7 +129,6 @@
                                                   </div>
                                                 </td>
                                               </tr>
-                                              <% } %>
                                             <% }) %>
                                           <% } %>
                                         </tbody>
