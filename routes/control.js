@@ -5,10 +5,10 @@ const auth = require("../middleware/auth");
 const admin = require("../middleware/admin");
 const Schedule = require("../model/Schedule");
 const Value = require("../model/Value");
-const Setting = require('../model/Setting');
+const Setting = require("../model/Setting");
 const Joi = require("joi");
 const { spawn } = require("child_process");
-const WebSocket = require('ws');
+const WebSocket = require("ws");
 
 // const { networkInterfaces } = require("os");
 const ip = require("ip");
@@ -18,7 +18,9 @@ app.get("/", auth, async function (req, res) {
     console.log("******** load oes_control ************");
     // const nets = networkInterfaces();
     sch_obj = await get_week_schedule();
-    let path = await Value.findOne({name:'path'});
+    let path = await Value.findOne({ name: "path" });
+    if (!path) path = "";
+    else path = path.value;
 
     let server_ip = ip.address();
     // for (const name of Object.keys(nets)) {
@@ -34,7 +36,7 @@ app.get("/", auth, async function (req, res) {
         priv: req.user.privilege,
         server_ip: server_ip,
         schedule_data: sch_obj,
-        path: path.value,
+        path: path,
     });
 });
 /***** run app ***/
@@ -102,23 +104,25 @@ app.post("/save_sch", async function (req, res, next) {
 app.post("/set_interval", async function (req, res, next) {
     var last_week_day = "";
     week_schedule = await get_week_schedule();
-    let path = await Value.findOne({name:'path'});
+    let path = await Value.findOne({ name: "path" });
+    if (!path) path = "";
+    else path = path.value;
     var daytimer;
     let server_ip = ip.address();
     var daytimer_interval = async () => {
-        var child = await spawn(path.value);
-        var websocket = await new WebSocket( "ws://" + server_ip + ":1234");
-        websocket.on('open', async function(){
-            console.log('open')
-            await websocket.send('start scan');
+        var child = await spawn(path);
+        var websocket = await new WebSocket("ws://" + server_ip + ":1234");
+        websocket.on("open", async function () {
+            console.log("open");
+            await websocket.send("start scan");
             await LoadDataFunction();
-            console.log('scan load');
+            console.log("scan load");
             websocket.close();
             child.kill();
         });
     };
     var start_flag = 0;
-    totaltimer = setInterval(()=>{
+    totaltimer = setInterval(() => {
         let current_day = new Date();
         const weekday = new Array(7);
         weekday[0] = "Sunday";
@@ -129,32 +133,39 @@ app.post("/set_interval", async function (req, res, next) {
         weekday[5] = "Friday";
         weekday[6] = "Saturday";
         let week_day = weekday[current_day.getDay()];
-        if(last_week_day === week_day){
-            var obj = week_schedule.find(e=>e.day === week_day);
-            var arr = obj.start_time.split(':');
-            var arr_end = obj.end_time.split(':');
+        if (last_week_day === week_day) {
+            var obj = week_schedule.find((e) => e.day === week_day);
+            var arr = obj.start_time.split(":");
+            var arr_end = obj.end_time.split(":");
             var today = new Date();
             var today_end = new Date();
-            today_end.setHours(arr_end[0],arr_end[1],0,0);
-            today.setHours(arr[0],arr[1],0,0);
+            today_end.setHours(arr_end[0], arr_end[1], 0, 0);
+            today.setHours(arr[0], arr[1], 0, 0);
             //start timer when start time.
-            if((!daytimer) && current_day.getTime()>=today.getTime() && current_day.getTime()<=today_end.getTime()){
+            if (
+                !daytimer &&
+                current_day.getTime() >= today.getTime() &&
+                current_day.getTime() <= today_end.getTime()
+            ) {
                 start_flag = 1;
-                var int_time = obj.interval_value * (obj.unit === 'min'?60:3600)*1000;
-                console.log('start timer');
+                var int_time =
+                    obj.interval_value *
+                    (obj.unit === "min" ? 60 : 3600) *
+                    1000;
+                console.log("start timer");
                 daytimer_interval();
                 daytimer = setInterval(daytimer_interval, int_time);
             }
             //kill timer when end time.
-            if(current_day.getTime()>=today_end.getTime()){
-                console.log('kill timer');
+            if (current_day.getTime() >= today_end.getTime()) {
+                console.log("kill timer");
                 clearInterval(daytimer);
             }
-        }
-        else{//when date change reset daytimer
+        } else {
+            //when date change reset daytimer
             start_flag = 0;
-            console.log('change');
-            console.log('kill timer');
+            console.log("change");
+            console.log("kill timer");
             last_week_day = week_day;
             clearInterval(daytimer);
         }
@@ -162,7 +173,7 @@ app.post("/set_interval", async function (req, res, next) {
     res.send();
 });
 
-async function get_week_schedule(){
+async function get_week_schedule() {
     let days = [
         { day: "Monday" },
         { day: "Tuesday" },
@@ -176,7 +187,7 @@ async function get_week_schedule(){
     let sch_obj = [];
     days.forEach((obj) => {
         var element = allmembers.find((e) => e.day === obj.day);
-        if (element){
+        if (element) {
             sch_obj.push({
                 day: element.day,
                 interval_value: element.interval_value,
@@ -184,8 +195,7 @@ async function get_week_schedule(){
                 start_time: element.start_time,
                 end_time: element.end_time,
             });
-        }
-        else
+        } else
             sch_obj.push({
                 day: obj.day,
                 interval_value: "",
@@ -196,46 +206,53 @@ async function get_week_schedule(){
     });
     return sch_obj;
 }
-async function LoadDataFunction(){
-	try {
-		const client = new MongoClient('mongodb://localhost:27017/', { useUnifiedTopology: true, useNewUrlParser: true, connectTimeoutMS: 30000 , keepAlive: 1});
-		let allmembers = await Setting.find();
-		await client.connect();
-		let sentdata = [];
-		/* connect all collections */
-		for(let mem of allmembers){
-			/* get cursor */
-			let db = mem.dbname.trim();
-			let col = mem.collectionname.trim();
-			if(db === 'delaytime'){
-				continue;
-			}
+async function LoadDataFunction() {
+    try {
+        const client = new MongoClient("mongodb://localhost:27017/", {
+            useUnifiedTopology: true,
+            useNewUrlParser: true,
+            connectTimeoutMS: 30000,
+            keepAlive: 1,
+        });
+        let allmembers = await Setting.find();
+        await client.connect();
+        let sentdata = [];
+        /* connect all collections */
+        for (let mem of allmembers) {
+            /* get cursor */
+            let db = mem.dbname.trim();
+            let col = mem.collectionname.trim();
+            if (db === "delaytime") {
+                continue;
+            }
 
-			const database = client.db(db);
-			const datas = database.collection(col);
-			// const cursor = datas.find({}).sort([['datetime', -1]]);
-			const cursor = datas.aggregate([{$sort:{'datetime':-1}}],{allowDiskUse: true});
-	
-			await cursor.forEach(function(model) {
-				let splitdata = model.datetime.split(' ');
-				let eachmodeldata = {
-					_id: model._id,
-					date: splitdata[0],
-					time: splitdata[1],
-					name: model.measurement[0].name,
-					mass: model.measurement[0].mass,
-					volume: model.measurement[0].volume,
-					setid: mem._id.toString(),
-				}
-				sentdata.push(eachmodeldata);
-			});
-		}
-		loadedData = sentdata;
-		console.log("load ended");
-	} catch (error) {
-		throw error;
-		console.log("load failed");
-	}
+            const database = client.db(db);
+            const datas = database.collection(col);
+            // const cursor = datas.find({}).sort([['datetime', -1]]);
+            const cursor = datas.aggregate([{ $sort: { datetime: -1 } }], {
+                allowDiskUse: true,
+            });
+
+            await cursor.forEach(function (model) {
+                let splitdata = model.datetime.split(" ");
+                let eachmodeldata = {
+                    _id: model._id,
+                    date: splitdata[0],
+                    time: splitdata[1],
+                    name: model.measurement[0].name,
+                    mass: model.measurement[0].mass,
+                    volume: model.measurement[0].volume,
+                    setid: mem._id.toString(),
+                };
+                sentdata.push(eachmodeldata);
+            });
+        }
+        loadedData = sentdata;
+        console.log("load ended");
+    } catch (error) {
+        throw error;
+        console.log("load failed");
+    }
 }
 
 /**
