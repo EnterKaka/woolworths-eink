@@ -124,36 +124,39 @@
 													</div>
 												</div>
 											</fieldset>
-											<div class="table-responsive">
-												<table class="table table-striped table-hover table-border">
-													<thead>
-														<tr>
-															<th>Day</th>
-															<th>Interval Value</th>
-															<th>Interval Unit</th>
-															<th>Start time</th>
-															<th>End time</th>
-															<th style="text-align: center;" onclick="openTable()"><i class="la la-angle-up"></i></th>
-														</tr>
-													</thead>
-													<tbody>
-														<% for(var i=0; i<schedule_data.length; i++) {%>
-															<tr id="<%=schedule_data[i].day%>">
-																<td><%=schedule_data[i].day%></td>
-																<td><%=schedule_data[i].interval_value%></td>
-																<td><%=schedule_data[i].unit%></td>
-																<td><%=schedule_data[i].start_time%></td>
-																<td><%=schedule_data[i].end_time%></td>
-																<td style="text-align: center;">
-																	<button class="btn btn-info" style="padding: 0.5rem;" onclick="openModal('<%=JSON.stringify(schedule_data[i])%>')">
-																		<i class="la la-pencil"></i>
-																	</button>
-																</td>
+											<fieldset class="close_field">
+												<legend class="close_field">Schedule</legend>
+												<div class="table-responsive">
+													<table class="table table-striped table-hover table-border">
+														<thead>
+															<tr>
+																<th>Day</th>
+																<th>Interval Value</th>
+																<th>Interval Unit</th>
+																<th>Start time</th>
+																<th>End time</th>
+																<th style="text-align: center;" onclick="openTable()"><i class="la la-angle-up"></i></th>
 															</tr>
-															<%}%>
-													</tbody>
-												</table>
-											</div>
+														</thead>
+														<tbody>
+															<% for(var i=0; i<schedule_data.length; i++) {%>
+																<tr id="<%=schedule_data[i].day%>">
+																	<td><%=schedule_data[i].day%></td>
+																	<td><%=schedule_data[i].interval_value%></td>
+																	<td><%=schedule_data[i].unit%></td>
+																	<td><%=schedule_data[i].start_time%></td>
+																	<td><%=schedule_data[i].end_time%></td>
+																	<td style="text-align: center;">
+																		<button class="btn btn-info" style="padding: 0.5rem;" onclick="openModal('<%=JSON.stringify(schedule_data[i])%>')">
+																			<i class="la la-pencil"></i>
+																		</button>
+																	</td>
+																</tr>
+																<%}%>
+														</tbody>
+													</table>
+												</div>
+											</fieldset>
 											<!-- <div>
 												<img src="/img/loading.gif" id="loadingimg" style="position: absolute;top: 0px;right: 0;left: 0;margin: 0 auto; z-index: 100;">
 											</div>	 -->

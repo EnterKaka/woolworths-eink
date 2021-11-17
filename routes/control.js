@@ -83,6 +83,7 @@ app.post("/killApp", async function (req, res, next) {
 });
 /********** save schedule *********/
 app.post("/save_sch", async function (req, res, next) {
+    var start_arr = req.body.start_time.split(":");
     let sch = {
         day: req.body.day,
         interval_value: req.body.interval_value,
@@ -111,6 +112,10 @@ app.post("/set_interval", async function (req, res, next) {
     let server_ip = ip.address();
     var daytimer_interval = async () => {
         var child = await spawn(path);
+        await child.on("error", async function (err) {
+            console.log("not open");
+            return;
+        });
         var websocket = await new WebSocket("ws://" + server_ip + ":1234");
         websocket.on("open", async function () {
             console.log("open");
@@ -154,6 +159,7 @@ app.post("/set_interval", async function (req, res, next) {
                     1000;
                 console.log("start timer");
                 daytimer_interval();
+                delaytime = int_time;
                 daytimer = setInterval(daytimer_interval, int_time);
             }
             //kill timer when end time.
@@ -169,7 +175,7 @@ app.post("/set_interval", async function (req, res, next) {
             last_week_day = week_day;
             clearInterval(daytimer);
         }
-    }, 2000);
+    }, 1000 * 60);
     res.send();
 });
 
