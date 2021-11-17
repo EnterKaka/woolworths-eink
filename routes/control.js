@@ -1,9 +1,11 @@
 var express = require("express");
 var app = express();
+const MongoClient = require("mongodb").MongoClient;
 const auth = require("../middleware/auth");
 const admin = require("../middleware/admin");
 const Schedule = require("../model/Schedule");
 const Value = require("../model/Value");
+const Setting = require('../model/Setting');
 const Joi = require("joi");
 const { spawn } = require("child_process");
 const WebSocket = require('ws');
@@ -100,24 +102,22 @@ app.post("/save_sch", async function (req, res, next) {
 app.post("/set_interval", async function (req, res, next) {
     var last_week_day = "";
     week_schedule = await get_week_schedule();
+    let path = await Value.findOne({name:'path'});
     var daytimer;
     let server_ip = ip.address();
     var daytimer_interval = async () => {
-        var child = await spawn("C:\\Windows\\notepad.exe");
+        var child = await spawn(path.value);
         var websocket = await new WebSocket( "ws://" + server_ip + ":1234");
-        // websocket.onopen = function (evt) {
-        // };
-        setTimeout(async () => {
+        websocket.on('open', async function(){
+            console.log('open')
+            await websocket.send('start scan');
+            await LoadDataFunction();
             console.log('scan load');
-            if(websocket.readyState === 1)
-                await websocket.send('start scan');
             websocket.close();
             child.kill();
-        }, 3000);
-
+        });
     };
     var start_flag = 0;
-    //first-set totaltimer
     totaltimer = setInterval(()=>{
         let current_day = new Date();
         const weekday = new Array(7);
@@ -152,6 +152,7 @@ app.post("/set_interval", async function (req, res, next) {
             }
         }
         else{//when date change reset daytimer
+            start_flag = 0;
             console.log('change');
             console.log('kill timer');
             last_week_day = week_day;
@@ -195,6 +196,48 @@ async function get_week_schedule(){
     });
     return sch_obj;
 }
+async function LoadDataFunction(){
+	try {
+		const client = new MongoClient('mongodb://localhost:27017/', { useUnifiedTopology: true, useNewUrlParser: true, connectTimeoutMS: 30000 , keepAlive: 1});
+		let allmembers = await Setting.find();
+		await client.connect();
+		let sentdata = [];
+		/* connect all collections */
+		for(let mem of allmembers){
+			/* get cursor */
+			let db = mem.dbname.trim();
+			let col = mem.collectionname.trim();
+			if(db === 'delaytime'){
+				continue;
+			}
+
+			const database = client.db(db);
+			const datas = database.collection(col);
+			// const cursor = datas.find({}).sort([['datetime', -1]]);
+			const cursor = datas.aggregate([{$sort:{'datetime':-1}}],{allowDiskUse: true});
+	
+			await cursor.forEach(function(model) {
+				let splitdata = model.datetime.split(' ');
+				let eachmodeldata = {
+					_id: model._id,
+					date: splitdata[0],
+					time: splitdata[1],
+					name: model.measurement[0].name,
+					mass: model.measurement[0].mass,
+					volume: model.measurement[0].volume,
+					setid: mem._id.toString(),
+				}
+				sentdata.push(eachmodeldata);
+			});
+		}
+		loadedData = sentdata;
+		console.log("load ended");
+	} catch (error) {
+		throw error;
+		console.log("load failed");
+	}
+}
+
 /**
  * We assign app object to module.exports
  *
