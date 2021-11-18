@@ -47,9 +47,9 @@ cloudmachine.setListViewFunc((list, activeId) => {
         console.log('dblclicked')
         let target = cloudmachine.groupList[parseInt(this.dataset.id)];
         if (!e.ctrlKey) {
-            cloudmachine.setCameraPosition(target.position)
+            cloudmachine.setCameraPosition(target.group.position)
         } else {
-            cloudmachine.setCameraPosition(target.position)
+            cloudmachine.setCameraPosition(target.group.position)
         }
 
         cloudmachine.render();

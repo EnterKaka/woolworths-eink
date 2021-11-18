@@ -641,37 +641,26 @@ export const owlStudio = function (cv1, cv2, parent) {
 
         this.mouse.x = evt.clientX;
         this.mouse.y = evt.clientY;
+        let id1 = this.transDir[0];
+        let id2 = this.transDir[1];
 
-        if (this.transDir == 'xy') {
+        if (!this.gcs) {
 
             for (let id of this.activeId) {
 
                 let target = this.groupList[id];
 
-                target.group.position.x += deltaX / 100;
-                target.group.position.y -= deltaY / 100;
+                target.group.position[id1] += deltaX / 100;
+                target.group.position[id2] -= deltaY / 100;
 
             }
 
-        } else if (this.transDir == 'yz') {
+        } else {
 
-            for (let id of this.activeId) {
+            for (let target of this.groupList) {
 
-                let target = this.groupList[id];
-
-                target.group.position.y += deltaX / 100;
-                target.group.position.z -= deltaY / 100;
-
-            }
-
-        } else if (this.transDir == 'xz') {
-
-            for (let id of this.activeId) {
-
-                let target = this.groupList[id];
-
-                target.group.position.x += deltaX / 100;
-                target.group.position.z -= deltaY / 100;
+                target.group.position[id1] += deltaX / 100;
+                target.group.position[id2] -= deltaY / 100;
 
             }
 
