@@ -369,6 +369,12 @@ window.onload = function () {
         cloudmachine.setToolState('rotate2')
     });
 
+    document.getElementById('btn-rotate3').addEventListener('click', function () {
+        document.getElementById('btn-' + cloudmachine.toolState).classList.remove('active')
+        document.getElementById('btn-rotate3').classList.add('active')
+        cloudmachine.setToolState('rotate3')
+    });
+
     document.getElementById('btn-reset').addEventListener('click', function () {
         document.getElementById('btn-' + cloudmachine.toolState).classList.remove('active')
         document.getElementById('btn-reset').classList.add('active')
@@ -391,6 +397,12 @@ window.onload = function () {
         document.getElementById('btn-' + cloudmachine.toolState).classList.remove('active')
         document.getElementById('btn-addpoint').classList.add('active')
         cloudmachine.setToolState('addpoint')
+    });
+
+    document.getElementById('btn-cross').addEventListener('click', function () {
+        document.getElementById('btn-' + cloudmachine.toolState).classList.remove('active')
+        document.getElementById('btn-cross').classList.add('active')
+        cloudmachine.setToolState('cross')
     });
 
     // document.getElementById('btn-translate2').addEventListener('click', function () {
@@ -429,6 +441,21 @@ window.onload = function () {
         cloudmachine.transDir = this.value;
     })
 
+    document.getElementById('cross-offset').addEventListener('change', function () {
+        cloudmachine.updateCrossSection()
+    })
+
+    document.getElementById('cross-width').addEventListener('change', function () {
+        cloudmachine.updateCrossSection()
+    })
+
+    document.getElementById('cross-offset').addEventListener('input', function () {
+        cloudmachine.updateCrossSection()
+    })
+
+    document.getElementById('cross-width').addEventListener('input', function () {
+        cloudmachine.updateCrossSection()
+    })
     // document.getElementById('trans-axis2').addEventListener('change', function () {
     //     cloudmachine.transDir = this.value;
     // })

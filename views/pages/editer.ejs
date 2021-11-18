@@ -141,7 +141,7 @@
                           </div>
                         </li>
                         <li class="nav-item">
-                          <a class="nav-link" id="baseIcon-tab5" data-toggle="tab" aria-controls="tabIcon3"
+                          <a class="nav-link" id="baseIcon-tab5" data-toggle="tab" aria-controls="tabIcon5"
                             href="#tabIcon5" aria-expanded="false" data-nsfw-filter-status="swf"><i
                               class="ft-move mr-1"></i> Move</a>
                         </li>
@@ -152,6 +152,11 @@
                         <li class="nav-item">
                           <a class="nav-link" href="javascript:void(0)" data-toggle="modal" data-target="#volumeModal"
                             id="btn-vol">Calculate Volume</a>
+                        </li>
+                        <li class="nav-item">
+                          <a class="nav-link" id="baseIcon-tab6" data-toggle="tab" aria-controls="tabIcon6"
+                            href="#tabIcon6" aria-expanded="false" data-nsfw-filter-status="swf"><i
+                              class="ft-search mr-1"></i>Cross-Section</a>
                         </li>
                         <!-- <li class="nav-item"><input type="text" class="form-control round btn-glow mb-1 mr-1"
                               id="count" style="height: 31px;padding-left: 15px;width: 81px;" min="0.1" max="10"
@@ -406,6 +411,42 @@
                               title='set current matrix' id='set-matrix'>
                               set matrix
                             </button>
+                          </div>
+                        </div>
+                        <div class="tab-pane" id="tabIcon6" aria-labelledby="baseIcon-tab6">
+                          <div class="row toolbar">
+                            <button type='button'
+                              class="btn btn-icon btn-outline-success btn-glow round btn-sm mb-1 mr-1"
+                              title='select two points for cross section' id='btn-cross'>
+                              <i class="ft-edit-2"></i>
+                            </button>
+                            <button type='button'
+                              class="btn btn-icon btn-outline-success btn-glow round btn-sm mb-1 mr-1"
+                              title='rotate tool' id='btn-rotate3' style="display: none;">
+                              <i class="ft-rotate-cw"></i>
+                            </button>
+                            <select class="form-control round btn-glow mb-1 mr-1" style="height: 32px;padding-left: 10px;
+                              width: 70px;padding-right: 5px;border:1px solid #5ed84f;" id="cross-plane"
+                              title="choose plane">
+                              <option value="z">XY</option>
+                              <option value="y">XZ</option>
+                              <option value="x">YZ</option>
+                            </select>
+
+                            <div class="badge badge-pill badge-success mb-1"
+                              style="border-top-right-radius: 0px;border-bottom-right-radius: 0px;">
+                              offset
+                            </div>
+                            <input type="number" class="form-control round btn-glow mb-1 mr-1" id="cross-offset"
+                              style="height: 32px;padding-left: 15px;width: 70px;padding-right:0;border:1px solid #5ed84f; border-top-left-radius: 0;border-bottom-left-radius: 0;"
+                              min="-100" max="100" step="0.5" value="0" title="offset">
+
+                            <div class="badge badge-pill badge-success mb-1"
+                              style="border-top-right-radius: 0px;border-bottom-right-radius: 0px;">Width
+                            </div>
+                            <input type="number" class="form-control round btn-glow mb-1 mr-1" id="cross-width"
+                              style="height: 32px;padding-left: 15px;width: 70px;padding-right:0;border:1px solid #5ed84f; border-top-left-radius: 0;border-bottom-left-radius: 0;"
+                              min="-100" max="100" step="0.5" value="3" title="width">
                           </div>
                         </div>
                         <div class="tab-pane active" id="tabIcon4" aria-expanded="true" aria-labelledby="baseIcon-tab4">

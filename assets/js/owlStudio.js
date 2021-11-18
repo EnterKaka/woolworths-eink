@@ -28,6 +28,13 @@ export const owlStudio = function (cv1, cv2, parent) {
 
     this.plane = new THREE.Plane(new THREE.Vector3(0, 1, 0), 0);
 
+    this.cplanes = [
+        new THREE.Plane(new THREE.Vector3(0, 1, 0), -0.5),
+        new THREE.Plane(new THREE.Vector3(0, 1, 0), 0.5)
+    ];
+
+    this.planeHelpers = this.cplanes.map(p => new THREE.PlaneHelper(p, 20, 0xffffff));
+
     this.mouse = {
         target: new THREE.Vector2(),
         down: false,
@@ -65,6 +72,7 @@ export const owlStudio = function (cv1, cv2, parent) {
 
         this.renderer.setPixelRatio(window.devicePixelRatio);
         this.renderer.setSize(this.canvas.clientWidth, this.canvas.clientHeight);
+        // this.renderer.localClippingEnabled = true;
 
         this.camera.position.set(0, -20, 6);
         this.camera.lookAt(0, 0, 0);
@@ -79,6 +87,8 @@ export const owlStudio = function (cv1, cv2, parent) {
         // this.scene.add(this.multiGroup.group)
 
         this.scene.background = new THREE.Color(0x111111);
+
+
 
         // controls.addEventListener('change', render); // call this only in static scenes (i.e., if there is no animation loop)
         // controls.minDistance = 0.1;
@@ -256,7 +266,9 @@ export const owlStudio = function (cv1, cv2, parent) {
             return;
         }
 
-        // this.target = target;
+
+        // this.cplanes[0].set(new THREE.Vector3(0, -1, 0), target.group.position.y + 2)
+        // this.cplanes[1].set(new THREE.Vector3(0, 1, 0), -target.group.position.y + 2)
 
         let colors = [];
 
@@ -349,7 +361,8 @@ export const owlStudio = function (cv1, cv2, parent) {
 
         let material3 = new THREE.PointsMaterial({
             color: selectedcolor(),
-            size: selectedsize()
+            size: selectedsize(),
+
         });
 
         target.selectedGroup = new THREE.Points(geometry3, material3);
@@ -1381,6 +1394,204 @@ export const owlStudio = function (cv1, cv2, parent) {
         this.showDistance(this.polylineData, oldPosition);
     }
 
+    this.setCrossSection = function (evt) {
+        this.mouse.target.x = (evt.offsetX / this.canvas.clientWidth) * 2 - 1;
+        this.mouse.target.y = - (evt.offsetY / this.canvas.clientHeight) * 2 + 1;
+
+        let raycaster = new THREE.Raycaster();
+
+        raycaster.setFromCamera(this.mouse.target, this.camera);
+
+        let point = new THREE.Vector3();
+
+        let minDistance = Infinity;
+
+        let sind;
+
+        let closestPoint = new THREE.Vector3();
+
+        if (this.activeId.length <= 0) return;
+        let target = this.groupList[this.activeId[0]];
+
+        if (!target.group.visible) return;
+
+        let group = target.group;
+
+        let array = group.children[0].geometry.attributes.position.array;
+
+        for (let i = 0; i < array.length; i += 3) {
+
+            raycaster.ray.closestPointToPoint(new THREE.Vector3(array[i], array[i + 1], array[i + 2]).applyMatrix4(target.group.matrix), point)
+
+            let distanceSq = new THREE.Vector3(array[i], array[i + 1], array[i + 2]).applyMatrix4(target.group.matrix).distanceToSquared(point);
+
+            if (distanceSq < minDistance) {
+
+                closestPoint.set(array[i], array[i + 1], array[i + 2]);
+
+                minDistance = distanceSq;
+
+                sind = i;
+
+            }
+
+        }
+
+        let x = array[sind];
+        let y = array[sind + 1];
+        let z = array[sind + 2];
+
+        let vector = new THREE.Vector3(x, y, z)
+        let matrix = target.group.matrix;
+
+        if (!this.line) {
+
+            let geometry = new THREE.BufferGeometry().setFromPoints([vector]);
+
+            let material;
+
+            document.getElementById('pointcolor').disabled = true;
+
+            material = new THREE.PointsMaterial({ size: 0.5, vertexColors: false, color: "#1acaff" });
+
+            let points = new THREE.Points(geometry, material);
+            points.frustumCulled = false;
+
+            this.line = new THREE.Object3D().add(points);
+
+            this.line.applyMatrix4(matrix)
+
+            this.scene.add(this.line);
+
+        } else {
+
+            let array = this.line.children[0].geometry.attributes.position.array;
+            this.getCrossSection({ x, y, z }, { x: array[0], y: array[1], z: array[2], });
+
+            target.group.children[0].material.clippingPlanes = this.cplanes;
+            target.group.children[0].material.needsUpdate = true;
+            target.group.children[1].material.clippingPlanes = this.cplanes;
+            target.group.children[1].material.needsUpdate = true;
+            target.group.children[3].material.clippingPlanes = this.cplanes;
+            target.group.children[3].material.needsUpdate = true;
+            // vector.applyMatrix4(matrix)
+            // let v = new THREE.Vector3(array[0], array[1], array[2]).applyMatrix4(this.line.matrix)
+            // let tx = vector.x - v.x;
+            // let ty = vector.y - v.y;
+            // let tz = vector.z - v.z;
+
+            // if (tx == 0 && ty == 0 && tz == 0) {
+            //     return;
+            // }
+
+            // for (let id of this.activeId) {
+
+            //     let target = this.groupList[id];
+
+            //     this.addToHistory(target.history, { position: new THREE.Vector3().copy(target.group.position) })
+
+            //     target.group.position.x += tx;
+            //     target.group.position.y += ty;
+            //     target.group.position.z += tz;
+
+            // }
+            this.scene.remove(this.line)
+            this.line = undefined;
+
+        }
+
+        this.render()
+    }
+
+    this.getCrossSection = (a, b) => {
+        this.localClip = [a, b];
+        let target = this.groupList[this.activeId[0]];
+        let matrix = target.group.matrix;
+        // console.log(matrix)
+        let aa = new THREE.Vector3().copy(a)
+        let bb = new THREE.Vector3().copy(b)
+        let v1 = new THREE.Vector3().copy(aa)
+        let v2 = new THREE.Vector3().copy(bb)
+        let pn = document.getElementById('cross-plane').value;
+        let normal = new THREE.Vector3();
+        if (pn == "x") {
+            normal.z = 1;
+            normal.y = -(v1.z - v2.z) / (v1.y - v2.y);
+        } else if (pn == "y") {
+            normal.z = 1;
+            normal.x = -(v1.z - v2.z) / (v1.x - v2.x);
+        } else if (pn == "z") {
+            normal.y = 1;
+            normal.x = -(v1.y - v2.y) / (v1.x - v2.x);
+        }
+        let yb = new THREE.Vector3().copy(normal)
+        normal.applyQuaternion(new THREE.Quaternion().setFromRotationMatrix(matrix)).normalize();
+        v1.applyMatrix4(matrix)
+        v2.applyMatrix4(matrix)
+        let normal2 = new THREE.Vector3(-normal.x, -normal.y, -normal.z)
+        let constant = -(normal.x * v1.x + normal.y * v1.y + normal.z * v1.z);
+        this.cplanes[0].set(normal, (constant + crossWidth() / 2 + crossOffset()))
+        this.cplanes[1].set(normal2, -(constant - crossWidth() / 2 + crossOffset()))
+        this.renderer.localClippingEnabled = true;
+        let added = new THREE.Vector3(normal.x * crossOffset(), normal.y * crossOffset(), normal.z * crossOffset())
+        this.clipGrid = new THREE.Object3D();
+        let grid = new THREE.GridHelper(20, 20);
+        this.clipGrid.add(grid);
+        this.clipGrid.position.copy(v1.add(v2).divideScalar(2).sub(added))
+        this.clipGrid.quaternion.copy(new THREE.Quaternion().setFromRotationMatrix(matrix))
+        // grid.rotation[pn] = Math.PI / 2;
+        grid.applyQuaternion(new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0, 1, 0), yb.normalize()))
+        this.scene.add(this.clipGrid)
+        console.log('setted')
+
+        $('#btn-rotate3').trigger('click')
+    }
+
+    this.updateCrossSection = () => {
+        // console.log('updated')
+        if (!this.localClip) return;
+        let a = this.localClip[0];
+        let b = this.localClip[1];
+        let target = this.groupList[this.activeId[0]];
+        let matrix = target.group.matrix;
+        console.log('updated')
+        let aa = new THREE.Vector3().copy(a)
+        let bb = new THREE.Vector3().copy(b)
+        let v1 = new THREE.Vector3().copy(aa)
+        let v2 = new THREE.Vector3().copy(bb)
+        let pn = document.getElementById('cross-plane').value;
+        let normal = new THREE.Vector3();
+        if (pn == "x") {
+            normal.z = 1;
+            normal.y = -(v1.z - v2.z) / (v1.y - v2.y);
+        } else if (pn == "y") {
+            normal.z = 1;
+            normal.x = -(v1.z - v2.z) / (v1.x - v2.x);
+        } else if (pn == "z") {
+            normal.y = 1;
+            normal.x = -(v1.y - v2.y) / (v1.x - v2.x);
+        }
+        let width = crossWidth()
+        let offset = crossOffset()
+        normal.applyQuaternion(new THREE.Quaternion().setFromRotationMatrix(matrix)).normalize();
+        v1.applyMatrix4(matrix)
+        v2.applyMatrix4(matrix)
+        let normal2 = new THREE.Vector3(-normal.x, -normal.y, -normal.z)
+        let constant = -(normal.x * v1.x + normal.y * v1.y + normal.z * v1.z);
+        this.cplanes[0].set(normal, (constant + width / 2 + offset))
+        this.cplanes[1].set(normal2, -(constant - width / 2 + offset))
+
+        // this.clipGrid = new THREE.Object3D();
+        // let grid = new THREE.GridHelper(20, 20);
+        // this.clipGrid.add(grid);
+        let added = new THREE.Vector3(normal.x * offset, normal.y * offset, normal.z * offset)
+        this.clipGrid.position.copy(v1.add(v2).divideScalar(2).sub(added))
+        this.clipGrid.quaternion.copy(new THREE.Quaternion().setFromRotationMatrix(matrix))
+        // grid.quaternion.copy(new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(1, 0, 0), aa.add(bb).divideScalar(2).normalize()))
+
+        this.render();
+    }
+
     this.addPoint = function (evt) {
         if (!this.birdEyePlane) {
 
@@ -1678,6 +1889,13 @@ export const owlStudio = function (cv1, cv2, parent) {
                     if (this.mouse.rightDown) this.cameraMove(e)
                     break;
 
+                case 'rotate3':
+                    if (this.mouse.down) {
+                        this.rotateGroup(e)
+                        this.updateCrossSection()
+                    } else if (this.mouse.rightDown) this.cameraMove(e)
+                    break;
+
                 default:
 
             }
@@ -1722,6 +1940,9 @@ export const owlStudio = function (cv1, cv2, parent) {
                         break;
                     case 'addpoint':
                         this.addPoint(e)
+                        break;
+                    case 'cross':
+                        this.setCrossSection(e)
                         break;
 
                     default:
@@ -1781,7 +2002,7 @@ export const owlStudio = function (cv1, cv2, parent) {
 
         this.canvas2.addEventListener('mousewheel', (e) => {
 
-            if (this.toolState == 'rotate' || this.toolState == 'rotate2' || this.toolState == 'translate' || this.toolState == 'translate2' || this.toolState == 'lineTrans' || this.toolState == 'addpoint')
+            if (this.toolState == 'rotate' || this.toolState == 'rotate2' || this.toolState == 'rotate3' || this.toolState == 'translate' || this.toolState == 'translate2' || this.toolState == 'lineTrans' || this.toolState == 'addpoint')
                 this.mouseWheel(e);
 
         }, false);
@@ -2787,6 +3008,19 @@ export const owlStudio = function (cv1, cv2, parent) {
             this.birdEyePlane = undefined;
             this.setCameraPosition(this.groupList[this.activeId[0]].group.position)
         }
+        if (this.toolState == "rotate3") {
+            this.renderer.localClippingEnabled = false;
+            let group = this.groupList[this.activeId[0]].group;
+            group.children[0].material.clippingPlanes = [];
+            group.children[0].material.needsUpdate = true;
+            group.children[1].material.clippingPlanes = [];
+            group.children[1].material.needsUpdate = true;
+            group.children[3].material.clippingPlanes = [];
+            group.children[3].material.needsUpdate = true;
+
+            this.scene.remove(this.clipGrid)
+            this.clipGrid = undefined;
+        }
 
         this.polygonRender();
 
@@ -2951,6 +3185,18 @@ function backToRotateMode(tool) {
 
         $("#btn-rotate").trigger('click')
 
+    } else if (tool == "cross") {
+
+        $("#btn-rotate3").trigger('click')
+
     }
 
+}
+
+function crossWidth() {
+    return parseFloat(document.getElementById('cross-width').value);
+}
+
+function crossOffset() {
+    return parseFloat(document.getElementById('cross-offset').value);
 }
