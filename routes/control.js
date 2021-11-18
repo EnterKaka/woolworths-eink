@@ -128,8 +128,6 @@ var auto_Schedule = async function () {
     };
     var start_flag = 0;
     totaltimer = setInterval(() => {
-        console.log("here");
-
         let current_day = new Date();
         const weekday = new Array(7);
         weekday[0] = "Sunday";
@@ -166,6 +164,7 @@ var auto_Schedule = async function () {
             }
             //kill timer when end time.
             if (current_day.getTime() >= today_end.getTime()) {
+                start_flag = 0;
                 console.log("kill timer");
                 clearInterval(daytimer);
                 delaytime = 24 * 3600 * 1000;
