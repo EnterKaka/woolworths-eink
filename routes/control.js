@@ -112,6 +112,7 @@ var auto_Schedule = async function () {
     else path = path.value;
     var daytimer;
     var timeinterval;
+    var timeunit;
     let server_ip = ip.address();
     var daytimer_interval = async () => {
         var child = await spawn(path);
@@ -169,11 +170,12 @@ var auto_Schedule = async function () {
             today_end.setHours(arr_end[0], arr_end[1], 0, 0);
             today.setHours(arr[0], arr[1], 0, 0);
             //if schedule chaged, kill timer
-            if (timeinterval != obj.interval_value) {
+            if (timeinterval != obj.interval_value || timeunit != obj.unit) {
                 start_flag = 0;
                 await clearInterval(daytimer);
             }
             timeinterval = obj.interval_value;
+            timeunit = obj.unit;
             //start timer when start time.
             if (
                 start_flag === 0 &&
