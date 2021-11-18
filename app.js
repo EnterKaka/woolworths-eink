@@ -113,18 +113,18 @@ app.use(
 app.use(flash());
 
 app.use("/", index);
-app.use("/control", control);
+app.use("/control", control.app);
 app.use("/user", user);
 app.use("/data", data);
 app.use("/setting", setting);
 app.use("/database", database_ei);
 app.use("/api", api);
-
-io.on("connection", (socket) => {
-    socket.on("broad message", (msg) => {
-        io.emit("broad message", msg);
-    });
-});
+control.auto_Schedule();
+// io.on("connection", (socket) => {
+//     socket.on("broad message", (msg) => {
+//         io.emit("broad message", msg);
+//     });
+// });
 
 mongoose
     .connect(config.database.url, {

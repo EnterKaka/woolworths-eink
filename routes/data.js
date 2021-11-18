@@ -419,10 +419,6 @@ app.post("/get", auth, async function (req, res, next) {
                 /* get cursor */
                 let db = mem.dbname.trim();
                 let col = mem.collectionname.trim();
-                if (db === "delaytime") {
-                    delaytime = col * 60000;
-                    continue;
-                }
                 const database = client.db(db);
                 const datas = database.collection(col);
                 // const cursor = datas.find({}).sort([['datetime', -1]]);

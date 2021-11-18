@@ -102,7 +102,7 @@ app.post("/save_sch", async function (req, res, next) {
     }
 });
 /***************** auto interval search and load ******************/
-app.post("/set_interval", async function (req, res, next) {
+var auto_Schedule = async function () {
     var last_week_day = "";
     week_schedule = await get_week_schedule();
     let path = await Value.findOne({ name: "path" });
@@ -128,6 +128,8 @@ app.post("/set_interval", async function (req, res, next) {
     };
     var start_flag = 0;
     totaltimer = setInterval(() => {
+        console.log("here");
+
         let current_day = new Date();
         const weekday = new Array(7);
         weekday[0] = "Sunday";
@@ -166,6 +168,7 @@ app.post("/set_interval", async function (req, res, next) {
             if (current_day.getTime() >= today_end.getTime()) {
                 console.log("kill timer");
                 clearInterval(daytimer);
+                delaytime = 24 * 3600 * 1000;
             }
         } else {
             //when date change reset daytimer
@@ -174,10 +177,10 @@ app.post("/set_interval", async function (req, res, next) {
             console.log("kill timer");
             last_week_day = week_day;
             clearInterval(daytimer);
+            delaytime = 24 * 3600 * 1000;
         }
     }, 1000 * 60);
-    res.send();
-});
+};
 
 async function get_week_schedule() {
     let days = [
@@ -228,10 +231,6 @@ async function LoadDataFunction() {
             /* get cursor */
             let db = mem.dbname.trim();
             let col = mem.collectionname.trim();
-            if (db === "delaytime") {
-                continue;
-            }
-
             const database = client.db(db);
             const datas = database.collection(col);
             // const cursor = datas.find({}).sort([['datetime', -1]]);
@@ -269,4 +268,4 @@ async function LoadDataFunction() {
  * module.exports should be used to return the object
  * when this file is required in another module like app.js
  */
-module.exports = app;
+module.exports = { app, auto_Schedule };
