@@ -339,6 +339,17 @@ window.onload = function () {
         };
     });
 
+    document.getElementById('gcsDiv').addEventListener('click', function () {
+
+        let two = document.getElementById('gcs');
+        if (!two.checked) {
+            cloudmachine.deleteGlobalCoordinate();
+        }
+        else {
+            cloudmachine.setGlobalCoordinate();
+        };
+    });
+
     document.getElementById('pointcolor').addEventListener('input', function () {
         cloudmachine.setPointColor(this.value)
     });

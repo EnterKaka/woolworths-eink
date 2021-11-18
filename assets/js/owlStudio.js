@@ -589,12 +589,44 @@ export const owlStudio = function (cv1, cv2, parent) {
         this.mouse.x = evt.clientX;
         this.mouse.y = evt.clientY;
 
-        for (let id of this.activeId) {
+        if (!this.gcs) {
 
-            let target = this.groupList[id];
+            for (let id of this.activeId) {
 
-            target.group.rotation.z += deltaX / 100;
-            target.group.rotation.x += deltaY / 100;
+                let target = this.groupList[id];
+
+                target.group.rotation.z += deltaX / 100;
+                target.group.rotation.x += deltaY / 100;
+
+            }
+
+        } else {
+
+            let gp = new THREE.Vector3().copy(this.gcs.position)
+            let gm = new THREE.Matrix4().copy(this.gcs.matrix)
+            let gq = new THREE.Quaternion().setFromRotationMatrix(gm)
+            gq.x = -gq.x; gq.y = -gq.y; gq.z = -gq.z;
+
+            this.gcs.rotation.z += deltaX / 100;
+            this.gcs.rotation.x += deltaY / 100;
+            gm.makeRotationFromEuler(this.gcs.rotation)
+            let guq = new THREE.Quaternion().setFromRotationMatrix(gm);
+
+            for (let target of this.groupList) {
+
+                let group = target.group;
+                group.position.sub(gp);
+                group.position.applyQuaternion(gq)
+                group.position.applyQuaternion(guq)
+
+                group.applyQuaternion(gq)
+                group.applyQuaternion(guq)
+
+
+                group.position.add(gp)
+                // console.log(group.position)
+
+            }
 
         }
 
@@ -1136,32 +1168,39 @@ export const owlStudio = function (cv1, cv2, parent) {
 
         let vector = new THREE.Vector3(x, y, z).applyMatrix4(this.groupList[sind[0]].group.matrix);
 
-        for (let id of this.activeId) {
 
-            let target = this.groupList[id];
+        if (!this.gcs) {
+            for (let id of this.activeId) {
 
-            let om = target.group.matrix;
+                let target = this.groupList[id];
 
-            let p = new THREE.Vector3().setFromMatrixPosition(om)
-            let q = new THREE.Quaternion().setFromRotationMatrix(om)
+                let om = target.group.matrix;
 
-            // p.x = -p.x; p.y = -p.y; p.z = -p.z;
-            q.x = -q.x; q.y = -q.y; q.z = -q.z;
+                let p = new THREE.Vector3().setFromMatrixPosition(om)
+                let q = new THREE.Quaternion().setFromRotationMatrix(om)
 
-            let v = new THREE.Vector3().copy(vector).sub(p).applyQuaternion(q);
+                // p.x = -p.x; p.y = -p.y; p.z = -p.z;
+                q.x = -q.x; q.y = -q.y; q.z = -q.z;
 
-            target.group.children[0].geometry.translate(-v.x, -v.y, -v.z)
-            target.group.children[3].geometry.translate(-v.x, -v.y, -v.z)
+                let v = new THREE.Vector3().copy(vector).sub(p).applyQuaternion(q);
 
-            target.changePosition.x -= v.x;
-            target.changePosition.y -= v.y;
-            target.changePosition.z -= v.z;
+                target.group.children[0].geometry.translate(-v.x, -v.y, -v.z)
+                target.group.children[3].geometry.translate(-v.x, -v.y, -v.z)
 
-            target.group.position.x = vector.x;
-            target.group.position.y = vector.y;
-            target.group.position.z = vector.z;
+                target.changePosition.x -= v.x;
+                target.changePosition.y -= v.y;
+                target.changePosition.z -= v.z;
 
+                target.group.position.x = vector.x;
+                target.group.position.y = vector.y;
+                target.group.position.z = vector.z;
+
+            }
+        } else {
+            this.gcs.position.copy(vector);
+            this.gcs.rotation.copy(new THREE.Euler())
         }
+
 
         this.render();
 
@@ -3042,6 +3081,37 @@ export const owlStudio = function (cv1, cv2, parent) {
 
         }
 
+    }
+
+    this.setGlobalCoordinate = function () {
+
+        if (this.gcs) return;
+        if (this.activeId.length < 1) return;
+
+        this.gcs = new THREE.Object3D();
+        this.gcs.add(new THREE.AxesHelper(10))
+        this.gcs.position.copy(this.groupList[this.activeId[0]].group.position);
+
+        this.scene.add(this.gcs)
+
+        for (let i of this.activeId) {
+            this.groupList[i].group.children[4].visible = false;
+        }
+
+        this.render()
+    }
+
+    this.deleteGlobalCoordinate = function () {
+        // this.gcs.visible = false;
+        if (!this.gcs) return;
+        this.scene.remove(this.gcs)
+        this.gcs = undefined;
+
+        for (let i of this.activeId) {
+            this.groupList[i].group.children[4].visible = true;
+        }
+
+        this.render()
     }
 
     // this.addToMultiGroup = function (id) {
