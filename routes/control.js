@@ -109,6 +109,7 @@ var auto_Schedule = async function () {
     if (!path) path = "";
     else path = path.value;
     var daytimer;
+    var timeinterval;
     let server_ip = ip.address();
     var daytimer_interval = async () => {
         var child = await spawn(path);
@@ -127,7 +128,7 @@ var auto_Schedule = async function () {
         });
     };
     var start_flag = 0;
-    totaltimer = setInterval(() => {
+    totaltimer = setInterval(async () => {
         let current_day = new Date();
         const weekday = new Array(7);
         weekday[0] = "Sunday";
@@ -146,9 +147,16 @@ var auto_Schedule = async function () {
             var today_end = new Date();
             today_end.setHours(arr_end[0], arr_end[1], 0, 0);
             today.setHours(arr[0], arr[1], 0, 0);
+            //if schedule chaged, kill timer
+            if (timeinterval != obj.interval_value) {
+                start_flag = 0;
+                await clearInterval(daytimer);
+            }
+            console.log("start_flag", start_flag);
+            timeinterval = obj.interval_value;
             //start timer when start time.
             if (
-                !daytimer &&
+                start_flag === 0 &&
                 current_day.getTime() >= today.getTime() &&
                 current_day.getTime() <= today_end.getTime()
             ) {
@@ -157,7 +165,6 @@ var auto_Schedule = async function () {
                     obj.interval_value *
                     (obj.unit === "min" ? 60 : 3600) *
                     1000;
-                console.log("start timer");
                 daytimer_interval();
                 delaytime = int_time;
                 daytimer = setInterval(daytimer_interval, int_time);
@@ -178,7 +185,7 @@ var auto_Schedule = async function () {
             clearInterval(daytimer);
             delaytime = 24 * 3600 * 1000;
         }
-    }, 1000 * 60);
+    }, 5000);
 };
 
 async function get_week_schedule() {
