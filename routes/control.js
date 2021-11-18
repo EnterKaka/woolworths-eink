@@ -6,10 +6,12 @@ const admin = require("../middleware/admin");
 const Schedule = require("../model/Schedule");
 const Value = require("../model/Value");
 const Setting = require("../model/Setting");
-const Joi = require("joi");
 const { spawn } = require("child_process");
 const WebSocket = require("ws");
-
+const fs = require("fs");
+const logger = fs.createWriteStream("oe_server_logfile.txt", {
+    flags: "a", // 'a' means appending (old data will be preserved)
+});
 // const { networkInterfaces } = require("os");
 const ip = require("ip");
 var children = [];
@@ -113,18 +115,37 @@ var auto_Schedule = async function () {
     let server_ip = ip.address();
     var daytimer_interval = async () => {
         var child = await spawn(path);
+        var dt = new Date();
+        var msg = "";
+        msg = "Start with oes service ( " + dt + " )";
+        writeLog(msg);
         await child.on("error", async function (err) {
-            console.log("not open");
+            dt = new Date();
+            msg = "";
+            msg = "Run oes service failed ( " + dt + " )";
+            writeLog(msg);
+
             return;
         });
         var websocket = await new WebSocket("ws://" + server_ip + ":1234");
         websocket.on("open", async function () {
-            console.log("open");
+            dt = new Date();
+            msg = "";
+            msg = "WebSocket connected with oes service ( " + dt + " )";
+            writeLog(msg);
+
             await websocket.send("start scan");
+            dt = new Date();
+            msg = "Scan triggered (" + dt + ")";
+            writeLog(msg);
+
             await LoadDataFunction();
-            console.log("scan load");
-            websocket.close();
-            child.kill();
+
+            await websocket.close();
+            await child.kill();
+            dt = new Date();
+            msg = "Closed oes service (" + dt + ")";
+            writeLog(msg);
         });
     };
     var start_flag = 0;
@@ -152,7 +173,6 @@ var auto_Schedule = async function () {
                 start_flag = 0;
                 await clearInterval(daytimer);
             }
-            console.log("start_flag", start_flag);
             timeinterval = obj.interval_value;
             //start timer when start time.
             if (
@@ -185,7 +205,7 @@ var auto_Schedule = async function () {
             clearInterval(daytimer);
             delaytime = 24 * 3600 * 1000;
         }
-    }, 5000);
+    }, 60000);
 };
 
 async function get_week_schedule() {
@@ -220,6 +240,10 @@ async function get_week_schedule() {
             });
     });
     return sch_obj;
+}
+async function writeLog(msg) {
+    logger.write(msg + "\r\n");
+    console.log(msg);
 }
 async function LoadDataFunction() {
     try {
@@ -259,10 +283,14 @@ async function LoadDataFunction() {
             });
         }
         loadedData = sentdata;
-        console.log("load ended");
+        var dt = new Date();
+        var msg = "Scan completed (" + dt + ")";
+        writeLog(msg);
     } catch (error) {
         throw error;
-        console.log("load failed");
+        var dt = new Date();
+        var msg = "Scan failed (" + dt + ")";
+        writeLog(msg);
     }
 }
 
