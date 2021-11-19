@@ -503,6 +503,10 @@
 					$('#end_time').focus();
 					return;
 				}
+				if(param.start_time>param.end_time){
+					showMessage('error','ERROR',"Start time can't set after end time");
+					return;
+				}
 				$.post( '/control/save_sch', param, function( result ) {
 					if(result === 'success'){
 						$('#' + param.day + ' td:nth-child(2)').html(param.interval_value);

@@ -170,7 +170,7 @@ app.post("/upload", auth, function (req, res) {
     }
 });
 
-app.post("/importdb", auth, async function (req, res) {
+app.post("/importdb", async function (req, res) {
     console.log("************ import file *************");
 
     console.log(req.body);
