@@ -302,7 +302,9 @@ legend.close_field {
 .nav-item.mr-auto{
     width: calc(100% - 25px);
 }
-
+.content-wrapper-before{
+    background-color: #FFBE15;
+}
 /* .navbar-container{
     background-image: none !important;
     background-color: white !important;
