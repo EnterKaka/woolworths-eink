@@ -7,7 +7,7 @@ import { ConvexGeometry } from './ConvexGeometry.js';
 import { XYZLoader, getminmaxhegiht, getminmaxhegihtfromarray, getminmaxheightfromjson, getrgb, init_highlow } from './XYZLoader.js';
 
 import * as filters from './filters.js';
-
+// console.log($.toast)
 export const owlStudio = function (cv1, cv2, parent) {
 
     this.canvas = document.getElementById(cv1);
@@ -734,8 +734,8 @@ export const owlStudio = function (cv1, cv2, parent) {
         let op = new THREE.Vector3().copy(this.camera.position)
         let p = this.camera.position;
 
-        let quaternion = new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0, 1, 0), normal);
-        p.add(new THREE.Vector3(-deltaX / 35, 0, deltaY / 35).applyQuaternion(quaternion))
+        let quaternion = new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0, -1, 0), normal);
+        p.add(new THREE.Vector3(-deltaX / 35, 0, -deltaY / 35).applyQuaternion(quaternion))
 
         this.cameraLookAt.x += p.x - op.x;
         this.cameraLookAt.y += p.y - op.y;
@@ -895,6 +895,9 @@ export const owlStudio = function (cv1, cv2, parent) {
 
         if (this.activeId.length < 1) return;
 
+        // for (let id of this.activeId) {
+
+        // let target = this.groupList[id];
         let target = this.groupList[this.activeId[0]];
 
         let group = target.group;
@@ -1056,6 +1059,7 @@ export const owlStudio = function (cv1, cv2, parent) {
             }
 
         }
+        // }
 
         this.render()
 
@@ -1651,14 +1655,18 @@ export const owlStudio = function (cv1, cv2, parent) {
             }
             if (!rv) {
                 // rv = raycaster.ray.closestPointToPoint(inp, v)
-                let ray = raycaster.ray;
-                let b = (inp.z - ray.origin.z) / ray.direction.z;
-                let y = b * ray.direction.y + ray.origin.y;
-                let x = b * ray.direction.x + ray.origin.x;
-                rv = new THREE.Vector3(x, y, inp.z);
+                // let ray = raycaster.ray;
+                // let b = (inp.z - ray.origin.z) / ray.direction.z;
+                // let y = b * ray.direction.y + ray.origin.y;
+                // let x = b * ray.direction.x + ray.origin.x;
+                // rv = new THREE.Vector3(x, y, inp.z);
                 // rv.z = inp.z;
                 // rv = new THREE.Vector3().copy(inp);
                 // rv.y += 0.3;
+                let normal = new THREE.Vector3(0, 0, 1).applyQuaternion(new THREE.Quaternion().setFromRotationMatrix(target.group.matrix)).normalize()
+                let distance = -(normal.x * inp.x + normal.y * inp.y + normal.z * inp.z)
+                let plane = new THREE.Plane(normal, distance)
+                rv = raycaster.ray.intersectPlane(plane, v)
             }
             let om = target.group.matrix;
             let p = new THREE.Vector3().setFromMatrixPosition(om)
@@ -1723,9 +1731,7 @@ export const owlStudio = function (cv1, cv2, parent) {
 
         if (this.activeId.length < 1) return;
 
-        let target = this.groupList[this.activeId[0]];
 
-        let group = target.group;
 
         if (this.polygon.length > 2) {
 
@@ -1760,107 +1766,115 @@ export const owlStudio = function (cv1, cv2, parent) {
             }
             console.log(vs)
 
-            if (evt.ctrlKey && target.selectedCount > 0) {
+            for (let id of this.activeId) {
 
-                let geometry = target.selectedGroup.geometry;
+                let target = this.groupList[id];
 
-                let position = geometry.attributes.position;
+                let group = target.group;
 
-                let lop = target.selectedCount;
+                if (evt.ctrlKey && target.selectedCount > 0) {
 
-                target.selectedCount = 0;
+                    let geometry = target.selectedGroup.geometry;
 
-                for (let i = 0; i < lop; i++) {
+                    let position = geometry.attributes.position;
 
-                    let direct = new THREE.Vector3(position.array[i * 3], position.array[i * 3 + 1], position.array[i * 3 + 2])
+                    let lop = target.selectedCount;
 
-                    raycaster.set(camera.position, new THREE.Vector3().copy(direct).applyMatrix4(target.group.matrix).sub(camera.position).normalize());
+                    target.selectedCount = 0;
 
-                    raycaster.ray.intersectPlane(plane, pointOnPlane);
+                    for (let i = 0; i < lop; i++) {
 
-                    if (!isInside({ x: pointOnPlane[a], y: pointOnPlane[b] }, vs)) {
+                        let direct = new THREE.Vector3(position.array[i * 3], position.array[i * 3 + 1], position.array[i * 3 + 2])
 
-                        target.selectedPoints[target.selectedCount * 3 + 0] = direct.x;
-                        target.selectedPoints[target.selectedCount * 3 + 1] = direct.y;
-                        target.selectedPoints[target.selectedCount * 3 + 2] = direct.z;
+                        raycaster.set(camera.position, new THREE.Vector3().copy(direct).applyMatrix4(target.group.matrix).sub(camera.position).normalize());
 
-                        target.selectedCount++;
+                        raycaster.ray.intersectPlane(plane, pointOnPlane);
 
-                    } else {
+                        if (!isInside({ x: pointOnPlane[a], y: pointOnPlane[b] }, vs)) {
 
-                        target.unselectedPoints.push(direct.x, direct.y, direct.z)
+                            target.selectedPoints[target.selectedCount * 3 + 0] = direct.x;
+                            target.selectedPoints[target.selectedCount * 3 + 1] = direct.y;
+                            target.selectedPoints[target.selectedCount * 3 + 2] = direct.z;
+
+                            target.selectedCount++;
+
+                        } else {
+
+                            target.unselectedPoints.push(direct.x, direct.y, direct.z)
+
+                        }
+
+                    }
+
+                } else if (evt.shiftKey) {
+
+                    let updatedUn = [];
+
+                    for (let i = 0; i < target.unselectedPoints.length; i += 3) {
+
+                        let direct = new THREE.Vector3(target.unselectedPoints[i], target.unselectedPoints[i + 1], target.unselectedPoints[i + 2])
+
+                        raycaster.set(camera.position, new THREE.Vector3().copy(direct).applyMatrix4(target.group.matrix).sub(camera.position).normalize());
+
+                        raycaster.ray.intersectPlane(plane, pointOnPlane);
+
+                        if (isInside({ x: pointOnPlane[a], y: pointOnPlane[b] }, vs)) {
+
+                            target.selectedPoints[target.selectedCount * 3 + 0] = direct.x;
+                            target.selectedPoints[target.selectedCount * 3 + 1] = direct.y;
+                            target.selectedPoints[target.selectedCount * 3 + 2] = direct.z;
+
+                            target.selectedCount++;
+
+                        } else {
+
+                            updatedUn.push(direct.x, direct.y, direct.z)
+
+                        }
+
+                    }
+
+                    target.unselectedPoints = updatedUn;
+
+                } else {
+
+                    target.selectedCount = 0;
+
+                    let geometry = group.children[0].geometry;
+
+                    let array = geometry.attributes.position.array;
+
+                    target.unselectedPoints = [];
+
+                    for (let i = 0; i < array.length; i += 3) {
+
+                        raycaster.set(camera.position, new THREE.Vector3(array[i], array[i + 1], array[i + 2]).applyMatrix4(target.group.matrix).sub(camera.position).normalize());
+
+                        raycaster.ray.intersectPlane(plane, pointOnPlane);
+
+                        if (isInside({ x: pointOnPlane[a], y: pointOnPlane[b] }, vs)) {
+
+                            target.selectedPoints[target.selectedCount * 3 + 0] = array[i];
+                            target.selectedPoints[target.selectedCount * 3 + 1] = array[i + 1];
+                            target.selectedPoints[target.selectedCount * 3 + 2] = array[i + 2];
+
+                            target.selectedCount++;
+
+                        } else {
+
+                            target.unselectedPoints.push(array[i], array[i + 1], array[i + 2])
+
+                        }
 
                     }
 
                 }
 
-            } else if (evt.shiftKey) {
+                target.selectedGroup.geometry.setDrawRange(0, target.selectedCount);
 
-                let updatedUn = [];
-
-                for (let i = 0; i < target.unselectedPoints.length; i += 3) {
-
-                    let direct = new THREE.Vector3(target.unselectedPoints[i], target.unselectedPoints[i + 1], target.unselectedPoints[i + 2])
-
-                    raycaster.set(camera.position, new THREE.Vector3().copy(direct).applyMatrix4(target.group.matrix).sub(camera.position).normalize());
-
-                    raycaster.ray.intersectPlane(plane, pointOnPlane);
-
-                    if (isInside({ x: pointOnPlane[a], y: pointOnPlane[b] }, vs)) {
-
-                        target.selectedPoints[target.selectedCount * 3 + 0] = direct.x;
-                        target.selectedPoints[target.selectedCount * 3 + 1] = direct.y;
-                        target.selectedPoints[target.selectedCount * 3 + 2] = direct.z;
-
-                        target.selectedCount++;
-
-                    } else {
-
-                        updatedUn.push(direct.x, direct.y, direct.z)
-
-                    }
-
-                }
-
-                target.unselectedPoints = updatedUn;
-
-            } else {
-
-                target.selectedCount = 0;
-
-                let geometry = group.children[0].geometry;
-
-                let array = geometry.attributes.position.array;
-
-                target.unselectedPoints = [];
-
-                for (let i = 0; i < array.length; i += 3) {
-
-                    raycaster.set(camera.position, new THREE.Vector3(array[i], array[i + 1], array[i + 2]).applyMatrix4(target.group.matrix).sub(camera.position).normalize());
-
-                    raycaster.ray.intersectPlane(plane, pointOnPlane);
-
-                    if (isInside({ x: pointOnPlane[a], y: pointOnPlane[b] }, vs)) {
-
-                        target.selectedPoints[target.selectedCount * 3 + 0] = array[i];
-                        target.selectedPoints[target.selectedCount * 3 + 1] = array[i + 1];
-                        target.selectedPoints[target.selectedCount * 3 + 2] = array[i + 2];
-
-                        target.selectedCount++;
-
-                    } else {
-
-                        target.unselectedPoints.push(array[i], array[i + 1], array[i + 2])
-
-                    }
-
-                }
+                target.selectedGroup.geometry.attributes.position.needsUpdate = true;
 
             }
-
-            target.selectedGroup.geometry.setDrawRange(0, target.selectedCount);
-
-            target.selectedGroup.geometry.attributes.position.needsUpdate = true;
 
             this.render()
 
@@ -3071,7 +3085,19 @@ export const owlStudio = function (cv1, cv2, parent) {
         if (this.activeId.length < 1) return;
 
         this.gcs = new THREE.Object3D();
-        this.gcs.add(new THREE.AxesHelper(10))
+        // let axe = new THREE.AxesHelper(15).setColors('crimson', 'chartreuse', 'cyan');
+        let arrowX = new THREE.ArrowHelper(new THREE.Vector3(1, 0, 0), new THREE.Vector3(0, 0, 0), 10)
+        arrowX.setColor('crimson')
+        let arrowY = new THREE.ArrowHelper(new THREE.Vector3(0, 1, 0), new THREE.Vector3(0, 0, 0), 10)
+        arrowY.setColor('chartreuse')
+        let arrowZ = new THREE.ArrowHelper(new THREE.Vector3(0, 0, 1), new THREE.Vector3(0, 0, 0), 10)
+        arrowZ.setColor('cyan')
+        // axe.material.linewidth = 2;
+        // axe.material.needsUpdate = true;
+        // console.log(axe)
+        this.gcs.add(arrowX)
+        this.gcs.add(arrowY)
+        this.gcs.add(arrowZ)
         this.gcs.position.copy(this.groupList[this.activeId[0]].group.position);
 
         this.scene.add(this.gcs)

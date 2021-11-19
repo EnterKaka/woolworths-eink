@@ -17,6 +17,7 @@ cloudmachine.setListViewFunc((list, activeId) => {
             <a data-id="${i}" id="m-eye" class="modeldel" href="javascript:void(0)"><i class="ft-x"></i></a>
         </div>`;
 
+        if (cloudmachine.gcs) continue;
         if (!actived(activeId, i)) {
             list[i].group.children[4].visible = false;
         } else if (document.getElementById('coordinate').checked) {
@@ -87,6 +88,18 @@ function actived(activeId, i) {
         if (target == i) return true;
     }
     return false;
+}
+
+function expand() {
+    $('#sidebar').toggleClass('hide');
+    $('.navbar-container.content').toggleClass('expand');
+    $('.app-content.content').toggleClass('expand');
+    $('footer.footer').toggleClass('expand');
+    setTimeout(() => {
+        cloudmachine.windowResize()
+        // $('#viewer_3d').width('calc(100%)');
+    }, 500);
+
 }
 
 function setCurrentViewSetting() {
@@ -1113,4 +1126,6 @@ window.onload = function () {
         }
         setTimeout(() => { cloudmachine.windowResize() }, 500)
     })
+
+    document.getElementById('expand').addEventListener('click', expand)
 };
