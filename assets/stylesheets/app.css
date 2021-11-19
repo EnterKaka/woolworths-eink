@@ -305,6 +305,15 @@ legend.close_field {
 .content-wrapper-before{
     background-color: #FFBE15;
 }
+
+.navbar-container.content{
+    background-color: white;
+}
+
+.navbar-container.content li a{
+    color: black !important;
+}
+
 /* .navbar-container{
     background-image: none !important;
     background-color: white !important;
