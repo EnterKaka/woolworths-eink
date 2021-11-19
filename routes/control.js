@@ -125,7 +125,6 @@ var auto_Schedule = async function () {
             msg = "";
             msg = "Run oes service failed ( " + dt + " )";
             writeLog(msg);
-
             return;
         });
         var websocket = await new WebSocket("ws://" + server_ip + ":1234");
@@ -147,6 +146,12 @@ var auto_Schedule = async function () {
             dt = new Date();
             msg = "Closed oes service (" + dt + ")";
             writeLog(msg);
+        });
+        websocket.on("error", async function () {
+            await child.kill();
+            msg = "Can not find Websocket server ( " + dt + " )";
+            writeLog(msg);
+            return;
         });
     };
     var start_flag = 0;
