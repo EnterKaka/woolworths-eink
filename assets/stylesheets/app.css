@@ -294,3 +294,16 @@ legend.close_field {
     padding:0 10px;
     border-bottom:none;
 }
+
+.brand-logo{
+    width: 100% !important;
+}
+
+.nav-item.mr-auto{
+    width: calc(100% - 25px);
+}
+
+/* .navbar-container{
+    background-image: none !important;
+    background-color: white !important;
+} */

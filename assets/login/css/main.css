@@ -37,11 +37,13 @@
 body, html {
 	height: 100%;
 	font-family: Open Sans, sans-serif;
+  font-weight: 400;
 }
 
 /*---------------------------------------------*/
 a {
 	font-family: Open Sans, sans-serif;
+  font-weight: 400;
 	font-size: 14px;
 	line-height: 1.7;
 	color: #666666;
@@ -68,6 +70,7 @@ h1,h2,h3,h4,h5,h6 {
 
 p {
 	font-family: Open Sans, sans-serif;
+  font-weight: 400;
 	font-size: 14px;
 	line-height: 1.7;
 	color: #666666;
@@ -135,6 +138,7 @@ iframe {
 [ Utility ]*/
 .txt1 {
   font-family: Open Sans, sans-serif;
+  font-weight: 400;
   font-size: 13px;
   line-height: 1.5;
   color: #999999;
@@ -142,6 +146,7 @@ iframe {
 
 .txt2 {
   font-family: Open Sans, sans-serif;
+  font-weight: 400;
   font-size: 13px;
   line-height: 1.5;
   color: #666666;
@@ -211,8 +216,8 @@ iframe {
 
 .login100-form-title {
   font-family: Open Sans, sans-serif;
-  font-size: 24px;
-  font-family: bold;
+  font-size: 30px;
+  font-weight: 400;
   color: #333333;
   line-height: 1.2;
   text-align: center;
@@ -233,7 +238,8 @@ iframe {
 
 .input100 {
   font-family: Open Sans, sans-serif;
-  font-size: 15px;
+  font-weight: 400;
+  font-size: 20px;
   line-height: 1.5;
   color: #666666;
 
@@ -281,7 +287,7 @@ iframe {
 }
 
 .symbol-input100 {
-  font-size: 15px;
+  font-size: 20px;
 
   display: -webkit-box;
   display: -webkit-flex;
@@ -326,7 +332,8 @@ iframe {
 
 .login100-form-btn {
   font-family: Open Sans, sans-serif;
-  font-size: 15px;
+  font-weight: 400;
+  font-size: 20px;
   font-weight: bold;
   line-height: 1.5;
   color: #fff;
@@ -422,6 +429,7 @@ iframe {
   pointer-events: none;
 
   font-family: Open Sans, sans-serif;
+  font-weight: 400;
   color: #c80000;
   font-size: 13px;
   line-height: 1.4;
