@@ -628,7 +628,7 @@ export const owlStudio = function (cv1, cv2, parent) {
 
             }
 
-            if (this.gcs) {
+            if (this.clipGrid) {
                 let { normal, normal2, constant, position } = this.localClip;
                 let grid = this.clipGrid;
                 grid.position.copy(position)
