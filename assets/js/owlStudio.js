@@ -628,6 +628,8 @@ export const owlStudio = function (cv1, cv2, parent) {
 
             }
 
+            this.updateCrossSection()
+
         }
 
         this.render()
@@ -1556,19 +1558,22 @@ export const owlStudio = function (cv1, cv2, parent) {
         v2.applyMatrix4(matrix)
         let normal2 = new THREE.Vector3(-normal.x, -normal.y, -normal.z)
         let constant = -(normal.x * v1.x + normal.y * v1.y + normal.z * v1.z);
-        this.cplanes[0].set(normal, (constant + crossWidth() / 2 + crossOffset()))
-        this.cplanes[1].set(normal2, -(constant - crossWidth() / 2 + crossOffset()))
+        let width = crossWidth()
+        let offset = crossOffset()
+        this.cplanes[0].set(normal, (constant + width / 2 + offset))
+        this.cplanes[1].set(normal2, -(constant - width / 2 + offset))
         this.renderer.localClippingEnabled = true;
-        let added = new THREE.Vector3(normal.x * crossOffset(), normal.y * crossOffset(), normal.z * crossOffset())
+        let added = new THREE.Vector3(normal.x * offset, normal.y * offset, normal.z * offset)
         this.clipGrid = new THREE.Object3D();
         let grid = new THREE.GridHelper(20, 20);
         this.clipGrid.add(grid);
-        this.clipGrid.position.copy(v1.add(v2).divideScalar(2).sub(added))
+        let pposition = v1.add(v2).divideScalar(2);
+        this.clipGrid.position.copy(new THREE.Vector3().copy(pposition).sub(added))
         this.clipGrid.quaternion.copy(new THREE.Quaternion().setFromRotationMatrix(matrix))
         // grid.rotation[pn] = Math.PI / 2;
         grid.applyQuaternion(new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0, 1, 0), yb.normalize()))
         this.scene.add(this.clipGrid)
-        this.localClip = { normal: new THREE.Vector3().copy(normal), normal2: new THREE.Vector3().copy(normal2), constant, position: new THREE.Vector3().copy(v1.add(v2).divideScalar(2)) };
+        this.localClip = { normal: new THREE.Vector3().copy(normal), normal2: new THREE.Vector3().copy(normal2), constant, position: pposition };
         console.log('setted')
 
         $('#btn-rotate3').trigger('click')
@@ -1927,7 +1932,7 @@ export const owlStudio = function (cv1, cv2, parent) {
                 case 'rotate3':
                     if (this.mouse.down) {
                         this.rotateGroup(e)
-                        this.updateCrossSection()
+                        // this.updateCrossSection()
                     } else if (this.mouse.rightDown) this.cameraMove(e)
                     break;
 
@@ -3247,11 +3252,11 @@ function isInside(point, vs) {
 
 }
 
-function getCurrentFilename() {
+// function getCurrentFilename() {
 
-    return document.getElementById('modelpath').innerText;
+//     return document.getElementById('modelpath').innerText;
 
-}
+// }
 
 function backToRotateMode(tool) {
 

@@ -123,10 +123,10 @@
                                 class="ft-scissors mr-1"></i> Tools</a>
                           </li>
                           <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button"
+                            <!-- <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button"
                               aria-haspopup="true" aria-expanded="false" data-nsfw-filter-status="swf">
                               <i class="ft-filter mr-1"></i> Filters
-                            </a>
+                            </a> -->
                             <div class="dropdown-menu" x-placement="bottom-start"
                               style="position: absolute; will-change: transform; top: 0px; left: 0px; transform: translate3d(0px, 47px, 0px);padding:15px;">
                               <a class="btn btn-icon btn-outline-primary btn-glow mb-1" id="dropdownIcon1-tab"
@@ -169,62 +169,81 @@
                           <div role="tabpanel" class="tab-pane" id="tabIcon1" aria-labelledby="baseIcon-tab1">
                             <div class="row toolbar">
                               <div class="btn-group mr-1 mb-1">
-                                <button class="btn btn-outline-primary btn-glow btn-sm dropdown-toggle"
-                                  data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                  Color
-                                </button>
-                                <div class="dropdown-menu" x-placement="bottom-start"
-                                  style="position: absolute; will-change: transform; top: 0px; left: 0px; transform: translate3d(0px, 40px, 0px); padding:1rem 0 0;">
-                                  <div class="btn-group float-right">
-                                    <label class="mylabel">Polygon Color</label>
-                                    <input type="color" value="#87CEEB" style="height: 31px;width:60px;"
-                                      class="btn btn-icon btn-outline-primary btn-glow btn-sm mr-1 mb-1"
-                                      id="polygoncolor" title="set polygon's color">
-                                  </div>
-                                  <div class="btn-group float-right">
-                                    <label class="mylabel">Selected Point's Color</label>
-                                    <input type="color" value="#87CEEB" style="height: 31px;width:60px;"
-                                      class="btn btn-icon btn-outline-primary btn-glow btn-sm mr-1 mb-1"
-                                      id="selectedcolor" title="set selected point's color">
-                                  </div>
-                                  <div class="btn-group float-right">
-                                    <label class="mylabel">Point Cloud Color</label>
-                                    <input type="color" value="#87CEEB" style="height: 31px;width:60px;"
-                                      class="btn btn-icon btn-outline-primary btn-glow btn-sm mr-1 mb-1" id="pointcolor"
-                                      title="set points color">
-                                  </div>
-                                  <div class="btn-group float-right">
-                                    <label class="mylabel">3D Mesh's Color</label>
-                                    <input type="color" value="#800080" style="height: 31px;width:60px;"
-                                      class="btn btn-icon btn-outline-primary btn-glow btn-sm mr-1 mb-1"
-                                      id="delaunycolor" title="set 3D trianglation mesh's color">
+
+                                <div class="mydropdown">
+                                  <button class="mydropbtn btn btn-outline-primary btn-glow btn-sm dropdown-toggle"
+                                    data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    Color
+                                  </button>
+                                  <div class="mydropdown-content">
+                                    <div class="btn-group float-right">
+                                      <label class="mylabel">Polygon Color</label>
+                                      <input type="color" value="#87CEEB" style="height: 31px;width:60px;"
+                                        class="btn btn-icon btn-outline-primary btn-glow btn-sm mb-1" id="polygoncolor"
+                                        title="set polygon's color">
+                                    </div>
+                                    <div class="btn-group float-right">
+                                      <label class="mylabel">Selected Point's Color</label>
+                                      <input type="color" value="#87CEEB" style="height: 31px;width:60px;"
+                                        class="btn btn-icon btn-outline-primary btn-glow btn-sm mb-1" id="selectedcolor"
+                                        title="set selected point's color">
+                                    </div>
+                                    <div class="btn-group float-right">
+                                      <label class="mylabel">Point Cloud Color</label>
+                                      <input type="color" value="#87CEEB" style="height: 31px;width:60px;"
+                                        class="btn btn-icon btn-outline-primary btn-glow btn-sm mb-1" id="pointcolor"
+                                        title="set points color">
+                                    </div>
+                                    <div class="btn-group float-right">
+                                      <label class="mylabel">3D Mesh's Color</label>
+                                      <input type="color" value="#800080" style="height: 31px;width:60px;"
+                                        class="btn btn-icon btn-outline-primary btn-glow btn-sm mb-1" id="delaunycolor"
+                                        title="set 3D trianglation mesh's color">
+                                    </div>
+                                    <!-- <div class="mydropdown">
+                                      <button class="mydropbtn">Dropdown</button>
+                                      <div class="mydropdown-content mydropdown-right-content">
+                                      </div>
+                                    </div> -->
                                   </div>
                                 </div>
+
+
+                                <!-- <div class="dropdown-menu" x-placement="bottom-start"
+                                  style="position: absolute; will-change: transform; top: 0px; left: 0px; transform: translate3d(0px, 40px, 0px); padding:1rem 0 0;">
+
+                                </div> -->
                               </div>
                               <div class="btn-group mr-1 mb-1">
-                                <button class="btn btn-outline-primary btn-glow btn-sm dropdown-toggle"
-                                  data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                  Size
-                                </button>
-                                <div class="dropdown-menu" x-placement="bottom-start"
-                                  style="position: absolute; will-change: transform; top: 0px; left: 0px; transform: translate3d(0px, 40px, 0px); padding:1rem 0 0;">
-                                  <div class="btn-group float-right">
-                                    <label class="mylabel">Polygon Size</label>
-                                    <div id="polygonsizeDiv" class="form-group pb-0 mb-1"
-                                      style="height: 31px; padding-left:10px;padding-top: 7px; margin-bottom:0px;"
-                                      title="set polygon's size">
-                                      <input type="range" class="mr-1 " id="polygonsize" name="polygonsize" min="0.5"
-                                        max="5" step="0.5" value="2">
+                                <div class="mydropdown">
+                                  <button class="mydropbtn btn btn-outline-primary btn-glow btn-sm dropdown-toggle"
+                                    data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    Size
+                                  </button>
+                                  <div class="mydropdown-content">
+                                    <div class="btn-group float-right">
+                                      <label class="mylabel">Polygon Size</label>
+                                      <div id="polygonsizeDiv" class="form-group pb-0 mb-1"
+                                        style="height: 31px; padding-left:10px;padding-top: 7px; margin-bottom:0px;"
+                                        title="set polygon's size">
+                                        <input type="range" class="mr-1 " id="polygonsize" name="polygonsize" min="0.5"
+                                          max="5" step="0.5" value="2">
+                                      </div>
                                     </div>
-                                  </div>
-                                  <div class="btn-group float-right">
-                                    <label class="mylabel">Selected Point's Size</label>
-                                    <div id="selectedsizeDiv" class="form-group pb-0 mb-1"
-                                      style="height: 31px; padding-left:10px;padding-top: 7px; margin-bottom:0px;"
-                                      title="set selected point's size">
-                                      <input type="range" class="mr-1 " id="selectedsize" name="selectedsize" min="0.1"
-                                        max="1" step="0.1" value="0.2">
+                                    <div class="btn-group float-right">
+                                      <label class="mylabel">Selected Point's Size</label>
+                                      <div id="selectedsizeDiv" class="form-group pb-0 mb-1"
+                                        style="height: 31px; padding-left:10px;padding-top: 7px; margin-bottom:0px;"
+                                        title="set selected point's size">
+                                        <input type="range" class="mr-1 " id="selectedsize" name="selectedsize"
+                                          min="0.1" max="1" step="0.1" value="0.2">
+                                      </div>
                                     </div>
+                                    <!-- <div class="mydropdown">
+                                      <button class="mydropbtn">Dropdown</button>
+                                      <div class="mydropdown-content mydropdown-right-content">
+                                      </div>
+                                    </div> -->
                                   </div>
                                 </div>
                               </div>
@@ -309,88 +328,192 @@
                               </button>
 
                               <div class="btn-group mr-1 mb-1">
-                                <button class="btn btn-outline-primary btn-glow btn-sm dropdown-toggle"
-                                  data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                  Selection Tool
-                                </button>
-                                <div class="dropdown-menu" x-placement="bottom-start"
-                                  style="position: absolute; will-change: transform; top: 0px; left: 0px; transform: translate3d(0px, 40px, 0px); padding:1rem 1rem 0;">
-                                  <!-- <div class="btn-group float-right ml-1"> -->
-                                  <button type='button' class="btn btn-outline-primary btn-glow btn-sm mb-1 w-100"
-                                    title='point select tool (shift+z)' id='btn-point'>
-                                    <i class="ft-edit-2"></i> Point Tool
+                                <div class="mydropdown">
+                                  <button class="mydropbtn btn btn-outline-primary btn-glow btn-sm dropdown-toggle"
+                                    data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    Selection Tool
                                   </button>
-                                  <!-- </div>
-                                  <div class="btn-group float-right ml-1"> -->
-                                  <button type='button' class="btn btn-outline-primary btn-glow btn-sm mb-1 w-100"
-                                    title='polygon draw tool (shift+d)' id='btn-polygon'>
-                                    <i class="ft-octagon"></i> Polygon Tool
-                                  </button>
-                                  <!-- </div>
-                                  <div class="btn-group float-right ml-1"> -->
-                                  <button type='button' class="btn btn-outline-primary btn-glow btn-sm mb-1 w-100"
-                                    title='pencil tool for point selection (shift+f)' id='btn-pencil'>
-                                    <i class="ft-edit-3"></i> Pencil Tool
-                                  </button>
-                                  <!-- </div> -->
+                                  <div class="mydropdown-content">
+                                    <button type='button' class="btn btn-outline-primary btn-glow btn-sm mb-1 w-100"
+                                      title='point select tool (shift+z)' id='btn-point'>
+                                      <i class="ft-edit-2"></i> Point Tool
+                                    </button>
+                                    <button type='button' class="btn btn-outline-primary btn-glow btn-sm mb-1 w-100"
+                                      title='polygon draw tool (shift+d)' id='btn-polygon'>
+                                      <i class="ft-octagon"></i> Polygon Tool
+                                    </button>
+                                    <button type='button' class="btn btn-outline-primary btn-glow btn-sm mb-1 w-100"
+                                      title='pencil tool for point selection (shift+f)' id='btn-pencil'>
+                                      <i class="ft-edit-3"></i> Pencil Tool
+                                    </button>
+                                  </div>
                                 </div>
                               </div>
 
                               <div class="btn-group mr-1 mb-1">
-                                <button class="btn btn-outline-primary btn-glow btn-sm dropdown-toggle"
-                                  data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                  Analyze Tools
-                                </button>
-                                <div class="dropdown-menu" x-placement="bottom-start"
-                                  style="position: absolute; will-change: transform; top: 0px; left: 0px; transform: translate3d(0px, 40px, 0px); padding:1rem 1rem 0;">
-                                  <!-- <div class="btn-group float-right ml-1 mr-1" style="flex-direction: column-reverse;"> -->
-                                  <button type='button' class="btn btn-outline-primary btn-glow btn-sm mr-1 mb-1 w-100"
-                                    title='draw polyline and calculate distance' id='btn-polyline'>
-                                    <i class="ft-activity"></i> Measurement
+                                <div class="mydropdown">
+                                  <button class="mydropbtn btn btn-outline-primary btn-glow btn-sm dropdown-toggle"
+                                    data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    Analyze Tools
                                   </button>
-
-                                  <button type='button' class="btn btn-outline-primary btn-glow btn-sm mr-1 mb-1 w-100"
-                                    data-toggle="modal" data-target="#volumeModal" id="btn-vol">Calculator</button>
-
-                                  <!-- </div> -->
-                                  <!-- <div class="dropdown-divider"></div> -->
-                                  <div class="dropdown-submenu">
-                                    <!-- <div class="btn-group float-right ml-1 mr-1"
-                                      style="flex-direction: column-reverse;"> -->
+                                  <div class="mydropdown-content">
                                     <button type='button' class="btn btn-outline-primary btn-glow btn-sm mb-1 w-100"
-                                      title='select two points for cross section' id='btn-cross'>
-                                      <i class="ft-edit-2"></i>Cross Section
+                                      title='draw polyline and calculate distance' id='btn-polyline'>
+                                      <i class="ft-activity"></i> Measurement
                                     </button>
-                                    <!-- </div> -->
-                                    <div class="dropdown-menu" role="menu">
-                                      <div class="btn-group float-right ml-1 mr-1"
-                                        style="flex-direction: column-reverse;">
-                                        <button type='button' class="btn btn-outline-primary btn-glow btn-sm mb-1 mr-1"
+
+                                    <button type='button' class="btn btn-outline-primary btn-glow btn-sm mb-1 w-100"
+                                      data-toggle="modal" data-target="#volumeModal" id="btn-vol">Calculator</button>
+                                    <div class="mydropdown w-100">
+                                      <button type='button'
+                                        class="mydropbtn btn btn-outline-primary btn-glow btn-sm mb-1 w-100"
+                                        title='select two points for cross section' id='btn-cross'>
+                                        <i class="ft-edit-2"></i> Cross Section
+                                      </button>
+                                      <div class="mydropdown-content mydropdown-right-content">
+                                        <button type='button' class="btn btn-outline-primary btn-glow btn-sm mb-1"
                                           title='rotate tool' id='btn-rotate3' style="display: none;">
                                           <i class="ft-rotate-cw"></i>
                                         </button>
-                                        <select class="form-control btn-glow mb-1 mr-1"
+                                        <select class="form-control btn-glow mb-1"
                                           style="height: 29px;padding-left: 10px; width: 70px;padding-right: 5px;border:1px solid #6967ce;"
                                           id="cross-plane" title="choose plane">
                                           <option value="z">XY</option>
                                           <option value="y">XZ</option>
                                           <option value="x">YZ</option>
                                         </select>
-                                        <div class="badge badge-pill badge-pribtn-outline-primary mb-1"
-                                          style="border-top-right-radius: 0px;border-bottom-right-radius: 0px;">
+                                        <div class="badge badge-pill badge-pribtn-outline-primary"
+                                          style="border-top-right-radius: 0px;border-bottom-right-radius: 0px; color:#6967ce;">
                                           offset
                                         </div>
-                                        <input type="number" class="form-control btn-glow mb-1 mr-1" id="cross-offset"
+                                        <input type="number" class="form-control btn-glow mb-1" id="cross-offset"
                                           style="height: 29px;padding-left: 15px;width: 70px;padding-right:0;border:1px solid #6967ce; border-top-left-radius: 0;border-bottom-left-radius: 0;"
                                           min="-100" max="100" step="0.5" value="0" title="offset">
-                                        <div class="badge badge-pill badge-pribtn-outline-primary mb-1"
-                                          style="border-top-right-radius: 0px;border-bottom-right-radius: 0px;">Width
+                                        <div class="badge badge-pill badge-pribtn-outline-primary"
+                                          style="border-top-right-radius: 0px;border-bottom-right-radius: 0px; color:#6967ce;">
+                                          Width
                                         </div>
-                                        <input type="number" class="form-control btn-glow mb-1 mr-1" id="cross-width"
+                                        <input type="number" class="form-control btn-glow mb-1" id="cross-width"
                                           style="height: 29px;padding-left: 15px;width: 70px;padding-right:0;border:1px solid #6967ce; border-top-left-radius: 0;border-bottom-left-radius: 0;"
                                           min="-100" max="100" step="0.5" value="3" title="width">
                                       </div>
                                     </div>
+                                  </div>
+                                </div>
+                              </div>
+                              <div class="btn-group mr-1 mb-1">
+                                <div class="mydropdown">
+                                  <button class="mydropbtn btn btn-outline-primary btn-glow btn-sm dropdown-toggle"
+                                    data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    <i class="ft-filter mr-1"></i> Filters
+                                  </button>
+                                  <div class="mydropdown-content">
+                                    <div class="mydropdown w-100">
+                                      <button class="mydropbtn btn btn-outline-primary btn-glow btn-sm mb-1 w-100"
+                                        aria-haspopup="true" aria-expanded="false">
+                                        Grid Minimum Filter
+                                      </button>
+                                      <div class="mydropdown-content mydropdown-right-content">
+                                        <!-- <div class="badge badge-pill badge-primary mb-1 mr-1">Grid Minimum Filter(m)
+                                        </div> -->
+                                        <input type="number" class="form-control btn-glow mb-1 w-100" id="f1-cell-size"
+                                          style="height: 31px;padding-left: 15px;width: 81px;" min="0.1" max="10"
+                                          step="0.1" value="0.5" title="set cell size">
+                                        <button type='button' style="float:right;"
+                                          class="btn btn-icon btn-outline-primary btn-glow btn-sm mb-1 w-100"
+                                          title='grid minimum filter' id='f1-filter'>
+                                          filtering
+                                        </button>
+                                        <button type='button' style="float:right;"
+                                          class="btn btn-icon btn-outline-primary btn-glow btn-sm mb-1 w-100"
+                                          title='grid minimum filter' id='f1-mfilter'>
+                                          marked points filtering
+                                        </button>
+                                      </div>
+                                    </div>
+                                    <div class="mydropdown w-100">
+                                      <button class="mydropbtn btn btn-outline-primary btn-glow btn-sm mb-1 w-100"
+                                        aria-haspopup="true" aria-expanded="false">
+                                        Voxel Grid Filter
+                                      </button>
+                                      <div class="mydropdown-content mydropdown-right-content">
+                                        <!-- <div class="badge badge-pill badge-primary mb-1 mr-1">Voxel Grid Filter(m)
+                                        </div> -->
+                                        <input type="number" class="form-control btn-glow mb-1 w-100" id="f2-cell-size"
+                                          style="height: 31px;padding-left: 15px;width: 81px;" min="0.1" max="10"
+                                          step="0.1" value="0.5" title="set cell size">
+                                        <button type='button' style="float:right;"
+                                          class="btn btn-icon btn-outline-primary btn-glow btn-sm mb-1 w-100"
+                                          title='voxel grid filter' id='f2-filter'>
+                                          filtering
+                                        </button>
+                                        <button type='button' style="float:right;"
+                                          class="btn btn-icon btn-outline-primary btn-glow btn-sm mb-1 w-100"
+                                          title='voxel grid filter' id='f2-mfilter'>
+                                          marked points filtering
+                                        </button>
+                                      </div>
+                                    </div>
+                                    <div class="mydropdown w-100">
+                                      <button class="mydropbtn btn btn-outline-primary btn-glow btn-sm mb-1 w-100"
+                                        aria-haspopup="true" aria-expanded="false">
+                                        Statistical Outlier Removal Filter
+                                      </button>
+                                      <div class="mydropdown-content mydropdown-right-content">
+                                        <!-- <div class="badge badge-pill badge-primary mb-1 mr-1">Statistical Outlier
+                                          Removal Filter(m)
+                                        </div> -->
+                                        <input type="number" class="form-control btn-glow mb-1 w-100" id="f3-number"
+                                          style="height: 31px;padding-left: 15px;width: 81px;" min="1" max="100"
+                                          step="1" value="30" title="set points number for calculation">
+                                        <input type="number" class="form-control btn-glow mb-1 w-100" id="f3-deviation"
+                                          style="height: 31px;padding-left: 15px;width: 81px;" min="0.1" max="10"
+                                          step="0.1" value="0.5" title="Standard Deviation">
+                                        <button type='button' style="float:right;"
+                                          class="btn btn-icon btn-outline-primary btn-glow btn-sm mb-1 w-100"
+                                          title='Statistical Outlier Removal Filter' id='f3-filter'>
+                                          filtering
+                                        </button>
+                                        <button type='button' style="float:right;"
+                                          class="btn btn-icon btn-outline-primary btn-glow btn-sm mb-1 w-100"
+                                          title='Statistical Outlier Removal Filter' id='f3-mfilter'>
+                                          marked points filtering
+                                        </button>
+                                      </div>
+                                    </div>
+                                    <div class="mydropdown w-100">
+                                      <button class="mydropbtn btn btn-outline-primary btn-glow btn-sm mb-1 w-100"
+                                        aria-haspopup="true" aria-expanded="false">
+                                        Pass Through Filter
+                                      </button>
+                                      <div class="mydropdown-content mydropdown-right-content">
+                                        <!-- <div class="badge badge-pill badge-primary mb-1 mr-1">Pass Through Filter(m)
+                                        </div> -->
+                                        <select class="form-control btn-glow mb-1 w-100" style="height: 31px;padding-left: 15px;
+                                width: 60px;padding-right: 0;" id="f4-pass" title="set pass(axis)">
+                                          <option value="x">X</option>
+                                          <option value="y">Y</option>
+                                          <option value="z">Z</option>
+                                        </select>
+                                        <input type="number" class="form-control btn-glow mb-1 w-100" id="f4-limit1"
+                                          style="height: 31px;padding-left: 15px;width: 81px;" min="0" max="10000"
+                                          step="1" value="0" title="set min limit">
+                                        <input type="number" class="form-control btn-glow mb-1 w-100" id="f4-limit2"
+                                          style="height: 31px;padding-left: 15px;width: 81px;" min="1" max="10000"
+                                          step="1" value="500" title="set max limit">
+                                        <button type='button' style="float:right;"
+                                          class="btn btn-icon btn-outline-primary btn-glow btn-sm mb-1 w-100"
+                                          title='Pass Through Filter' id='f4-filter'>
+                                          filtering
+                                        </button>
+                                        <button type='button' style="float:right;"
+                                          class="btn btn-icon btn-outline-primary btn-glow btn-sm mb-1 w-100"
+                                          title='Pass Through Filter' id='f4-mfilter'>
+                                          marked points filtering
+                                        </button>
+                                      </div>
+                                    </div>
+
                                   </div>
                                 </div>
                               </div>
@@ -546,7 +669,7 @@
                                 <% } %>
                             </div>
                           </div>
-                          <div class="tab-pane" id="dropdownIcon1" role="tabpanel" aria-labelledby="dropdownIcon1-tab"
+                          <!-- <div class="tab-pane" id="dropdownIcon1" role="tabpanel" aria-labelledby="dropdownIcon1-tab"
                             aria-expanded="false">
                             <div class="row toolbar">
                               <div class="badge badge-pill badge-primary mb-1 mr-1">Grid Minimum Filter(m)
@@ -639,7 +762,7 @@
                               </button>
 
                             </div>
-                          </div>
+                          </div> -->
                         </div>
                         <div style="display:inline-block;width:45px;font-size:16px;"><a id="sidenav"
                             class="nav-link hidden-xs" href="javascript:void(0)"><i class="ft-menu"></i></a></div>
