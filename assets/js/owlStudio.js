@@ -628,7 +628,29 @@ export const owlStudio = function (cv1, cv2, parent) {
 
             }
 
-            this.updateCrossSection()
+            if (this.gcs) {
+                let { normal, normal2, constant, position } = this.localClip;
+                let grid = this.clipGrid;
+                grid.position.copy(position)
+                grid.position.sub(gp);
+                grid.position.applyQuaternion(gq)
+                grid.position.applyQuaternion(guq)
+                grid.applyQuaternion(gq)
+                grid.applyQuaternion(guq)
+                grid.position.add(gp)
+
+                let ctr = grid.position;
+
+                normal.applyQuaternion(gq)
+                normal.applyQuaternion(guq).normalize()
+                normal2.applyQuaternion(gq)
+                normal2.applyQuaternion(guq).normalize()
+
+                constant = -(normal.x * ctr.x + normal.y * ctr.y + normal.z * ctr.z);
+                position = new THREE.Vector3().copy(ctr)
+                this.localClip = { normal, normal2, constant, position };
+                this.updateCrossSection()
+            }
 
         }
 
@@ -1594,6 +1616,42 @@ export const owlStudio = function (cv1, cv2, parent) {
         this.render();
     }
 
+    this.updateCrossSectionByGlobal = () => {
+        if (!this.localClip) return;
+        console.log('updatedG')
+        let { normal, normal2, constant, position } = this.localClip;
+        // ////////////////////////////////////////////////////////////////////////////////////
+        let gp = new THREE.Vector3().copy(this.gcs.position)
+        let gm = new THREE.Matrix4().copy(this.gcs.matrix)
+        let gq = new THREE.Quaternion().setFromRotationMatrix(gm)
+        gq.x = -gq.x; gq.y = -gq.y; gq.z = -gq.z;
+
+        this.gcs.rotation.z += deltaX / 100;
+        this.gcs.rotation.x += deltaY / 100;
+        gm.makeRotationFromEuler(this.gcs.rotation)
+        let guq = new THREE.Quaternion().setFromRotationMatrix(gm);
+        // ////////////////////////////////////////////////////////////////////////////////////
+        let grid = this.clipGrid;
+        grid.position.sub(gp);
+        grid.position.applyQuaternion(gq)
+        grid.position.applyQuaternion(guq)
+        grid.applyQuaternion(gq)
+        grid.applyQuaternion(guq)
+        grid.position.add(gp)
+
+        let ctr = grid.position;
+
+        normal.applyQuaternion(gq)
+        normal.applyQuaternion(guq).normalize()
+        normal2.applyQuaternion(gq)
+        normal2.applyQuaternion(guq).normalize()
+
+        constant = -(normal.x * ctr.x + normal.y * ctr.y + normal.z * ctr.z);
+        position = new THREE.Vector3().copy(ctr)
+
+        this.updateCrossSection()
+    }
+
     this.addPoint = function (evt) {
         if (!this.birdEyePlane) {
 
@@ -1930,7 +1988,7 @@ export const owlStudio = function (cv1, cv2, parent) {
                     break;
 
                 case 'rotate3':
-                    if (this.mouse.down) {
+                    if (this.mouse.down && this.clipGrid) {
                         this.rotateGroup(e)
                         // this.updateCrossSection()
                     } else if (this.mouse.rightDown) this.cameraMove(e)
