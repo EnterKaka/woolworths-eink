@@ -653,8 +653,8 @@ window.onload = function () {
     }, false);
 
     document.getElementById('btn-directSave').addEventListener('click', () => {
-        document.getElementById('ds-modelName').value = document.getElementById('modelpath').innerText;
-        document.getElementById('ds-modelVolume').value = cloudmachine.sessionHistory[cloudmachine.sessionHistory.length - 1].volume || 0;
+        document.getElementById('ds-modelName').value = cloudmachine.groupList[cloudmachine.activeId[0]].name;
+        document.getElementById('ds-modelVolume').value = cloudmachine.groupList[cloudmachine.activeId[0]].volume || 0;
     })
 
     document.getElementById('directSaveBtn').addEventListener('click', () => {
@@ -788,7 +788,7 @@ window.onload = function () {
         }
         $('.hload-btn').click(function () {
             console.log({ this: this })
-            document.getElementById('modelpath').innerText = this.parentElement.parentElement.children[0].innerText;
+            // document.getElementById('modelpath').innerText = this.parentElement.parentElement.children[0].innerText;
             cloudmachine.reloadModelFromArray(sessionHistory[parseInt(this.dataset.id)].name, sessionHistory[parseInt(this.dataset.id)].data, sessionHistory[parseInt(this.dataset.id)].matrix);
             $('#browser-close').trigger('click');
         })
@@ -864,7 +864,7 @@ window.onload = function () {
                 }
                 $('.dload-btn').click(function () {
                     console.log({ data: res.data })
-                    document.getElementById('modelpath').innerText = this.parentElement.parentElement.children[0].innerText;
+                    // document.getElementById('modelpath').innerText = this.parentElement.parentElement.children[0].innerText;
                     cloudmachine.reloadModelFromArray(res.data[parseInt(this.dataset.id)].name, res.data[parseInt(this.dataset.id)].data, res.data[parseInt(this.dataset.id)].matrix);
                     $('#browser-close').trigger('click');
                 })
