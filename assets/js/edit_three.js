@@ -11,8 +11,8 @@ cloudmachine.setListViewFunc((list, activeId) => {
 
     for (let i = 0; i < list.length; i++) {
 
-        dom.innerHTML += `<div data-id="${i}" class="model ${actived(activeId, i) ? 'active' : ''} btn btn-outline-primary round">
-            <span data-id="${i}" class="modelname">${list[i].name}</span>
+        dom.innerHTML += `<div data-id="${i}" class="model ${actived(activeId, i) ? 'active' : ''} btn btn-outline-primary">
+            <span data-id="${i}" class="modelname" title="${list[i].name}">${list[i].name}</span>
             <i data-id="${i}" class="${list[i].group.visible ? 'ft-eye' : 'ft-eye-off'} modeleye"></i>
             <a data-id="${i}" id="m-eye" class="modeldel" href="javascript:void(0)"><i class="ft-x"></i></a>
         </div>`;

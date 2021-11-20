@@ -199,7 +199,7 @@ export const owlStudio = function (cv1, cv2, parent) {
 
     this.reloadModelFromArray = function (filename, arrayData, newModel = 'new') {
 
-        $("#modelpath").text(filename);
+        // $("#modelpath").text(filename);
 
         let target;
 
@@ -2300,7 +2300,7 @@ export const owlStudio = function (cv1, cv2, parent) {
 
             }
 
-            this.reloadModelFromArray(getCurrentFilename(), updatePoints, id);
+            this.reloadModelFromArray(target.name, updatePoints, id);
 
         }
 
@@ -2362,7 +2362,7 @@ export const owlStudio = function (cv1, cv2, parent) {
 
             this.addToHistory(target.history, array)
 
-            this.reloadModelFromArray(getCurrentFilename(), [...target.unselectedPoints], id);
+            this.reloadModelFromArray(target.name, [...target.unselectedPoints], id);
 
         }
 
@@ -2416,7 +2416,7 @@ export const owlStudio = function (cv1, cv2, parent) {
 
             this.addToHistory(target.history, array)
 
-            this.reloadModelFromArray(getCurrentFilename(), filteredPoints, id)
+            this.reloadModelFromArray(target.name, filteredPoints, id)
 
         }
 
@@ -2456,7 +2456,7 @@ export const owlStudio = function (cv1, cv2, parent) {
 
             this.addToHistory(target.history, array)
             console.log("reloaded", id)
-            this.reloadModelFromArray(getCurrentFilename(), filteredPoints, id)
+            this.reloadModelFromArray(target.name, filteredPoints, id)
         }
 
         this.initDraw();
@@ -2496,7 +2496,7 @@ export const owlStudio = function (cv1, cv2, parent) {
 
             this.addToHistory(target.history, array)
 
-            this.reloadModelFromArray(getCurrentFilename(), filteredPoints, id)
+            this.reloadModelFromArray(target.name, filteredPoints, id)
 
         }
 
@@ -2537,7 +2537,7 @@ export const owlStudio = function (cv1, cv2, parent) {
 
             this.addToHistory(target.history, array)
 
-            this.reloadModelFromArray(getCurrentFilename(), filteredPoints, id)
+            this.reloadModelFromArray(target.name, filteredPoints, id)
 
         }
 
@@ -2555,7 +2555,7 @@ export const owlStudio = function (cv1, cv2, parent) {
 
                 e.preventDefault();
 
-                this.reloadModelFromArray(getCurrentFilename(), target.history.data[target.history.step - 1], id)
+                this.reloadModelFromArray(target.name, target.history.data[target.history.step - 1], id)
 
                 this.render()
 
@@ -2976,7 +2976,7 @@ export const owlStudio = function (cv1, cv2, parent) {
             return this.groupList[id].name;
         })
 
-        $("#modelpath").text(namelist)
+        // $("#modelpath").text(namelist)
 
     }
 
