@@ -1,23 +1,5 @@
 var table;
 function onclick_get(){
-    const swalWithBootstrapButtons = Swal.mixin({
-      customClass: {
-        confirmButton: 'btn btn-success',
-        cancelButton: 'btn btn-danger'
-      },
-      buttonsStyling: false
-    })
-
-    swalWithBootstrapButtons.fire({
-      title: 'Are you sure?',
-      text: "You won't be able to revert this!",
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonText: 'Yes, get it!',
-      cancelButtonText: 'No, cancel!',
-      reverseButtons: true
-    }).then((result) => {
-      if (result.isConfirmed) {
         $('#table_main_data').html('');
         url = '/data/get';
         table.clear().draw();
@@ -42,7 +24,7 @@ function onclick_get(){
                 { data: 'mass', width: '30%', targets: 3},
                 { data: 'volume', width: '30%', targets: 4},
                 {  data: 'setid', width: '30%', targets: 5, render:function ( data, type, row ) {
-                  return '<a href="/data/view/' + row._id + '" class="btn btn-primary btn-min-width mr-1 mb-1">View</a><a href="/data/edit/' + row._id + '" class="btn btn-primary btn-min-width mr-1 mb-1">Edit</a>';}},
+                  return '<a href="/data/view/' + row._id + '" class="btn btn-custom-line btn-min-width mr-1 mb-1">View</a><a href="/data/edit/' + row._id + '" class="btn btn-custom-line btn-min-width mr-1 mb-1">Edit</a>';}},
                 ],
                 initComplete: function(settings, json) {
                   $('#prepross').empty();
@@ -88,8 +70,6 @@ function onclick_get(){
         //     );
         //   }
         // });
-      }
-    });
   }
 
 
