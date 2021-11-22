@@ -135,7 +135,7 @@ mongoose
     .then(() => {
         console.log("connected to db");
         http.listen(3000, "0.0.0.0", () => {
-            console.log(`Socket.IO server running at http://localhost:3000/`);
+            console.log(`Node server running at http://localhost:3000/`);
         });
     })
     .catch((err) => {

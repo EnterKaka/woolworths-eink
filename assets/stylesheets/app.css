@@ -1,4 +1,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Open+Sans&display=swap');
+.san{
+	font-family: Open Sans, sans-serif;
+}
 /*Sidebar Logo height fix*/
 #navbar_head_logo{
     height: 7rem;
@@ -325,6 +328,16 @@ legend.close_field {
     background-color: #4063AD;
     color: white;
 }
+
+.back-yellow{
+    background-color:#FFBE15;
+    color:black;
+}
+
+.hover-yellow li a:hover{
+    color:#FFBE15 !important;
+}
+
 /* .navbar-container{
     background-image: none !important;
     background-color: white !important;
