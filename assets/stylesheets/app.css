@@ -1,3 +1,4 @@
+@import url('https://fonts.googleapis.com/css2?family=Open+Sans&display=swap');
 /*Sidebar Logo height fix*/
 #navbar_head_logo{
     height: 7rem;
@@ -314,6 +315,16 @@ legend.close_field {
     color: black !important;
 }
 
+.btn-custom-line{
+    border: solid;
+    border-color: #4063AD;
+    color: #4063AD;
+}
+
+.btn-custom-fill{
+    background-color: #4063AD;
+    color: white;
+}
 /* .navbar-container{
     background-image: none !important;
     background-color: white !important;
