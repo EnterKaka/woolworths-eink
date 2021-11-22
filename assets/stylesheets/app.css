@@ -338,6 +338,25 @@ legend.close_field {
     color:#FFBE15 !important;
 }
 
+.content-header-title{
+    font-family: Open Sans, sans-serif;
+}
+
+.breadcrumb{
+    font-family: Open Sans, sans-serif;
+}
+
+.content-body{
+    font-family: Open Sans, sans-serif;
+}
+
+.card-title{
+    font-family: Open Sans, sans-serif;
+}
+
+h1,h2,h3,h4,h5,h6{
+    font-family: Open Sans, sans-serif;
+}
 /* .navbar-container{
     background-image: none !important;
     background-color: white !important;
