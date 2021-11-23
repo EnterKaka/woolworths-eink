@@ -779,6 +779,7 @@ export const owlStudio = function (cv1, cv2, parent) {
 
         this.camera.lookAt(this.cameraLookAt);
 
+
         this.render()
 
     }
@@ -1285,46 +1286,32 @@ export const owlStudio = function (cv1, cv2, parent) {
 
         let vector = new THREE.Vector3(x, y, z)
         let matrix = this.groupList[sind[0]].group.matrix;
-
+        this.linePdata = { vector: new THREE.Vector3().copy(vector), matrix }
+        vector.applyMatrix4(matrix)
         if (!this.line) {
 
-            let geometry = new THREE.BufferGeometry().setFromPoints([vector]);
+            let geometry = new THREE.BufferGeometry().setFromPoints([new THREE.Vector3()]);
 
             let material;
-
-            document.getElementById('pointcolor').disabled = true;
-
-            material = new THREE.PointsMaterial({ size: 0.5, vertexColors: false, color: "#1acaff" });
+            material = new THREE.PointsMaterial({ size: selectedsize(), vertexColors: false, color: selectedcolor() });
 
             let points = new THREE.Points(geometry, material);
             points.frustumCulled = false;
 
             this.line = new THREE.Object3D().add(points);
 
-            this.line.applyMatrix4(matrix)
+            this.line.position.copy(vector)
 
             this.scene.add(this.line);
 
         } else if (!this.line.visible) {
 
-            let array = this.line.children[0].geometry.attributes.position.array;
-
-            array[0] = vector.x;
-            array[1] = vector.y;
-            array[2] = vector.z;
-
-            this.line.children[0].geometry.attributes.position.needsUpdate = true;
-            this.line.matrix.copy(matrix)
-            this.line.position.setFromMatrixPosition(matrix);
-            this.line.quaternion.setFromRotationMatrix(matrix)
-
+            this.line.position.copy(vector)
             this.line.visible = true;
 
         } else {
 
-            let array = this.line.children[0].geometry.attributes.position.array;
-            vector.applyMatrix4(matrix)
-            let v = new THREE.Vector3(array[0], array[1], array[2]).applyMatrix4(this.line.matrix)
+            let v = this.line.position;
             let tx = vector.x - v.x;
             let ty = vector.y - v.y;
             let tz = vector.z - v.z;
@@ -1351,6 +1338,12 @@ export const owlStudio = function (cv1, cv2, parent) {
 
         this.render()
 
+    }
+
+    this.updateThisLine = function () {
+        if (!this.line || !this.line.visible) return;
+        this.line.position.copy(new THREE.Vector3().copy(this.linePdata.vector).applyMatrix4(this.linePdata.matrix))
+        this.render();
     }
 
     this.drawPolyline = function (evt) {
@@ -1405,56 +1398,56 @@ export const owlStudio = function (cv1, cv2, parent) {
 
         let vector = new THREE.Vector3(x, y, z)
         let matrix = this.groupList[sind[0]].group.matrix;
-        console.log(vector)
+
+        if (this.polyline) this.scene.remove(this.polyline);
+
+        if (!this.polylineData) {
+            this.polylineData = [];
+            this.polylineMatrix = [];
+        }
+
+        this.polylineData.push(vector)
+        this.polylineMatrix.push(matrix)
+
+        let points = [];
+        for (let i = 0; i < this.polylineData.length; i++) {
+            points.push(new THREE.Vector3().copy(this.polylineData[i]).applyMatrix4(this.polylineMatrix[i]))
+        }
+        let rdata = this.vectorCenter(points)
+
+
+        const geometry = new THREE.BufferGeometry().setFromPoints(rdata.points);
         const material = new THREE.LineBasicMaterial({
             color: pointcolor(),
             // size: 0.2
         });
-        if (!this.addpoints)
-            this.addpoints = [];
-        if (!this.polylineData) {
-            this.polylineData = [];
-        }
-
-        let vvv = new THREE.Vector3().copy(vector).applyMatrix4(matrix);
-        let oldPosition;
-        if (this.polylineData.length != 0) {
-            console.log(this.polyline)
-            oldPosition = new THREE.Vector3().copy(this.polyline.position)
-            vvv.x -= oldPosition.x; vvv.y -= oldPosition.y; vvv.z -= oldPosition.z;
-        }
-        else {
-            oldPosition = new THREE.Vector3().copy(vvv)
-            vvv.x = 0; vvv.y = 0; vvv.z = 0;
-        }
-        if (this.polyline) this.scene.remove(this.polyline);
-
-        // let xa = Math.floor(vvv.x);
-        // this.addpoints.push(xa)
-        // vvv.x -= xa;
-        // let ya = Math.floor(vvv.y);
-        // this.addpoints.push(ya)
-        // vvv.y -= ya;
-        // let za = Math.floor(vvv.z);
-        // this.addpoints.push(za)
-        // vvv.z -= za;
-
-        this.polylineData.push(vvv)
-
-
-        const geometry = new THREE.BufferGeometry().setFromPoints(this.polylineData);
-        // this.subPointToGeom(geometry, this.addpoints)
-        // let garray = geometry.attributes.position.array;
-        // for (let i = 0; i < garray.length; i++) {
-        //     garray[i] += this.addpoints[i];
-        // }
-        // console.log(garray)
         this.polyline = new THREE.Line(geometry, material);
-        this.polyline.position.copy(oldPosition)
+        this.polyline.position.copy(rdata.position)
         this.polyline.frustumCulled = false;
         this.scene.add(this.polyline);
         this.render();
-        this.showDistance(this.polylineData, oldPosition);
+        this.showDistance(this.polylineData, this.polylineMatrix);
+    }
+
+    this.updatePolyline = function () {
+        if (this.polyline) this.scene.remove(this.polyline);
+        let points = [];
+        for (let i = 0; i < this.polylineData.length; i++) {
+            points.push(new THREE.Vector3().copy(this.polylineData[i]).applyMatrix4(this.polylineMatrix[i]))
+        }
+        let rdata = this.vectorCenter(points)
+
+
+        const geometry = new THREE.BufferGeometry().setFromPoints(rdata.points);
+        const material = new THREE.LineBasicMaterial({
+            color: pointcolor(),
+            // size: 0.2
+        });
+        this.polyline = new THREE.Line(geometry, material);
+        this.polyline.position.copy(rdata.position)
+        this.polyline.frustumCulled = false;
+        this.scene.add(this.polyline);
+        this.render();
     }
 
     this.setCrossSection = function (evt) {
@@ -1763,18 +1756,18 @@ export const owlStudio = function (cv1, cv2, parent) {
     //     }
     // }
 
-    this.showDistance = (lines, position = new THREE.Vector3()) => {
+    this.showDistance = (lines, matrixs) => {
         $(".distance").remove();
         for (let i = 1; i < lines.length; i++) {
             let a = lines[i];
             let b = lines[i - 1];
-            let distance = a.distanceTo(b).toFixed(2);
-            let aa = new THREE.Vector3().copy(a).add(position);
-            let bb = new THREE.Vector3().copy(b).add(position);
-            aa.project(this.camera)
-            bb.project(this.camera)
-            let left = ((aa.x + bb.x) / 2 + 1) * this.parent_canvas.clientWidth / 2;
-            let top = (-(aa.y + bb.y) / 2 + 1) * this.parent_canvas.clientHeight / 2;
+            let aa = new THREE.Vector3().copy(a).applyMatrix4(matrixs[i]);
+            let bb = new THREE.Vector3().copy(b).applyMatrix4(matrixs[i - 1]);
+            let distance = aa.distanceTo(bb).toFixed(2);
+            let cc = new THREE.Vector3().copy(aa).add(bb).divideScalar(2);
+            cc.project(this.camera)
+            let left = (cc.x + 1) * this.parent_canvas.clientWidth / 2;
+            let top = (-cc.y + 1) * this.parent_canvas.clientHeight / 2;
             $(this.parent_canvas).append(`<span class="distance" style="position:absolute;display:inline-block;top:${top}px;left:${left}px;">${distance}m</span>`);
         }
     }
@@ -1785,8 +1778,8 @@ export const owlStudio = function (cv1, cv2, parent) {
             this.polyline = undefined;
         }
         this.polylineData = undefined;
-        this.addpoints = undefined;
-        this.showDistance([]);
+        this.polylineMatrix = undefined;
+        this.showDistance([], []);
         this.render();
     }
 
@@ -1993,6 +1986,10 @@ export const owlStudio = function (cv1, cv2, parent) {
 
                 case 'lineTrans':
                     if (this.mouse.rightDown) this.cameraMove(e)
+                    else if (e.altKey && this.mouse.down) {
+                        this.rotateGroup(e)
+                        this.updateThisLine()
+                    }
                     break;
 
                 case 'addpoint':
@@ -2005,6 +2002,20 @@ export const owlStudio = function (cv1, cv2, parent) {
                         // this.updateCrossSection()
                     } else if (this.mouse.rightDown) this.cameraMove(e)
                     break;
+                case 'polyline':
+                    if (this.mouse.rightDown) {
+                        this.cameraMove(e)
+                        if (this.polyline) {
+                            this.showDistance(this.polylineData, this.polylineMatrix)
+                        }
+                    }
+                    else if (e.altKey && this.mouse.down) {
+                        this.rotateGroup(e)
+                        if (this.polyline) {
+                            this.updatePolyline()
+                            this.showDistance(this.polylineData, this.polylineMatrix)
+                        }
+                    }
 
                 default:
 
@@ -2042,10 +2053,12 @@ export const owlStudio = function (cv1, cv2, parent) {
                         break;
 
                     case 'lineTrans':
+                        if (e.altKey) return;
                         this.translateByLine(e)
                         break;
 
                     case 'polyline':
+                        if (e.altKey) return;
                         this.drawPolyline(e)
                         break;
                     case 'addpoint':
@@ -2062,9 +2075,9 @@ export const owlStudio = function (cv1, cv2, parent) {
             } else if (e.button == 2) {
 
                 this.mouseRightDown(e)
-                if (this.toolState == "polyline") {
-                    this.initPolyline();
-                }
+                // if (this.toolState == "polyline") {
+                //     this.initPolyline();
+                // }
                 // else if (this.toolState == "addpoint") {
                 //     this.initAddPoint();
                 // }
@@ -3001,6 +3014,33 @@ export const owlStudio = function (cv1, cv2, parent) {
 
     }
 
+    this.vectorCenter = function (vectorArray) {
+
+        let x = 0, y = 0, z = 0, count = vectorArray.length;
+        let newArray = [];
+        for (let i = 0; i < count; i++) {
+
+            x += vectorArray[i].x;
+            y += vectorArray[i].y;
+            z += vectorArray[i].z;
+            newArray.push(new THREE.Vector3().copy(vectorArray[i]))
+        }
+
+        x /= count;
+        y /= count;
+        z /= count;
+
+        for (let i = 0; i < count; i++) {
+
+            newArray[i].x -= x;
+            newArray[i].y -= y;
+            newArray[i].z -= z;
+
+        }
+
+        return { position: new THREE.Vector3(x, y, z), points: newArray }
+    }
+
     this.setListViewFunc = function (special) {
 
         this.listViewEngine = special;
@@ -3162,8 +3202,9 @@ export const owlStudio = function (cv1, cv2, parent) {
         }
 
         this.polygonRender();
-
-        this.initPolyline()
+        if (this.polyline) {
+            this.initPolyline()
+        }
 
     }
 
