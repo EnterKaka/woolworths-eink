@@ -138,14 +138,17 @@ var auto_Schedule = async function () {
             dt = new Date();
             msg = "Scan triggered (" + dt + ")";
             writeLog(msg);
+        });
+        websocket.on("message", async function (msg) {
+            if (msg === "scan successfully") {
+                await LoadDataFunction();
 
-            await LoadDataFunction();
-
-            await websocket.close();
-            await child.kill();
-            dt = new Date();
-            msg = "Closed oes service (" + dt + ")";
-            writeLog(msg);
+                await websocket.close();
+                await child.kill();
+                dt = new Date();
+                msg = "Closed oes service (" + dt + ")";
+                writeLog(msg);
+            }
         });
         websocket.on("error", async function () {
             await child.kill();
