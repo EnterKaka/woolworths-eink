@@ -1535,7 +1535,7 @@ export const owlStudio = function (cv1, cv2, parent) {
     }
 
     this.getCrossSection = (a, b, trigger = true) => {
-        console.log(a, b)
+        // console.log(a, b)
         this.clipPoints = [new THREE.Vector3(a.x, a.y, a.z), new THREE.Vector3(b.x, b.y, b.z)];
         if (this.clipGrid) this.scene.remove(this.clipGrid);
         let aa = new THREE.Vector3().copy(a)
