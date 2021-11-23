@@ -2769,8 +2769,10 @@ export const owlStudio = function (cv1, cv2, parent) {
         let indexedGround = this.getIndexedGeom(ground);
 
         let added = { x: indexedHeap.x, y: indexedHeap.y, z: indexedHeap.z };
-
+        console.log(added)
         let triangleData = this.specialTriangleData(indexedGround);
+
+        // console.log(indexedHeap, indexedGround)
 
         let sum2 = 0;
 
@@ -2806,22 +2808,16 @@ export const owlStudio = function (cv1, cv2, parent) {
             tid = Math.floor(p3.x) + '.' + Math.floor(p3.y);
             if (triangleData[tid]) t3 = triangleData[tid]; else t3 = false;
             if (!t3) continue;
-            // console.log('fineded 1')
-            let ray = new THREE.Ray(p1)
-            let q1;
-            for (let trg of t1) {
-                // console.log('trg for')
-                q1 = ray.intersectTriangle(trg.a, trg.b, trg.c, false, v)
-                if (q1) break;
-            }
-            if (!q1) continue;
-            // console.log('fineded 2')
 
             let ray2 = new THREE.Ray(p2)
             let q2;
+            let z1, z2, z3;
             for (let trg of t2) {
                 q2 = ray2.intersectTriangle(trg.a, trg.b, trg.c, false, v)
-                if (q2) break;
+                if (q2) {
+                    z2 = q2.z;
+                    break;
+                }
             }
             if (!q2) continue;
 
@@ -2829,14 +2825,29 @@ export const owlStudio = function (cv1, cv2, parent) {
             let q3;
             for (let trg of t3) {
                 q3 = ray3.intersectTriangle(trg.a, trg.b, trg.c, false, v)
-                if (q3) break;
+                if (q3) {
+                    z3 = q3.z;
+                    break;
+                }
             }
             if (!q3) continue;
 
-            p1.z -= q1.z;
-            p2.z -= q2.z;
-            p3.z -= q3.z;
+            let ray1 = new THREE.Ray(p1)
+            let q1;
+            for (let trg of t1) {
+                q1 = ray1.intersectTriangle(trg.a, trg.b, trg.c, false, v)
+                if (q1) {
+                    z1 = q1.z;
+                    break;
+                }
+            }
+            if (!q1) continue;
 
+            // console.log(p1.x, p1.y, p1.z, q1.x, q1.y, q1.z)
+            p1.z -= z1;
+            p2.z -= z2;
+            p3.z -= z3;
+            console.log(q1.z - z1, q2.z = z2, q3.z - z3)
             if (p1.z > 0 && p2.z <= 0 && p3.z <= 0) result = this.e1Volume(p1, p2, p3);
             else if (p2.z > 0 && p1.z <= 0 && p3.z <= 0) result = this.e1Volume(p2, p1, p3);
             else if (p3.z > 0 && p1.z <= 0 && p2.z <= 0) result = this.e1Volume(p3, p1, p2);
@@ -2844,11 +2855,12 @@ export const owlStudio = function (cv1, cv2, parent) {
             else if (p1.z >= 0 && p3.z >= 0 && p2.z < 0) result = this.e2Volume(p1, p3, p2);
             else if (p1.z >= 0 && p2.z >= 0 && p3.z < 0) result = this.e2Volume(p1, p2, p3);
             else if (p1.z >= 0 && p2.z >= 0 && p3.z >= 0) result = this.signedVolumeOfTriangle(p1, p2, p3);
-
+            // console.log(result)
             sum2 += result;
 
         }
-
+        if (sum2 < 1e-3)
+            sum2 = 0;
         return sum2;
 
     }
@@ -2856,6 +2868,7 @@ export const owlStudio = function (cv1, cv2, parent) {
     this.specialTriangleData = ({ geometry, x, y, z }) => {
 
         let added = { x, y, z };
+        console.log(added)
         let rData = {};
 
         let position = geometry.attributes.position;
@@ -2869,6 +2882,7 @@ export const owlStudio = function (cv1, cv2, parent) {
             p3 = new THREE.Vector3();
 
         for (let i = 0; i < faces; i++) {
+
             p1.fromBufferAttribute(position, index.array[i * 3 + 0]).add(added);
             p2.fromBufferAttribute(position, index.array[i * 3 + 1]).add(added);
             p3.fromBufferAttribute(position, index.array[i * 3 + 2]).add(added);
