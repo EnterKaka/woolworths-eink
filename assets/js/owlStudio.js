@@ -658,6 +658,13 @@ export const owlStudio = function (cv1, cv2, parent) {
                 position = new THREE.Vector3().copy(ctr)
                 this.localClip = { normal, normal2, constant, position };
                 this.updateCrossSection()
+
+                for (let target of this.clipPoints) {
+                    target.sub(gp);
+                    target.applyQuaternion(gq)
+                    target.applyQuaternion(guq)
+                    target.add(gp)
+                }
             }
 
         }
@@ -1499,58 +1506,26 @@ export const owlStudio = function (cv1, cv2, parent) {
 
         let vector = new THREE.Vector3(x, y, z)
         let matrix = target.group.matrix;
+        vector.applyMatrix4(matrix)
 
         if (!this.line) {
 
-            let geometry = new THREE.BufferGeometry().setFromPoints([vector]);
+            let geometry = new THREE.BufferGeometry().setFromPoints([new THREE.Vector3()]);
 
-            let material;
-
-            document.getElementById('pointcolor').disabled = true;
-
-            material = new THREE.PointsMaterial({ size: 0.5, vertexColors: false, color: "#1acaff" });
-
+            let material = new THREE.PointsMaterial({ size: selectedsize(), vertexColors: false, color: selectedcolor() });
             let points = new THREE.Points(geometry, material);
             points.frustumCulled = false;
 
             this.line = new THREE.Object3D().add(points);
-
-            this.line.applyMatrix4(matrix)
+            this.line.position.copy(vector)
 
             this.scene.add(this.line);
 
         } else {
 
-            let array = this.line.children[0].geometry.attributes.position.array;
-            this.getCrossSection({ x, y, z }, { x: array[0], y: array[1], z: array[2], });
+            let array = this.line.position;
+            this.getCrossSection({ x: array.x, y: array.y, z: array.z }, { x: vector.x, y: vector.y, z: vector.z });
 
-            // target.group.children[0].material.clippingPlanes = this.cplanes;
-            // target.group.children[0].material.needsUpdate = true;
-            // target.group.children[1].material.clippingPlanes = this.cplanes;
-            // target.group.children[1].material.needsUpdate = true;
-            // target.group.children[3].material.clippingPlanes = this.cplanes;
-            // target.group.children[3].material.needsUpdate = true;
-            // vector.applyMatrix4(matrix)
-            // let v = new THREE.Vector3(array[0], array[1], array[2]).applyMatrix4(this.line.matrix)
-            // let tx = vector.x - v.x;
-            // let ty = vector.y - v.y;
-            // let tz = vector.z - v.z;
-
-            // if (tx == 0 && ty == 0 && tz == 0) {
-            //     return;
-            // }
-
-            // for (let id of this.activeId) {
-
-            //     let target = this.groupList[id];
-
-            //     this.addToHistory(target.history, { position: new THREE.Vector3().copy(target.group.position) })
-
-            //     target.group.position.x += tx;
-            //     target.group.position.y += ty;
-            //     target.group.position.z += tz;
-
-            // }
             this.scene.remove(this.line)
             this.line = undefined;
 
@@ -1559,10 +1534,10 @@ export const owlStudio = function (cv1, cv2, parent) {
         this.render()
     }
 
-    this.getCrossSection = (a, b) => {
-        let target = this.groupList[this.activeId[0]];
-        let matrix = target.group.matrix;
-        // console.log(matrix)
+    this.getCrossSection = (a, b, trigger = true) => {
+        console.log(a, b)
+        this.clipPoints = [new THREE.Vector3(a.x, a.y, a.z), new THREE.Vector3(b.x, b.y, b.z)];
+        if (this.clipGrid) this.scene.remove(this.clipGrid);
         let aa = new THREE.Vector3().copy(a)
         let bb = new THREE.Vector3().copy(b)
         let v1 = new THREE.Vector3().copy(aa)
@@ -1579,10 +1554,11 @@ export const owlStudio = function (cv1, cv2, parent) {
             normal.y = 1;
             normal.x = -(v1.y - v2.y) / (v1.x - v2.x);
         }
+        normal.normalize();
         let yb = new THREE.Vector3().copy(normal)
-        normal.applyQuaternion(new THREE.Quaternion().setFromRotationMatrix(matrix)).normalize();
-        v1.applyMatrix4(matrix)
-        v2.applyMatrix4(matrix)
+        // normal.applyQuaternion(new THREE.Quaternion().setFromRotationMatrix(matrix)).normalize();
+        // v1.applyMatrix4(matrix)
+        // v2.applyMatrix4(matrix)
         let normal2 = new THREE.Vector3(-normal.x, -normal.y, -normal.z)
         let constant = -(normal.x * v1.x + normal.y * v1.y + normal.z * v1.z);
         let width = crossWidth()
@@ -1596,14 +1572,14 @@ export const owlStudio = function (cv1, cv2, parent) {
         this.clipGrid.add(grid);
         let pposition = v1.add(v2).divideScalar(2);
         this.clipGrid.position.copy(new THREE.Vector3().copy(pposition).sub(added))
-        this.clipGrid.quaternion.copy(new THREE.Quaternion().setFromRotationMatrix(matrix))
+        // this.clipGrid.quaternion.copy(new THREE.Quaternion().setFromRotationMatrix(matrix))
         // grid.rotation[pn] = Math.PI / 2;
-        grid.applyQuaternion(new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0, 1, 0), yb.normalize()))
+        grid.applyQuaternion(new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0, 1, 0), yb))
         this.scene.add(this.clipGrid)
         this.localClip = { normal: new THREE.Vector3().copy(normal), normal2: new THREE.Vector3().copy(normal2), constant, position: pposition };
         console.log('setted')
-
-        $('#btn-rotate3').trigger('click')
+        if (trigger)
+            $('#btn-rotate3').trigger('click')
     }
 
     this.updateCrossSection = () => {
@@ -2809,9 +2785,10 @@ export const owlStudio = function (cv1, cv2, parent) {
             if (triangleData[tid]) t3 = triangleData[tid]; else t3 = false;
             if (!t3) continue;
 
+            let z1, z2, z3;
+
             let ray2 = new THREE.Ray(p2)
             let q2;
-            let z1, z2, z3;
             for (let trg of t2) {
                 q2 = ray2.intersectTriangle(trg.a, trg.b, trg.c, false, v)
                 if (q2) {
@@ -3203,14 +3180,6 @@ export const owlStudio = function (cv1, cv2, parent) {
         }
         if (this.toolState == "rotate3") {
             this.renderer.localClippingEnabled = false;
-            let group = this.groupList[this.activeId[0]].group;
-            // group.children[0].material.clippingPlanes = [];
-            // group.children[0].material.needsUpdate = true;
-            // group.children[1].material.clippingPlanes = [];
-            // group.children[1].material.needsUpdate = true;
-            // group.children[3].material.clippingPlanes = [];
-            // group.children[3].material.needsUpdate = true;
-
             this.scene.remove(this.clipGrid)
             this.clipGrid = undefined;
         }

@@ -1004,6 +1004,14 @@ window.onload = function () {
 
     })
 
+    document.getElementById('cross-plane').addEventListener('change', function () {
+        if (cloudmachine.clipGrid) {
+            // cloudmachine.initDraw()
+            cloudmachine.getCrossSection(cloudmachine.clipPoints[0], cloudmachine.clipPoints[1], false)
+            cloudmachine.render()
+        }
+    })
+
     document.getElementById('absTranslate').addEventListener('click', () => {
         let x = document.getElementById('trans-x').value;
         let y = document.getElementById('trans-y').value;
