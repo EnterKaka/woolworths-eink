@@ -286,7 +286,8 @@ window.onload = function () {
     $('#input_model').change(openModel_Fromlocal);
 
     document.getElementById('obj-download').addEventListener('click', () => {
-        const result = cloudmachine.getObjDataOf2D()
+        // const result = cloudmachine.getObjDataOf2D()
+        const result = cloudmachine.getObjData()
         download('model.obj', 'object', result);
     })
 
@@ -381,6 +382,10 @@ window.onload = function () {
 
     document.getElementById('selectedsize').addEventListener('input', function () {
         cloudmachine.setSelectedSize(this.value)
+    });
+
+    document.getElementById('pointsize').addEventListener('input', function () {
+        cloudmachine.setPointSize(this.value)
     });
 
     document.getElementById('selectedcolor').addEventListener('input', function () {
@@ -602,10 +607,10 @@ window.onload = function () {
             console.log(1)
             $("#delauny").trigger('click');
         }
-        else if (e.keyCode == 87 && e.shiftKey) {
-            console.log(2)
-            $("#delauny3").trigger('click');
-        }
+        // else if (e.keyCode == 87 && e.shiftKey) {
+        //     console.log(2)
+        //     $("#delauny3").trigger('click');
+        // }
         else if (e.keyCode == 69 && e.shiftKey) {
             console.log(3)
             $("#surface").trigger('click');

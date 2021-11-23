@@ -195,6 +195,14 @@ export const owlStudio = function (cv1, cv2, parent) {
         arrayData = [...loader.parse(data).children[0].geometry.attributes.position.array];
 
         this.reloadModelFromArray(filename, arrayData)
+
+
+        // // ///////////////////////////////////////////////
+        // let target = this.CustomPointCloud(filename)
+        // target.name = "asdf";
+        // target.group.add(loader.parse(data))
+        // this.scene.add(target.group)
+        // ///////////////////////////////////////////////
     }
 
     this.reloadModelFromArray = function (filename, arrayData, newModel = 'new') {
@@ -309,10 +317,10 @@ export const owlStudio = function (cv1, cv2, parent) {
 
             document.getElementById('pointcolor').disabled = true;
 
-            material = new THREE.PointsMaterial({ size: 0.1, vertexColors: true, clippingPlanes: this.cplanes, color: "#ffffff" });
+            material = new THREE.PointsMaterial({ size: pointsize(), vertexColors: true, clippingPlanes: this.cplanes, color: "#ffffff" });
 
         } else
-            material = new THREE.PointsMaterial({ size: 0.1, vertexColors: false, clippingPlanes: this.cplanes, color: pointcolor() });
+            material = new THREE.PointsMaterial({ size: pointsize(), vertexColors: false, clippingPlanes: this.cplanes, color: pointcolor() });
 
         let points2 = new THREE.Points(geometry, material);
 
@@ -589,7 +597,7 @@ export const owlStudio = function (cv1, cv2, parent) {
         this.mouse.x = evt.clientX;
         this.mouse.y = evt.clientY;
 
-        if (!this.gcs) {
+        if (!this.gcs || !this.gcs.visible) {
 
             for (let id of this.activeId) {
 
@@ -668,7 +676,7 @@ export const owlStudio = function (cv1, cv2, parent) {
         let id1 = this.transDir[0];
         let id2 = this.transDir[1];
 
-        if (!this.gcs) {
+        if (!this.gcs || !this.gcs.visible) {
 
             for (let id of this.activeId) {
 
@@ -697,7 +705,8 @@ export const owlStudio = function (cv1, cv2, parent) {
     this.rotateAbs = (axis, degree) => {
 
         let x = 0, y = 0, z = 0;
-
+        degree = parseFloat(degree)
+        isNaN(degree) && (degree = 0);
         if (axis == 'x') {
 
             x = degree;
@@ -731,6 +740,9 @@ export const owlStudio = function (cv1, cv2, parent) {
         x = parseFloat(x)
         y = parseFloat(y)
         z = parseFloat(z)
+        isNaN(x) && (x = 0);
+        isNaN(y) && (y = 0);
+        isNaN(z) && (z = 0);
 
         for (let id of this.activeId) {
 
@@ -1181,7 +1193,7 @@ export const owlStudio = function (cv1, cv2, parent) {
         let vector = new THREE.Vector3(x, y, z).applyMatrix4(this.groupList[sind[0]].group.matrix);
 
 
-        if (!this.gcs) {
+        if (!this.gcs || !this.gcs.visible) {
             for (let id of this.activeId) {
 
                 let target = this.groupList[id];
@@ -2141,6 +2153,23 @@ export const owlStudio = function (cv1, cv2, parent) {
 
     }
 
+    this.getObjData = function () {
+
+        if (this.activeId.length < 1) return;
+
+        let target = this.groupList[this.activeId[0]];
+
+        const exporter = new OBJExporter();
+
+        let obj = new THREE.Object3D();
+        obj.applyMatrix4(target.group.matrix)
+        obj.add(target.group.children[0].clone());
+        if (target.group.children[1].visible) obj.add(target.group.children[1].clone());
+
+        return exporter.parse(obj);
+
+    }
+
     this.getTextData = function (param = false, matrix = false) {
 
         if (this.activeId.length < 1) return;
@@ -2154,10 +2183,11 @@ export const owlStudio = function (cv1, cv2, parent) {
         if (!param) {
 
             array = target.group.children[0].geometry.attributes.position.array;
-
+            let matrix = target.group.matrix;
             for (let i = 0; i < array.length; i += 3) {
 
-                result += `        ${array[i]},        ${array[i + 1]},        ${array[i + 2]}\n`;
+                let point = new THREE.Vector3(array[i], array[i + 1], array[i + 2]).applyMatrix4(matrix)
+                result += `        ${point.x},        ${point.y},        ${point.z}\n`;
 
             }
 
@@ -2300,12 +2330,23 @@ export const owlStudio = function (cv1, cv2, parent) {
 
     this.setSelectedSize = function (c) {
 
-        for (let id of this.activeId) {
-
-            let target = this.groupList[id];
+        for (let target of this.groupList) {
 
             target.group.children[2].material.size = c;
             target.group.children[2].material.needsUpdate = true;
+
+        }
+
+        this.render();
+
+    }
+
+    this.setPointSize = function (c) {
+
+        for (let target of this.groupList) {
+
+            target.group.children[0].material.size = c;
+            target.group.children[0].material.needsUpdate = true;
 
         }
 
@@ -3144,26 +3185,34 @@ export const owlStudio = function (cv1, cv2, parent) {
 
     this.setGlobalCoordinate = function () {
 
-        if (this.gcs) return;
+        if (this.gcs && this.gcs.visible) return;
         if (this.activeId.length < 1) return;
 
-        this.gcs = new THREE.Object3D();
-        // let axe = new THREE.AxesHelper(15).setColors('crimson', 'chartreuse', 'cyan');
-        let arrowX = new THREE.ArrowHelper(new THREE.Vector3(1, 0, 0), new THREE.Vector3(0, 0, 0), 10)
-        arrowX.setColor('crimson')
-        let arrowY = new THREE.ArrowHelper(new THREE.Vector3(0, 1, 0), new THREE.Vector3(0, 0, 0), 10)
-        arrowY.setColor('chartreuse')
-        let arrowZ = new THREE.ArrowHelper(new THREE.Vector3(0, 0, 1), new THREE.Vector3(0, 0, 0), 10)
-        arrowZ.setColor('cyan')
-        // axe.material.linewidth = 2;
-        // axe.material.needsUpdate = true;
-        // console.log(axe)
-        this.gcs.add(arrowX)
-        this.gcs.add(arrowY)
-        this.gcs.add(arrowZ)
-        this.gcs.position.copy(this.groupList[this.activeId[0]].group.position);
 
-        this.scene.add(this.gcs)
+        if (!this.gcs) {
+            this.gcs = new THREE.Object3D();
+            // let axe = new THREE.AxesHelper(15).setColors('crimson', 'chartreuse', 'cyan');
+            let arrowX = new THREE.ArrowHelper(new THREE.Vector3(1, 0, 0), new THREE.Vector3(0, 0, 0), 10)
+            arrowX.setColor('crimson')
+            let arrowY = new THREE.ArrowHelper(new THREE.Vector3(0, 1, 0), new THREE.Vector3(0, 0, 0), 10)
+            arrowY.setColor('chartreuse')
+            let arrowZ = new THREE.ArrowHelper(new THREE.Vector3(0, 0, 1), new THREE.Vector3(0, 0, 0), 10)
+            arrowZ.setColor('cyan')
+            // axe.material.linewidth = 2;
+            // axe.material.needsUpdate = true;
+            // console.log(axe)
+            this.gcs.add(arrowX)
+            this.gcs.add(arrowY)
+            this.gcs.add(arrowZ)
+            this.gcs.position.copy(this.groupList[this.activeId[0]].group.position);
+
+            // console.log('seted')
+            this.scene.add(this.gcs)
+        } else {
+            this.gcs.visible = true;
+            // console.log('visibled')
+        }
+
 
         for (let i of this.activeId) {
             this.groupList[i].group.children[4].visible = false;
@@ -3174,10 +3223,10 @@ export const owlStudio = function (cv1, cv2, parent) {
 
     this.deleteGlobalCoordinate = function () {
         // this.gcs.visible = false;
-        if (!this.gcs) return;
-        this.scene.remove(this.gcs)
-        this.gcs = undefined;
-
+        if (!this.gcs || this.gcs.visible == false) return;
+        // this.scene.remove(this.gcs)
+        this.gcs.visible = false;
+        // console.log('deleted')
         for (let i of this.activeId) {
             this.groupList[i].group.children[4].visible = true;
         }
@@ -3227,6 +3276,12 @@ function selectedcolor() {
 function selectedsize() {
 
     return document.getElementById('selectedsize').value;
+
+}
+
+function pointsize() {
+
+    return document.getElementById('pointsize').value;
 
 }
 
