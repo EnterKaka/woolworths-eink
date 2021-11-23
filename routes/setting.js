@@ -13,10 +13,14 @@ app.get("/", auth, admin, async function (req, res, next) {
     let path = await Value.findOne({ name: "path" });
     if (!path) path = "";
     else path = path.value;
+    let dtime = await Value.findOne({ name: "dtime" });
+    if (!dtime) dtime = "1";
+    else dtime = dtime.value;
     let allmembers = await Setting.find();
     res.render("pages/setting/list", {
         data: allmembers,
         path: path,
+        dtime: dtime,
     });
 });
 app.post("/setpath", auth, admin, async function (req, res, next) {
@@ -27,6 +31,14 @@ app.post("/setpath", auth, admin, async function (req, res, next) {
     await Value.deleteOne({ name: "path" });
     let v_setting = new Value(val);
     await v_setting.save();
+    val = {
+        name: "dtime",
+        value: req.body.dtime,
+    };
+    await Value.deleteOne({ name: "dtime" });
+    v_setting = new Value(val);
+    await v_setting.save();
+    dtime = req.body.dtime * 60000;
     res.send();
 });
 // SHOW ADD USER FORM

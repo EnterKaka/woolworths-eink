@@ -110,6 +110,10 @@ var auto_Schedule = async function () {
     let path = await Value.findOne({ name: "path" });
     if (!path) path = "";
     else path = path.value;
+    let dt = await Value.findOne({ name: "dtime" });
+    if (!dt) dt = "";
+    else dt = dt.value;
+    dtime = dt * 60000;
     var daytimer;
     var timeinterval;
     var timeunit;
@@ -128,6 +132,9 @@ var auto_Schedule = async function () {
             return;
         });
         var websocket = await new WebSocket("ws://" + server_ip + ":1234");
+        // var receive_websocket = await new WebSocket(
+        //     "ws://" + server_ip + ":1235"
+        // );
         websocket.on("open", async function () {
             dt = new Date();
             msg = "";
@@ -141,15 +148,21 @@ var auto_Schedule = async function () {
         });
         websocket.on("message", async function (msg) {
             if (msg === "scan successfully") {
-                await LoadDataFunction();
+                setTimeout(async () => {
+                    await LoadDataFunction();
 
-                await websocket.close();
-                await child.kill();
-                dt = new Date();
-                msg = "Closed oes service (" + dt + ")";
-                writeLog(msg);
+                    await websocket.close();
+                    await child.kill();
+                    dt = new Date();
+                    msg = "Closed oes service (" + dt + ")";
+                    writeLog(msg);
+                }, dtime);
             }
         });
+        // receive_websocket.on("error", async function () {
+        //     await child.kill();
+        //     return;
+        // });
         websocket.on("error", async function () {
             await child.kill();
             msg = "Can not find Websocket server ( " + dt + " )";
@@ -198,6 +211,13 @@ var auto_Schedule = async function () {
                 daytimer_interval();
                 delaytime = int_time;
                 daytimer = setInterval(daytimer_interval, int_time);
+            }
+            //kill timer before start time
+            if (current_day.getTime() < today.getTime()) {
+                start_flag = 0;
+                console.log("kill timer");
+                clearInterval(daytimer);
+                delaytime = 24 * 3600 * 1000;
             }
             //kill timer when end time.
             if (current_day.getTime() >= today_end.getTime()) {

@@ -42,6 +42,7 @@ app.use(
  */
 global.loadedData = "";
 global.delaytime = 60000 * 60;
+global.dtime = 60000; //kill app time;
 
 var index = require("./routes/index");
 var user = require("./routes/users");

@@ -78,26 +78,24 @@
                                 <% } %>	      
                             </div>
                             <div class="row" style="padding: 0 25px">
-                              <div class="col-md-6">
+                              <div class="col-md-9">
                                 <form action="/setting/setpath" method="post" target="iframe">
                                   <!-- <fieldset>
                                   <legend>Set Delay Time</legend> -->
                                   <iframe name="iframe" style="display: none;"></iframe>
                                   <div class="row">
-                                    <div class="col-md-6 col-6">
-                                      <div class="form-group bmd-form-group">
-                                          <!-- <label for="collectionname" class="bmd-label-floating">Delay time</label> -->
-                                          <input type="text" class="form-control" name="path" placeholder="*.exe path" value="<%= path%>">
-                                      </div>
+                                    <div class="col-md-9 col-12">
+                                          <input type="text" style="width: 70%; display: inline;" class="form-control mr-1 mb-1" name="path" placeholder="*.exe path" value="<%= path%>">
+                                          <input type="text" style="width: 20%; display: inline;" class="form-control" name="dtime" placeholder="Delay Kill Time" value="<%= dtime%>">
                                     </div>
-                                    <div class="col-md-6 col-6">
+                                    <div class="col-md-3 col-12">
                                       <button type="submit" id="delaytimeset" class="btn btn-custom-fill btn-min-width mr-1 mb-1">Set</button>
                                     </div>
                                   </div>
                                 <!-- </fieldset> -->
                                 </form>
                               </div>
-                              <div class="col-md-6">
+                              <div class="col-md-3 col-12">
                                 <a href="/setting/add" class="btn btn-custom-fill btn-min-width mr-1 mb-1" style="float : right;">Add</a>
                               </div>
                             </div>
