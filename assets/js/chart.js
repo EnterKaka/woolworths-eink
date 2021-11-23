@@ -69,7 +69,7 @@ function drawChart(ctx,data,ft,tt){
                 position: 'top',
             },
             title: {
-                display: true,
+                display: false,
                 text: data.name,
                 // color: '#0040ff',
                 font: {
@@ -109,7 +109,7 @@ function drawChart(ctx,data,ft,tt){
             y: {
                 display: true,
                 title: {
-                    display: true,
+                    display: false,
                     text: 'Volume in m3',
                     // color: '#191',
                     font: {
@@ -393,228 +393,6 @@ function makedefaultDate(bugdate){
     return truedate;
 }
 
-function makedefaultDateString(ruledate){
-    var truedate;
-    truedate = ruledate.toLocaleDateString().replace('/','-') + 'T' + ruledate.toLocaleTimeString().slice(0,8);
-    return truedate;
-}
-
-function init_socket(){
-    //socket
-    var socket = io();
-    // socket.emit('broad message', 'Hello Hello hello');
-    socket.on('broad message', function(msg) {
-        // console.log(msg);
-        var dbname = document.getElementById('input-dbname').value;
-        var collectionname = document.getElementById('input-collectionname').value;
-        var realdata;
-
-        if((msg.data.modelname === dbname) && (msg.data.collectionname === collectionname)){
-            realdata = msg.data.datas;
-            // console.log('new socket full data ----',realdata);
-            var namelist = makenamelist(realdata);
-            var originaldata, newdetectlist;
-            originaldata = document.getElementById('input-names').value;
-            originaldata = originaldata.split(',');
-            // console.log('original data ---', originaldata);
-            // console.log('new data ---', namelist);
-            newdetectlist = detectnewmodelnamelist(originaldata, namelist);
-            if(newdetectlist.length > 0){
-                // console.log('new detected model -----', newdetectlist);
-                var parenttag = document.getElementById('chartjs-line-charts');
-                var newhtml = '&nbsp;';
-                for(const element of newdetectlist){
-                    newhtml = newhtml +  '&nbsp;' +
-                    + '<div class="row">' 
-                    + '<div class="col-12">'
-                    + '<div class="card">'
-                    + '<div class="card-header">'
-                    + '<h4 class="card-title"></h4>'
-                    + '<a class="heading-elements-toggle"><i class="la la-ellipsis-v font-medium-3"></i></a>'
-                    + '<div class="heading-elements">'
-                    + '<ul class="list-inline mb-0">'
-                    + '<li><a data-action="collapse"><i class="ft-minus"></i></a></li>'
-                    + '<li><a data-action="reload"><i class="ft-rotate-cw"></i></a></li>'
-                    + '<li><a data-action="expand"><i class="ft-maximize"></i></a></li>'
-                    + '<li><a data-action="close"><i class="ft-x"></i></a></li>'
-                    + '</ul>'
-                    + '</div>'
-                    + '</div>'
-                    + '<div class="card-content collapse show">'
-                    + '<div class="card-body chartjs">'
-                    + '<div class="height-500">'
-                    + '<canvas id="canvas-model-' + element + '"></canvas>'
-                    + '</div>'
-                    + '<div>'
-                    + '<div class="row" style="margin-top: 20px; margin-bottom: 15px; margin-left: -5px;">'
-                    + '<div class="col-md-5 col-sm-12 col-12 col-lg-5 col-xl-4">'
-                    + 'From&nbsp;<input type="datetime-local" id="fromtime-' + element + '">'
-                    + '</div>'
-                    + '<div class="col-md-5 col-sm-12 col-12 col-lg-5 col-xl-4">'
-                    + 'To&nbsp;<input type="datetime-local" id="totime-' + element + '">'
-                    + '</div>'
-                    + '<div class="col-md-1 col-sm-1 col-12 col-lg-1 col-xl-1">'
-                    + '<button class="btn btn-sm btn-dark" id="btn-' + element + '">Update</button>'
-                    + '</div>'
-                    + '</div>'
-                    + '<!-- model data -->'
-                    + '<input type="hidden" id="input-model-' + element + '" value >'
-                    + '&Tab;<h4 class="info">Model Information&nbsp;:&nbsp;<%= element.name %></h4><br>'
-                    + '<div class="row">'
-                    + '<div class="col-md-12 col-lg-6">'
-                    + '<dl class="row"><dt class="col-9"> 1. Last Measurement Date&nbsp;:</dt><dd class="col-3" id="lm-date-' + element + '" ></dd></dl>'
-                    + '<dl class="row"><dt class="col-9"> 2. Last Measurement Time&nbsp;:</dt><dd class="col-3" id="lm-time-' + element + '" ></dd></dl>'
-                    + '<dl class="row"><dt class="col-9"> 3. Last Measurement Volume&nbsp;:</dt><dd class="col-3" id="lm-volume-' + element + '" ></dd></dl>'
-                    + '</div>'
-                    + '<div class="col-md-12 col-lg-6">'
-                    + '<dl class="row"><dt class="col-9"> 4. Last Measurement Mass&nbsp;:</dt><dd class="col-3" id="lm-mass-' + element + '" ></dd></dl>'
-                    + '<dl class="row"><dt class="col-9"> 5. Last Measurement Density&nbsp;:</dt><dd class="col-3" id="lm-density-' + element + '" ></dd></dl>'
-                    + '<dl class="row"><dt class="col-9"> 6. Average Volume&nbsp;:</dt><dd class="col-3" id="lm-averagevolume-' + element + '" ></dd></dl>'
-                    + '</div>'
-                    + '</div>'
-                    + '<input type="hidden" id="input-modelid-' + element + '">'
-                    + '</div>'
-                    + '</div>'
-                    + '</div>'
-                    + '</div>'
-                    + '</div>'
-                    + '</div>';
-                }
-                if(newhtml){
-                    // console.log(newhtml);
-                    // parenttag.innerHTML = newhtml+ parenttag.innerHTML;
-                    location.reload();
-                    // for(const name of namelist){
-                    //     let canvasname = 'canvas-model-' + name;
-                    //     let inputname = 'input-model-' + name;
-                    //     let ctx = document.getElementById(canvasname);
-                    //     let data = document.getElementById(inputname).value;
-                    //     if(data){
-                    //         data = JSON.parse(data);
-                    //     }
-                    //     // console.log(ctx, data);
-                    //     drawupgradablechart(ctx, name, data, realdata);
-                    // }
-                }
-            }else{
-                // console.log('new detected model is not existed');
-                for(const name of originaldata){
-                    let canvasname = 'canvas-model-' + name;
-                    let inputname = 'input-model-' + name;
-                    let ctx = document.getElementById(canvasname);
-                    let data = document.getElementById(inputname).value;
-                    if(data){
-                        data = JSON.parse(data);
-                    }
-                    // console.log(ctx, data);
-                    drawupgradablechart(ctx, name, data, realdata);
-                }
-                
-            }
-        }
-    });
-}
-
-
-//make model name list in specific collection of specific database from data lists
-function makenamelist(datas){
-    var namelist = [];
-    for(const element of datas){
-        var modelname = element.measurement[0].name;
-        var contains = false;
-        for(const elementj of namelist){
-            if(elementj === modelname){
-                contains = true;
-                break;
-            }
-        }
-        if(!contains) namelist.push(modelname);
-    }
-    return namelist;
-}
-
-//detect new model from socket.io data between original data
-function detectnewmodelnamelist(originallist,newlist){
-    var detectlist = [];
-    for(const element of newlist){
-        var contains = false;
-        for(const elementj of originallist){
-            if(elementj == element){
-                contains = true;
-                break;
-            }
-        }
-        if(!contains){
-            detectlist.push(element);
-        }
-    }
-    return detectlist;
-}
-
-//make new model list from new data stream
-function drawupgradablechart(ctx, modelname, originaldata, newdata){
-    // console.log(ctx, modelname, originaldata, newdata);
-    var upgradabledatalist = [];
-    for(const element of newdata){
-        if(modelname === element.measurement[0].name){
-            var new_id, contains = false;
-            new_id = element._id;
-            if(originaldata){
-                for(const elementj of originaldata.log){
-                    var old_id;
-                    old_id = elementj._id;
-                    if(old_id === new_id){
-                        contains = true;
-                        break;
-                    }
-                }
-                if(!contains){
-                    upgradabledatalist.push(element);
-                }
-            }else{
-                upgradabledatalist.push(element);
-            }
-            
-        }
-    } 
-    if(upgradabledatalist.length > 0){
-        // console.log('upgrade ready---');
-        var temp_originaldata;
-        upgradabledatalist = makeusefuldatafromnative(upgradabledatalist);
-        if(originaldata){
-            temp_originaldata = originaldata;
-            temp_originaldata.log = temp_originaldata.log.concat(upgradabledatalist);
-        }else{
-            temp_originaldata = {
-                name: modelname,
-                log: upgradabledatalist,
-            }
-        }
-        // console.log(temp_originaldata);
-        drawChart(ctx,temp_originaldata);
-        //write new data to input tag
-        var inputtag = 'input-model-' + modelname;
-        document.getElementById(inputtag).value = JSON.stringify(temp_originaldata);
-    }else{
-        // console.log('no upgradable list---');
-    }
-}
-
-function makeusefuldatafromnative(nativedata){
-    var usefuldata = [];
-    for(const element of nativedata){
-        var jsondata = {
-            _id: element._id,
-            datetime: element.datetime,
-            mass: element.measurement[0].mass,
-            volume: element.measurement[0].volume
-        }
-        usefuldata.push(jsondata);
-    }
-    return usefuldata;
-}
-
-
 
 
 //start three js
@@ -641,46 +419,8 @@ function main() {
         onTouchStart(e);
     }, false);
     canvas.addEventListener('touchend', function (e) {
-        // if(timer){
-        //     clearTimeout(timer);
-        //     timerflag = 0;
-        // }
         onTouchEnd(e);
     }, false);
-
-    // canvas.addEventListener('gestureend', function(e) {
-    //     e.preventDefault();
-    //     console.log('here')
-    //     if (e.scale < 1.0) {
-    //         console.log('smaller')
-    //         // User moved fingers closer together
-    //     } else if (e.scale > 1.0) {
-    //         console.log('bigger')
-    //         // User moved fingers further apart
-    //     }
-    // }, false);
-    // canvas.addEventListener('gesturestart', function(e) {
-    //     e.preventDefault();
-    //     console.log('start')
-    //     if (e.scale < 1.0) {
-    //         console.log('smaller')
-    //         // User moved fingers closer together
-    //     } else if (e.scale > 1.0) {
-    //         console.log('bigger')
-    //         // User moved fingers further apart
-    //     }
-    // }, false);
-    // canvas.addEventListener('gesturechange', function(e) {
-    //     e.preventDefault();
-    //     console.log('gesturechange')
-    //     if (e.scale < 1.0) {
-    //         console.log('smaller')
-    //         // User moved fingers closer together
-    //     } else if (e.scale > 1.0) {
-    //         console.log('bigger')
-    //         // User moved fingers further apart
-    //     }
-    // }, false);
 
     /* mouse mode */
     canvas.addEventListener('mousemove', function (e) {
@@ -855,13 +595,6 @@ function main() {
 		group.position.x += deltaX * 0.05;
     }
     
-
-    // function get_distance(e) {
-    //     var diffX = e.touches[0].clientX - e.touches[1].clientX;
-    //     var diffY = e.touches[0].clientY - e.touches[1].clientY;
-    //     return Math.sqrt(diffX * diffX + diffY * diffY); // Pythagorean theorem
-    // }
-    
     function onTouchMove(evt) {
         if (!mouseDown) {
             return;
@@ -869,12 +602,6 @@ function main() {
 		if (evt.cancelable) {
 			evt.preventDefault();
 		}  
-        // console.log(evt);
-        // if(evt.touches.length > 1) {
-        //     var new_finger_dist = get_distance(evt); // Get current distance between fingers
-        //     zoom = zoom * Math.abs(finger_dist / new_finger_dist); // Zoom is proportional to change
-        //     finger_dist = new_finger_dist;
-        // }
         var deltaX = evt.touches[0].clientX - mouseX,
         deltaY = evt.touches[0].clientY - mouseY;
         mouseX = evt.touches[0].clientX;
@@ -1073,7 +800,4 @@ animate();
 
 //start chart draw
 init_chart();
-
-//init socket
-init_socket();
 

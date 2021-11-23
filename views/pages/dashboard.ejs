@@ -74,7 +74,7 @@
                                     <div class="chart_element col-lg-6 col-md-12 col-sm-12 col-12">
                                         <div class="card">
                                             <div class="card-header">
-                                                <h4 class="card-title"></h4>
+                                                <h4 class="card-title"><%= element.name %></h4>
                                                 <a class="heading-elements-toggle"><i class="la la-ellipsis-v font-medium-3"></i></a>
                                                 <div class="heading-elements">
                                                     <a data-action="expand"><i class="ft-maximize"></i></a>
@@ -82,8 +82,20 @@
                                             </div>
                                             <div class="card-content collapse show">
                                                 <div class="card-body chartjs">
-                                                    <div>
-                                                        <canvas id="<%= 'canvas-model-' + element.name %>" style="height: 400px;"></canvas>
+                                                    <div class="row">
+                                                        <div class="col-lg-9 col-md-9 col-9">
+                                                            <canvas id="<%= 'canvas-model-' + element.name %>" style="height: 400px;"></canvas>
+                                                        </div>
+                                                        <div class="col-lg-3 col-md-3 col-3">
+                                                            <ul class="list-unstyled">
+                                                                <li><i class="fa fa-calendar"></i>&nbsp;&nbsp;&nbsp;<span id='<%= "lm-date-"+element.name %>'></span></li>
+                                                                <li><i class="fa fa-clock-o"></i>&nbsp;&nbsp;&nbsp;<span id='<%= "lm-time-"+element.name %>'></span></li>
+                                                                <li><i class="fa fa-h-square"></i>&nbsp;&nbsp;&nbsp;<span id='<%= "lm-volume-"+element.name %>'></span></li>
+                                                                <li><i class="fa fa-tumblr"></i>&nbsp;&nbsp;&nbsp;<span id='<%= "lm-mass-"+element.name %>'></span></li>
+                                                                <li><span style="font-weight:bold">ρ</span>&nbsp;&nbsp;&nbsp;<span id='<%= "lm-density-"+element.name %>'></span></li>
+                                                                <li><span style="font-weight:bold">Ø</span>&nbsp;&nbsp;&nbsp;<span id='<%= "lm-averagevolume-"+element.name %>'></span></li>
+                                                            </ul>
+                                                        </div>
                                                     </div>
                                                     <div>
                                                         <div class="row" style="margin-top: 20px; margin-bottom: 15px; margin-left: -5px;">
@@ -107,19 +119,6 @@
                                                         </div>
                                                         <!-- model data -->
                                                         <input type="hidden" id="<%= 'input-model-' + element.name %>" value='<%= JSON.stringify(element) %>'>
-                                                        &Tab;<h4 class='info'>Model Information&nbsp;:&nbsp;<%= element.name %></h4><br>
-                                                        <div class="row">
-                                                            <div class="col-md-12 col-lg-6">
-                                                                <dl class='row'><dt class="col-9"> 1. Last Measurement Date&nbsp;:</dt><dd class="col-3" id='<%= "lm-date-"+element.name %>'></dd></dl>
-                                                                <dl class='row'><dt class="col-9"> 2. Last Measurement Time&nbsp;:</dt><dd class="col-3" id='<%= "lm-time-"+element.name %>'></dd></dl>
-                                                                <dl class='row'><dt class="col-9"> 3. Last Measurement Volume&nbsp;:</dt><dd class="col-3" id='<%= "lm-volume-"+element.name %>'></dd></dl>
-                                                            </div>
-                                                            <div class="col-md-12 col-lg-6">
-                                                                <dl class='row'><dt class="col-9"> 4. Last Measurement Mass&nbsp;:</dt><dd class="col-3" id='<%= "lm-mass-"+element.name %>'></dd></dl>
-                                                                <dl class='row'><dt class="col-9"> 5. Last Measurement Density&nbsp;:</dt><dd class="col-3" id='<%= "lm-density-"+element.name %>'></dd></dl>
-                                                                <dl class='row'><dt class="col-9"> 6. Average Volume&nbsp;:</dt><dd class="col-3" id='<%= "lm-averagevolume-"+element.name %>'></dd></dl>
-                                                            </div>
-                                                        </div>
                                                         <input type="hidden" id="<%= 'input-modelid-' + element.name %>">
                                                     </div>
                                                 </div>
