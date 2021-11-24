@@ -104,7 +104,7 @@ function drawChart(ctx, data, ft, tt) {
             y:{
                 ticks:{
                     callback: function (value, index, values) {
-                        return value + 'm³';
+                        return parseInt(value*100)/100 + ' m³';
                     },
                 }
             }
