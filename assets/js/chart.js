@@ -101,6 +101,13 @@ function drawChart(ctx, data, ft, tt) {
                     },
                 },
             },
+            y:{
+                ticks:{
+                    callback: function (value, index, values) {
+                        return value + 'm³';
+                    },
+                }
+            }
         },
     };
     if (!ft) {
@@ -200,7 +207,7 @@ function drawChart(ctx, data, ft, tt) {
                     data: tempdata[1],
                     lineTension: 0,
                     fill: false,
-                    borderColor: "#FF7D4D",
+                    borderColor: "#FFAA4E",
                     pointStyle: null,
                     pointHoverBackgroundColor: "#FFF",
                     pointBorderWidth: 0,

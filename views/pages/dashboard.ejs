@@ -58,16 +58,18 @@
                                                 <div class="card-body chartjs">
                                                     <div class="row">
                                                         <div class="col-lg-9 col-md-9 col-9">
-                                                            <button class="btn-custom-line date_button <%= 'dt-' + element.name %>" id="<%= '1week-' + element.name %>">1 Week</button>
-                                                            <button class="btn-custom-line date_button <%= 'dt-' + element.name %>" id="<%= '1month-' + element.name %>">1 Month</button>
-                                                            <button class="btn-custom-line date_button <%= 'dt-' + element.name %>" id="<%= '3month-' + element.name %>">3 Month</button>
-                                                            <button class="btn-custom-line date_button <%= 'dt-' + element.name %>" id="<%= '1year-' + element.name %>">1 Year</button>
-                                                            <button class="btn-custom-line date_button <%= 'dt-' + element.name %>" id="<%= 'ytd-' + element.name %>">YTD</button>
+                                                            <div class="date_button_group">
+                                                                <button class="date_button <%= 'dt-' + element.name %>" id="<%= '1week-' + element.name %>">1 Week</button>
+                                                                <button class="date_button <%= 'dt-' + element.name %>" id="<%= '1month-' + element.name %>">1 Month</button>
+                                                                <button class="date_button <%= 'dt-' + element.name %>" id="<%= '3month-' + element.name %>">3 Month</button>
+                                                                <button class="date_button <%= 'dt-' + element.name %>" id="<%= '1year-' + element.name %>">1 Year</button>
+                                                                <button class="date_button <%= 'dt-' + element.name %>" id="<%= 'ytd-' + element.name %>">YTD</button>
+                                                            </div>
                                                             <div>
                                                                 <canvas id="<%= 'canvas-model-' + element.name %>" style="height: 300px;"></canvas>
                                                             </div>
                                                         </div>
-                                                        <div class="col-lg-3 col-md-3 col-3" style="border:solid thin #4063AD; border-radius:5px">
+                                                        <div class="col-lg-3 col-md-3 col-3" style="border:solid thin #b9bbbf; border-radius:5px">
                                                             <ul class="list-unstyled" style="height: 100%; display: flex; flex-direction: column; justify-content: space-around;">
                                                                 <li><i class="fa fa-calendar"></i>&nbsp;&nbsp;&nbsp;<span id='<%= "lm-date-"+element.name %>'></span></li>
                                                                 <li><i class="fa fa-clock-o"></i>&nbsp;&nbsp;&nbsp;<span id='<%= "lm-time-"+element.name %>'></span></li>
