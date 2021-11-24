@@ -363,13 +363,12 @@ h1,h2,h3,h4,h5,h6{
     padding: 2px 7px; 
     margin-bottom: 5px; 
     margin-right: auto;
-    border-radius: 2px;
     border-width: thin;
     border-style: none;
     color: rgb(99, 101, 103);
-    background-color: #d8dadf;
+    background-color: #f1f2f5;
     font-weight: bold;
-    min-width: 70px;
+    min-width: 80px;
 }
 .date_button:hover{
     color: #FFBE15;
