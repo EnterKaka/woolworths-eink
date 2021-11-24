@@ -386,20 +386,19 @@ h1,h2,h3,h4,h5,h6{
     padding-right: 5px;
 }
 .view_panel{
-    position: absolute;
-    background: white;
+    position: relative;
+    /* background: white;
     z-index: 100;
     width: 100%;
     left: 0;
     margin-top: 20px;
     border-radius: 5px;
-    border: 1px solid #f4f5fa;
-    /* padding: 1rem; */
+    border: 1px solid #f4f5fa; */
 }
 .view_close{
     position: absolute;
-    right: 10px;
-    top: 10px;
+    right: -10px;
+    top: -13px;
 }
 /* .navbar-container{
     background-image: none !important;

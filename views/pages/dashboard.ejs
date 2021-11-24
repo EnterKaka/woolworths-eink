@@ -44,52 +44,106 @@
                         <!-- Line Chart -->
                         <% if(data) { %>
                             <div class="row">
-                                <% for(const element of data) { %>
-                                    <div class="chart_element col-lg-6 col-md-12 col-sm-12 col-12">
-                                        <div class="card">
-                                            <div class="card-header">
-                                                <h4 class="card-title"><%= element.name %></h4>
-                                                <a class="heading-elements-toggle"><i class="la la-ellipsis-v font-medium-3"></i></a>
-                                                <div class="heading-elements">
-                                                    <a data-action="expand"><i class="ft-maximize"></i></a>
-                                                </div>
-                                            </div>
-                                            <div class="card-content collapse show">
-                                                <div class="card-body chartjs">
-                                                    <div class="row">
-                                                        <div class="col-lg-9 col-md-9 col-9">
-                                                            <div class="date_button_group">
-                                                                <button class="date_button <%= 'dt-' + element.name %>" id="<%= '1week-' + element.name %>">1 Week</button>
-                                                                <button class="date_button <%= 'dt-' + element.name %>" id="<%= '1month-' + element.name %>">1 Month</button>
-                                                                <button class="date_button <%= 'dt-' + element.name %>" id="<%= '3month-' + element.name %>">3 Month</button>
-                                                                <button class="date_button <%= 'dt-' + element.name %>" id="<%= '1year-' + element.name %>">1 Year</button>
-                                                                <button class="date_button <%= 'dt-' + element.name %>" id="<%= 'ytd-' + element.name %>">YTD</button>
-                                                            </div>
-                                                            <div>
-                                                                <canvas id="<%= 'canvas-model-' + element.name %>" style="height: 300px;"></canvas>
-                                                            </div>
-                                                        </div>
-                                                        <div class="col-lg-3 col-md-3 col-3" style="border:solid thin #b9bbbf; border-radius:5px">
-                                                            <ul class="list-unstyled" style="height: 100%; display: flex; flex-direction: column; justify-content: space-around;">
-                                                                <li><i class="fa fa-calendar"></i>&nbsp;&nbsp;&nbsp;<span id='<%= "lm-date-"+element.name %>'></span></li>
-                                                                <li><i class="fa fa-clock-o"></i>&nbsp;&nbsp;&nbsp;<span id='<%= "lm-time-"+element.name %>'></span></li>
-                                                                <li><i class="fa fa-h-square"></i>&nbsp;&nbsp;&nbsp;<span id='<%= "lm-volume-"+element.name %>'></span></li>
-                                                                <li><i class="fa fa-tumblr"></i>&nbsp;&nbsp;&nbsp;<span id='<%= "lm-mass-"+element.name %>'></span></li>
-                                                                <li><span style="font-weight:bold">ρ</span>&nbsp;&nbsp;&nbsp;<span id='<%= "lm-density-"+element.name %>'></span></li>
-                                                                <li><span style="font-weight:bold">Ø</span>&nbsp;&nbsp;&nbsp;<span id='<%= "lm-averagevolume-"+element.name %>'></span></li>
-                                                            </ul>
+                                <div class="col-lg-6 col-md-12 col-sm-12 col-12">
+                                    <% for(const [index,element] of data.entries()) { %>
+                                        <% if(index > data.length/2) {%>
+                                            <div class="chart_element">
+                                                <div class="card">
+                                                    <div class="card-header">
+                                                        <h4 class="card-title"><%= element.name %></h4>
+                                                        <a class="heading-elements-toggle"><i class="la la-ellipsis-v font-medium-3"></i></a>
+                                                        <div class="heading-elements">
+                                                            <a data-action="expand"><i class="ft-maximize"></i></a>
                                                         </div>
                                                     </div>
-                                                    <div class="view_panel">
-                                                        <!-- model data -->
-                                                        <input type="hidden" id="<%= 'input-model-' + element.name %>" value='<%= JSON.stringify(element) %>'>
-                                                        <input type="hidden" id="<%= 'input-modelid-' + element.name %>">
+                                                    <div class="card-content collapse show">
+                                                        <div class="card-body chartjs">
+                                                            <div class="row">
+                                                                <div class="col-lg-9 col-md-9 col-9">
+                                                                    <div class="date_button_group">
+                                                                        <button class="date_button <%= 'dt-' + element.name %>" id="<%= '1week-' + element.name %>">1 Week</button>
+                                                                        <button class="date_button <%= 'dt-' + element.name %>" id="<%= '1month-' + element.name %>">1 Month</button>
+                                                                        <button class="date_button <%= 'dt-' + element.name %>" id="<%= '3month-' + element.name %>">3 Month</button>
+                                                                        <button class="date_button <%= 'dt-' + element.name %>" id="<%= '1year-' + element.name %>">1 Year</button>
+                                                                        <button class="date_button <%= 'dt-' + element.name %>" id="<%= 'ytd-' + element.name %>">YTD</button>
+                                                                    </div>
+                                                                    <div>
+                                                                        <canvas id="<%= 'canvas-model-' + element.name %>" style="height: 300px;"></canvas>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="col-lg-3 col-md-3 col-3" style="border:solid thin #b9bbbf; border-radius:5px">
+                                                                    <ul class="list-unstyled" style="height: 100%; display: flex; flex-direction: column; justify-content: space-around;">
+                                                                        <li><i class="fa fa-calendar"></i>&nbsp;&nbsp;&nbsp;<span id='<%= "lm-date-"+element.name %>'></span></li>
+                                                                        <li><i class="fa fa-clock-o"></i>&nbsp;&nbsp;&nbsp;<span id='<%= "lm-time-"+element.name %>'></span></li>
+                                                                        <li><i class="fa fa-h-square"></i>&nbsp;&nbsp;&nbsp;<span id='<%= "lm-volume-"+element.name %>'></span></li>
+                                                                        <li><i class="fa fa-tumblr"></i>&nbsp;&nbsp;&nbsp;<span id='<%= "lm-mass-"+element.name %>'></span></li>
+                                                                        <li><span style="font-weight:bold">ρ</span>&nbsp;&nbsp;&nbsp;<span id='<%= "lm-density-"+element.name %>'></span></li>
+                                                                        <li><span style="font-weight:bold">Ø</span>&nbsp;&nbsp;&nbsp;<span id='<%= "lm-averagevolume-"+element.name %>'></span></li>
+                                                                    </ul>
+                                                                </div>
+                                                            </div>
+                                                            <div class="view_panel">
+                                                                <!-- model data -->
+                                                                <input type="hidden" id="<%= 'input-model-' + element.name %>" value='<%= JSON.stringify(element) %>'>
+                                                                <input type="hidden" id="<%= 'input-modelid-' + element.name %>">
+                                                            </div>
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>
-                                        </div>
-                                    </div>
-                                <% } %>
+                                        <% } %>
+                                    <% } %>
+                                </div>
+                                <div class="col-lg-6 col-md-12 col-sm-12 col-12">
+                                    <% for(const [index,element] of data.entries()) { %>
+                                        <% if(index <= data.length/2) {%>
+                                            <div class="chart_element">
+                                                <div class="card">
+                                                    <div class="card-header">
+                                                        <h4 class="card-title"><%= element.name %></h4>
+                                                        <a class="heading-elements-toggle"><i class="la la-ellipsis-v font-medium-3"></i></a>
+                                                        <div class="heading-elements">
+                                                            <a data-action="expand"><i class="ft-maximize"></i></a>
+                                                        </div>
+                                                    </div>
+                                                    <div class="card-content collapse show">
+                                                        <div class="card-body chartjs">
+                                                            <div class="row">
+                                                                <div class="col-lg-9 col-md-9 col-9">
+                                                                    <div class="date_button_group">
+                                                                        <button class="date_button <%= 'dt-' + element.name %>" id="<%= '1week-' + element.name %>">1 Week</button>
+                                                                        <button class="date_button <%= 'dt-' + element.name %>" id="<%= '1month-' + element.name %>">1 Month</button>
+                                                                        <button class="date_button <%= 'dt-' + element.name %>" id="<%= '3month-' + element.name %>">3 Month</button>
+                                                                        <button class="date_button <%= 'dt-' + element.name %>" id="<%= '1year-' + element.name %>">1 Year</button>
+                                                                        <button class="date_button <%= 'dt-' + element.name %>" id="<%= 'ytd-' + element.name %>">YTD</button>
+                                                                    </div>
+                                                                    <div>
+                                                                        <canvas id="<%= 'canvas-model-' + element.name %>" style="height: 300px;"></canvas>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="col-lg-3 col-md-3 col-3" style="border:solid thin #b9bbbf; border-radius:5px">
+                                                                    <ul class="list-unstyled" style="height: 100%; display: flex; flex-direction: column; justify-content: space-around;">
+                                                                        <li><i class="fa fa-calendar"></i>&nbsp;&nbsp;&nbsp;<span id='<%= "lm-date-"+element.name %>'></span></li>
+                                                                        <li><i class="fa fa-clock-o"></i>&nbsp;&nbsp;&nbsp;<span id='<%= "lm-time-"+element.name %>'></span></li>
+                                                                        <li><i class="fa fa-h-square"></i>&nbsp;&nbsp;&nbsp;<span id='<%= "lm-volume-"+element.name %>'></span></li>
+                                                                        <li><i class="fa fa-tumblr"></i>&nbsp;&nbsp;&nbsp;<span id='<%= "lm-mass-"+element.name %>'></span></li>
+                                                                        <li><span style="font-weight:bold">ρ</span>&nbsp;&nbsp;&nbsp;<span id='<%= "lm-density-"+element.name %>'></span></li>
+                                                                        <li><span style="font-weight:bold">Ø</span>&nbsp;&nbsp;&nbsp;<span id='<%= "lm-averagevolume-"+element.name %>'></span></li>
+                                                                    </ul>
+                                                                </div>
+                                                            </div>
+                                                            <div class="view_panel">
+                                                                <!-- model data -->
+                                                                <input type="hidden" id="<%= 'input-model-' + element.name %>" value='<%= JSON.stringify(element) %>'>
+                                                                <input type="hidden" id="<%= 'input-modelid-' + element.name %>">
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        <% } %>
+                                    <% } %>
+                                </div>
                             </div>
                         <% } %>
                         <% if(names) { %>
