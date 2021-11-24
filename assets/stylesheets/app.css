@@ -31,6 +31,7 @@ div.container_main{
     /* max-height: 500px; */
     display: block;
     z-index: -1;
+    border-radius: 5px;
     /* padding: 15px; */
 }
 
@@ -362,6 +363,9 @@ h1,h2,h3,h4,h5,h6{
     padding: 2px 7px; 
     margin-bottom: 5px; 
     border-radius: 2px;
+    border-width: thin;
+    color: black;
+    font-weight: bold;
 }
 /* .navbar-container{
     background-image: none !important;

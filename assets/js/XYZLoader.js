@@ -27,7 +27,6 @@ class XYZLoader extends Loader {
 		loader.setRequestHeader(this.requestHeader);
 		loader.setWithCredentials(this.withCredentials);
 		loader.load(url, function (text) {
-			console.log(text)
 			try {
 
 				onLoad(scope.parse(text));

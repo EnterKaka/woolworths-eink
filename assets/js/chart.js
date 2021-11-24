@@ -10,7 +10,6 @@ function init_chart() {
     chartnamelist = [];
     let names = document.getElementById("input-names").value;
     names = names.split(",");
-
     for (const name of names) {
         let canvasname = "canvas-model-" + name;
         let inputname = "input-model-" + name;
@@ -115,7 +114,7 @@ function drawChart(ctx, data, ft, tt) {
                     data: tempdata[1],
                     lineTension: 0,
                     fill: false,
-                    borderColor: "#FF7D4D",
+                    borderColor: "#FFAA4E",
                     pointStyle: null,
                     pointHoverBackgroundColor: "#FFF",
                     pointBorderWidth: 0,
@@ -239,7 +238,6 @@ function drawChart(ctx, data, ft, tt) {
             var this_canvas_modelname = "input-modelid-" + this_canvas.slice(-1);
             this_canvas_modelname = document.getElementById(this_canvas_modelname).value;
             load3dmodelwithidonlocal(this_canvas.slice(-1), this_canvas_modelname);
-            window.scrollTo(0, 80);
             return false;
         }
         time_stamp = event_.timeStamp;
@@ -247,8 +245,11 @@ function drawChart(ctx, data, ft, tt) {
 
     ctx.addEventListener("dblclick", function (evt) {
         //go to 3d viewer with last id
+        var viewer = document.getElementById('viewer_3d');
+        viewer.parentNode.removeChild(viewer);
         var this_canvas = $(this).attr("id");
         this_canvas = this_canvas.split("canvas-model-");
+        $('#input-model-'+this_canvas.slice(-1)).parent().append("<canvas id='viewer_3d' class='3dviewer' style='margin-top:20px;'></canvas>");
         var this_canvas_totalmodel = "input-model-" + this_canvas.slice(-1);
         var this_canvas_modelname = "input-modelid-" + this_canvas.slice(-1);
         const points = lineChart.getElementsAtEventForMode(evt, "nearest", lineChart.options);
@@ -263,8 +264,10 @@ function drawChart(ctx, data, ft, tt) {
         } else {
             this_canvas_modelname = document.getElementById(this_canvas_modelname).value;
         }
+        init_highlow();
+        main();
+        animate();
         load3dmodelwithidonlocal(this_canvas.slice(-1), this_canvas_modelname);
-        window.scrollTo(0, 80);
     });
     
 }
@@ -421,32 +424,10 @@ function main() {
     group = new THREE.Object3D();
     var points1, pointcloud;
     var loader = new XYZLoader();
-    var tempvaluetag = document.getElementById("pointcloud");
-    if (tempvaluetag) {
-        pointcloud = tempvaluetag.value;
-        pointcloud = JSON.parse(pointcloud);
-        let modelname = "";
-        reloadModelFromJSONData(modelname, pointcloud);
-    } else {
-        loader.load("./3dmodels/owleyeweb.txt", function (geometry) {
-            $("#modelpath").html("owleyeweb.txt");
-            geometry.center();
 
-            var vertexColors = geometry.hasAttribute("color") === true;
-
-            var material = new THREE.PointsMaterial({
-                size: 0.1,
-                vertexColors: vertexColors,
-            });
-
-            points1 = new THREE.Points(geometry, material);
-            group.add(points1);
-            render();
-        });
-    }
     scene.add(group);
 
-    parent_canvas = document.getElementById("main_canvas");
+    parent_canvas = document.getElementById("viewer_3d").parentNode;
     $("#btn-openfromLocal").click(function () {
         btn_open_model();
     });
@@ -542,7 +523,7 @@ function onWindowResize() {
     camera.aspect = parent_canvas.clientWidth / parent_canvas.clientHeight;
     camera.updateProjectionMatrix();
     renderer.setSize(
-        parent_canvas.clientWidth - 30,
+        parent_canvas.clientWidth,
         parent_canvas.clientHeight
     );
 }
@@ -645,13 +626,6 @@ function update_lastidofmodel(modelname, modelid) {
     var modeltag = "input-modelid-" + modelname;
     modeltag = document.getElementById(modeltag).value = modelid;
 }
-
-//draw three.js
-init_highlow();
-
-main();
-
-animate();
 
 //start chart draw
 init_chart();

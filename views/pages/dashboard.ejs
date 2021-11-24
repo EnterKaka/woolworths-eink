@@ -38,34 +38,7 @@
                     <!-- Chart -->
                     
                 <div class="content-body">
-                    <!-- 3d viewer card body start -->
-                    <section id="basic-buttons">
-                        <div class="row">
-                            <div class="col-lg-12 col-md-12">
-                                <div class="card" id="canvas-container">
-                                    <div class="card-header">
-                                        <!-- <h4 class="card-title">OWL 3D WEB APP</h4> -->
-                                        <a class="heading-elements-toggle"><i class="la la-ellipsis font-medium-3"></i></a>
-                                        <div class="heading-elements">
-                                            <a data-action="expand"><i class="ft-maximize"></i></a>
-                                        </div>
-                                        </div>
-                                    <div class="card-content collapse show">
-                                        <div class="card-body">
-                                            <!-- <p class="card-subtitle">You can load *.txt, *.obj files from owl windows app.</p> -->
-                                            <div class="form-group">
-                                                <canvas id='viewer_3d' class='3dviewer'></canvas>
-                                                <!-- basic viewer -->
-                                                <!-- <%- //include('../partials/threeviewer', {id:'dashborad_three'}); %> -->
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </section>
-                    <!-- 3d viewer card body end -->
-
+                    <canvas id='viewer_3d' class='3dviewer' style="display: none;"></canvas>
                     <!-- line chart section start -->
                     <section id="chartjs-line-charts">
                         <!-- Line Chart -->
@@ -94,7 +67,7 @@
                                                                 <canvas id="<%= 'canvas-model-' + element.name %>" style="height: 300px;"></canvas>
                                                             </div>
                                                         </div>
-                                                        <div class="col-lg-3 col-md-3 col-3" style="border:solid thin #4063AD">
+                                                        <div class="col-lg-3 col-md-3 col-3" style="border:solid thin #4063AD; border-radius:5px">
                                                             <ul class="list-unstyled" style="height: 100%; display: flex; flex-direction: column; justify-content: space-around;">
                                                                 <li><i class="fa fa-calendar"></i>&nbsp;&nbsp;&nbsp;<span id='<%= "lm-date-"+element.name %>'></span></li>
                                                                 <li><i class="fa fa-clock-o"></i>&nbsp;&nbsp;&nbsp;<span id='<%= "lm-time-"+element.name %>'></span></li>
