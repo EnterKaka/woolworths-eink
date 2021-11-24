@@ -253,6 +253,10 @@ function drawChart(ctx, data, ft, tt) {
     ctx.addEventListener("dblclick", function (evt) {
         //go to 3d viewer with last id
         var viewer = document.getElementById('viewer_3d');
+        var close = document.getElementsByClassName('view_close');
+        if(close.length){
+            $(close).remove();
+        }
         viewer.parentNode.removeChild(viewer);
         var this_canvas = $(this).attr("id");
         this_canvas = this_canvas.split("canvas-model-");
