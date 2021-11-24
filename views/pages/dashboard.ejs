@@ -80,7 +80,7 @@
                                                             </ul>
                                                         </div>
                                                     </div>
-                                                    <div>
+                                                    <div class="view_panel">
                                                         <!-- model data -->
                                                         <input type="hidden" id="<%= 'input-model-' + element.name %>" value='<%= JSON.stringify(element) %>'>
                                                         <input type="hidden" id="<%= 'input-modelid-' + element.name %>">
@@ -119,6 +119,9 @@
                     $('div.container_main').toggleClass('small');
                     $('.dashborad_three #viewer_3d').toggleClass('expand');
                 });
+            });
+            $('.view_panel').on('click','.view_close',function(){
+                $(this).parent().hide();
             });
             $.toast({
                 heading: 'Load Database',

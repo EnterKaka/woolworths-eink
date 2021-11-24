@@ -256,7 +256,8 @@ function drawChart(ctx, data, ft, tt) {
         viewer.parentNode.removeChild(viewer);
         var this_canvas = $(this).attr("id");
         this_canvas = this_canvas.split("canvas-model-");
-        $('#input-model-'+this_canvas.slice(-1)).parent().append("<canvas id='viewer_3d' class='3dviewer' style='margin-top:20px;'></canvas>");
+        $('#input-model-'+this_canvas.slice(-1)).parent().append("<canvas id='viewer_3d' class='3dviewer' style='margin-top:20px;'></canvas><i class='fa fa-close view_close'></i>");
+        $(this).parent().parent().parent().parent().find('.view_panel').show();
         var this_canvas_totalmodel = "input-model-" + this_canvas.slice(-1);
         var this_canvas_modelname = "input-modelid-" + this_canvas.slice(-1);
         const points = lineChart.getElementsAtEventForMode(evt, "nearest", lineChart.options);
