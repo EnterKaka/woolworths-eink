@@ -362,7 +362,7 @@ h1,h2,h3,h4,h5,h6{
 .date_button{
     padding: 2px 7px; 
     margin-bottom: 5px; 
-    margin-right: auto;
+    /* margin: auto; */
     border-width: thin;
     border-style: none;
     color: rgb(99, 101, 103);
@@ -371,18 +371,19 @@ h1,h2,h3,h4,h5,h6{
     min-width: 80px;
 }
 .date_button:hover{
-    color: #FFBE15;
-    box-shadow: 1px 2px 3px #FFBE15;
+    background-color: #dadadc;
 }
 .date_button:focus{
     outline: none;
-    box-shadow: 1px 2px 3px #FFBE15;
+    background-color: #dadadc;
 }
 .date_button_group{
     display: flex;
     /* justify-content: space-around; */
+    justify-content: space-between;
     flex-flow: wrap;
     padding-left: 45px;
+    padding-right: 5px;
 }
 /* .navbar-container{
     background-image: none !important;
