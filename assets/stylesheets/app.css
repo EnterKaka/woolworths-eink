@@ -357,6 +357,12 @@ legend.close_field {
 h1,h2,h3,h4,h5,h6{
     font-family: Open Sans, sans-serif;
 }
+
+.date_button{
+    padding: 2px 7px; 
+    margin-bottom: 5px; 
+    border-radius: 2px;
+}
 /* .navbar-container{
     background-image: none !important;
     background-color: white !important;

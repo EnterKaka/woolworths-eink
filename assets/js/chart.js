@@ -1,157 +1,134 @@
-import * as THREE from './three.module.js';
-import { OrbitControls } from './OrbitControls.js';
-import { XYZLoader, getminmaxhegiht, getrgb, init_highlow } from './XYZLoader.js';
+import * as THREE from "./three.module.js";
+import { OrbitControls } from "./OrbitControls.js";
+import {XYZLoader, getminmaxhegiht, getrgb,init_highlow} from "./XYZLoader.js";
 
-var controls, camera, renderer, scene, canvas, parent_canvas, group, zoom = 0.5, finger_dest = 0, timer;
-
-// chart global list
+var controls, camera, renderer, scene, canvas, parent_canvas, group; // chart global list
 var chartlist, chartnamelist;
 
-function init_chart(){
+function init_chart() {
     chartlist = [];
     chartnamelist = [];
+    let names = document.getElementById("input-names").value;
+    names = names.split(",");
 
-    let names = document.getElementById('input-names').value;
-    names = names.split(',');
-
-    for(const name of names){
-        let canvasname = 'canvas-model-' + name;
-        let inputname = 'input-model-' + name;
+    for (const name of names) {
+        let canvasname = "canvas-model-" + name;
+        let inputname = "input-model-" + name;
         let ctx = document.getElementById(canvasname);
         let data = document.getElementById(inputname).value;
         data = JSON.parse(data);
-        // console.log(ctx, data);
         drawChart(ctx, data);
     }
 }
 
-function updateGraph (id){
-    let ft = $('#fromtime-' + id).val();
-    ft = new Date(ft);
-    let tt = $('#totime-' + id).val();
-    tt = new Date(tt);
-    let canvasname = 'canvas-model-' + id;
-    let inputname = 'input-model-' + id;
-    let parent = $('#' + canvasname).parent();
+async function updateGraph(id, flag) {
+    let tt = new Date();
+    let ft;
+    switch(flag){
+        case "1week" :
+            ft = new Date(Date.now() - (7 * 24 * 60 * 60 * 1000));
+            break;
+        case "1month" :
+            ft = new Date(Date.now() - (30 * 24 * 60 * 60 * 1000));
+            break;
+        case "3month" :
+            ft = new Date(Date.now() - (90 * 24 * 60 * 60 * 1000));
+            break;
+        case "1year" :
+            ft = new Date(Date.now() - (365 * 24 * 60 * 60 * 1000));
+            break;
+        case "ytd" :
+            ft = new Date(tt.getFullYear(), 0, 1)
+            break;
+    }
+    let canvasname = "canvas-model-" + id;
+    let inputname = "input-model-" + id;
+    let parent = $("#" + canvasname).parent();
     let ctx = document.getElementById(canvasname);
     ctx.remove();
-    parent.append('<canvas id="' + canvasname + '" style="height:400px"><canvas>');
-    ctx = document.querySelector('#' + canvasname);
-    ctx = ctx.getContext('2d');
+    await parent.append(
+        '<canvas id="' + canvasname + '" style="height:300px"><canvas>'
+    );
+    ctx = document.querySelector("#" + canvasname);
     let data = document.getElementById(inputname).value;
     data = JSON.parse(data);
-    // let tempdata = makeChartDataFromModelSetsWithRange(data,ft,tt);
-    drawChart(ctx,data,ft,tt);
+    drawChart(ctx, data, ft, tt);
 }
 
-
-function drawChart(ctx,data,ft,tt){
-    //draw chart
+//draw chart
+function drawChart(ctx, data, ft, tt) {
     // initialize chart option
     var chartOptions = {
-            //last setting
-            // responsive: true,
-            maintainAspectRatio: false,
-            // legend: {
-            //     position: 'bottom',
-            // },
-            // hover: {
-            //     mode: 'label'
-            // },
+        maintainAspectRatio: false,
         responsive: true,
         interaction: {
             intersect: false,
-            mode: 'index',
+            mode: "index",
         },
         plugins: {
             legend: {
-                display:false,
-                position: 'top',
+                display: false,
+                position: "top",
             },
             title: {
                 display: false,
                 text: data.name,
-                // color: '#0040ff',
                 font: {
-                    family: 'Times',
+                    family: "Times",
                     size: 20,
                     lineHeight: 1.2,
                 },
             },
             tooltip: {
-                // usePointStyle: true,
-                position: 'nearest',
-            }
+                position: "nearest",
+            },
         },
         scales: {
             x: {
                 display: true,
                 reverse: true,
-                ticks:{
-                    autoSkip:true,
-                    // maxRotation:0,
-                    // minRotation:0,
-                    maxTicksLimit:5
-                },
-                // title: {
-                //     display: true,
-                //     text: 'Time',
-                //     // color: '#911',
-                //     font: {
-                //     family: 'Times',
-                //     size: 20,
-                //     weight: 'bold',
-                //     lineHeight: 1.2,
-                //     },
-                //     padding: {top: 20, left: 0, right: 100, bottom: 0}
-                // }
-            },
-            y: {
-                display: true,
-                title: {
-                    display: false,
-                    text: 'Volume in m3',
-                    // color: '#191',
-                    font: {
-                    family: 'Times',
-                    size: 20,
-                    weight: 'bold',
-                    lineHeight: 1.2
+                ticks: {
+                    autoSkip: true,
+                    maxRotation: 0,
+                    minRotation: 0,
+                    maxTicksLimit: 5,
+                    callback: function (value, index, values) {
+                        let monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+                        var arr = this.getLabelForValue(value).split(" ");
+                        var fir_arr = arr[0].split(".");
+                        var buffer = fir_arr[1] + "." + fir_arr[0] + "." + fir_arr[2] + " " + arr[1];
+                        var d = new Date(buffer);
+                        return d.getDate() + "." + monthNames[d.getMonth()];
                     },
-                    padding: {top: 20, left: 0, right: 0, bottom: 0}
-                }
-            }
+                },
+            },
         },
-            // title: {
-            //     display: true,
-            //     text: data.name,
-            // }
     };
-    if(!ft){
+    if (!ft) {
         // Chart Data
         var tempdata = makeChartDataFromModelSets(data);
         var chartData = {
             labels: tempdata[0],
-            datasets: [{
-                label: data.name + " - Volumes",
-                data: tempdata[1],
-                lineTension: 0,
-                fill: false,
-                borderColor: "#FF7D4D",
-                pointStyle :null,
-                // pointBorderColor: "#FF7D4D",
-                pointHoverBackgroundColor: "#FFF",
-                pointBorderWidth: 0,
-                pointHoverBorderWidth: 4,
-                // pointRadius: 4,
-            }]
+            datasets: [
+                {
+                    label: data.name + " - Volumes",
+                    data: tempdata[1],
+                    lineTension: 0,
+                    fill: false,
+                    borderColor: "#FF7D4D",
+                    pointStyle: null,
+                    pointHoverBackgroundColor: "#FFF",
+                    pointBorderWidth: 0,
+                    pointHoverBorderWidth: 4,
+                },
+            ],
         };
 
         var config = {
-            type: 'line',
+            type: "line",
             // Chart Options
-            options : chartOptions,
-            data : chartData
+            options: chartOptions,
+            data: chartData,
         };
 
         // Create the chart
@@ -160,16 +137,18 @@ function drawChart(ctx,data,ft,tt){
         chartnamelist.push(data.name);
 
         //set necessay extra information
-        let lm_date = 'lm-date-' + data.name,
-        lm_time = 'lm-time-' + data.name,
-        lm_volume = 'lm-volume-' + data.name ,
-        lm_mass = 'lm-mass-' + data.name ,
-        lm_density = 'lm-density-' + data.name ,
-        lm_avervol = 'lm-averagevolume-' + data.name,
-        inputmodelid = 'input-modelid-' + data.name,
-        inputfromtime = 'fromtime-' + data.name,
-        inputtotime = 'totime-'  + data.name,
-        btn = 'btn-' + data.name;
+        let lm_date = "lm-date-" + data.name,
+            lm_time = "lm-time-" + data.name,
+            lm_volume = "lm-volume-" + data.name,
+            lm_mass = "lm-mass-" + data.name,
+            lm_density = "lm-density-" + data.name,
+            lm_avervol = "lm-averagevolume-" + data.name,
+            inputmodelid = "input-modelid-" + data.name,
+            week_1 = "1week-" + data.name,
+            month_1 = "1month-" + data.name,
+            month_3 = "3month-" + data.name,
+            year_1 = "1year-" + data.name,
+            ytd = "ytd-" + data.name;
 
         lm_date = document.getElementById(lm_date);
         lm_time = document.getElementById(lm_time);
@@ -178,10 +157,13 @@ function drawChart(ctx,data,ft,tt){
         lm_density = document.getElementById(lm_density);
         lm_avervol = document.getElementById(lm_avervol);
         inputmodelid = document.getElementById(inputmodelid);
-        inputfromtime = document.getElementById(inputfromtime);
-        inputtotime = document.getElementById(inputtotime);
-        btn = document.getElementById(btn);
 
+        week_1 = document.getElementById(week_1);
+        month_1 = document.getElementById(month_1);
+        month_3 = document.getElementById(month_3);
+        year_1 = document.getElementById(year_1);
+        ytd = document.getElementById(ytd);
+        
         lm_date.innerHTML = tempdata[2];
         lm_time.innerHTML = tempdata[3];
         lm_volume.innerHTML = tempdata[4];
@@ -189,165 +171,140 @@ function drawChart(ctx,data,ft,tt){
         lm_density.innerHTML = tempdata[6];
         lm_avervol.innerHTML = tempdata[7];
         inputmodelid.value = tempdata[8];
-        inputfromtime.value = tempdata[9];
-        inputtotime.value = tempdata[10];
-        update_lastidofmodel(data.name,tempdata[11]);
-
-        inputfromtime.onchange = function () {
-            updateGraph(this.id.substr(this.id.lastIndexOf('fromtime-')+9));
-        }
-        inputtotime.onchange = function () {
-            updateGraph(this.id.substr(this.id.lastIndexOf('totime-')+7));
-        }
-        btn.onclick = function () {
-            let name = $(this).attr('id');
-            name = name.split('-');
-            name = name.slice(-1);
-            let inputft = 'fromtime-' + name ,inputtt = 'totime-' + name;
-            inputft = document.getElementById(inputft).value;
-            inputtt = document.getElementById(inputtt).value;
-            inputft = new Date(inputft);
-            inputtt = new Date(inputtt);
-
-            let canvasname = 'canvas-model-' + name;
-            let inputname = 'input-model-' + name;
-            let ctx = document.getElementById(canvasname);
-            let data = document.getElementById(inputname).value;
-            data = JSON.parse(data);
-            // console.log(ctx, data);
-            drawChart(ctx, data,inputft, inputtt);
-        }
-        //ondblclick listener
-        let time_stamp = 0; // Or Date.now()
-        ctx.addEventListener("touchstart", function(event_) {
-            if (event_.timeStamp - time_stamp < 300) { // A tap that occurs less than 300 ms from the last tap will trigger a double tap. This delay may be different between browsers.
-                event_.preventDefault();
-                var this_canvas = $(this).attr('id');
-                console.log('******** canvas ***********',this_canvas)
-                // var this_id = this_canvas;
-                this_canvas = this_canvas.split('canvas-model-');
-                var this_canvas_modelname = 'input-modelid-' + this_canvas.slice(-1);
-                console.log('*********** canvas_modelname *********',this_canvas_modelname);
-                this_canvas_modelname = document.getElementById(this_canvas_modelname).value
-                // location.href = "/data/view/" + this_canvas;
-                load3dmodelwithidonlocal(this_canvas.slice(-1),this_canvas_modelname);
-                // location.href = '#canvas-container';
-                //for current item get
-                // var ctx = document.getElementById(this_id);
-                // console.log(ctx.chart.options.plugins.tooltip);
-                window.scrollTo(0,80);
-    
-                return false;
-            }
-            time_stamp = event_.timeStamp;
-        });
-
-        ctx.addEventListener("dblclick", function(evt) {
-            //go to 3d viewer with last id
-            var this_canvas = $(this).attr('id');
-            console.log('******** canvas ***********',this_canvas)
-            // var this_id = this_canvas;
-            this_canvas = this_canvas.split('canvas-model-');
-            var this_canvas_totalmodel = 'input-model-' + this_canvas.slice(-1)
-            var this_canvas_modelname = 'input-modelid-' + this_canvas.slice(-1);
-            const points = lineChart.getElementsAtEventForMode(evt, 'nearest', lineChart.options);
-            if (points.length) {
-                const firstPoint = points[0];
-                const label = lineChart.data.labels[firstPoint.index];
-                var totalmodel = JSON.parse(document.getElementById(this_canvas_totalmodel).value).log;
-                let obj = totalmodel.find((o)=>{
-                    if(o.datetime.toString()===label)
-                    return true;
-                });
-                this_canvas_modelname = obj._id;
-            }else{
-                this_canvas_modelname = document.getElementById(this_canvas_modelname).value
-            }
-            console.log('*********** canvas_modelname *********',this_canvas_modelname);
-            // location.href = "/data/view/" + this_canvas;
-            load3dmodelwithidonlocal(this_canvas.slice(-1),this_canvas_modelname);
-
-
-            // location.href = '#canvas-container';
-            //for current item get
-            // var ctx = document.getElementById(this_id);
-            // console.log(ctx.chart.options.plugins.tooltip);
-            window.scrollTo(0,80);
-        });
-    }else{
+        update_lastidofmodel(data.name, tempdata[11]);
+        /*
+            date button click
+        */
+        week_1.onclick = function() {
+            updateGraph(this.id.substr(this.id.lastIndexOf("1week-") + 6), '1week');
+        };
+        month_1.onclick = function() {
+            updateGraph(this.id.substr(this.id.lastIndexOf("1month-") + 7), '1month');
+        };
+        month_3.onclick = function() {
+            updateGraph(this.id.substr(this.id.lastIndexOf("3month-") + 7), '3month');
+        };
+        year_1.onclick = function() {
+            updateGraph(this.id.substr(this.id.lastIndexOf("1year-") + 6), '1year');
+        };
+        ytd.onclick = function() {
+            updateGraph(this.id.substr(this.id.lastIndexOf("ytd-") + 4), 'ytd');
+        };
+    } else {
         // Chart Data
-        var tempdata = makeChartDataFromModelSetsWithRange(data,ft,tt);
-        // console.log(tempdata);
+        var tempdata = makeChartDataFromModelSetsWithRange(data, ft, tt);
         var chartData = {
             labels: tempdata[0],
-            datasets: [{
-                label: data.name + " - Volumes",
-                data: tempdata[1],
-                lineTension: 0,
-                fill: false,
-                borderColor: "#FF7D4D",
-                pointStyle :null,
-                // pointBorderColor: "#FF7D4D",
-                pointHoverBackgroundColor: "#FFF",
-                pointBorderWidth: 0,
-                pointHoverBorderWidth: 4,
-                // pointRadius: 4,
-            }]
+            datasets: [
+                {
+                    label: data.name + " - Volumes",
+                    data: tempdata[1],
+                    lineTension: 0,
+                    fill: false,
+                    borderColor: "#FF7D4D",
+                    pointStyle: null,
+                    pointHoverBackgroundColor: "#FFF",
+                    pointBorderWidth: 0,
+                    pointHoverBorderWidth: 4,
+                },
+            ],
         };
 
         var config = {
-            type: 'line',
+            type: "line",
             // Chart Options
-            options : chartOptions,
-            data : chartData
+            options: chartOptions,
+            data: chartData,
         };
 
         // Create the chart
-        try{
+        try {
             var i;
-            for(const element of chartlist){
-                i = 0;
-            }
-            console.log(ctx);
-            // ctx.data.datasets = chartData;
-            // ctx.update();
+            for (const element of chartlist) {i = 0;}
             var lineChart = new Chart(ctx, config);
-        }catch(err){
-            console.log(ctx);
+        } catch (err) {
             console.log(err);
         }
 
         update_lastidofmodel(data.name, tempdata[2]);
     }
+    //ondblclick listener
+    let time_stamp = 0; // Or Date.now()
+    ctx.addEventListener("touchstart", function (event_) {
+        if (event_.timeStamp - time_stamp < 300) {
+            // A tap that occurs less than 300 ms from the last tap will trigger a double tap. This delay may be different between browsers.
+            event_.preventDefault();
+            var this_canvas = $(this).attr("id");
+            this_canvas = this_canvas.split("canvas-model-");
+            var this_canvas_modelname = "input-modelid-" + this_canvas.slice(-1);
+            this_canvas_modelname = document.getElementById(this_canvas_modelname).value;
+            load3dmodelwithidonlocal(this_canvas.slice(-1), this_canvas_modelname);
+            window.scrollTo(0, 80);
+            return false;
+        }
+        time_stamp = event_.timeStamp;
+    });
+
+    ctx.addEventListener("dblclick", function (evt) {
+        //go to 3d viewer with last id
+        var this_canvas = $(this).attr("id");
+        this_canvas = this_canvas.split("canvas-model-");
+        var this_canvas_totalmodel = "input-model-" + this_canvas.slice(-1);
+        var this_canvas_modelname = "input-modelid-" + this_canvas.slice(-1);
+        const points = lineChart.getElementsAtEventForMode(evt, "nearest", lineChart.options);
+        if (points.length) {
+            const firstPoint = points[0];
+            const label = lineChart.data.labels[firstPoint.index];
+            var totalmodel = JSON.parse(document.getElementById(this_canvas_totalmodel).value).log;
+            let obj = totalmodel.find((o) => {
+                if (o.datetime.toString() === label) return true;
+            });
+            this_canvas_modelname = obj._id;
+        } else {
+            this_canvas_modelname = document.getElementById(this_canvas_modelname).value;
+        }
+        load3dmodelwithidonlocal(this_canvas.slice(-1), this_canvas_modelname);
+        window.scrollTo(0, 80);
+    });
+    
 }
 
-function makeChartDataFromModelSets(data){
-    let labels = [], eachdata = [];
-    let lastdatetime=['',''],vol,mass,dens,cnt = 0,totalvols = 0, _id,
-    fromtime = new Date(), totime = new Date(2000,1,1,0,0,0);
+function makeChartDataFromModelSets(data) {
+    let labels = [],
+        eachdata = [];
+    let lastdatetime = ["", ""],
+        vol,
+        mass,
+        dens,
+        cnt = 0,
+        totalvols = 0,
+        _id,
+        fromtime = new Date(),
+        totime = new Date(2000, 1, 1, 0, 0, 0);
     //for last id get
-    var last_id, last_datetime = totime;
+    var last_id,
+        last_datetime = totime;
 
-    for(const element of data.log){
+    for (const element of data.log) {
         labels.push(element.datetime);
         eachdata.push(element.volume);
         lastdatetime = element.datetime;
         vol = element.volume;
         mass = element.mass;
-        cnt = cnt+1;
+        cnt = cnt + 1;
         totalvols = totalvols + parseFloat(vol);
         _id = element._id;
         var tmpdate = makedefaultDate(lastdatetime);
         tmpdate = new Date(tmpdate);
-        if(fromtime > tmpdate){
+        if (fromtime > tmpdate) {
             fromtime = tmpdate;
         }
-        if(totime < tmpdate){
+        if (totime < tmpdate) {
             totime = tmpdate;
             lastdatetime = element.datetime;
-            lastdatetime = lastdatetime.split(' ');
+            lastdatetime = lastdatetime.split(" ");
         }
-        if(last_datetime < tmpdate){
+        if (last_datetime < tmpdate) {
             last_datetime = tmpdate;
             last_id = element._id;
         }
@@ -355,25 +312,37 @@ function makeChartDataFromModelSets(data){
     dens = parseFloat(mass) / parseFloat(vol);
     fromtime.setMinutes(fromtime.getMinutes() - fromtime.getTimezoneOffset());
     totime.setMinutes(totime.getMinutes() - totime.getTimezoneOffset());
-    return [labels, eachdata,lastdatetime[0],lastdatetime[1],vol.toFixed(2),mass.toFixed(2),dens.toFixed(2),
-    (totalvols/cnt).toFixed(2),_id, fromtime.toISOString().slice(0,19), totime.toISOString().slice(0,19), last_id];
+    return [
+        labels,
+        eachdata,
+        lastdatetime[0],
+        lastdatetime[1],
+        vol.toFixed(2),
+        mass.toFixed(2),
+        dens.toFixed(2),
+        (totalvols / cnt).toFixed(2),
+        _id,
+        fromtime.toISOString().slice(0, 19),
+        totime.toISOString().slice(0, 19),
+        last_id,
+    ];
 }
 
-function makeChartDataFromModelSetsWithRange(data,ft,tt){
+function makeChartDataFromModelSetsWithRange(data, ft, tt) {
     let labels = [], eachdata = [];
     var last_id, last_datetime = ft, lastdatetime;
-    for(const element of data.log){
+    for (const element of data.log) {
         lastdatetime = element.datetime;
         var tmpdate = makedefaultDate(lastdatetime);
         tmpdate = new Date(tmpdate);
         // console.log(ft.toISOString(),tmpdate.toISOString(),tt.toISOString());
-        if(ft <= tmpdate){
-            if(tt >= tmpdate){
+        if (ft <= tmpdate) {
+            if (tt >= tmpdate) {
                 labels.push(lastdatetime);
                 eachdata.push(element.volume);
 
                 //get last date model id
-                if(last_datetime < tmpdate){
+                if (last_datetime < tmpdate) {
                     last_datetime = tmpdate;
                     last_id = element._id;
                 }
@@ -383,73 +352,63 @@ function makeChartDataFromModelSetsWithRange(data,ft,tt){
     return [labels, eachdata, last_id];
 }
 
-function makedefaultDate(bugdate){
+function makedefaultDate(bugdate) {
     var truedate;
-    var tmpstr = bugdate.split(' ');
+    var tmpstr = bugdate.split(" ");
     var tmpstr1 = tmpstr[0];
-    var list = tmpstr1.split('.');
-    truedate = list[2]+'-'+list[1]+'-'+list[0]+'T'+tmpstr[1];
+    var list = tmpstr1.split(".");
+    truedate = list[2] + "-" + list[1] + "-" + list[0] + "T" + tmpstr[1];
 
     return truedate;
 }
 
-
-
 //start three js
 //three.js point cloud viewer
 function main() {
-    canvas = document.querySelector('#viewer_3d');
+    canvas = document.querySelector("#viewer_3d");
 
-    var mouseDown = false,
-        mouseX = 0,
-        mouseY = 0,
-        timerflag = 0;
-
+    var mouseDown = false, mouseX = 0, mouseY = 0, timerflag = 0;
 
     /* touch mode */
-    canvas.addEventListener('touchmove', function (e) {
-        if(timerflag) onTransfer(e);
-        else     onTouchMove(e);
-    }, false);
-    canvas.addEventListener('touchstart', function (e) {
-        // timer = setTimeout(() => {
-        //     onTransfer(e);
-        //     timerflag = 1;
-        // }, 500);
-        onTouchStart(e);
-    }, false);
-    canvas.addEventListener('touchend', function (e) {
-        onTouchEnd(e);
-    }, false);
+    canvas.addEventListener("touchmove", function (e) {
+            if (timerflag) onTransfer(e);
+            else onTouchMove(e);
+        },false);
+    canvas.addEventListener("touchstart", function (e) {
+            onTouchStart(e);
+        }, false);
+    canvas.addEventListener("touchend", function (e) {
+            onTouchEnd(e);
+        }, false);
 
     /* mouse mode */
-    canvas.addEventListener('mousemove', function (e) {
-        onMouseMove(e);
-    }, false);
-    canvas.addEventListener('mousedown', function (e) {
-        if(e.button == 0) {
-            onMouseDown(e);
-        }
-    }, false);
-    canvas.addEventListener('mouseup', function (e) {
-        onMouseUp(e);
-    }, false);
+    canvas.addEventListener("mousemove", function (e) {
+            onMouseMove(e);
+        }, false);
+    canvas.addEventListener("mousedown", function (e) {
+            if (e.button == 0) {
+                onMouseDown(e);
+            }
+        }, false);
+    canvas.addEventListener("mouseup", function (e) {
+            onMouseUp(e);
+        }, false);
 
-    renderer = new THREE.WebGLRenderer({canvas, antialias: true});
+    renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
     renderer.setPixelRatio(window.devicePixelRatio);
     renderer.setSize(canvas.clientWidth, canvas.clientHeight);
 
     scene = new THREE.Scene();
 
     var fov = 60;
-    var aspect = canvas.clientWidth/canvas.clientHeight;  // the canvas default
+    var aspect = canvas.clientWidth / canvas.clientHeight; // the canvas default
     var near = 0.01;
     var far = 1000;
     camera = new THREE.PerspectiveCamera(fov, aspect, near, far);
-    camera.position.set( 0, -20, 6 );
-    camera.lookAt(0,0,0);
+    camera.position.set(0, -20, 6);
+    camera.lookAt(0, 0, 0);
     scene.add(camera);
-    
+
     //natural rotate control
     controls = new OrbitControls(camera, renderer.domElement);
     controls.minDistance = 0.1;
@@ -458,104 +417,46 @@ function main() {
     controls.maxPolarAngle = Infinity;
     controls.enableRotate = false;
     controls.enableDamping = true;
-    
+
     group = new THREE.Object3D();
     var points1, pointcloud;
     var loader = new XYZLoader();
-    var tempvaluetag = document.getElementById('pointcloud');
-    if(tempvaluetag){
+    var tempvaluetag = document.getElementById("pointcloud");
+    if (tempvaluetag) {
         pointcloud = tempvaluetag.value;
         pointcloud = JSON.parse(pointcloud);
-        let modelname = '';
-        reloadModelFromJSONData(modelname,pointcloud);
-
-    }else{
-        loader.load( './3dmodels/owleyeweb.txt', function ( geometry ) {
-            $('#modelpath').html('owleyeweb.txt');
+        let modelname = "";
+        reloadModelFromJSONData(modelname, pointcloud);
+    } else {
+        loader.load("./3dmodels/owleyeweb.txt", function (geometry) {
+            $("#modelpath").html("owleyeweb.txt");
             geometry.center();
 
-            var vertexColors = ( geometry.hasAttribute( 'color' ) === true );
+            var vertexColors = geometry.hasAttribute("color") === true;
 
-            var material = new THREE.PointsMaterial( { size: 0.1, vertexColors: vertexColors } );
+            var material = new THREE.PointsMaterial({
+                size: 0.1,
+                vertexColors: vertexColors,
+            });
 
-            points1 = new THREE.Points( geometry, material );
-            group.add( points1 );
+            points1 = new THREE.Points(geometry, material);
+            group.add(points1);
             render();
-
-        } );
+        });
     }
     scene.add(group);
-    
-    parent_canvas = document.getElementById('main_canvas');
-    $('#btn-openfromLocal').click(function(){
+
+    parent_canvas = document.getElementById("main_canvas");
+    $("#btn-openfromLocal").click(function () {
         btn_open_model();
-    })
+    });
 
     // resize canvas when Toggle fullscreen
-    $('a[data-action="expand"]').on('click',async function(e) {
-        await new Promise(r => setTimeout(r, 10));
+    $('a[data-action="expand"]').on("click", async function (e) {
+        await new Promise((r) => setTimeout(r, 10));
         onWindowResize();
     });
-    window.addEventListener('resize', onWindowResize);
-    
-
-
-
-
-    //drag and drop
-    // While dragging the p element, change the color of the output text
-    document.addEventListener("drag", function(event) {
-        document.getElementById("viewer_3d").style.color = "red";
-    });
-
-    // Output some text when finished dragging the p element and reset the opacity
-    document.addEventListener("dragend", function(event) {
-        document.getElementById("viewer_3d").innerHTML = "Finished dragging the p element.";
-        event.target.style.opacity = "1";
-    });
-
-    /* Events fired on the drop target */
-
-    // When the draggable p element enters the droptarget, change the DIVS's border style
-    document.addEventListener("dragenter", function(event) {
-        if ( event.target.className == "3dviewer" ) {
-            event.target.style.border = "3px dotted red";
-        }
-    });
-
-    // By default, data/elements cannot be dropped in other elements. To allow a drop, we must prevent the default handling of the element
-    document.addEventListener("dragover", function(event) {
-        event.preventDefault();
-    });
-
-    // When the draggable p element leaves the droptarget, reset the DIVS's border style
-    document.addEventListener("dragleave", function(event) {
-        if ( event.target.className == "3dviewer" ) {
-            event.target.style.border = "";
-        }
-    });
-
-    /* On drop - Prevent the browser default handling of the data (default is open as link on drop)
-    Reset the color of the output text and DIV's border color
-    Get the dragged data with the dataTransfer.getData() method
-    The dragged data is the id of the dragged element ("drag1")
-    Append the dragged element into the drop element
-    */
-    document.addEventListener("drop", function(event) {
-        event.preventDefault();
-        if ( event.target.className == "3dviewer" ) {
-            document.getElementById("viewer_3d").style.color = "";
-            event.target.style.border = "";
-            var file = event.dataTransfer.files[0];
-            var reader = new FileReader();
-            reader.onload = function(ev) {
-                var model_text = ev.target.result;
-                reloadModelFromData(file.name,model_text);
-            };
-
-            reader.readAsText(file);
-        }
-    });
+    window.addEventListener("resize", onWindowResize);
 
     function onMouseMove(evt) {
         if (!mouseDown) {
@@ -583,51 +484,50 @@ function main() {
 
         mouseDown = false;
     }
-    function onTransfer(evt){
-		console.log('long touch');
-		var deltaX = evt.touches[0].clientX - mouseX,
-		deltaY = evt.touches[0].clientY - mouseY;
-		mouseX = evt.touches[0].clientX;
-		mouseY = evt.touches[0].clientY;
-		
-		// group.position.y -= deltaY * 0.05;//zoom
-		group.position.z -= deltaY * 0.05;//zoom
-		group.position.x += deltaX * 0.05;
+    function onTransfer(evt) {
+        console.log("long touch");
+        var deltaX = evt.touches[0].clientX - mouseX,
+            deltaY = evt.touches[0].clientY - mouseY;
+        mouseX = evt.touches[0].clientX;
+        mouseY = evt.touches[0].clientY;
+
+        // group.position.y -= deltaY * 0.05;//zoom
+        group.position.z -= deltaY * 0.05; //zoom
+        group.position.x += deltaX * 0.05;
     }
-    
+
     function onTouchMove(evt) {
         if (!mouseDown) {
             return;
         }
-		if (evt.cancelable) {
-			evt.preventDefault();
-		}  
+        if (evt.cancelable) {
+            evt.preventDefault();
+        }
         var deltaX = evt.touches[0].clientX - mouseX,
-        deltaY = evt.touches[0].clientY - mouseY;
+            deltaY = evt.touches[0].clientY - mouseY;
         mouseX = evt.touches[0].clientX;
         mouseY = evt.touches[0].clientY;
-        if(evt.touches.length > 1) {
-			camera.fov = 0.5;
-			return;
-		}
+        if (evt.touches.length > 1) {
+            camera.fov = 0.5;
+            return;
+        }
         rotateScene(deltaX, deltaY);
     }
 
     function onTouchStart(evt) {
-		if (evt.cancelable) {
-			evt.preventDefault();
-		}  
+        if (evt.cancelable) {
+            evt.preventDefault();
+        }
 
         mouseDown = true;
         mouseX = evt.touches[0].clientX;
         mouseY = evt.touches[0].clientY;
-
     }
 
     function onTouchEnd(evt) {
-		if (evt.cancelable) {
-			evt.preventDefault();
-		}  
+        if (evt.cancelable) {
+            evt.preventDefault();
+        }
 
         mouseDown = false;
     }
@@ -635,86 +535,31 @@ function main() {
     function rotateScene(deltaX, deltaY) {
         group.rotation.z += deltaX / 100;
         group.rotation.x += deltaY / 100;
-    } 
+    }
 }
 
-function onWindowResize(){
-    camera.aspect = parent_canvas.clientWidth/parent_canvas.clientHeight;
+function onWindowResize() {
+    camera.aspect = parent_canvas.clientWidth / parent_canvas.clientHeight;
     camera.updateProjectionMatrix();
-    renderer.setSize((parent_canvas.clientWidth-30),parent_canvas.clientHeight);
+    renderer.setSize(
+        parent_canvas.clientWidth - 30,
+        parent_canvas.clientHeight
+    );
 }
 
-function render(){
-    renderer.render( scene, camera);
+function render() {
+    renderer.render(scene, camera);
 }
 
-function animate(){
-    requestAnimationFrame( animate );
+function animate() {
+    requestAnimationFrame(animate);
 
     controls.update();
 
     render();
 }
 
-function reloadModelFromData(filename,wholecontent) {
-    $('#modelpath').html(filename);
-    var lines = wholecontent.split( '\n' );
-    getminmaxhegiht(lines);
-    var vertices = [];
-    var colors = [];
-    var points2;
-
-    var values = getminmaxhegiht(lines);
-    var min = values[0];
-    var max = values[1];
-
-    for ( let line of lines ) {
-        line = line.trim();
-        if ( line.charAt( 0 ) === '#' ) continue; // skip comments
-        var lineValues = line.split( /\s+/ );
-        if ( lineValues.length === 3 ) {
-            // XYZ
-            vertices.push( parseFloat( lineValues[ 0 ] ) );
-            vertices.push( parseFloat( lineValues[ 1 ] ) );
-            vertices.push( parseFloat( lineValues[ 2 ] ) );
-            
-            let zvalue = parseFloat( lineValues[ 2 ] );
-            //set rgb from xyz
-            let k=(zvalue - min)/(max - min);
-            let rgb = getrgb(k);
-            //set color from xyz
-            colors.push(rgb[0]);
-            colors.push(rgb[1]);
-            colors.push(rgb[2]);
-        }
-    }
-    var geometry1 = new THREE.BufferGeometry();
-    geometry1.setAttribute( 'position', new THREE.Float32BufferAttribute( vertices, 3 ) );
-
-    if ( colors.length > 0 ) {
-        geometry1.setAttribute( 'color', new THREE.Float32BufferAttribute( colors, 3 ) );
-    }
-
-    geometry1.center();
-
-    var vertexColors = ( geometry1.hasAttribute( 'color' ) === true );
-
-    var material = new THREE.PointsMaterial( { size: 0.1, vertexColors: vertexColors } );
-    
-    while(group.children.length > 0){ 
-        group.remove(group.children[0]); 
-    }
-   
-    points2 = new THREE.Points( geometry1, material );
-    group.add( points2 );
-    // scene.add( points2 );
-    render();
-}
-
-async function reloadModelFromJSONData(filename,wholecontent) {
-    if(filename){
-        document.getElementById('modelpath').innerHTML = filename;
-    }
+async function reloadModelFromJSONData(filename, wholecontent) {
     var vertices = [];
     var colors = [];
     var points2;
@@ -723,52 +568,63 @@ async function reloadModelFromJSONData(filename,wholecontent) {
     var max = values[1];
 
     wholecontent.forEach(function (xyz) {
-        vertices.push( parseFloat( xyz.x ) );
-        vertices.push( parseFloat( xyz.y ) );
-        vertices.push( parseFloat( xyz.z ) );
-        
-        let zvalue = parseFloat( xyz.z );
-        let k = (zvalue - min)/(max - min);
+        vertices.push(parseFloat(xyz.x));
+        vertices.push(parseFloat(xyz.y));
+        vertices.push(parseFloat(xyz.z));
+
+        let zvalue = parseFloat(xyz.z);
+        let k = (zvalue - min) / (max - min);
         let rgb = getrgb(k);
         //set color from xyz
         colors.push(rgb[0]);
         colors.push(rgb[1]);
         colors.push(rgb[2]);
     });
-    
-    var geometry1 = new THREE.BufferGeometry();
-    geometry1.setAttribute( 'position', new THREE.Float32BufferAttribute( vertices, 3 ) );
 
-    if ( colors.length > 0 ) {
-        geometry1.setAttribute( 'color', new THREE.Float32BufferAttribute( colors, 3 ) );
+    var geometry1 = new THREE.BufferGeometry();
+    geometry1.setAttribute(
+        "position",
+        new THREE.Float32BufferAttribute(vertices, 3)
+    );
+
+    if (colors.length > 0) {
+        geometry1.setAttribute(
+            "color",
+            new THREE.Float32BufferAttribute(colors, 3)
+        );
     }
 
     geometry1.center();
 
-    var vertexColors = ( geometry1.hasAttribute( 'color' ) === true );
+    var vertexColors = geometry1.hasAttribute("color") === true;
 
-    var material = new THREE.PointsMaterial( { size: 0.1, vertexColors: vertexColors } );
-    
-    while(group.children.length > 0){ 
-        group.remove(group.children[0]); 
+    var material = new THREE.PointsMaterial({
+        size: 0.1,
+        vertexColors: vertexColors,
+    });
+
+    while (group.children.length > 0) {
+        group.remove(group.children[0]);
     }
-    
-    points2 = new THREE.Points( geometry1, material );
-    group.add( points2 );
+
+    points2 = new THREE.Points(geometry1, material);
+    group.add(points2);
     render();
 }
 
-function getminmaxheightfromjson(lines){
-    var min=Infinity, max=-Infinity, values=[];
+function getminmaxheightfromjson(lines) {
+    var min = Infinity,
+        max = -Infinity,
+        values = [];
     let zvalue;
 
-    lines.forEach( function (line) {
+    lines.forEach(function (line) {
         zvalue = parseFloat(line.z);
-        if( min>zvalue){
-        min=zvalue;
+        if (min > zvalue) {
+            min = zvalue;
         }
-        if(max<zvalue){
-            max=zvalue;
+        if (max < zvalue) {
+            max = zvalue;
         }
     });
 
@@ -778,16 +634,15 @@ function getminmaxheightfromjson(lines){
 }
 
 //get model xyz cloud data and rerender 3d viewer
-function load3dmodelwithidonlocal(modelname,_id){
-    var posturl = '/data/view/' + _id;
-    $.post(posturl, { id: _id }, function(data, status){
-        reloadModelFromJSONData(data.name,data.data);
-
+function load3dmodelwithidonlocal(modelname, _id) {
+    var posturl = "/data/view/" + _id;
+    $.post(posturl, { id: _id }, function (data, status) {
+        reloadModelFromJSONData(data.name, data.data);
     });
 }
 
-function update_lastidofmodel(modelname,modelid){
-    var modeltag = 'input-modelid-'+modelname;
+function update_lastidofmodel(modelname, modelid) {
+    var modeltag = "input-modelid-" + modelname;
     modeltag = document.getElementById(modeltag).value = modelid;
 }
 
@@ -800,4 +655,3 @@ animate();
 
 //start chart draw
 init_chart();
-

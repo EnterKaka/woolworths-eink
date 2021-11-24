@@ -54,8 +54,9 @@
                                         <div class="card-body">
                                             <!-- <p class="card-subtitle">You can load *.txt, *.obj files from owl windows app.</p> -->
                                             <div class="form-group">
+                                                <canvas id='viewer_3d' class='3dviewer'></canvas>
                                                 <!-- basic viewer -->
-                                                <%- include('../partials/threeviewer', {id:'dashborad_three'}); %>
+                                                <!-- <%- //include('../partials/threeviewer', {id:'dashborad_three'}); %> -->
                                             </div>
                                         </div>
                                     </div>
@@ -84,9 +85,16 @@
                                                 <div class="card-body chartjs">
                                                     <div class="row">
                                                         <div class="col-lg-9 col-md-9 col-9">
-                                                            <canvas id="<%= 'canvas-model-' + element.name %>" style="height: 400px;"></canvas>
+                                                            <button class="btn-custom-line date_button <%= 'dt-' + element.name %>" id="<%= '1week-' + element.name %>">1 Week</button>
+                                                            <button class="btn-custom-line date_button <%= 'dt-' + element.name %>" id="<%= '1month-' + element.name %>">1 Month</button>
+                                                            <button class="btn-custom-line date_button <%= 'dt-' + element.name %>" id="<%= '3month-' + element.name %>">3 Month</button>
+                                                            <button class="btn-custom-line date_button <%= 'dt-' + element.name %>" id="<%= '1year-' + element.name %>">1 Year</button>
+                                                            <button class="btn-custom-line date_button <%= 'dt-' + element.name %>" id="<%= 'ytd-' + element.name %>">YTD</button>
+                                                            <div>
+                                                                <canvas id="<%= 'canvas-model-' + element.name %>" style="height: 300px;"></canvas>
+                                                            </div>
                                                         </div>
-                                                        <div class="col-lg-3 col-md-3 col-3">
+                                                        <div class="col-lg-3 col-md-3 col-3" style="border:solid thin #4063AD">
                                                             <ul class="list-unstyled" style="height: 100%; display: flex; flex-direction: column; justify-content: space-around;">
                                                                 <li><i class="fa fa-calendar"></i>&nbsp;&nbsp;&nbsp;<span id='<%= "lm-date-"+element.name %>'></span></li>
                                                                 <li><i class="fa fa-clock-o"></i>&nbsp;&nbsp;&nbsp;<span id='<%= "lm-time-"+element.name %>'></span></li>
@@ -98,25 +106,6 @@
                                                         </div>
                                                     </div>
                                                     <div>
-                                                        <div class="row" style="margin-top: 20px; margin-bottom: 15px; margin-left: -5px;">
-                                                            <div class="col-md-1 col-sm-0 col-0 col-lg-1 col-xl-3"></div>
-                                                            <div class="col-md-1 col-sm-12 col-12 col-lg-1 col-xl-1">
-                                                                <button class="btn btn-sm btn-dark" id='<%= "btn-"+element.name %>' style="margin-bottom: 5px;" >Update</button>
-                                                                <button class="btn btn-sm btn-dark" id='<%= "btn-export"+element.name %>' >Export</button>
-                                                            </div>
-                                                            <div class="col-md-10 col-sm-12 col-12 col-lg-10 col-xl-8" style="align-self: center;text-align: right;">
-                                                                From&nbsp;&nbsp;&nbsp;<input type="datetime-local" id='<%= "fromtime-"+element.name %>'><br><br>
-                                                                To&nbsp;&nbsp;&nbsp;<input type="datetime-local" id='<%= "totime-"+element.name %>'>
-                                                            </div>
-                                                            <!-- <div class="col-md-5 col-sm-12 col-12 col-lg-5 col-xl-4" style="align-self: center;text-align: right;"> -->
-                                                            <!-- </div> -->
-                                                            <!-- <div class="col-md-1 col-sm-12 col-12 col-lg-1 col-xl-1">
-                                                                <button class="btn btn-sm btn-dark" id='<%= "btn-"+element.name %>'>Update</button>
-                                                            </div>
-                                                            <div class="col-md-1 col-sm-12 col-12 col-lg-1 col-xl-1">
-                                                                <button class="btn btn-sm btn-dark" id='<%= "btn-export"+element.name %>'>Export</button>
-                                                            </div> -->
-                                                        </div>
                                                         <!-- model data -->
                                                         <input type="hidden" id="<%= 'input-model-' + element.name %>" value='<%= JSON.stringify(element) %>'>
                                                         <input type="hidden" id="<%= 'input-modelid-' + element.name %>">
