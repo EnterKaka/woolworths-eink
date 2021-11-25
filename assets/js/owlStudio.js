@@ -1230,7 +1230,7 @@ export const owlStudio = function (cv1, cv2, parent) {
             }
         } else {
             this.gcs.position.copy(vector);
-            this.gcs.rotation.copy(new THREE.Euler())
+            // this.gcs.rotation.copy(new THREE.Euler())
         }
 
 
