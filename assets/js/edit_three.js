@@ -155,10 +155,12 @@ function startApp() {
         let pointcloud = tempvaluetag.value;
         pointcloud = JSON.parse(pointcloud);
         cloudmachine.reloadModelFromJSONData('new_Model', pointcloud);
+        cloudmachine.setGlobalCoordinate()
     } else {
         const loader = new THREE.FileLoader();
         loader.load('./3dmodels/Weissspat_1632872292.txt', (text) => {
             cloudmachine.reloadModelFromData('Weissspat_1632872292.txt', text);
+            cloudmachine.setGlobalCoordinate()
         });
     }
 }

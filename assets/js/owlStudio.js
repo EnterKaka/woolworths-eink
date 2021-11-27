@@ -88,6 +88,8 @@ export const owlStudio = function (cv1, cv2, parent) {
 
         this.scene.background = new THREE.Color(0x111111);
 
+        this.setGlobalCoordinate();
+
 
 
         // controls.addEventListener('change', render); // call this only in static scenes (i.e., if there is no animation loop)
