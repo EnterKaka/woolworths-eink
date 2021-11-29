@@ -80,6 +80,17 @@ function drawChart(ctx, data, ft, tt) {
             },
             tooltip: {
                 position: "nearest",
+                callbacks: {
+                    label: function(tooltipItem) {
+                        var label = tooltipItem.dataset.label || '';
+    
+                        if (label) {
+                            label += ': ';
+                        }
+                        label += Math.round(tooltipItem.parsed.y * 100) / 100 + '  m³';
+                        return label;
+                    }
+                }
             },
         },
         scales: {
@@ -117,7 +128,7 @@ function drawChart(ctx, data, ft, tt) {
             labels: tempdata[0],
             datasets: [
                 {
-                    label: data.name + " - Volumes",
+                    label: "Volume",
                     data: tempdata[1],
                     lineTension: 0,
                     fill: false,
@@ -203,7 +214,7 @@ function drawChart(ctx, data, ft, tt) {
             labels: tempdata[0],
             datasets: [
                 {
-                    label: data.name + " - Volumes",
+                    label: "Volume",
                     data: tempdata[1],
                     lineTension: 0,
                     fill: false,
@@ -240,10 +251,19 @@ function drawChart(ctx, data, ft, tt) {
         if (event_.timeStamp - time_stamp < 300) {
             // A tap that occurs less than 300 ms from the last tap will trigger a double tap. This delay may be different between browsers.
             event_.preventDefault();
+            var viewer = document.getElementById('viewer_3d');
+            var close = document.getElementsByClassName('view_close');
+            if(close.length){
+                $(close).remove();
+            }    
+            $(viewer).remove();
             var this_canvas = $(this).attr("id");
             this_canvas = this_canvas.split("canvas-model-");
             var this_canvas_modelname = "input-modelid-" + this_canvas.slice(-1);
             this_canvas_modelname = document.getElementById(this_canvas_modelname).value;
+            init_highlow();
+            main();
+            animate();
             load3dmodelwithidonlocal(this_canvas.slice(-1), this_canvas_modelname);
             return false;
         }
@@ -316,14 +336,14 @@ function makeChartDataFromModelSets(data) {
         }
         if (totime < tmpdate) {
             totime = tmpdate;
-            lastdatetime = element.datetime;
-            lastdatetime = lastdatetime.split(" ");
+            // lastdatetime = element.datetime;
         }
         if (last_datetime < tmpdate) {
             last_datetime = tmpdate;
             last_id = element._id;
         }
     }
+    lastdatetime = data.log[0].datetime.split(" ");
     dens = parseFloat(mass) / parseFloat(vol);
     fromtime.setMinutes(fromtime.getMinutes() - fromtime.getTimezoneOffset());
     totime.setMinutes(totime.getMinutes() - totime.getTimezoneOffset());
@@ -332,8 +352,8 @@ function makeChartDataFromModelSets(data) {
         eachdata,
         lastdatetime[0],
         lastdatetime[1],
-        vol.toFixed(2),
-        mass.toFixed(2),
+        data.log[0].volume.toFixed(2),
+        data.log[0].mass.toFixed(2),
         dens.toFixed(2),
         (totalvols / cnt).toFixed(2),
         _id,
@@ -373,7 +393,6 @@ function makedefaultDate(bugdate) {
     var tmpstr1 = tmpstr[0];
     var list = tmpstr1.split(".");
     truedate = list[2] + "-" + list[1] + "-" + list[0] + "T" + tmpstr[1];
-
     return truedate;
 }
 
