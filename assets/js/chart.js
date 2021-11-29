@@ -293,6 +293,18 @@ function drawChart(ctx, data, ft, tt) {
                 if (o.datetime.toString() === label) return true;
             });
             this_canvas_modelname = obj._id;
+            let lm_date = "lm-date-" + data.name,
+            lm_time = "lm-time-" + data.name,
+            lm_volume = "lm-volume-" + data.name,
+            lm_mass = "lm-mass-" + data.name;
+            console.log(obj);
+            console.log(obj.datetime);
+            var datetime = obj.datetime.split(' ');
+            console.log(datetime)
+            document.getElementById(lm_date).innerHTML = datetime[0];
+            document.getElementById(lm_time).innerHTML = datetime[1];
+            document.getElementById(lm_volume).innerHTML = Math.round(obj.volume*100)/100;
+            document.getElementById(lm_mass).innerHTML = Math.round(obj.mass*100)/100;
         } else {
             this_canvas_modelname = document.getElementById(this_canvas_modelname).value;
         }
