@@ -3,6 +3,15 @@
 	<head>
 		<!-- <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css"> -->
 		<%- include('../partials/head'); %>
+		<style>
+			#DataTables_Table_0_wrapper{
+				padding-left: 0px;
+				padding-right: 0px;
+			}
+			select.form-control:not([size]):not([multiple]){
+				height: calc(2.75rem + -7px);
+			}
+		</style>
 	</head>
 	<body class="vertical-layout vertical-menu 2-columns   menu-expanded fixed-navbar" data-open="click" data-menu="vertical-menu" data-color="bg-gradient-x-purple-blue" data-col="2-columns">
 		<!-- fixed-top-->
@@ -60,13 +69,13 @@
 								<div class="card-content collapse show">
 									<div class="card-body" style="padding-bottom: 0px;">
 										<div class="row">
-											<div class="col-md-9">
+											<!-- <div class="col-md-9"> -->
 												<!-- <p>This is Owl Studio Model Table.
 													<br>You can load history and view 3d models.
 												</p> -->
-											</div>
-											<div class="col-md-3">
-												<input type="button" style="float: right;" class="btn btn-custom-fill" value='Get Data' style="float: bottom" onclick="onclick_get()">
+											<!-- </div> -->
+											<div class="col-md-12">
+												<input type="button" style="float: right; margin-right: 5px;" class="btn btn-custom-fill" value='Get Data' style="float: bottom" onclick="onclick_get()">
 											</div>
 										</div>
 										<% if (messages.error) { %>
@@ -175,7 +184,7 @@
 					{ data: 'mass', width: '30%', targets: 3},
 					{ data: 'volume', width: '30%', targets: 4},
 					{ data: 'setid', width: '30%',targets: 5, render:function ( data, type, row ) {
-					return '<a href="/data/view/' + row._id + '" class="btn btn-custom-line btn-min-width mr-1 mb-1"><i class="fa fa-eye" aria-hidden="true"></i> View</a><a href="/data/edit/' + row._id + '" class="btn btn-custom-line btn-min-width mr-1 mb-1"><i class="fa fa-pencil" aria-hidden="true"></i> Edit</a>';}},
+					return '<a href="/data/view/' + row._id + '" class="btn btn-custom-line mr-1 mb-1" style="padding:0.75rem 0.8rem;min-width: 3rem;"><i class="fa fa-eye" aria-hidden="true"></i></a><a href="/data/edit/' + row._id + '" class="btn btn-custom-line mr-1 mb-1" style="padding:0.75rem 0.8rem;min-width: 3rem;"><i class="fa fa-pencil" aria-hidden="true"></i></a>';}},
 				],
 			});
 

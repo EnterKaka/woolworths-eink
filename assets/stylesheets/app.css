@@ -5,8 +5,8 @@
 /*Sidebar Logo height fix*/
 #navbar_head_logo{
     height: 7rem;
+    margin-bottom: 25px !important;
 }
-
 /* 
 #img_owllogo{
     display: block;
@@ -399,6 +399,13 @@ h1,h2,h3,h4,h5,h6{
     position: absolute;
     right: -10px;
     top: -13px;
+}
+.page-item.active .page-link{
+    border-color: #4063AD;
+    background-color: #4063AD;
+}
+.pagination .page-link{
+    color: #4063AD;
 }
 /* .navbar-container{
     background-image: none !important;
