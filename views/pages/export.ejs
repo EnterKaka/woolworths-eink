@@ -42,9 +42,9 @@
 								<div class="card" id="canvas-container">
 									<div class="card-header">
 										<a class="heading-elements-toggle"><i class="la la-ellipsis font-medium-3"></i></a>
-										<div class="heading-elements">
+										<!-- <div class="heading-elements">
 											<a data-action="expand"><i class="ft-maximize"></i></a>
-										</div>
+										</div> -->
 									</div>
 									<div class="card-content collapse show"  style="position: relative;">
 										<div class="card-body">
@@ -113,8 +113,8 @@
 														</label>
 													</div>
 												</div>
-												<div class="col-lg-3 col-md-3 col-sm-3" style="display: flex;">
-													<button type="button" class="btn btn-custom-fill" onclick="onclick_get()" style="margin: auto;"><i class="ft-download"></i> Export</button>
+												<div class="col-lg-3 col-md-3 col-sm-3" style="display: flex; flex-direction: row-reverse;">
+													<button type="button" class="btn btn-custom-fill" onclick="onclick_get()" style="margin: auto 0;"><i class="ft-download"></i> Export</button>
 													<% if (messages.error) { %>
 														<!-- <p style="color:red"><%- messages.error %></p> -->
 														<script>

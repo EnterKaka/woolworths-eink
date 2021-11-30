@@ -300,7 +300,6 @@ function drawChart(ctx, data, ft, tt) {
             console.log(obj);
             console.log(obj.datetime);
             var datetime = obj.datetime.split(' ');
-            console.log(datetime)
             document.getElementById(lm_date).innerHTML = datetime[0];
             document.getElementById(lm_time).innerHTML = datetime[1];
             document.getElementById(lm_volume).innerHTML = Math.round(obj.volume*100)/100;
@@ -592,7 +591,7 @@ async function reloadModelFromJSONData(filename, wholecontent) {
     var max = values[1];
 
     wholecontent.forEach(function (xyz) {
-        vertices.push(parseFloat(xyz.x));
+        vertices.push(parseFloat(xyz.x)*(-1));
         vertices.push(parseFloat(xyz.y));
         vertices.push(parseFloat(xyz.z));
 
