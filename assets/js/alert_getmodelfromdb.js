@@ -24,7 +24,7 @@ function onclick_get(){
                 { data: 'mass', width: '30%', targets: 3},
                 { data: 'volume', width: '30%', targets: 4},
                 {  data: 'setid', width: '30%', targets: 5, render:function ( data, type, row ) {
-                  return '<a href="/data/view/' + row._id + '" class="btn btn-custom-line btn-min-width mr-1 mb-1">View</a><a href="/data/edit/' + row._id + '" class="btn btn-custom-line btn-min-width mr-1 mb-1">Edit</a>';}},
+                  return '<a href="/data/view/' + row._id + '" class="btn btn-custom-line btn-min-width mr-1 mb-1"><i class="fa fa-eye" aria-hidden="true"></i> View</a><a href="/data/edit/' + row._id + '" class="btn btn-custom-line btn-min-width mr-1 mb-1"><i class="fa fa-pencil" aria-hidden="true"></i> Edit</a>';}},
                 ],
                 initComplete: function(settings, json) {
                   $('#prepross').empty();

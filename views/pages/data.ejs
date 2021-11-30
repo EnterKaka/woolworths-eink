@@ -28,7 +28,7 @@
 				</div>
 				<div class="content-header row">
 					<div class="content-header-left col-md-4 col-12 mb-2">
-					<h3 class="content-header-title">Tables</h3>
+					<h3 class="content-header-title">Data</h3>
 					</div>
 					<div class="content-header-right col-md-8 col-12">
 						<div class="breadcrumbs-top float-md-right">
@@ -36,7 +36,7 @@
 								<ol class="breadcrumb">
 									<li class="breadcrumb-item"><a href="/">Home</a>
 									</li>
-									<li class="breadcrumb-item active">Tables
+									<li class="breadcrumb-item active">Data
 									</li>
 								</ol>
 							</div>
@@ -50,20 +50,20 @@
 						<div class="col-12">
 							<div class="card">
 								<div class="card-header">
-									<h4 class="card-title">Owl Studio Model Table</h4>
+									<!-- <h4 class="card-title">Owl Studio Model Table</h4>
 									<a class="heading-elements-toggle"><i class="la la-ellipsis-v font-medium-3"></i></a>
 									<div class="heading-elements">
 											<a data-action="expand"><i class="ft-maximize"></i></a>
 										</ul>
-									</div>
+									</div> -->
 								</div>
 								<div class="card-content collapse show">
 									<div class="card-body" style="padding-bottom: 0px;">
 										<div class="row">
 											<div class="col-md-9">
-												<p>This is Owl Studio Model Table.
+												<!-- <p>This is Owl Studio Model Table.
 													<br>You can load history and view 3d models.
-												</p>
+												</p> -->
 											</div>
 											<div class="col-md-3">
 												<input type="button" style="float: right;" class="btn btn-custom-fill" value='Get Data' style="float: bottom" onclick="onclick_get()">
@@ -175,7 +175,7 @@
 					{ data: 'mass', width: '30%', targets: 3},
 					{ data: 'volume', width: '30%', targets: 4},
 					{ data: 'setid', width: '30%',targets: 5, render:function ( data, type, row ) {
-					return '<a href="/data/view/' + row._id + '" class="btn btn-custom-line btn-min-width mr-1 mb-1">View</a><a href="/data/edit/' + row._id + '" class="btn btn-custom-line btn-min-width mr-1 mb-1">Edit</a>';}},
+					return '<a href="/data/view/' + row._id + '" class="btn btn-custom-line btn-min-width mr-1 mb-1"><i class="fa fa-eye" aria-hidden="true"></i> View</a><a href="/data/edit/' + row._id + '" class="btn btn-custom-line btn-min-width mr-1 mb-1"><i class="fa fa-pencil" aria-hidden="true"></i> Edit</a>';}},
 				],
 			});
 

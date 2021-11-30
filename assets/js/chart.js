@@ -377,16 +377,19 @@ function makeChartDataFromModelSets(data) {
 function makeChartDataFromModelSetsWithRange(data, ft, tt) {
     let labels = [], eachdata = [];
     var last_id, last_datetime = ft, lastdatetime;
+    var cnt = 0, totalvols = 0;
     for (const element of data.log) {
         lastdatetime = element.datetime;
         var tmpdate = makedefaultDate(lastdatetime);
         tmpdate = new Date(tmpdate);
+
         // console.log(ft.toISOString(),tmpdate.toISOString(),tt.toISOString());
         if (ft <= tmpdate) {
             if (tt >= tmpdate) {
                 labels.push(lastdatetime);
                 eachdata.push(element.volume);
-
+                cnt = cnt + 1;
+                totalvols = totalvols + parseFloat(element.volume);
                 //get last date model id
                 if (last_datetime < tmpdate) {
                     last_datetime = tmpdate;
@@ -395,6 +398,7 @@ function makeChartDataFromModelSetsWithRange(data, ft, tt) {
             }
         }
     }
+    $("#lm-averagevolume-" + data.name).html(cnt === 0?0:(totalvols/cnt).toFixed(2));
     return [labels, eachdata, last_id];
 }
 
