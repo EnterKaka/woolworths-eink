@@ -472,3 +472,6 @@ iframe {
     opacity: 1;
   }
 }
+.input100[type="text"]{
+  text-transform: lowercase;
+}
