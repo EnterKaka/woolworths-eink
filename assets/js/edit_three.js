@@ -11,12 +11,13 @@ cloudmachine.setListViewFunc((list, activeId) => {
 
     for (let i = 0; i < list.length; i++) {
 
-        dom.innerHTML += `<div data-id="${i}" class="model ${actived(activeId, i) ? 'active' : ''} btn btn-outline-primary round">
-            <span data-id="${i}" class="modelname">${list[i].name}</span>
+        dom.innerHTML += `<div data-id="${i}" class="model ${actived(activeId, i) ? 'active' : ''} btn btn-outline-primary">
+            <span data-id="${i}" class="modelname" title="${list[i].name}">${list[i].name}</span>
             <i data-id="${i}" class="${list[i].group.visible ? 'ft-eye' : 'ft-eye-off'} modeleye"></i>
             <a data-id="${i}" id="m-eye" class="modeldel" href="javascript:void(0)"><i class="ft-x"></i></a>
         </div>`;
 
+        if (cloudmachine.gcs) continue;
         if (!actived(activeId, i)) {
             list[i].group.children[4].visible = false;
         } else if (document.getElementById('coordinate').checked) {
@@ -47,9 +48,9 @@ cloudmachine.setListViewFunc((list, activeId) => {
         console.log('dblclicked')
         let target = cloudmachine.groupList[parseInt(this.dataset.id)];
         if (!e.ctrlKey) {
-            cloudmachine.setCameraPosition(target.position)
+            cloudmachine.setCameraPosition(target.group.position)
         } else {
-            cloudmachine.setCameraPosition(target.position)
+            cloudmachine.setCameraPosition(target.group.position)
         }
 
         cloudmachine.render();
@@ -87,6 +88,18 @@ function actived(activeId, i) {
         if (target == i) return true;
     }
     return false;
+}
+
+function expand() {
+    $('#sidebar').toggleClass('hide');
+    $('.navbar-container.content').toggleClass('expand');
+    $('.app-content.content').toggleClass('expand');
+    $('footer.footer').toggleClass('expand');
+    setTimeout(() => {
+        cloudmachine.windowResize()
+        // $('#viewer_3d').width('calc(100%)');
+    }, 500);
+
 }
 
 function setCurrentViewSetting() {
@@ -142,10 +155,12 @@ function startApp() {
         let pointcloud = tempvaluetag.value;
         pointcloud = JSON.parse(pointcloud);
         cloudmachine.reloadModelFromJSONData('new_Model', pointcloud);
+        cloudmachine.setGlobalCoordinate()
     } else {
         const loader = new THREE.FileLoader();
         loader.load('./3dmodels/Weissspat_1632872292.txt', (text) => {
             cloudmachine.reloadModelFromData('Weissspat_1632872292.txt', text);
+            cloudmachine.setGlobalCoordinate()
         });
     }
 }
@@ -273,7 +288,8 @@ window.onload = function () {
     $('#input_model').change(openModel_Fromlocal);
 
     document.getElementById('obj-download').addEventListener('click', () => {
-        const result = cloudmachine.getObjDataOf2D()
+        // const result = cloudmachine.getObjDataOf2D()
+        const result = cloudmachine.getObjData()
         download('model.obj', 'object', result);
     })
 
@@ -339,6 +355,17 @@ window.onload = function () {
         };
     });
 
+    document.getElementById('gcsDiv').addEventListener('click', function () {
+
+        let two = document.getElementById('gcs');
+        if (!two.checked) {
+            cloudmachine.deleteGlobalCoordinate();
+        }
+        else {
+            cloudmachine.setGlobalCoordinate();
+        };
+    });
+
     document.getElementById('pointcolor').addEventListener('input', function () {
         cloudmachine.setPointColor(this.value)
     });
@@ -359,6 +386,10 @@ window.onload = function () {
         cloudmachine.setSelectedSize(this.value)
     });
 
+    document.getElementById('pointsize').addEventListener('input', function () {
+        cloudmachine.setPointSize(this.value)
+    });
+
     document.getElementById('selectedcolor').addEventListener('input', function () {
         cloudmachine.setSelectedColor(this.value)
     });
@@ -367,6 +398,12 @@ window.onload = function () {
         document.getElementById('btn-' + cloudmachine.toolState).classList.remove('active')
         document.getElementById('btn-rotate2').classList.add('active')
         cloudmachine.setToolState('rotate2')
+    });
+
+    document.getElementById('btn-rotate3').addEventListener('click', function () {
+        document.getElementById('btn-' + cloudmachine.toolState).classList.remove('active')
+        document.getElementById('btn-rotate3').classList.add('active')
+        cloudmachine.setToolState('rotate3')
     });
 
     document.getElementById('btn-reset').addEventListener('click', function () {
@@ -391,6 +428,12 @@ window.onload = function () {
         document.getElementById('btn-' + cloudmachine.toolState).classList.remove('active')
         document.getElementById('btn-addpoint').classList.add('active')
         cloudmachine.setToolState('addpoint')
+    });
+
+    document.getElementById('btn-cross').addEventListener('click', function () {
+        document.getElementById('btn-' + cloudmachine.toolState).classList.remove('active')
+        document.getElementById('btn-cross').classList.add('active')
+        cloudmachine.setToolState('cross')
     });
 
     // document.getElementById('btn-translate2').addEventListener('click', function () {
@@ -429,6 +472,21 @@ window.onload = function () {
         cloudmachine.transDir = this.value;
     })
 
+    document.getElementById('cross-offset').addEventListener('change', function () {
+        cloudmachine.updateCrossSection()
+    })
+
+    document.getElementById('cross-width').addEventListener('change', function () {
+        cloudmachine.updateCrossSection()
+    })
+
+    document.getElementById('cross-offset').addEventListener('input', function () {
+        cloudmachine.updateCrossSection()
+    })
+
+    document.getElementById('cross-width').addEventListener('input', function () {
+        cloudmachine.updateCrossSection()
+    })
     // document.getElementById('trans-axis2').addEventListener('change', function () {
     //     cloudmachine.transDir = this.value;
     // })
@@ -551,10 +609,10 @@ window.onload = function () {
             console.log(1)
             $("#delauny").trigger('click');
         }
-        else if (e.keyCode == 87 && e.shiftKey) {
-            console.log(2)
-            $("#delauny3").trigger('click');
-        }
+        // else if (e.keyCode == 87 && e.shiftKey) {
+        //     console.log(2)
+        //     $("#delauny3").trigger('click');
+        // }
         else if (e.keyCode == 69 && e.shiftKey) {
             console.log(3)
             $("#surface").trigger('click');
@@ -602,8 +660,8 @@ window.onload = function () {
     }, false);
 
     document.getElementById('btn-directSave').addEventListener('click', () => {
-        document.getElementById('ds-modelName').value = document.getElementById('modelpath').innerText;
-        document.getElementById('ds-modelVolume').value = cloudmachine.sessionHistory[cloudmachine.sessionHistory.length - 1].volume || 0;
+        document.getElementById('ds-modelName').value = cloudmachine.groupList[cloudmachine.activeId[0]].name;
+        document.getElementById('ds-modelVolume').value = cloudmachine.groupList[cloudmachine.activeId[0]].volume || 0;
     })
 
     document.getElementById('directSaveBtn').addEventListener('click', () => {
@@ -737,7 +795,7 @@ window.onload = function () {
         }
         $('.hload-btn').click(function () {
             console.log({ this: this })
-            document.getElementById('modelpath').innerText = this.parentElement.parentElement.children[0].innerText;
+            // document.getElementById('modelpath').innerText = this.parentElement.parentElement.children[0].innerText;
             cloudmachine.reloadModelFromArray(sessionHistory[parseInt(this.dataset.id)].name, sessionHistory[parseInt(this.dataset.id)].data, sessionHistory[parseInt(this.dataset.id)].matrix);
             $('#browser-close').trigger('click');
         })
@@ -813,7 +871,7 @@ window.onload = function () {
                 }
                 $('.dload-btn').click(function () {
                     console.log({ data: res.data })
-                    document.getElementById('modelpath').innerText = this.parentElement.parentElement.children[0].innerText;
+                    // document.getElementById('modelpath').innerText = this.parentElement.parentElement.children[0].innerText;
                     cloudmachine.reloadModelFromArray(res.data[parseInt(this.dataset.id)].name, res.data[parseInt(this.dataset.id)].data, res.data[parseInt(this.dataset.id)].matrix);
                     $('#browser-close').trigger('click');
                 })
@@ -948,6 +1006,14 @@ window.onload = function () {
 
     })
 
+    document.getElementById('cross-plane').addEventListener('change', function () {
+        if (cloudmachine.clipGrid) {
+            // cloudmachine.initDraw()
+            cloudmachine.getCrossSection(cloudmachine.clipPoints[0], cloudmachine.clipPoints[1], false)
+            cloudmachine.render()
+        }
+    })
+
     document.getElementById('absTranslate').addEventListener('click', () => {
         let x = document.getElementById('trans-x').value;
         let y = document.getElementById('trans-y').value;
@@ -1075,4 +1141,6 @@ window.onload = function () {
         }
         setTimeout(() => { cloudmachine.windowResize() }, 500)
     })
+
+    document.getElementById('expand').addEventListener('click', expand)
 };

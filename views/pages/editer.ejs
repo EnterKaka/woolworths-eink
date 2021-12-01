@@ -16,21 +16,21 @@
 <body id="editer" class="vertical-layout vertical-menu 2-columns   menu-expanded fixed-navbar" data-open="click"
   data-menu="vertical-menu" data-color="bg-gradient-x-purple-blue" data-col="2-columns" style="padding-top:0;">
   <!-- fixed-top-->
-  <div style="display: none;">
-    <%- include('../partials/header'); %>
-  </div>
-  <!-- ////////////////////////////////////////////////////////////////////////////-->
-  <%- include('../partials/sidebar'); %>
+  <!-- <div style="display: none;"> -->
+  <%- include('../partials/editHeader'); %>
+    <!-- </div> -->
+    <!-- ////////////////////////////////////////////////////////////////////////////-->
+    <%- include('../partials/sidebar'); %>
 
-    <!-- dashboard -->
-    <div class="app-content content" id="editArea">
-      <div
+      <!-- dashboard -->
+      <div class="app-content content" id="editArea" style="margin-top:70px;">
+        <!-- <div
         style="height: 100px;width: 100%;position: fixed;background-image: linear-gradient(to right, #9f78ff, #32cafe);">
-      </div>
-      <div class="content-wrapper" style="padding:1.7rem;">
+      </div> -->
+        <div class="content-wrapper" style="padding:0;">
 
-        <!-- <div class="content-wrapper-before"></div> -->
-        <!-- <div class="content-header row">
+          <!-- <div class="content-wrapper-before"></div> -->
+          <!-- <div class="content-header row">
             <div class="content-header-left col-md-4 col-12 mb-2">
               <h3 class="content-header-title">Owl Eye 3D Editor</h3>
             </div>
@@ -48,497 +48,746 @@
             </div>
           </div> -->
 
-        <div class="content-body">
-          <!-- Basic Buttons start -->
-          <section id="basic-buttons">
-            <div class="row">
-              <div class="col-lg-12 col-md-12">
-                <div class="card" id="canvas-container">
-                  <div class="card-header" style="padding-bottom:0">
-                    <% if(messages.pcl_name){ %>
-                      <h4 class="card-title" id='modelpath'>
-                        <%= messages.pcl_name %>
-                      </h4>
-                      <% }else{ %>
-                        <h4 class="card-title" id='modelpath'>filename</h4>
-                        <% } %>
-                          <!-- <label>GroundFile : </label><label id='groundpath'
+          <div class="content-body">
+            <!-- Basic Buttons start -->
+            <section id="basic-buttons">
+              <div class="row">
+                <div class="col-lg-12 col-md-12">
+                  <div class="card" id="canvas-container" style="margin-bottom:0;">
+                    <!-- <div class="card-header" style="padding-bottom:0"> -->
+
+
+                    <!--                        
+                          <h4 class="card-title" id='modelpath'></h4>
+                           -->
+                    <!-- <label>GroundFile : </label><label id='groundpath'
                               style="margin-top:5px; margin-bottom:0;font-size:12px;">
                             </label> -->
 
-                          <a class="heading-elements-toggle"><i class="la la-ellipsis-v font-medium-3"></i></a>
-                          <div class="heading-elements">
-                            <ul class="nav navbar-nav list-inline float-right mb-0">
-                              <li><a data-action="expand"><i class="ft-maximize"></i></a></li>
-                            </ul>
-                            <ul class="nav navbar-nav list-inline float-right mb-0 mr-3">
-                              <li class="dropdown dropdown-user nav-item">
-                                <a class="nav-link" href="/logout"><i class="ft-power"></i>Logout</a>
-                              </li>
-                            </ul>
-                            <ul class="nav navbar-nav list-inline float-right mb-0 mr-1">
-                              <li class="dropdown dropdown-language nav-item">
-                                <a class="dropdown-toggle nav-link" id="dropdown-flag" href="#" data-toggle="dropdown"
-                                  aria-haspopup="true" aria-expanded="false">
-                                  <i class="flag-icon flag-icon-us"></i><span class="selected-language"></span>
-                                </a>
-                                <div class="dropdown-menu" aria-labelledby="dropdown-flag">
-                                  <div class="arrow_box">
-                                    <a class="dropdown-item" href="#"><i class="flag-icon flag-icon-us"></i> English</a>
-                                    <a class="dropdown-item" href="#"><i class="flag-icon flag-icon-de"></i> Germany</a>
-                                  </div>
-                                </div>
-                              </li>
-                            </ul>
+                    <!-- <a class="heading-elements-toggle"><i class="la la-ellipsis-v font-medium-3"></i></a> -->
+                    <!-- <div class="heading-elements">
+                        <ul class="nav navbar-nav list-inline float-right mb-0">
+                          <li><a data-action="expand"><i class="ft-maximize"></i></a></li>
+                        </ul>
+                        <ul class="nav navbar-nav list-inline float-right mb-0 mr-3">
+                          <li class="dropdown dropdown-user nav-item">
+                            <a class="nav-link" href="/logout"><i class="ft-power"></i>Logout</a>
+                          </li>
+                        </ul>
+                        <ul class="nav navbar-nav list-inline float-right mb-0 mr-1">
+                          <li class="dropdown dropdown-language nav-item">
+                            <a class="dropdown-toggle nav-link" id="dropdown-flag" href="#" data-toggle="dropdown"
+                              aria-haspopup="true" aria-expanded="false">
+                              <i class="flag-icon flag-icon-us"></i><span class="selected-language"></span>
+                            </a>
+                            <div class="dropdown-menu" aria-labelledby="dropdown-flag">
+                              <div class="arrow_box">
+                                <a class="dropdown-item" href="#"><i class="flag-icon flag-icon-us"></i>
+                                  English</a>
+                                <a class="dropdown-item" href="#"><i class="flag-icon flag-icon-de"></i>
+                                  Germany</a>
+                              </div>
+                            </div>
+                          </li>
+                        </ul>
 
-                          </div>
-                  </div>
-                  <div class="card-content collapse show">
+                      </div> -->
+                    <!-- </div> -->
+                    <div class="card-content collapse show">
 
 
 
-                    <div class="card-body">
-                      <ul class="nav nav-tabs">
-                        <li class="nav-item">
-                          <a class="nav-link active" id="baseIcon-tab4" data-toggle="tab" aria-controls="tabIcon4"
-                            href="#tabIcon4" aria-expanded="true" data-nsfw-filter-status="swf"><i
-                              class="ft-file-text mr-1"></i> File</a>
-                        </li>
-                        <li class="nav-item">
-                          <a class="nav-link" id="baseIcon-tab1" data-toggle="tab" aria-controls="tabIcon1"
-                            href="#tabIcon1" aria-expanded="false" data-nsfw-filter-status="swf"><i
-                              class="ft-eye mr-1"></i> View</a>
-                        </li>
-                        <li class="nav-item">
-                          <a class="nav-link" id="baseIcon-tab2" data-toggle="tab" aria-controls="tabIcon2"
-                            href="#tabIcon2" aria-expanded="false" data-nsfw-filter-status="swf"><i
-                              class="ft-navigation mr-1"></i> Selection</a>
-                        </li>
-                        <li class="nav-item">
-                          <a class="nav-link" id="baseIcon-tab3" data-toggle="tab" aria-controls="tabIcon3"
-                            href="#tabIcon3" aria-expanded="false" data-nsfw-filter-status="swf"><i
-                              class="ft-scissors mr-1"></i> Tools</a>
-                        </li>
-                        <li class="nav-item dropdown">
-                          <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button"
-                            aria-haspopup="true" aria-expanded="false" data-nsfw-filter-status="swf">
-                            <i class="ft-filter mr-1"></i> Filters
-                          </a>
-                          <div class="dropdown-menu" x-placement="bottom-start"
-                            style="position: absolute; will-change: transform; top: 0px; left: 0px; transform: translate3d(0px, 47px, 0px);padding:15px;">
-                            <a class="btn btn-icon btn-outline-primary btn-glow round mb-1" id="dropdownIcon1-tab"
-                              href="#dropdownIcon1" data-toggle="tab" aria-controls="dropdownIcon1" aria-expanded="true"
-                              data-nsfw-filter-status="swf" style="width:100%">GridMinimumFilter</a>
-                            <a class="btn btn-icon btn-outline-primary btn-glow round mb-1" id="dropdownIcon2-tab"
-                              href="#dropdownIcon2" data-toggle="tab" aria-controls="dropdownIcon2" aria-expanded="true"
-                              data-nsfw-filter-status="swf" style="width:100%">VoxelGridFilter</a>
-                            <a class="btn btn-icon btn-outline-primary btn-glow round mb-1" id="dropdownIcon3-tab"
-                              href="#dropdownIcon3" data-toggle="tab" aria-controls="dropdownIcon3" aria-expanded="true"
-                              data-nsfw-filter-status="swf" style="width:100%">StatisticalOutlierRemovalFilter</a>
-                            <a class="btn btn-icon btn-outline-primary btn-glow round mb-1" id="dropdownIcon4-tab"
-                              href="#dropdownIcon4" data-toggle="tab" aria-controls="dropdownIcon4" aria-expanded="true"
-                              data-nsfw-filter-status="swf" style="width:100%">PassThroughFilter</a>
-                          </div>
-                        </li>
-                        <li class="nav-item">
-                          <a class="nav-link" id="baseIcon-tab5" data-toggle="tab" aria-controls="tabIcon3"
-                            href="#tabIcon5" aria-expanded="false" data-nsfw-filter-status="swf"><i
-                              class="ft-move mr-1"></i> Move</a>
-                        </li>
-                        <li class="nav-item">
-                          <a class="nav-link" href="javascript:void(0)" data-toggle="modal" data-target="#editerModal"
-                            id="btn-emb">Editor Model Browser</a>
-                        </li>
-                        <li class="nav-item">
-                          <a class="nav-link" href="javascript:void(0)" data-toggle="modal" data-target="#volumeModal"
-                            id="btn-vol">Calculate Volume</a>
-                        </li>
-                        <!-- <li class="nav-item"><input type="text" class="form-control round btn-glow mb-1 mr-1"
+                      <div class="card-body">
+                        <ul class="nav navbar-nav list-inline float-right mb-0">
+                          <li><a data-action="expand"><i class="ft-maximize"></i></a></li>
+                        </ul>
+                        <ul class="nav nav-tabs" style="margin-right:50px;">
+                          <li class="nav-item">
+                            <a class="nav-link active" id="baseIcon-tab4" data-toggle="tab" aria-controls="tabIcon4"
+                              href="#tabIcon4" aria-expanded="true" data-nsfw-filter-status="swf"><i
+                                class="ft-file-text mr-1"></i> File</a>
+                          </li>
+                          <li class="nav-item">
+                            <a class="nav-link" id="baseIcon-tab1" data-toggle="tab" aria-controls="tabIcon1"
+                              href="#tabIcon1" aria-expanded="false" data-nsfw-filter-status="swf"><i
+                                class="ft-eye mr-1"></i> View</a>
+                          </li>
+                          <!-- <li class="nav-item">
+                            <a class="nav-link" id="baseIcon-tab2" data-toggle="tab" aria-controls="tabIcon2"
+                              href="#tabIcon2" aria-expanded="false" data-nsfw-filter-status="swf"><i
+                                class="ft-navigation mr-1"></i> Selection</a>
+                          </li> -->
+                          <li class="nav-item">
+                            <a class="nav-link" id="baseIcon-tab3" data-toggle="tab" aria-controls="tabIcon3"
+                              href="#tabIcon3" aria-expanded="false" data-nsfw-filter-status="swf"><i
+                                class="ft-scissors mr-1"></i> Tools</a>
+                          </li>
+                          <li class="nav-item dropdown">
+                            <!-- <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button"
+                              aria-haspopup="true" aria-expanded="false" data-nsfw-filter-status="swf">
+                              <i class="ft-filter mr-1"></i> Filters
+                            </a> -->
+                            <div class="dropdown-menu" x-placement="bottom-start"
+                              style="position: absolute; will-change: transform; top: 0px; left: 0px; transform: translate3d(0px, 47px, 0px);padding:15px;">
+                              <a class="btn btn-icon btn-outline-primary btn-glow mb-1" id="dropdownIcon1-tab"
+                                href="#dropdownIcon1" data-toggle="tab" aria-controls="dropdownIcon1"
+                                aria-expanded="true" data-nsfw-filter-status="swf"
+                                style="width:100%">GridMinimumFilter</a>
+                              <a class="btn btn-icon btn-outline-primary btn-glow mb-1" id="dropdownIcon2-tab"
+                                href="#dropdownIcon2" data-toggle="tab" aria-controls="dropdownIcon2"
+                                aria-expanded="true" data-nsfw-filter-status="swf"
+                                style="width:100%">VoxelGridFilter</a>
+                              <a class="btn btn-icon btn-outline-primary btn-glow mb-1" id="dropdownIcon3-tab"
+                                href="#dropdownIcon3" data-toggle="tab" aria-controls="dropdownIcon3"
+                                aria-expanded="true" data-nsfw-filter-status="swf"
+                                style="width:100%">StatisticalOutlierRemovalFilter</a>
+                              <a class="btn btn-icon btn-outline-primary btn-glow mb-1" id="dropdownIcon4-tab"
+                                href="#dropdownIcon4" data-toggle="tab" aria-controls="dropdownIcon4"
+                                aria-expanded="true" data-nsfw-filter-status="swf"
+                                style="width:100%">PassThroughFilter</a>
+                            </div>
+                          </li>
+                          <li class="nav-item">
+                            <a class="nav-link" id="baseIcon-tab5" data-toggle="tab" aria-controls="tabIcon5"
+                              href="#tabIcon5" aria-expanded="false" data-nsfw-filter-status="swf"><i
+                                class="ft-move mr-1"></i> Registration</a>
+                          </li>
+
+                          <!-- <li class="nav-item">
+                            <a class="nav-link" id="baseIcon-tab6" data-toggle="tab" aria-controls="tabIcon6"
+                              href="#tabIcon6" aria-expanded="false" data-nsfw-filter-status="swf"><i
+                                class="ft-search mr-1"></i>Cross-Section</a>
+                          </li> -->
+                          <!-- <li class="nav-item"><input type="text" class="form-control btn-glow mb-1 mr-1"
                               id="count" style="height: 31px;padding-left: 15px;width: 81px;" min="0.1" max="10"
                               step="0.1" value="0.5"></li> -->
-                        <!-- <li class="nav-item">
+                          <!-- <li class="nav-item">
                             <a class="nav-link disabled" data-nsfw-filter-status="swf"><i class="ft-gitlab"></i> Disabled</a>
                           </li> -->
-                      </ul>
-                      <div class="tab-content px-1 pt-1" style="display: inline-block;width:calc(100% - 50px);">
-                        <div role="tabpanel" class="tab-pane" id="tabIcon1" aria-labelledby="baseIcon-tab1">
-                          <div class="row toolbar">
-                            <!-- <p data-nsfw-filter-status="swf">Oat cake marzipan cake lollipop caramels wafer pie jelly beans. Icing halvah chocolate cake carrot cake. Jelly beans carrot cake marshmallow gingerbread chocolate cake. Gummies cupcake croissant.</p> -->
+                        </ul>
+                        <div class="tab-content px-1 pt-1" style="display: inline-block;width:calc(100% - 50px);">
+                          <div role="tabpanel" class="tab-pane" id="tabIcon1" aria-labelledby="baseIcon-tab1">
+                            <div class="row toolbar">
+                              <div class="btn-group mr-1 mb-1">
 
-                            <input type="color" value="#87CEEB" style="height: 31px;width:60px;"
-                              class="btn btn-icon btn-outline-success btn-glow round btn-sm mr-1 mb-1" id="pointcolor"
-                              title="set points color">
-                            <input type="color" value="#800080" style="height: 31px;width:60px;"
-                              class="btn btn-icon btn-outline-success btn-glow round btn-sm mr-1 mb-1" id="delaunycolor"
-                              title="set 3D trianglation mesh's color">
-                            <div id="delaunyDiv" class="form-group pb-0 mb-1"
-                              style="padding-top: 3px; padding-left:10px; margin-bottom:0px;"
-                              title="set 2D delauny trianglation (shift+q)">
-                              <input type="checkbox" data-size="sm" id="delauny" class="switchery" data-color="success"
-                                data-secondary-color="success" data-switchery="true" style="display: none;">
-                              <label for="delauny" class="font-medium-2 text-bold-600">delauny(2D)</label>
-                            </div>
-                            <div id="delaunyDiv3" class="form-group pb-0 mb-1"
-                              style="padding-top: 3px; padding-left:10px; margin-bottom:0px;"
-                              title="set 3D delauny trianglation (shift+w)">
-                              <input type="checkbox" data-size="sm" id="delauny3" class="switchery" data-color="success"
-                                data-secondary-color="success" data-switchery="true" style="display: none;">
-                              <label for="delauny3" class="font-medium-2 text-bold-600">delauny(3D)</label>
-                            </div>
-                            <div id="surfaceDiv" class="form-group pb-0 mb-1"
-                              style="padding-top: 3px; padding-left:10px; margin-bottom:0px;"
-                              title="set for 2/3D trianglation mesh's surface (shift+e)">
-                              <input type="checkbox" data-size="sm" id="surface" class="switchery" data-color="success"
-                                data-secondary-color="success" data-switchery="true" style="display: none;">
-                              <label for="surface" class="font-medium-2 text-bold-600">surface</label>
-                            </div>
-                            <div id="heightmapColorDiv" class="form-group pb-0 mb-1"
-                              style="padding-top: 3px; padding-left:10px; margin-bottom:0px;"
-                              title="set heightmap color for points/mesh (shift+r)">
-                              <input type="checkbox" data-size="sm" id="heightmapColor" checked class="switchery"
-                                data-color="success" data-secondary-color="success" data-switchery="true"
-                                style="display: none;">
-                              <label for="heightmapColor" class="font-medium-2 text-bold-600">heightmap</label>
-                            </div>
-                            <div id="coordinateDiv" class="form-group pb-0 mb-1"
-                              style="padding-top: 3px; padding-left:10px; margin-bottom:0px; flex-grow:20;"
-                              title="set coordinate system">
-                              <input type="checkbox" data-size="sm" id="coordinate" checked class="switchery"
-                                data-color="success" data-secondary-color="success" data-switchery="true"
-                                style="display: none;">
-                              <label for="coordinate" class="font-medium-2 text-bold-600">coordinate</label>
+                                <div class="mydropdown">
+                                  <button class="mydropbtn btn btn-outline-primary btn-glow btn-sm dropdown-toggle"
+                                    data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    Color
+                                  </button>
+                                  <div class="mydropdown-content">
+                                    <div class="btn-group float-right">
+                                      <label class="mylabel">Polygon Color</label>
+                                      <input type="color" value="#87CEEB" style="height: 31px;width:60px;"
+                                        class="btn btn-icon btn-outline-primary btn-glow btn-sm mb-1" id="polygoncolor"
+                                        title="set polygon's color">
+                                    </div>
+                                    <div class="btn-group float-right">
+                                      <label class="mylabel">Selected Point's Color</label>
+                                      <input type="color" value="#87CEEB" style="height: 31px;width:60px;"
+                                        class="btn btn-icon btn-outline-primary btn-glow btn-sm mb-1" id="selectedcolor"
+                                        title="set selected point's color">
+                                    </div>
+                                    <div class="btn-group float-right">
+                                      <label class="mylabel">Point Cloud Color</label>
+                                      <input type="color" value="#87CEEB" style="height: 31px;width:60px;"
+                                        class="btn btn-icon btn-outline-primary btn-glow btn-sm mb-1" id="pointcolor"
+                                        title="set points color">
+                                    </div>
+                                    <div class="btn-group float-right">
+                                      <label class="mylabel">3D Mesh's Color</label>
+                                      <input type="color" value="#800080" style="height: 31px;width:60px;"
+                                        class="btn btn-icon btn-outline-primary btn-glow btn-sm mb-1" id="delaunycolor"
+                                        title="set 3D trianglation mesh's color">
+                                    </div>
+                                    <!-- <div class="mydropdown">
+                                      <button class="mydropbtn">Dropdown</button>
+                                      <div class="mydropdown-content mydropdown-right-content">
+                                      </div>
+                                    </div> -->
+                                  </div>
+                                </div>
+
+
+                                <!-- <div class="dropdown-menu" x-placement="bottom-start"
+                                  style="position: absolute; will-change: transform; top: 0px; left: 0px; transform: translate3d(0px, 40px, 0px); padding:1rem 0 0;">
+
+                                </div> -->
+                              </div>
+                              <div class="btn-group mr-1 mb-1">
+                                <div class="mydropdown">
+                                  <button class="mydropbtn btn btn-outline-primary btn-glow btn-sm dropdown-toggle"
+                                    data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    Size
+                                  </button>
+                                  <div class="mydropdown-content">
+                                    <!-- <div class="btn-group float-right"> -->
+                                    <div id="heightmapColorDiv" class="form-group pb-0 mb-1"
+                                      style="padding-top: 1px; padding-left:10px; margin-bottom:0px;"
+                                      title="set heightmap color for points/mesh (shift+r)">
+                                      <label for="heightmapColor" class="mylabel"
+                                        style="padding-left:60px;padding-right:20px;">Heightmap</label>
+                                      <input type="checkbox" data-size="sm" id="heightmapColor" checked
+                                        class="switchery" data-color="primary" data-secondary-color="primary"
+                                        data-switchery="true" style="display: none;">
+                                    </div>
+                                    <!-- </div> -->
+                                    <div class="btn-group float-right">
+                                      <label class="mylabel">Point's Size</label>
+                                      <div id="pointsizeDiv" class="form-group pb-0 mb-1"
+                                        style="height: 31px; padding-left:10px;padding-top: 7px; margin-bottom:0px;"
+                                        title="set point's size">
+                                        <input style="accent-color: #6967ce;" type="range" class="mr-1 " id="pointsize"
+                                          name="pointsize" min="0.05" max="0.5" step="0.05" value="0.1">
+                                      </div>
+                                    </div>
+                                    <div class="btn-group float-right">
+                                      <label class="mylabel">Selected Point's Size</label>
+                                      <div id="selectedsizeDiv" class="form-group pb-0 mb-1"
+                                        style="height: 31px; padding-left:10px;padding-top: 7px; margin-bottom:0px;"
+                                        title="set selected point's size">
+                                        <input style="accent-color: #6967ce;" type="range" class="mr-1 "
+                                          id="selectedsize" name="selectedsize" min="0.1" max="1" step="0.1"
+                                          value="0.2">
+                                      </div>
+                                    </div>
+                                    <div class="btn-group float-right">
+                                      <label class="mylabel">Polygon Size</label>
+                                      <div id="polygonsizeDiv" class="form-group pb-0 mb-1"
+                                        style="height: 31px; padding-left:10px;padding-top: 7px; margin-bottom:0px;"
+                                        title="set polygon's size">
+                                        <input style="accent-color: #6967ce;" type="range" class="mr-1 "
+                                          id="polygonsize" name="polygonsize" min="0.5" max="5" step="0.5" value="2">
+                                      </div>
+                                    </div>
+
+                                    <!-- <div class="mydropdown">
+                                      <button class="mydropbtn">Dropdown</button>
+                                      <div class="mydropdown-content mydropdown-right-content">
+                                      </div>
+                                    </div> -->
+                                  </div>
+                                </div>
+                              </div>
+                              <div id="delaunyDiv" class="form-group pb-0 mb-1"
+                                style="padding-top: 1px; padding-left:10px; margin-bottom:0px;"
+                                title="set 2D delauny trianglation (shift+q)">
+                                <input type="checkbox" data-size="sm" id="delauny" class="switchery"
+                                  data-color="primary" data-secondary-color="primary" data-switchery="true"
+                                  style="display: none;">
+                                <label for="delauny" class="font-medium-2 text-bold-600">delauny</label>
+                              </div>
+                              <div id="delaunyDiv3" class="form-group pb-0 mb-1"
+                                style="display:none;padding-top: 1px; padding-left:10px; margin-bottom:0px;"
+                                title="set 3D delauny trianglation (shift+w)">
+                                <input type="checkbox" data-size="sm" id="delauny3" class="switchery"
+                                  data-color="primary" data-secondary-color="primary" data-switchery="true"
+                                  style="display: none;">
+                                <label for="delauny3" class="font-medium-2 text-bold-600">delauny(3D)</label>
+                              </div>
+                              <div id="surfaceDiv" class="form-group pb-0 mb-1"
+                                style="padding-top: 1px; padding-left:10px; margin-bottom:0px;"
+                                title="set for 2/3D trianglation mesh's surface (shift+e)">
+                                <input type="checkbox" data-size="sm" id="surface" class="switchery"
+                                  data-color="primary" data-secondary-color="primary" data-switchery="true"
+                                  style="display: none;">
+                                <label for="surface" class="font-medium-2 text-bold-600">surface</label>
+                              </div>
+
+                              <div id="coordinateDiv" class="form-group pb-0 mb-1"
+                                style="padding-top: 1px; padding-left:10px; margin-bottom:0px;"
+                                title="set coordinate system">
+                                <input type="checkbox" data-size="sm" id="coordinate" checked class="switchery"
+                                  data-color="primary" data-secondary-color="primary" data-switchery="true"
+                                  style="display: none;">
+                                <label for="coordinate" class="font-medium-2 text-bold-600">coordinate</label>
+                              </div>
+                              <div id="gcsDiv" class="form-group pb-0 mb-1"
+                                style="padding-top: 1px; padding-left:10px; margin-bottom:0px; flex-grow:20;"
+                                title="set global coordinate system">
+                                <input type="checkbox" data-size="sm" id="gcs" checked class="switchery"
+                                  data-color="primary" data-secondary-color="primary" data-switchery="true"
+                                  style="display: none;">
+                                <label for="gcs" class="font-medium-2 text-bold-600">global system</label>
+                              </div>
                             </div>
                           </div>
-                        </div>
-                        <div class="tab-pane" id="tabIcon2" aria-labelledby="baseIcon-tab2">
-                          <div class="row toolbar">
-                            <input type="color" value="#87CEEB" style="height: 31px;width:60px;"
-                              class="btn btn-icon btn-outline-primary btn-glow round btn-sm mr-1 mb-1" id="polygoncolor"
-                              title="set polygon's color">
-                            <div id="polygonsizeDiv" class="form-group pb-0 mb-1"
-                              style="height: 31px; padding-left:10px;padding-top: 7px; margin-bottom:0px;"
-                              title="set polygon's size">
-                              <input type="range" class="mr-1 " id="polygonsize" name="polygonsize" min="0.5" max="5"
-                                step="0.5" value="2">
+                          <!-- <div class="tab-pane" id="tabIcon2" aria-labelledby="baseIcon-tab2">
+                            <div class="row toolbar">
+
                             </div>
-                            <input type="color" value="#87CEEB" style="height: 31px;width:60px;"
-                              class="btn btn-icon btn-outline-primary btn-glow round btn-sm mr-1 mb-1"
-                              id="selectedcolor" title="set selected point's color">
-                            <div id="selectedsizeDiv" class="form-group pb-0 mb-1"
-                              style="height: 31px; padding-left:10px;padding-top: 7px; margin-bottom:0px;"
-                              title="set selected point's size">
-                              <input type="range" class="mr-1 " id="selectedsize" name="selectedsize" min="0.1" max="1"
-                                step="0.1" value="0.2">
-                            </div>
-                          </div>
-                        </div>
-                        <div class="tab-pane" id="tabIcon3" aria-labelledby="baseIcon-tab3">
-                          <div class="row toolbar">
-                            <!-- <button type='button' class="btn btn-icon btn-outline-success btn-glow round btn-sm mb-1"
+                          </div> -->
+                          <div class="tab-pane" id="tabIcon3" aria-labelledby="baseIcon-tab3">
+                            <div class="row toolbar">
+                              <!-- <button type='button' class="btn btn-icon btn-outline-success btn-glow btn-sm mb-1"
                                 title='translate tool' id='btn-translate2'
                                 style="border-top-right-radius: 0px;border-bottom-right-radius: 0px;">
                                 <i class="ft-move"></i>
                               </button>
-                              <select class="form-control round btn-glow mb-1 mr-1"
-                                style="height: 32px;padding-left: 3px;
-                              width: 55px;padding-right: 0;border:1px solid #5ed84f;border-top-left-radius: 0px;border-bottom-left-radius: 0px;" id="trans-axis2"
+                              <select class="form-control btn-glow mb-1 mr-1"
+                                style="height: 29px;padding-left: 3px;
+                              width: 55px;padding-right: 0;border:1px solid #6967ce;border-top-left-radius: 0px;border-bottom-left-radius: 0px;" id="trans-axis2"
                                 title="axis">
                                 <option value="xy">XY</option>
                                 <option value="xz">XZ</option>
                                 <option value="yz">YZ</option>
                               </select> -->
-                            <button type='button' class="btn btn-icon btn-outline-success btn-glow round btn-sm mb-1"
-                              style="border-top-right-radius: 0px;border-bottom-right-radius: 0px;"
-                              title='rotate tool (shift+a)' id='btn-rotate2'>
-                              <i class="ft-rotate-cw"></i>
-                            </button>
-                            <button type='button'
-                              class="btn btn-icon btn-outline-success btn-glow round btn-sm mr-1 mb-1"
-                              style="border-top-left-radius: 0px;border-bottom-left-radius: 0px;"
-                              title='reset rotate position' id='btn-reset'>
-                              Set Origin
-                            </button>
-                            <!-- <button type='button'
-                                class="btn btn-icon btn-outline-success btn-glow round active btn-sm mr-1 mb-1"
+                              <button type='button' class="btn btn-outline-primary btn-glow btn-sm mb-1 mr-1"
+                                style="border-top-right-radius: 0px;border-bottom-right-radius: 0px;"
+                                title='rotate tool (shift+a)' id='btn-rotate2'>
+                                <i class="ft-rotate-cw"></i> Rotate
+                              </button>
+                              <button type='button' class="btn btn-outline-primary btn-glow btn-sm mr-1 mb-1"
+                                style="border-top-left-radius: 0px;border-bottom-left-radius: 0px;"
+                                title='reset rotate position' id='btn-reset'>
+                                Set Origin
+                              </button>
+
+                              <div class="btn-group mr-1 mb-1">
+                                <div class="mydropdown">
+                                  <button class="mydropbtn btn btn-outline-primary btn-glow btn-sm dropdown-toggle"
+                                    data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    Selection Tool
+                                  </button>
+                                  <div class="mydropdown-content">
+                                    <button type='button' class="btn btn-outline-primary btn-glow btn-sm mb-1 w-100"
+                                      title='point select tool (shift+z)' id='btn-point'>
+                                      <i class="ft-edit-2"></i> Point Tool
+                                    </button>
+                                    <button type='button' class="btn btn-outline-primary btn-glow btn-sm mb-1 w-100"
+                                      title='polygon draw tool (shift+d)' id='btn-polygon'>
+                                      <i class="ft-octagon"></i> Polygon Tool
+                                    </button>
+                                    <button type='button' class="btn btn-outline-primary btn-glow btn-sm mb-1 w-100"
+                                      title='pencil tool for point selection (shift+f)' id='btn-pencil'>
+                                      <i class="ft-edit-3"></i> Pencil Tool
+                                    </button>
+                                  </div>
+                                </div>
+                              </div>
+
+                              <div class="btn-group mr-1 mb-1">
+                                <div class="mydropdown">
+                                  <button class="mydropbtn btn btn-outline-primary btn-glow btn-sm dropdown-toggle"
+                                    data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    Analyze Tools
+                                  </button>
+                                  <div class="mydropdown-content">
+                                    <button type='button' class="btn btn-outline-primary btn-glow btn-sm mb-1 w-100"
+                                      title='draw polyline and calculate distance' id='btn-polyline'>
+                                      <i class="ft-activity"></i> Measurement
+                                    </button>
+
+                                    <button type='button' class="btn btn-outline-primary btn-glow btn-sm mb-1 w-100"
+                                      data-toggle="modal" data-target="#volumeModal" id="btn-vol">Calculator</button>
+                                    <div class="mydropdown w-100">
+                                      <button type='button'
+                                        class="mydropbtn btn btn-outline-primary btn-glow btn-sm mb-1 w-100"
+                                        title='select two points for cross section' id='btn-cross'>
+                                        <i class="ft-edit-2"></i> Cross Section
+                                      </button>
+                                      <div class="mydropdown-content mydropdown-right-content">
+                                        <button type='button' class="btn btn-outline-primary btn-glow btn-sm mb-1"
+                                          title='rotate tool' id='btn-rotate3' style="display: none;">
+                                          <i class="ft-rotate-cw"></i>
+                                        </button>
+                                        <select class="form-control btn-glow mb-1"
+                                          style="height: 29px;padding-left: 10px; width: 70px;padding-right: 5px;border:1px solid #6967ce;"
+                                          id="cross-plane" title="choose plane">
+                                          <option value="z">XY</option>
+                                          <option value="y">XZ</option>
+                                          <option value="x">YZ</option>
+                                        </select>
+                                        <div class="badge badge-pill badge-pribtn-outline-primary"
+                                          style="border-top-right-radius: 0px;border-bottom-right-radius: 0px; color:#6967ce;">
+                                          offset
+                                        </div>
+                                        <input type="number" class="form-control btn-glow mb-1" id="cross-offset"
+                                          style="height: 29px;padding-left: 15px;width: 70px;padding-right:0;border:1px solid #6967ce; border-top-left-radius: 0;border-bottom-left-radius: 0;"
+                                          min="-100" max="100" step="0.5" value="0" title="offset">
+                                        <div class="badge badge-pill badge-pribtn-outline-primary"
+                                          style="border-top-right-radius: 0px;border-bottom-right-radius: 0px; color:#6967ce;">
+                                          Width
+                                        </div>
+                                        <input type="number" class="form-control btn-glow mb-1" id="cross-width"
+                                          style="height: 29px;padding-left: 15px;width: 70px;padding-right:0;border:1px solid #6967ce; border-top-left-radius: 0;border-bottom-left-radius: 0;"
+                                          min="-100" max="100" step="0.5" value="3" title="width">
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                              <div class="btn-group mr-1 mb-1">
+                                <div class="mydropdown">
+                                  <button class="mydropbtn btn btn-outline-primary btn-glow btn-sm dropdown-toggle"
+                                    data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    <i class="ft-filter mr-1"></i> Filters
+                                  </button>
+                                  <div class="mydropdown-content">
+                                    <div class="mydropdown w-100">
+                                      <button class="mydropbtn btn btn-outline-primary btn-glow btn-sm mb-1 w-100"
+                                        aria-haspopup="true" aria-expanded="false">
+                                        Grid Minimum Filter
+                                      </button>
+                                      <div class="mydropdown-content mydropdown-right-content">
+                                        <!-- <div class="badge badge-pill badge-primary mb-1 mr-1">Grid Minimum Filter(m)
+                                        </div> -->
+                                        <input type="number" class="form-control btn-glow mb-1 w-100" id="f1-cell-size"
+                                          style="height: 31px;padding-left: 15px;width: 81px;" min="0.1" max="10"
+                                          step="0.1" value="0.5" title="set cell size">
+                                        <button type='button' style="float:right;"
+                                          class="btn btn-icon btn-outline-primary btn-glow btn-sm mb-1 w-100"
+                                          title='grid minimum filter' id='f1-filter'>
+                                          filtering
+                                        </button>
+                                        <button type='button' style="float:right;"
+                                          class="btn btn-icon btn-outline-primary btn-glow btn-sm mb-1 w-100"
+                                          title='grid minimum filter' id='f1-mfilter'>
+                                          marked points filtering
+                                        </button>
+                                      </div>
+                                    </div>
+                                    <div class="mydropdown w-100">
+                                      <button class="mydropbtn btn btn-outline-primary btn-glow btn-sm mb-1 w-100"
+                                        aria-haspopup="true" aria-expanded="false">
+                                        Voxel Grid Filter
+                                      </button>
+                                      <div class="mydropdown-content mydropdown-right-content">
+                                        <!-- <div class="badge badge-pill badge-primary mb-1 mr-1">Voxel Grid Filter(m)
+                                        </div> -->
+                                        <input type="number" class="form-control btn-glow mb-1 w-100" id="f2-cell-size"
+                                          style="height: 31px;padding-left: 15px;width: 81px;" min="0.1" max="10"
+                                          step="0.1" value="0.5" title="set cell size">
+                                        <button type='button' style="float:right;"
+                                          class="btn btn-icon btn-outline-primary btn-glow btn-sm mb-1 w-100"
+                                          title='voxel grid filter' id='f2-filter'>
+                                          filtering
+                                        </button>
+                                        <button type='button' style="float:right;"
+                                          class="btn btn-icon btn-outline-primary btn-glow btn-sm mb-1 w-100"
+                                          title='voxel grid filter' id='f2-mfilter'>
+                                          marked points filtering
+                                        </button>
+                                      </div>
+                                    </div>
+                                    <div class="mydropdown w-100">
+                                      <button class="mydropbtn btn btn-outline-primary btn-glow btn-sm mb-1 w-100"
+                                        aria-haspopup="true" aria-expanded="false">
+                                        Statistical Outlier Removal Filter
+                                      </button>
+                                      <div class="mydropdown-content mydropdown-right-content">
+                                        <!-- <div class="badge badge-pill badge-primary mb-1 mr-1">Statistical Outlier
+                                          Removal Filter(m)
+                                        </div> -->
+                                        <input type="number" class="form-control btn-glow mb-1 w-100" id="f3-number"
+                                          style="height: 31px;padding-left: 15px;width: 81px;" min="1" max="100"
+                                          step="1" value="30" title="set points number for calculation">
+                                        <input type="number" class="form-control btn-glow mb-1 w-100" id="f3-deviation"
+                                          style="height: 31px;padding-left: 15px;width: 81px;" min="0.1" max="10"
+                                          step="0.1" value="0.5" title="Standard Deviation">
+                                        <button type='button' style="float:right;"
+                                          class="btn btn-icon btn-outline-primary btn-glow btn-sm mb-1 w-100"
+                                          title='Statistical Outlier Removal Filter' id='f3-filter'>
+                                          filtering
+                                        </button>
+                                        <button type='button' style="float:right;"
+                                          class="btn btn-icon btn-outline-primary btn-glow btn-sm mb-1 w-100"
+                                          title='Statistical Outlier Removal Filter' id='f3-mfilter'>
+                                          marked points filtering
+                                        </button>
+                                      </div>
+                                    </div>
+                                    <div class="mydropdown w-100">
+                                      <button class="mydropbtn btn btn-outline-primary btn-glow btn-sm mb-1 w-100"
+                                        aria-haspopup="true" aria-expanded="false">
+                                        Pass Through Filter
+                                      </button>
+                                      <div class="mydropdown-content mydropdown-right-content">
+                                        <!-- <div class="badge badge-pill badge-primary mb-1 mr-1">Pass Through Filter(m)
+                                        </div> -->
+                                        <select class="form-control btn-glow mb-1 w-100" style="height: 31px;padding-left: 15px;
+                                width: 60px;padding-right: 0;" id="f4-pass" title="set pass(axis)">
+                                          <option value="x">X</option>
+                                          <option value="y">Y</option>
+                                          <option value="z">Z</option>
+                                        </select>
+                                        <input type="number" class="form-control btn-glow mb-1 w-100" id="f4-limit1"
+                                          style="height: 31px;padding-left: 15px;width: 81px;" min="0" max="10000"
+                                          step="1" value="0" title="set min limit">
+                                        <input type="number" class="form-control btn-glow mb-1 w-100" id="f4-limit2"
+                                          style="height: 31px;padding-left: 15px;width: 81px;" min="1" max="10000"
+                                          step="1" value="500" title="set max limit">
+                                        <button type='button' style="float:right;"
+                                          class="btn btn-icon btn-outline-primary btn-glow btn-sm mb-1 w-100"
+                                          title='Pass Through Filter' id='f4-filter'>
+                                          filtering
+                                        </button>
+                                        <button type='button' style="float:right;"
+                                          class="btn btn-icon btn-outline-primary btn-glow btn-sm mb-1 w-100"
+                                          title='Pass Through Filter' id='f4-mfilter'>
+                                          marked points filtering
+                                        </button>
+                                      </div>
+                                    </div>
+
+                                  </div>
+                                </div>
+                              </div>
+
+                              <!-- <button type='button'
+                                class="btn btn-outline-primary btn-glow active btn-sm mr-1 mb-1"
                                 title='move tool (shift+a)' id='btn-move'>
                                 <i class="ft-move"></i>
                               </button> -->
-                            <button type='button'
-                              class="btn btn-icon btn-outline-success btn-glow round btn-sm mr-1 mb-1"
-                              title='point select tool (shift+z)' id='btn-point'>
-                              <i class="ft-edit-2"></i>
-                            </button>
-                            <button type='button'
-                              class="btn btn-icon btn-outline-success btn-glow round btn-sm mr-1 mb-1"
-                              title='polygon draw tool (shift+d)' id='btn-polygon'>
-                              <i class="ft-octagon"></i>
-                            </button>
-                            <button type='button'
-                              class="btn btn-icon btn-outline-success btn-glow round btn-sm mr-1 mb-1"
-                              title='pencil tool for point selection (shift+f)' id='btn-pencil'>
-                              <i class="ft-edit-3"></i>
-                            </button>
-                            <button type='button'
-                              class="btn btn-icon btn-outline-success btn-glow round btn-sm mr-1 mb-1"
-                              title='draw polyline and calculate distance' id='btn-polyline'>
-                              <i class="ft-activity"></i>
-                            </button>
-                            <button type='button'
-                              class="btn btn-icon btn-outline-success btn-glow round btn-sm mr-3 mb-1" title='add point'
-                              id='btn-addpoint'>
-                              <i class="ft-plus"></i>
-                            </button>
 
 
-                            <button type='button'
-                              class="btn btn-icon btn-outline-success btn-glow round btn-sm mr-1 mb-1"
-                              title='get selected points (shift+v)' id='btn-check'>
-                              <i class="ft-check-circle"></i>
-                            </button>
-                            <button type='button'
-                              class="btn btn-icon btn-outline-success btn-glow round btn-sm mr-1 mb-1"
-                              title='change between selected/unselected points (shift+c)' id='btn-change'>
-                              <i class="ft-refresh-cw"></i>
-                            </button>
-                            <button type='button'
-                              class="btn btn-icon btn-outline-success btn-glow round btn-sm mr-1 mb-1"
-                              title='delete selected points (shift+x)' id='btn-delete'>
-                              <i class="ft-x"></i>
-                            </button>
-                            <input type="file" id="ground-file" style="display:none;" accept=".txt">
+                              <button type='button' class="btn btn-outline-primary btn-glow btn-sm mr-1 mb-1"
+                                title='add point' id='btn-addpoint'>
+                                <i class="ft-plus"></i> Add Points
+                              </button>
 
 
-                          </div>
-                        </div>
-                        <div class="tab-pane" id="tabIcon5" aria-labelledby="baseIcon-tab5">
-                          <div class="row toolbar">
-                            <button type='button' class="btn btn-icon btn-outline-success btn-glow round btn-sm mb-1"
-                              title='translate tool' id='btn-translate'
-                              style="border-top-right-radius: 0px;border-bottom-right-radius: 0px;">
-                              <i class="ft-move"></i>
-                            </button>
-                            <select class="form-control round btn-glow mb-1 mr-1"
-                              style="height: 32px;padding-left: 3px;
-                              width: 55px;padding-right: 0;border:1px solid #5ed84f;border-top-left-radius: 0px;border-bottom-left-radius: 0px;" id="trans-axis"
-                              title="axis">
-                              <option value="xy">XY</option>
-                              <option value="xz">XZ</option>
-                              <option value="yz">YZ</option>
-                            </select>
+                              <button type='button' class="btn btn-outline-primary btn-glow btn-sm mr-1 mb-1"
+                                title='get selected points (shift+v)' id='btn-check'>
+                                <i class="ft-check-circle"></i> Save Selected Points
+                              </button>
+                              <button type='button' class="btn btn-outline-primary btn-glow btn-sm mr-1 mb-1"
+                                title='change between selected/unselected points (shift+c)' id='btn-change'>
+                                <i class="ft-refresh-cw"></i> Change Selected Points
+                              </button>
+                              <button type='button' class="btn btn-outline-primary btn-glow btn-sm mr-1 mb-1"
+                                title='delete selected points (shift+x)' id='btn-delete'>
+                                <i class="ft-x"></i> Delete Selected Points
+                              </button>
+                              <input type="file" id="ground-file" style="display:none;" accept=".txt">
 
-                            <button type='button' class="btn btn-icon btn-outline-success btn-glow round btn-sm mb-1"
-                              style="border-top-right-radius: 0px;border-bottom-right-radius: 0px;" title='rotate tool'
-                              id='btn-rotate'>
-                              <i class="ft-rotate-cw"></i>
-                            </button>
-                            <button type='button'
-                              class="btn btn-icon btn-outline-success btn-glow round btn-sm mr-1 mb-1"
-                              style="border-top-left-radius: 0px;border-bottom-left-radius: 0px;"
-                              title='reset rotate position' id='btn-reset2'>
-                              Set Origin
-                            </button>
-
-                            <div class="badge badge-pill badge-success mb-1"
-                              style="border-top-right-radius: 0px;border-bottom-right-radius: 0px;">
-                              Translate(m)
                             </div>
-                            <input type="number" class="form-control btn-glow mb-1" id="trans-x"
-                              style="height: 32px;padding-left: 15px;width: 60px;padding-right:0;border:1px solid #5ed84f; border-radius: 0;"
-                              min="0.1" max="10" step="0.1" value="0" title="x">
-                            <input type="number" class="form-control btn-glow mb-1" id="trans-y"
-                              style="height: 32px;padding-left: 15px;width: 60px;padding-right:0;border:1px solid #5ed84f;border-radius: 0;"
-                              min="0.1" max="10" step="0.1" value="0" title="y">
-                            <input type="number" class="form-control btn-glow mb-1" id="trans-z"
-                              style="height: 32px;padding-left: 15px;width: 60px;padding-right:0;border:1px solid #5ed84f;border-radius: 0;"
-                              min="0.1" max="10" step="0.1" value="0" title="z">
-                            <button type='button'
-                              class="btn btn-icon btn-outline-success btn-glow round btn-sm mr-1 mb-1" title='translate'
-                              id='absTranslate' style="border-top-left-radius: 0px;border-bottom-left-radius: 0px;">
-                              <i class="ft-check"></i>
-                            </button>
-
-                            <div class="badge badge-pill badge-success mb-1"
-                              style="border-top-right-radius: 0px;border-bottom-right-radius: 0px;">Rotate(°)
-                            </div>
-                            <select class="form-control round btn-glow mb-1" style="height: 32px;padding-left: 15px;
-                              width: 60px;padding-right: 0;border:1px solid #5ed84f;border-radius: 0;" id="rotate-pass"
-                              title="axis">
-                              <option value="x">X</option>
-                              <option value="y">Y</option>
-                              <option value="z">Z</option>
-                            </select>
-                            <input type="number" class="form-control round btn-glow mb-1" id="rotate-degree"
-                              style="height: 32px;padding-left: 15px;width: 60px;padding-right:0;border:1px solid #5ed84f;border-radius: 0;"
-                              min="0.1" max="10" step="0.1" value="0" title="degree">
-                            <button type='button'
-                              class="btn btn-icon btn-outline-success btn-glow round btn-sm mr-1 mb-1" title='rotate'
-                              id='absRotate' style="border-top-left-radius: 0px;border-bottom-left-radius: 0px;">
-                              <i class="ft-check"></i>
-                            </button>
-
-                            <button type='button' class="btn btn-icon btn-outline-success btn-glow round btn-sm mb-1"
-                              title='flip-left' id='flip-left'
-                              style="border-top-right-radius: 0px;border-bottom-right-radius: 0px;">
-                              <i class="ft-corner-up-left"></i>
-                            </button>
-                            <select class="form-control round btn-glow mb-1" style="height: 32px;padding-left: 15px;
-                              width: 60px;padding-right: 0;border:1px solid #5ed84f;border-radius: 0;" id="flip-pass"
-                              title="axis">
-                              <option value="x">X</option>
-                              <option value="y">Y</option>
-                              <option value="z">Z</option>
-                            </select>
-                            <button type='button'
-                              class="btn btn-icon btn-outline-success btn-glow round btn-sm mr-1 mb-1"
-                              title='flip-right' id='flip-right'
-                              style="border-top-left-radius: 0px;border-bottom-left-radius: 0px;">
-                              <i class="ft-corner-up-right"></i>
-                            </button>
-
-                            <button type='button'
-                              class="btn btn-icon btn-outline-success btn-glow round btn-sm mr-1 mb-1"
-                              title='Transaltion by two point select' id='btn-lineTrans'>
-                              <i class="ft-trending-down"></i>
-                            </button>
-
-                            <button type='button'
-                              class="btn btn-icon btn-outline-success btn-glow round btn-sm mr-1 mb-1"
-                              title='set current matrix' id='set-matrix'>
-                              set matrix
-                            </button>
                           </div>
-                        </div>
-                        <div class="tab-pane active" id="tabIcon4" aria-expanded="true" aria-labelledby="baseIcon-tab4">
-                          <div class="row toolbar">
-                            <input name="mymodel" type="file" style="display: none;" accept=".obj, .txt"
-                              id="input_model">
-                            <button type='button'
-                              class="btn btn-icon btn-outline-primary btn-glow round btn-sm mr-1 mb-1"
-                              title='load model from txt,obj file' id='btn-openfromLocal'>
-                              <i class="ft-upload"></i>
-                            </button>
-                            <button type='button' style="float:right;"
-                              class="btn btn-icon btn-outline-primary btn-glow round btn-sm mr-1 mb-1"
-                              title='save model into db (models collection) (shift+s)' id='btn-directSave'
-                              data-toggle="modal" data-target="#directSave">
-                              <i class="ft-save"></i>
-                            </button>
-                            <button type='button' style="float:right;"
-                              class="btn btn-icon btn-outline-primary btn-glow round btn-sm mr-1 mb-1"
-                              title='download model with txt,obj file' id='btn-download' data-toggle="modal"
-                              data-target="#exampleModal">
-                              <i class="ft-download"></i>
-                            </button>
+                          <div class="tab-pane" id="tabIcon5" aria-labelledby="baseIcon-tab5">
+                            <div class="row toolbar">
+                              <button type='button' class="btn btn-outline-primary btn-glow btn-sm mb-1"
+                                title='translate tool' id='btn-translate'
+                                style="border-top-right-radius: 0px;border-bottom-right-radius: 0px;">
+                                <i class="ft-move"></i> Translate
+                              </button>
+                              <select class="form-control btn-glow mb-1 mr-1"
+                                style="height: 29px;padding-left: 3px;
+                              width: 55px;padding-right: 0;border:1px solid #6967ce;border-top-left-radius: 0px;border-bottom-left-radius: 0px;" id="trans-axis"
+                                title="axis">
+                                <option value="xy">XY</option>
+                                <option value="xz">XZ</option>
+                                <option value="yz">YZ</option>
+                              </select>
 
-                            <% if(messages.pointcloud){ %>
-                              <input type="hidden" id="pointcloud" value='<%- messages.pointcloud %>'>
-                              <% } %>
+                              <button type='button' class="btn btn-outline-primary btn-glow btn-sm mb-1"
+                                style="border-top-right-radius: 0px;border-bottom-right-radius: 0px;"
+                                title='rotate tool' id='btn-rotate'>
+                                <i class="ft-rotate-cw"></i> Rotate
+                              </button>
+                              <button type='button' class="btn btn-outline-primary btn-glow btn-sm mr-1 mb-1"
+                                title='reset rotate position' id='btn-reset2'>
+                                Set Origin
+                              </button>
 
-                          </div>
-                        </div>
-                        <div class="tab-pane" id="dropdownIcon1" role="tabpanel" aria-labelledby="dropdownIcon1-tab"
-                          aria-expanded="false">
-                          <div class="row toolbar">
-                            <div class="badge badge-pill badge-primary mb-1 mr-1">Grid Minimum Filter(m)
+                              <div class="badge badge-pill badge-primary mb-1" style="border-radius: 0;">
+                                Translate(m)
+                              </div>
+                              <input type="number" class="form-control btn-glow mb-1" id="trans-x"
+                                style="height: 29px;padding-left: 15px;width: 60px;padding-right:0;border:1px solid #6967ce; border-radius: 0;"
+                                min="0.1" max="10" step="0.1" value="0" title="x">
+                              <input type="number" class="form-control btn-glow mb-1" id="trans-y"
+                                style="height: 29px;padding-left: 15px;width: 60px;padding-right:0;border:1px solid #6967ce;border-radius: 0;"
+                                min="0.1" max="10" step="0.1" value="0" title="y">
+                              <input type="number" class="form-control btn-glow mb-1" id="trans-z"
+                                style="height: 29px;padding-left: 15px;width: 60px;padding-right:0;border:1px solid #6967ce;border-radius: 0;"
+                                min="0.1" max="10" step="0.1" value="0" title="z">
+                              <button type='button' class="btn btn-outline-primary btn-glow btn-sm mr-1 mb-1"
+                                title='translate' id='absTranslate'>
+                                <i class="ft-check"></i>
+                              </button>
+
+                              <div class="badge badge-pill badge-primary mb-1" style="border-radius:0;">Rotate(°)
+                              </div>
+                              <select class="form-control btn-glow mb-1" style="height: 29px;padding-left: 15px;
+                              width: 60px;padding-right: 0;border:1px solid #6967ce;border-radius: 0;" id="rotate-pass"
+                                title="axis">
+                                <option value="x">X</option>
+                                <option value="y">Y</option>
+                                <option value="z">Z</option>
+                              </select>
+                              <input type="number" class="form-control btn-glow mb-1" id="rotate-degree"
+                                style="height: 29px;padding-left: 15px;width: 60px;padding-right:0;border:1px solid #6967ce;border-radius: 0;"
+                                min="0.1" max="10" step="0.1" value="0" title="degree">
+                              <button type='button' class="btn btn-outline-primary btn-glow btn-sm mr-1 mb-1"
+                                title='rotate' id='absRotate'
+                                style="border-top-left-radius: 0px;border-bottom-left-radius: 0px;">
+                                <i class="ft-check"></i>
+                              </button>
+
+                              <button type='button' class="btn btn-outline-primary btn-glow btn-sm mb-1"
+                                title='flip-left' id='flip-left'
+                                style="border-top-right-radius: 0px;border-bottom-right-radius: 0px;">
+                                <i class="ft-corner-up-left"></i>
+                              </button>
+                              <select class="form-control btn-glow mb-1" style="height: 29px;padding-left: 15px;
+                              width: 60px;padding-right: 0;border:1px solid #6967ce;border-radius: 0;" id="flip-pass"
+                                title="axis">
+                                <option value="x">X</option>
+                                <option value="y">Y</option>
+                                <option value="z">Z</option>
+                              </select>
+                              <button type='button' class="btn btn-outline-primary btn-glow btn-sm mr-1 mb-1"
+                                title='flip-right' id='flip-right'
+                                style="border-top-left-radius: 0px;border-bottom-left-radius: 0px;">
+                                <i class="ft-corner-up-right"></i>
+                              </button>
+
+                              <button type='button' class="btn btn-outline-primary btn-glow btn-sm mr-1 mb-1"
+                                title='Transaltion by two point select' id='btn-lineTrans'>
+                                <i class="ft-trending-down"></i> Move
+                              </button>
+
+                              <button type='button' class="btn btn-outline-primary btn-glow btn-sm mr-1 mb-1"
+                                title='set current matrix' id='set-matrix'>
+                                set matrix
+                              </button>
                             </div>
-                            <input type="number" class="form-control round btn-glow mb-1 mr-1" id="f1-cell-size"
-                              style="height: 31px;padding-left: 15px;width: 81px;" min="0.1" max="10" step="0.1"
-                              value="0.5" title="set cell size">
-                            <button type='button' style="float:right;"
-                              class="btn btn-icon btn-outline-primary btn-glow round btn-sm mb-1 mr-1"
-                              title='grid minimum filter' id='f1-filter'>
-                              filtering
-                            </button>
-                            <button type='button' style="float:right;"
-                              class="btn btn-icon btn-outline-primary btn-glow round btn-sm mb-1"
-                              title='grid minimum filter' id='f1-mfilter'>
-                              marked points filtering
-                            </button>
                           </div>
-                        </div>
-                        <div class="tab-pane" id="dropdownIcon2" role="tabpanel" aria-labelledby="dropdownIcon2-tab"
-                          aria-expanded="false">
-                          <div class="row toolbar">
-                            <div class="badge badge-pill badge-primary mb-1 mr-1">Voxel Grid Filter(m)
+                          <!-- <div class="tab-pane" id="tabIcon6" aria-labelledby="baseIcon-tab6">
+                            <div class="row toolbar">
+                              
                             </div>
-                            <input type="number" class="form-control round btn-glow mb-1 mr-1" id="f2-cell-size"
-                              style="height: 31px;padding-left: 15px;width: 81px;" min="0.1" max="10" step="0.1"
-                              value="0.5" title="set cell size">
-                            <button type='button' style="float:right;"
-                              class="btn btn-icon btn-outline-primary btn-glow round btn-sm mb-1 mr-1"
-                              title='voxel grid filter' id='f2-filter'>
-                              filtering
-                            </button>
-                            <button type='button' style="float:right;"
-                              class="btn btn-icon btn-outline-primary btn-glow round btn-sm mb-1"
-                              title='voxel grid filter' id='f2-mfilter'>
-                              marked points filtering
-                            </button>
+                          </div> -->
+                          <div class="tab-pane active" id="tabIcon4" aria-expanded="true"
+                            aria-labelledby="baseIcon-tab4">
+                            <div class="row toolbar">
+                              <input name="mymodel" type="file" style="display: none;" accept=".obj, .txt"
+                                id="input_model">
+                              <button type='button' class="btn btn-outline-primary btn-glow btn-sm mr-1 mb-1"
+                                title='load model from txt,obj file' id='btn-openfromLocal'>
+                                <i class="ft-upload"></i> Load</button>
+                              <button type='button' style="float:right;"
+                                class="btn btn-outline-primary btn-glow btn-sm mr-1 mb-1"
+                                title='save model into db (models collection) (shift+s)' id='btn-directSave'
+                                data-toggle="modal" data-target="#directSave">
+                                <i class="ft-save"></i> Save to DB</button>
+                              <button type='button' style="float:right;"
+                                class="btn btn-outline-primary btn-glow btn-sm mr-1 mb-1"
+                                title='download model with txt,obj file' id='btn-download' data-toggle="modal"
+                                data-target="#exampleModal">
+                                <i class="ft-download"></i> Download</button>
+                              <button type='button' style="float:right;"
+                                class="btn btn-outline-primary btn-glow btn-sm mr-1 mb-1" data-toggle="modal"
+                                data-target="#editerModal" id="btn-emb">Model Browser</button>
+
+                              <% if(messages.pointcloud){ %>
+                                <input type="hidden" id="pointcloud" value='<%- messages.pointcloud %>'>
+                                <% } %>
+                            </div>
                           </div>
-                        </div>
-                        <div class="tab-pane" id="dropdownIcon3" role="tabpanel" aria-labelledby="dropdownIcon3-tab"
-                          aria-expanded="false">
-                          <div class="row toolbar">
-                            <div class="badge badge-pill badge-primary mb-1 mr-1">Statistical Outlier Removal
-                              Filter(m)
+                          <!-- <div class="tab-pane" id="dropdownIcon1" role="tabpanel" aria-labelledby="dropdownIcon1-tab"
+                            aria-expanded="false">
+                            <div class="row toolbar">
+                              <div class="badge badge-pill badge-primary mb-1 mr-1">Grid Minimum Filter(m)
+                              </div>
+                              <input type="number" class="form-control btn-glow mb-1 mr-1" id="f1-cell-size"
+                                style="height: 31px;padding-left: 15px;width: 81px;" min="0.1" max="10" step="0.1"
+                                value="0.5" title="set cell size">
+                              <button type='button' style="float:right;"
+                                class="btn btn-icon btn-outline-primary btn-glow btn-sm mb-1 mr-1"
+                                title='grid minimum filter' id='f1-filter'>
+                                filtering
+                              </button>
+                              <button type='button' style="float:right;"
+                                class="btn btn-icon btn-outline-primary btn-glow btn-sm mb-1"
+                                title='grid minimum filter' id='f1-mfilter'>
+                                marked points filtering
+                              </button>
                             </div>
-                            <input type="number" class="form-control round btn-glow mb-1 mr-1" id="f3-number"
-                              style="height: 31px;padding-left: 15px;width: 81px;" min="1" max="100" step="1" value="30"
-                              title="set points number for calculation">
-                            <input type="number" class="form-control round btn-glow mb-1 mr-1" id="f3-deviation"
-                              style="height: 31px;padding-left: 15px;width: 81px;" min="0.1" max="10" step="0.1"
-                              value="0.5" title="Standard Deviation">
-                            <button type='button' style="float:right;"
-                              class="btn btn-icon btn-outline-primary btn-glow round btn-sm mb-1 mr-1"
-                              title='Statistical Outlier Removal Filter' id='f3-filter'>
-                              filtering
-                            </button>
-                            <button type='button' style="float:right;"
-                              class="btn btn-icon btn-outline-primary btn-glow round btn-sm mb-1"
-                              title='Statistical Outlier Removal Filter' id='f3-mfilter'>
-                              marked points filtering
-                            </button>
                           </div>
-                        </div>
-                        <div class="tab-pane" id="dropdownIcon4" role="tabpanel" aria-labelledby="dropdownIcon4-tab"
-                          aria-expanded="false">
-                          <div class="row toolbar">
-                            <div class="badge badge-pill badge-primary mb-1 mr-1">Pass Through Filter(m)
+                          <div class="tab-pane" id="dropdownIcon2" role="tabpanel" aria-labelledby="dropdownIcon2-tab"
+                            aria-expanded="false">
+                            <div class="row toolbar">
+                              <div class="badge badge-pill badge-primary mb-1 mr-1">Voxel Grid Filter(m)
+                              </div>
+                              <input type="number" class="form-control btn-glow mb-1 mr-1" id="f2-cell-size"
+                                style="height: 31px;padding-left: 15px;width: 81px;" min="0.1" max="10" step="0.1"
+                                value="0.5" title="set cell size">
+                              <button type='button' style="float:right;"
+                                class="btn btn-icon btn-outline-primary btn-glow btn-sm mb-1 mr-1"
+                                title='voxel grid filter' id='f2-filter'>
+                                filtering
+                              </button>
+                              <button type='button' style="float:right;"
+                                class="btn btn-icon btn-outline-primary btn-glow btn-sm mb-1" title='voxel grid filter'
+                                id='f2-mfilter'>
+                                marked points filtering
+                              </button>
                             </div>
-                            <select class="form-control round btn-glow mb-1 mr-1" style="height: 31px;padding-left: 15px;
+                          </div>
+                          <div class="tab-pane" id="dropdownIcon3" role="tabpanel" aria-labelledby="dropdownIcon3-tab"
+                            aria-expanded="false">
+                            <div class="row toolbar">
+                              <div class="badge badge-pill badge-primary mb-1 mr-1">Statistical Outlier Removal
+                                Filter(m)
+                              </div>
+                              <input type="number" class="form-control btn-glow mb-1 mr-1" id="f3-number"
+                                style="height: 31px;padding-left: 15px;width: 81px;" min="1" max="100" step="1"
+                                value="30" title="set points number for calculation">
+                              <input type="number" class="form-control btn-glow mb-1 mr-1" id="f3-deviation"
+                                style="height: 31px;padding-left: 15px;width: 81px;" min="0.1" max="10" step="0.1"
+                                value="0.5" title="Standard Deviation">
+                              <button type='button' style="float:right;"
+                                class="btn btn-icon btn-outline-primary btn-glow btn-sm mb-1 mr-1"
+                                title='Statistical Outlier Removal Filter' id='f3-filter'>
+                                filtering
+                              </button>
+                              <button type='button' style="float:right;"
+                                class="btn btn-icon btn-outline-primary btn-glow btn-sm mb-1"
+                                title='Statistical Outlier Removal Filter' id='f3-mfilter'>
+                                marked points filtering
+                              </button>
+                            </div>
+                          </div>
+                          <div class="tab-pane" id="dropdownIcon4" role="tabpanel" aria-labelledby="dropdownIcon4-tab"
+                            aria-expanded="false">
+                            <div class="row toolbar">
+                              <div class="badge badge-pill badge-primary mb-1 mr-1">Pass Through Filter(m)
+                              </div>
+                              <select class="form-control btn-glow mb-1 mr-1" style="height: 31px;padding-left: 15px;
                                 width: 60px;padding-right: 0;" id="f4-pass" title="set pass(axis)">
-                              <option value="x">X</option>
-                              <option value="y">Y</option>
-                              <option value="z">Z</option>
-                            </select>
-                            <input type="number" class="form-control round btn-glow mb-1 mr-1" id="f4-limit1"
-                              style="height: 31px;padding-left: 15px;width: 81px;" min="0" max="10000" step="1"
-                              value="0" title="set min limit">
-                            <input type="number" class="form-control round btn-glow mb-1 mr-1" id="f4-limit2"
-                              style="height: 31px;padding-left: 15px;width: 81px;" min="1" max="10000" step="1"
-                              value="500" title="set max limit">
-                            <button type='button' style="float:right;"
-                              class="btn btn-icon btn-outline-primary btn-glow round btn-sm mb-1 mr-1"
-                              title='Pass Through Filter' id='f4-filter'>
-                              filtering
-                            </button>
-                            <button type='button' style="float:right;"
-                              class="btn btn-icon btn-outline-primary btn-glow round btn-sm mb-1"
-                              title='Pass Through Filter' id='f4-mfilter'>
-                              marked points filtering
-                            </button>
+                                <option value="x">X</option>
+                                <option value="y">Y</option>
+                                <option value="z">Z</option>
+                              </select>
+                              <input type="number" class="form-control btn-glow mb-1 mr-1" id="f4-limit1"
+                                style="height: 31px;padding-left: 15px;width: 81px;" min="0" max="10000" step="1"
+                                value="0" title="set min limit">
+                              <input type="number" class="form-control btn-glow mb-1 mr-1" id="f4-limit2"
+                                style="height: 31px;padding-left: 15px;width: 81px;" min="1" max="10000" step="1"
+                                value="500" title="set max limit">
+                              <button type='button' style="float:right;"
+                                class="btn btn-icon btn-outline-primary btn-glow btn-sm mb-1 mr-1"
+                                title='Pass Through Filter' id='f4-filter'>
+                                filtering
+                              </button>
+                              <button type='button' style="float:right;"
+                                class="btn btn-icon btn-outline-primary btn-glow btn-sm mb-1"
+                                title='Pass Through Filter' id='f4-mfilter'>
+                                marked points filtering
+                              </button>
 
-                          </div>
+                            </div>
+                          </div> -->
                         </div>
-                      </div>
-                      <div style="display:inline-block;width:45px;font-size:16px;"><a id="sidenav"
-                          class="nav-link hidden-xs" href="javascript:void(0)"><i class="ft-menu"></i></a></div>
-                      <!-- </div>
+                        <div style="display:inline-block;width:45px;font-size:16px;"><a id="sidenav"
+                            class="nav-link hidden-xs" href="javascript:void(0)"><i class="ft-menu"></i></a></div>
+                        <!-- </div>
                         <div class="card-body"> -->
-                      <!-- <p class="card-subtitle">You can load *.txt, *.obj files from owl windows app.</p> -->
+                        <!-- <p class="card-subtitle">You can load *.txt, *.obj files from owl windows app.</p> -->
 
-                      <div class="form-group" style="position:relative">
-                        <div id="modellist" style="
+                        <div class="form-group" style="position:relative">
+                          <div id="modellist" style="
                               transition:width 0.5s;
                               position: absolute;
                               right: 0;
@@ -549,440 +798,441 @@
                               overflow-y: auto;
                           ">
 
-                          <div class="model btn btn-outline-primary round">
-                            <span>model1</span>
-                            <i class="ft-eye"></i>
-                            <a id="m-eye" href="javascript:void(0)"><i class="ft-x"></i></a>
-                          </div>
-                          <div class="model btn btn-outline-primary round">
-                            <span>model1</span>
-                            <i class="ft-eye"></i>
-                            <a id="m-eye" href="javascript:void(0)"><i class="ft-x"></i></a>
-                          </div>
-                          <div class="model active btn btn-outline-primary round">
-                            <span>model1</span>
-                            <i class="ft-eye"></i>
-                            <a id="m-eye" href="javascript:void(0)"><i class="ft-x"></i></a>
-                          </div>
-                          <div class="model btn btn-outline-primary round">
-                            <span>model1</span>
-                            <i class="ft-eye"></i>
-                            <a id="m-eye" href="javascript:void(0)"><i class="ft-x"></i></a>
-                          </div>
-                          <div class="model btn btn-outline-primary round">
-                            <span>model1</span>
-                            <i class="ft-eye"></i>
-                            <a id="m-eye" href="javascript:void(0)"><i class="ft-x"></i></a>
-                          </div>
-                          <div class="model btn btn-outline-primary round">
-                            <span>model1</span>
-                            <i class="ft-eye"></i>
-                            <a id="m-eye" href="javascript:void(0)"><i class="ft-x"></i></a>
+                            <div class="model btn btn-outline-primary">
+                              <span>model1</span>
+                              <i class="ft-eye"></i>
+                              <a id="m-eye" href="javascript:void(0)"><i class="ft-x"></i></a>
+                            </div>
+                            <div class="model btn btn-outline-primary">
+                              <span>model1</span>
+                              <i class="ft-eye"></i>
+                              <a id="m-eye" href="javascript:void(0)"><i class="ft-x"></i></a>
+                            </div>
+                            <div class="model active btn btn-outline-primary">
+                              <span>model1</span>
+                              <i class="ft-eye"></i>
+                              <a id="m-eye" href="javascript:void(0)"><i class="ft-x"></i></a>
+                            </div>
+                            <div class="model btn btn-outline-primary">
+                              <span>model1</span>
+                              <i class="ft-eye"></i>
+                              <a id="m-eye" href="javascript:void(0)"><i class="ft-x"></i></a>
+                            </div>
+                            <div class="model btn btn-outline-primary">
+                              <span>model1</span>
+                              <i class="ft-eye"></i>
+                              <a id="m-eye" href="javascript:void(0)"><i class="ft-x"></i></a>
+                            </div>
+                            <div class="model btn btn-outline-primary">
+                              <span>model1</span>
+                              <i class="ft-eye"></i>
+                              <a id="m-eye" href="javascript:void(0)"><i class="ft-x"></i></a>
+                            </div>
+
                           </div>
 
+
+                          <!-- basic viewer -->
+                          <%- include('../partials/threeediter'); %>
+                            <div
+                              style="display:none;background:#2b2b2b86;position:absolute;top:0;left:0;width:100%;height:100%;"
+                              id="fprgs">
+                              <label
+                                style="transform: translate(-50%,-50%);position:absolute;left:50%;top:50%;">filtering,
+                                this may take a while...</label>
+                            </div>
                         </div>
-
-
-                        <!-- basic viewer -->
-                        <%- include('../partials/threeediter'); %>
-                          <div
-                            style="display:none;background:#2b2b2b86;position:absolute;top:0;left:0;width:100%;height:100%;"
-                            id="fprgs">
-                            <label
-                              style="transform: translate(-50%,-50%);position:absolute;left:50%;top:50%;">filtering,
-                              this may take a while...</label>
-                          </div>
                       </div>
                     </div>
                   </div>
                 </div>
               </div>
-            </div>
-          </section>
-          <!-- Basic Buttons end -->
-        </div>
-
-
-      </div>
-    </div>
-    <!-- ////////////////////////////////////////////////////////////////////////////-->
-    <!-- BEGIN: Customizer-->
-    <div class="modal fade text-left" id="volumeModal" tabindex="-1" role="dialog" aria-labelledby="volumeLabel"
-      aria-hidden="true" style="z-index:100001;">
-      <div class="modal-dialog" role="document">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title" id="directSaveLabel">Please choose model and ground for volume calculation</h5>
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-              <span aria-hidden="true">×</span>
-            </button>
+            </section>
+            <!-- Basic Buttons end -->
           </div>
-          <div class="modal-body">
 
-            <div id="markedVolumeDiv" class="form-group pb-0 mb-1"
-              style="padding-top: 3px; padding-left:10px; margin-bottom:0px; flex-grow:20;"
-              title="switch for marked points volume calculation">
-              <input type="checkbox" data-size="sm" id="markedVolume" class="switchery" data-color="primary"
-                data-secondary-color="primary" data-switchery="true" style="display: none;">
-              <label for="markedVolume" class="font-medium-2 text-bold-600">only marked points</label>
+
+        </div>
+      </div>
+      <!-- ////////////////////////////////////////////////////////////////////////////-->
+      <!-- BEGIN: Customizer-->
+      <div class="modal fade text-left" id="volumeModal" tabindex="-1" role="dialog" aria-labelledby="volumeLabel"
+        aria-hidden="true" style="z-index:100001;">
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="directSaveLabel">Please choose model and ground for volume calculation</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">×</span>
+              </button>
             </div>
+            <div class="modal-body">
 
-            <label for="ds-modelName" class="ml-1">Heap File</label>
-            <select class="select2 form-control select2-hidden-accessible mb-1" id="vheap-list"
-              data-select2-id="default-select" tabindex="-1" aria-hidden="true">
-              <!-- <option value="AK">Alaska</option>
+              <div id="markedVolumeDiv" class="form-group pb-0 mb-1"
+                style="padding-top: 3px; padding-left:10px; margin-bottom:0px; flex-grow:20;"
+                title="switch for marked points volume calculation">
+                <input type="checkbox" data-size="sm" id="markedVolume" class="switchery" data-color="primary"
+                  data-secondary-color="primary" data-switchery="true" style="display: none;">
+                <label for="markedVolume" class="font-medium-2 text-bold-600">only marked points</label>
+              </div>
+
+              <label for="ds-modelName" class="ml-1">Heap File</label>
+              <select class="select2 form-control select2-hidden-accessible mb-1" id="vheap-list"
+                data-select2-id="default-select" tabindex="-1" aria-hidden="true">
+                <!-- <option value="AK">Alaska</option>
                         <option value="HI">Hawaii</option> -->
-            </select>
-            <label for="ds-modelVolume" class="ml-1">Ground File</label>
-            <select class="select2 form-control select2-hidden-accessible mb-1" id="vground-list"
-              data-select2-id="default-select" tabindex="-1" aria-hidden="true">
-              <!-- <option value="AK">Alaska</option>
+              </select>
+              <label for="ds-modelVolume" class="ml-1">Ground File</label>
+              <select class="select2 form-control select2-hidden-accessible mb-1" id="vground-list"
+                data-select2-id="default-select" tabindex="-1" aria-hidden="true">
+                <!-- <option value="AK">Alaska</option>
               <option value="HI">Hawaii</option> -->
-            </select>
-            <button type='button' class="btn btn-icon btn-outline-primary btn-glow round btn-sm mr-1 mb-1"
-              title='set ground file from PC' id='btn-ground'> set ground file from PC
-            </button>
-            <div style="display: flex;justify-content: space-around;">
-              <label for="id-volume" class="ml-1" style="width:30%;">volume(m<sup>3</sup>)</label>
-              <label for="id-mass" class="ml-1" style="width:30%;">mass(t)</label>
-              <label for="id-densty" class="ml-1" style="width:30%;">densty(kg/m<sup>3</sup>)</label>
+              </select>
+              <button type='button' class="btn btn-icon btn-outline-primary btn-glow btn-sm mr-1 mb-1"
+                title='set ground file from PC' id='btn-ground'> set ground file from PC
+              </button>
+              <div style="display: flex;justify-content: space-around;">
+                <label for="id-volume" class="ml-1" style="width:30%;">volume(m<sup>3</sup>)</label>
+                <label for="id-mass" class="ml-1" style="width:30%;">mass(t)</label>
+                <label for="id-densty" class="ml-1" style="width:30%;">densty(kg/m<sup>3</sup>)</label>
+              </div>
+              <div style="display: flex;justify-content: space-around;">
+                <input type="number" value=0 class="form-control" style="width:30%;display: inline-block;"
+                  id="id-volume" placeholder="volume">
+                <input type="number" value=0 class="form-control" style="width:30%;display: inline-block;" id="id-mass"
+                  placeholder="mass">
+                <input type="number" value=0 class="form-control" style="width:30%;display: inline-block;"
+                  id="id-densty" placeholder="densty">
+              </div>
             </div>
-            <div style="display: flex;justify-content: space-around;">
-              <input type="number" value=0 class="form-control" style="width:30%;display: inline-block;" id="id-volume"
-                placeholder="volume">
-              <input type="number" value=0 class="form-control" style="width:30%;display: inline-block;" id="id-mass"
-                placeholder="mass">
-              <input type="number" value=0 class="form-control" style="width:30%;display: inline-block;" id="id-densty"
-                placeholder="densty">
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-dismiss="modal" id="btn-vClose">Close</button>
+              <button type="button" class="btn btn-primary ml-1" id="btn-volume">Calculate</button>
+              <button type="button" class="btn btn-success ml-1" id="btn-vSave">save</button>
             </div>
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-dismiss="modal" id="btn-vClose">Close</button>
-            <button type="button" class="btn btn-primary ml-1" id="btn-volume">Calculate</button>
-            <button type="button" class="btn btn-success ml-1" id="btn-vSave">save</button>
           </div>
         </div>
       </div>
-    </div>
-    <!-- End: Customizer-->
-    <!-- page content end -->
-    <%- include('../partials/footer'); %>
-      <script type="module" src="/js/edit_three.js"></script>
-      <script type="module" src="/js/tool_three.js"></script>
-      <!-- <script>
+      <!-- End: Customizer-->
+      <!-- page content end -->
+      <%- include('../partials/footer'); %>
+        <script type="module" src="/js/edit_three.js"></script>
+        <script type="module" src="/js/tool_three.js"></script>
+        <!-- <script>
           window.onbeforeunload = function () {
             return 'Are you really want to perform the action?';
           }
         </script> -->
 
-      <!-- page footer -->
-      <div class="modal fade text-left" id="exampleModal" tabindex="-1" role="dialog"
-        aria-labelledby="exampleModalLabel" aria-hidden="true" style="z-index:100001;">
-        <div class="modal-dialog" role="document">
-          <div class="modal-content">
-            <div class="modal-header">
-              <h5 class="modal-title" id="exampleModalLabel">Please choose download file type</h5>
-              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                <span aria-hidden="true">×</span>
-              </button>
-            </div>
-            <div class="modal-body">
-              <div class="row toolbar" style="justify-content: center;">
-                <button type="button" class="btn btn-success mr-1 ml-1 mb-1" id="obj-download" data-dismiss="modal"><i
-                    class="ft-download"></i>obj file(2D)</button>
-                <button type="button" class="btn btn-success mr-1 ml-1 mb-1" id="obj-download3" data-dismiss="modal"><i
-                    class="ft-download"></i>obj file(3D)</button>
-                <button type="button" class="btn btn-primary mr-1 ml-1 mb-1" id="txt-download" data-dismiss="modal"><i
-                    class=" ft-download"></i>&nbsp;&nbsp;txt file&nbsp;&nbsp;&nbsp;</button>
+        <!-- page footer -->
+        <div class="modal fade text-left" id="exampleModal" tabindex="-1" role="dialog"
+          aria-labelledby="exampleModalLabel" aria-hidden="true" style="z-index:100001;">
+          <div class="modal-dialog" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Please choose download file type</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">×</span>
+                </button>
               </div>
-            </div>
-            <div class="modal-footer">
+              <div class="modal-body">
+                <div class="row toolbar" style="justify-content: space-evenly;">
+                  <button type="button" class="btn btn-success mr-1 ml-1 mb-1" id="obj-download" data-dismiss="modal"><i
+                      class="ft-download"></i>obj file</button>
+                  <button type="button" class="btn btn-success mr-1 ml-1 mb-1" id="obj-download3" data-dismiss="modal"
+                    style="display: none;"><i class="ft-download"></i>obj file(3D)</button>
+                  <button type="button" class="btn btn-primary mr-1 ml-1 mb-1" id="txt-download" data-dismiss="modal"><i
+                      class=" ft-download"></i>&nbsp;&nbsp;txt file&nbsp;&nbsp;&nbsp;</button>
+                </div>
+              </div>
+              <div class="modal-footer">
+              </div>
             </div>
           </div>
         </div>
-      </div>
 
-      <div class="modal fade text-left" id="directSave" tabindex="-1" role="dialog" aria-labelledby="directSaveLabel"
-        aria-hidden="true" style="z-index:100001;">
+        <div class="modal fade text-left" id="directSave" tabindex="-1" role="dialog" aria-labelledby="directSaveLabel"
+          aria-hidden="true" style="z-index:100001;">
 
-        <div class="modal-dialog" role="document">
-          <div class="modal-content">
-            <div class="modal-header">
-              <h5 class="modal-title" id="directSaveLabel">Please enter(confirm) model's name and volume</h5>
-              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                <span aria-hidden="true">×</span>
-              </button>
-            </div>
-            <div class="modal-body">
-              <div class="row toolbar" style="flex-direction: row;">
-                <label for="ds-modelName" class="ml-1">Database Name</label>
-                <input type="text" class="form-control ml-1 mr-1 mb-2" id="ds-database">
-                <label for="ds-modelName" class="ml-1">Collection Name</label>
-                <input type="text" class="form-control ml-1 mr-1 mb-2" id="ds-collection">
-                <label for="ds-modelName" class="ml-1">Model Name</label>
-                <input type="text" class="form-control ml-1 mr-1 mb-2" id="ds-modelName">
-                <label for="ds-modelVolume" class="ml-1">Model Volume</label>
-                <input type="text" class="form-control ml-1 mr-1 mb-2" id="ds-modelVolume">
+          <div class="modal-dialog" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="directSaveLabel">Please enter(confirm) model's name and volume</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">×</span>
+                </button>
               </div>
-            </div>
-            <div class="modal-footer">
-              <button type="button" class="btn btn-secondary" data-dismiss="modal" id="btn-dsClose">Close</button>
-              <button type="button" class="btn btn-primary ml-1" id="directSaveBtn">Save</button>
+              <div class="modal-body">
+                <div class="row toolbar" style="flex-direction: row;">
+                  <label for="ds-modelName" class="ml-1">Database Name</label>
+                  <input type="text" class="form-control ml-1 mr-1 mb-2" id="ds-database">
+                  <label for="ds-modelName" class="ml-1">Collection Name</label>
+                  <input type="text" class="form-control ml-1 mr-1 mb-2" id="ds-collection">
+                  <label for="ds-modelName" class="ml-1">Model Name</label>
+                  <input type="text" class="form-control ml-1 mr-1 mb-2" id="ds-modelName">
+                  <label for="ds-modelVolume" class="ml-1">Model Volume</label>
+                  <input type="text" class="form-control ml-1 mr-1 mb-2" id="ds-modelVolume">
+                </div>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal" id="btn-dsClose">Close</button>
+                <button type="button" class="btn btn-primary ml-1" id="directSaveBtn">Save</button>
+              </div>
             </div>
           </div>
         </div>
-      </div>
 
 
 
-      <div class="modal fade text-left" id="matrixModal" tabindex="-1" role="dialog" aria-labelledby="matrixLabel"
-        aria-hidden="true" style="z-index:100001;">
-        <div class="modal-dialog" role="document" style="margin-top:50px">
-          <div class="modal-content">
-            <div class="modal-header">
-              <h5 class="modal-title" id="directSaveLabel">M A T R I X</h5>
-              <input id="matrix-id" style="display: none;">
-              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                <span aria-hidden="true">×</span>
-              </button>
-            </div>
-            <div class="modal-body">
-              <div class="row mb-1" style="border-bottom:1px solid lightgrey;">
-                <div contenteditable="true" id="mtx0" class="col-xl-3 col-lg-3"></div>
-                <div contenteditable="true" id="mtx4" class="col-xl-3 col-lg-3"></div>
-                <div contenteditable="true" id="mtx8" class="col-xl-3 col-lg-3"></div>
-                <div contenteditable="true" id="mtx12" class="col-xl-3 col-lg-3"></div>
+        <div class="modal fade text-left" id="matrixModal" tabindex="-1" role="dialog" aria-labelledby="matrixLabel"
+          aria-hidden="true" style="z-index:100001;">
+          <div class="modal-dialog" role="document" style="margin-top:50px">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="directSaveLabel">M A T R I X</h5>
+                <input id="matrix-id" style="display: none;">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">×</span>
+                </button>
               </div>
-              <div class="row mb-1" style="border-bottom:1px solid lightgrey;">
-                <div contenteditable="true" id="mtx1" class="col-xl-3 col-lg-3"></div>
-                <div contenteditable="true" id="mtx5" class="col-xl-3 col-lg-3"></div>
-                <div contenteditable="true" id="mtx9" class="col-xl-3 col-lg-3"></div>
-                <div contenteditable="true" id="mtx13" class="col-xl-3 col-lg-3"></div>
+              <div class="modal-body">
+                <div class="row mb-1" style="border-bottom:1px solid lightgrey;">
+                  <div contenteditable="true" id="mtx0" class="col-xl-3 col-lg-3"></div>
+                  <div contenteditable="true" id="mtx4" class="col-xl-3 col-lg-3"></div>
+                  <div contenteditable="true" id="mtx8" class="col-xl-3 col-lg-3"></div>
+                  <div contenteditable="true" id="mtx12" class="col-xl-3 col-lg-3"></div>
+                </div>
+                <div class="row mb-1" style="border-bottom:1px solid lightgrey;">
+                  <div contenteditable="true" id="mtx1" class="col-xl-3 col-lg-3"></div>
+                  <div contenteditable="true" id="mtx5" class="col-xl-3 col-lg-3"></div>
+                  <div contenteditable="true" id="mtx9" class="col-xl-3 col-lg-3"></div>
+                  <div contenteditable="true" id="mtx13" class="col-xl-3 col-lg-3"></div>
+                </div>
+                <div class="row mb-1" style="border-bottom:1px solid lightgrey;">
+                  <div contenteditable="true" id="mtx2" class="col-xl-3 col-lg-3"></div>
+                  <div contenteditable="true" id="mtx6" class="col-xl-3 col-lg-3"></div>
+                  <div contenteditable="true" id="mtx10" class="col-xl-3 col-lg-3"></div>
+                  <div contenteditable="true" id="mtx14" class="col-xl-3 col-lg-3"></div>
+                </div>
+                <div class="row mb-1" style="border-bottom:1px solid lightgrey;">
+                  <div contenteditable="true" id="mtx3" class="col-xl-3 col-lg-3"></div>
+                  <div contenteditable="true" id="mtx7" class="col-xl-3 col-lg-3"></div>
+                  <div contenteditable="true" id="mtx11" class="col-xl-3 col-lg-3"></div>
+                  <div contenteditable="true" id="mtx15" class="col-xl-3 col-lg-3"></div>
+                </div>
               </div>
-              <div class="row mb-1" style="border-bottom:1px solid lightgrey;">
-                <div contenteditable="true" id="mtx2" class="col-xl-3 col-lg-3"></div>
-                <div contenteditable="true" id="mtx6" class="col-xl-3 col-lg-3"></div>
-                <div contenteditable="true" id="mtx10" class="col-xl-3 col-lg-3"></div>
-                <div contenteditable="true" id="mtx14" class="col-xl-3 col-lg-3"></div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary mr-1" data-dismiss="modal"
+                  id="matrix-close">Close</button>
+                <button type="button" class="btn btn-primary mr-1" id="matrix-download">Download</button>
+                <button type="button" class="btn btn-success mr-1" id="matrix-save">Save</button>
               </div>
-              <div class="row mb-1" style="border-bottom:1px solid lightgrey;">
-                <div contenteditable="true" id="mtx3" class="col-xl-3 col-lg-3"></div>
-                <div contenteditable="true" id="mtx7" class="col-xl-3 col-lg-3"></div>
-                <div contenteditable="true" id="mtx11" class="col-xl-3 col-lg-3"></div>
-                <div contenteditable="true" id="mtx15" class="col-xl-3 col-lg-3"></div>
-              </div>
-            </div>
-            <div class="modal-footer">
-              <button type="button" class="btn btn-secondary mr-1" data-dismiss="modal" id="matrix-close">Close</button>
-              <button type="button" class="btn btn-primary mr-1" id="matrix-download">Download</button>
-              <button type="button" class="btn btn-success mr-1" id="matrix-save">Save</button>
             </div>
           </div>
         </div>
-      </div>
 
-      <div class="modal fade text-left" id="dbMatrix" tabindex="-1" role="dialog" aria-labelledby="dbMatrixLabel"
-        aria-hidden="true" style="z-index:100001;">
-        <div class="modal-dialog" role="document" style="margin-top:50px">
-          <div class="modal-content">
-            <div class="modal-header">
-              <h5 class="modal-title" id="directSaveLabel">M A T R I X</h5>
-              <input id="matrix-id" style="display: none;">
-              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                <span aria-hidden="true">×</span>
-              </button>
-            </div>
-            <div class="modal-body">
-              <div class="row mb-1" style="border-bottom:1px solid lightgrey;">
-                <div contenteditable="true" id="dbmtx0" class="col-xl-3 col-lg-3"></div>
-                <div contenteditable="true" id="dbmtx4" class="col-xl-3 col-lg-3"></div>
-                <div contenteditable="true" id="dbmtx8" class="col-xl-3 col-lg-3"></div>
-                <div contenteditable="true" id="dbmtx12" class="col-xl-3 col-lg-3"></div>
+        <div class="modal fade text-left" id="dbMatrix" tabindex="-1" role="dialog" aria-labelledby="dbMatrixLabel"
+          aria-hidden="true" style="z-index:100001;">
+          <div class="modal-dialog" role="document" style="margin-top:50px">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="directSaveLabel">M A T R I X</h5>
+                <input id="matrix-id" style="display: none;">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">×</span>
+                </button>
               </div>
-              <div class="row mb-1" style="border-bottom:1px solid lightgrey;">
-                <div contenteditable="true" id="dbmtx1" class="col-xl-3 col-lg-3"></div>
-                <div contenteditable="true" id="dbmtx5" class="col-xl-3 col-lg-3"></div>
-                <div contenteditable="true" id="dbmtx9" class="col-xl-3 col-lg-3"></div>
-                <div contenteditable="true" id="dbmtx13" class="col-xl-3 col-lg-3"></div>
+              <div class="modal-body">
+                <div class="row mb-1" style="border-bottom:1px solid lightgrey;">
+                  <div contenteditable="true" id="dbmtx0" class="col-xl-3 col-lg-3"></div>
+                  <div contenteditable="true" id="dbmtx4" class="col-xl-3 col-lg-3"></div>
+                  <div contenteditable="true" id="dbmtx8" class="col-xl-3 col-lg-3"></div>
+                  <div contenteditable="true" id="dbmtx12" class="col-xl-3 col-lg-3"></div>
+                </div>
+                <div class="row mb-1" style="border-bottom:1px solid lightgrey;">
+                  <div contenteditable="true" id="dbmtx1" class="col-xl-3 col-lg-3"></div>
+                  <div contenteditable="true" id="dbmtx5" class="col-xl-3 col-lg-3"></div>
+                  <div contenteditable="true" id="dbmtx9" class="col-xl-3 col-lg-3"></div>
+                  <div contenteditable="true" id="dbmtx13" class="col-xl-3 col-lg-3"></div>
+                </div>
+                <div class="row mb-1" style="border-bottom:1px solid lightgrey;">
+                  <div contenteditable="true" id="dbmtx2" class="col-xl-3 col-lg-3"></div>
+                  <div contenteditable="true" id="dbmtx6" class="col-xl-3 col-lg-3"></div>
+                  <div contenteditable="true" id="dbmtx10" class="col-xl-3 col-lg-3"></div>
+                  <div contenteditable="true" id="dbmtx14" class="col-xl-3 col-lg-3"></div>
+                </div>
+                <div class="row mb-1" style="border-bottom:1px solid lightgrey;">
+                  <div contenteditable="true" id="dbmtx3" class="col-xl-3 col-lg-3"></div>
+                  <div contenteditable="true" id="dbmtx7" class="col-xl-3 col-lg-3"></div>
+                  <div contenteditable="true" id="dbmtx11" class="col-xl-3 col-lg-3"></div>
+                  <div contenteditable="true" id="dbmtx15" class="col-xl-3 col-lg-3"></div>
+                </div>
               </div>
-              <div class="row mb-1" style="border-bottom:1px solid lightgrey;">
-                <div contenteditable="true" id="dbmtx2" class="col-xl-3 col-lg-3"></div>
-                <div contenteditable="true" id="dbmtx6" class="col-xl-3 col-lg-3"></div>
-                <div contenteditable="true" id="dbmtx10" class="col-xl-3 col-lg-3"></div>
-                <div contenteditable="true" id="dbmtx14" class="col-xl-3 col-lg-3"></div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary mr-1" data-dismiss="modal"
+                  id="dbmatrix-close">Close</button>
+                <button type="button" class="btn btn-primary mr-1" id="dbmatrix-download">Download</button>
               </div>
-              <div class="row mb-1" style="border-bottom:1px solid lightgrey;">
-                <div contenteditable="true" id="dbmtx3" class="col-xl-3 col-lg-3"></div>
-                <div contenteditable="true" id="dbmtx7" class="col-xl-3 col-lg-3"></div>
-                <div contenteditable="true" id="dbmtx11" class="col-xl-3 col-lg-3"></div>
-                <div contenteditable="true" id="dbmtx15" class="col-xl-3 col-lg-3"></div>
-              </div>
-            </div>
-            <div class="modal-footer">
-              <button type="button" class="btn btn-secondary mr-1" data-dismiss="modal"
-                id="dbmatrix-close">Close</button>
-              <button type="button" class="btn btn-primary mr-1" id="dbmatrix-download">Download</button>
             </div>
           </div>
         </div>
-      </div>
 
 
-      <div class="modal fade text-left" id="editerModal" tabindex="-1" role="dialog" aria-labelledby="editerModalLabel"
-        aria-hidden="true" style="z-index:100000;">
-        <div class="modal-dialog" role="document" style="max-width:1400px;height:90%;">
-          <div class="modal-content" style="height:100%;">
-            <div class="modal-header" style="position:relative;z-index: 1;">
-              <!-- <h5 class="modal-title" id="editerModalLabel" style="font-weight:800;">Editor Model Browser</h5> -->
-              <ul class="nav nav-tabs">
-                <li class="nav-item">
-                  <a class="nav-link active" id="bhistory-tab" data-toggle="tab" href="#bhistory" aria-controls="home"
-                    aria-expanded="true">history</a>
-                </li>
-                <li class="nav-item">
-                  <a class="nav-link" id="bdatabase-tab" data-toggle="tab" href="#bdatabase" aria-controls="profile"
-                    aria-expanded="false">database</a>
-                </li>
-              </ul>
-              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                <span aria-hidden="true">×</span>
-              </button>
-            </div>
-            <div class="modal-body" id="previewParent" style="overflow-y: auto;padding-top:0;">
-              <!-- <button type='button' style="margin:10px;" class="btn btn-outline-primary btn-glow round"
+        <div class="modal fade text-left" id="editerModal" tabindex="-1" role="dialog"
+          aria-labelledby="editerModalLabel" aria-hidden="true" style="z-index:100000;">
+          <div class="modal-dialog" role="document" style="max-width:1400px;height:90%;">
+            <div class="modal-content" style="height:100%;">
+              <div class="modal-header" style="position:relative;z-index: 1;">
+                <!-- <h5 class="modal-title" id="editerModalLabel" style="font-weight:800;">Editor Model Browser</h5> -->
+                <ul class="nav nav-tabs">
+                  <li class="nav-item">
+                    <a class="nav-link active" id="bhistory-tab" data-toggle="tab" href="#bhistory" aria-controls="home"
+                      aria-expanded="true">history</a>
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link" id="bdatabase-tab" data-toggle="tab" href="#bdatabase" aria-controls="profile"
+                      aria-expanded="false">database</a>
+                  </li>
+                </ul>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">×</span>
+                </button>
+              </div>
+              <div class="modal-body" id="previewParent" style="overflow-y: auto;padding-top:0;">
+                <!-- <button type='button' style="margin:10px;" class="btn btn-outline-primary btn-glow"
                   title='Open model from local pc'>
                   <i class="ft-save"></i> Save
                 </button> -->
 
-              <!-- <canvas id="previewCanvas"></canvas> -->
-              <div class="tab-content px-1 pt-1">
-                <div role="tabpanel" class="tab-pane active" id="bhistory" aria-labelledby="bhistory-tab"
-                  aria-expanded="true">
-                  <div class="row">
-                    <div class="col-xl-6 col-lg-12">
-                      <div class="form-group">
-                        <p class="text-bold-600 font-medium-2">
-                          Database
-                        </p>
-                        <input type="text" class="form-control" id="hdatabase-name" />
+                <!-- <canvas id="previewCanvas"></canvas> -->
+                <div class="tab-content px-1 pt-1">
+                  <div role="tabpanel" class="tab-pane active" id="bhistory" aria-labelledby="bhistory-tab"
+                    aria-expanded="true">
+                    <div class="row">
+                      <div class="col-xl-6 col-lg-12">
+                        <div class="form-group">
+                          <p class="text-bold-600 font-medium-2">
+                            Database
+                          </p>
+                          <input type="text" class="form-control" id="hdatabase-name" />
+                        </div>
+                      </div>
+                      <div class="col-xl-6 col-lg-12">
+                        <div class="form-group">
+                          <p class="text-bold-600 font-medium-2">
+                            Collection
+                          </p>
+                          <input type="text" class="form-control" id="hcollection-name" />
+                        </div>
                       </div>
                     </div>
-                    <div class="col-xl-6 col-lg-12">
-                      <div class="form-group">
-                        <p class="text-bold-600 font-medium-2">
-                          Collection
-                        </p>
-                        <input type="text" class="form-control" id="hcollection-name" />
-                      </div>
-                    </div>
-                  </div>
-                  <div class="table-responsive" style="position:relative">
-                    <table class="table mb-0" style="table-layout: fixed;">
-                      <thead>
-                        <tr>
-                          <!-- <th style="display: none;">view</th> -->
-                          <th style="width:205px;">name</th>
-                          <th>date</th>
-                          <th>time</th>
-                          <th>type</th>
-                          <th>volume</th>
-                          <th>mass</th>
-                          <th>densty</th>
-                          <th>matrix</th>
-                          <th style="width:205px;">#</th>
-                        </tr>
-                      </thead>
-                      <tbody id="history-models">
-                        <!-- <tr>
+                    <div class="table-responsive" style="position:relative">
+                      <table class="table mb-0" style="table-layout: fixed;">
+                        <thead>
+                          <tr>
+                            <!-- <th style="display: none;">view</th> -->
+                            <th style="width:205px;">name</th>
+                            <th>date</th>
+                            <th>time</th>
+                            <th>type</th>
+                            <th>volume</th>
+                            <th>mass</th>
+                            <th>densty</th>
+                            <th>matrix</th>
+                            <th style="width:205px;">#</th>
+                          </tr>
+                        </thead>
+                        <tbody id="history-models">
+                          <!-- <tr>
                             <td contenteditable="true">example</td>
                             <td>06.10.2021</td>
                             <td>12:25:14</td>
                             <td>model</td>
                             <td style="width:170px;">
-                              <button type='button' class="btn btn-icon btn-outline-primary  round btn-sm mr-1"
+                              <button type='button' class="btn btn-icon btn-outline-primary  btn-sm mr-1"
                                 title='loading'><i class="ft-upload"></i>
                               </button>
-                              <button type='button' class="btn btn-icon btn-outline-primary  round btn-sm"
+                              <button type='button' class="btn btn-icon btn-outline-primary  btn-sm"
                                 title='delete'><i class="ft-x-square"></i>
                               </button>
                             </td>
                           </tr> -->
-                      </tbody>
-                    </table>
+                        </tbody>
+                      </table>
+                    </div>
                   </div>
-                </div>
-                <div class="tab-pane" id="bdatabase" role="tabpanel" aria-labelledby="bdatabase-tab"
-                  aria-expanded="false">
-                  <div class="row">
-                    <div class="col-xl-4 col-lg-12">
-                      <div class="form-group">
-                        <p class="text-bold-600 font-medium-2">
-                          Database
-                        </p>
-                        <select class="select2 form-control select2-hidden-accessible" id="cdatabase-list"
-                          data-select2-id="default-select" tabindex="-1" aria-hidden="true">
-                          <!-- <option value="AK">Alaska</option>
+                  <div class="tab-pane" id="bdatabase" role="tabpanel" aria-labelledby="bdatabase-tab"
+                    aria-expanded="false">
+                    <div class="row">
+                      <div class="col-xl-4 col-lg-12">
+                        <div class="form-group">
+                          <p class="text-bold-600 font-medium-2">
+                            Database
+                          </p>
+                          <select class="select2 form-control select2-hidden-accessible" id="cdatabase-list"
+                            data-select2-id="default-select" tabindex="-1" aria-hidden="true">
+                            <!-- <option value="AK">Alaska</option>
                             <option value="HI">Hawaii</option> -->
-                        </select>
+                          </select>
+                        </div>
                       </div>
-                    </div>
-                    <div class="col-xl-4 col-lg-12">
-                      <div class="form-group">
-                        <p class="text-bold-600 font-medium-2">
-                          Collection
-                        </p>
-                        <select class="select2 form-control select2-hidden-accessible" id="ccollection-list"
-                          data-select2-id="default-select" tabindex="-1" aria-hidden="true">
-                          <!-- <option value="AK">Alaska</option>
+                      <div class="col-xl-4 col-lg-12">
+                        <div class="form-group">
+                          <p class="text-bold-600 font-medium-2">
+                            Collection
+                          </p>
+                          <select class="select2 form-control select2-hidden-accessible" id="ccollection-list"
+                            data-select2-id="default-select" tabindex="-1" aria-hidden="true">
+                            <!-- <option value="AK">Alaska</option>
                             <option value="HI">Hawaii</option> -->
-                        </select>
+                          </select>
+                        </div>
                       </div>
-                    </div>
-                    <div class="col-xl-4 col-lg-12">
-                      <div class="form-group">
-                        <button type="button" class="btn btn-outline-primary" style="margin-top:39px;"
-                          id="browser-load"><i class="ft-upload-cloud"></i> Load</button>
+                      <div class="col-xl-4 col-lg-12">
+                        <div class="form-group">
+                          <button type="button" class="btn btn-outline-primary" style="margin-top:39px;"
+                            id="browser-load"><i class="ft-upload-cloud"></i> Load</button>
+                        </div>
                       </div>
+
                     </div>
+                    <div class="table-responsive">
+                      <table class="table mb-0" style="table-layout: fixed;">
+                        <thead>
+                          <tr>
+                            <th style="width:205px;">name</th>
+                            <th>date</th>
+                            <th>time</th>
+                            <th>type</th>
+                            <th>volume</th>
+                            <th>mass</th>
+                            <th>densty</th>
+                            <th>matrix</th>
+                            <th>#</th>
+                          </tr>
+                        </thead>
+                        <tbody id="database-models">
 
-                  </div>
-                  <div class="table-responsive">
-                    <table class="table mb-0" style="table-layout: fixed;">
-                      <thead>
-                        <tr>
-                          <th style="width:205px;">name</th>
-                          <th>date</th>
-                          <th>time</th>
-                          <th>type</th>
-                          <th>volume</th>
-                          <th>mass</th>
-                          <th>densty</th>
-                          <th>matrix</th>
-                          <th>#</th>
-                        </tr>
-                      </thead>
-                      <tbody id="database-models">
-
-                      </tbody>
-                    </table>
+                        </tbody>
+                      </table>
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
-            <div class="modal-footer" style="z-index:1;">
-              <button type="button" class="btn btn-secondary" data-dismiss="modal" id="browser-close">Close</button>
-              <button type="button" class="btn btn-primary ml-1" id="browser-save">Save</button>
+              <div class="modal-footer" style="z-index:1;">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal" id="browser-close">Close</button>
+                <button type="button" class="btn btn-primary ml-1" id="browser-save">Save</button>
+              </div>
             </div>
           </div>
         </div>
-      </div>
-      <div
-        style="position:fixed;height:100%;width:100%;background:lightgrey;top:0;left:0;opacity:0.5;z-index:100002;display:none;"
-        id="loading">
-        <div class="spinner-border text-primary" role="status" style="top:50%;left:50%;position:absolute;">
-          <span class="sr-only">Loading...</span>
+        <div
+          style="position:fixed;height:100%;width:100%;background:lightgrey;top:0;left:0;opacity:0.5;z-index:100002;display:none;"
+          id="loading">
+          <div class="spinner-border text-primary" role="status" style="top:50%;left:50%;position:absolute;">
+            <span class="sr-only">Loading...</span>
+          </div>
         </div>
-      </div>
 
 </body>
 

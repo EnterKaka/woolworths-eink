@@ -7,7 +7,7 @@ import { ConvexGeometry } from './ConvexGeometry.js';
 import { XYZLoader, getminmaxhegiht, getminmaxhegihtfromarray, getminmaxheightfromjson, getrgb, init_highlow } from './XYZLoader.js';
 
 import * as filters from './filters.js';
-
+// console.log($.toast)
 export const owlStudio = function (cv1, cv2, parent) {
 
     this.canvas = document.getElementById(cv1);
@@ -27,6 +27,13 @@ export const owlStudio = function (cv1, cv2, parent) {
     this.controls = new OrbitControls(this.camera, this.renderer.domElement);
 
     this.plane = new THREE.Plane(new THREE.Vector3(0, 1, 0), 0);
+
+    this.cplanes = [
+        new THREE.Plane(new THREE.Vector3(0, 1, 0), -0.5),
+        new THREE.Plane(new THREE.Vector3(0, 1, 0), 0.5)
+    ];
+
+    // this.planeHelpers = this.cplanes.map(p => new THREE.PlaneHelper(p, 20, 0xffffff));
 
     this.mouse = {
         target: new THREE.Vector2(),
@@ -65,6 +72,7 @@ export const owlStudio = function (cv1, cv2, parent) {
 
         this.renderer.setPixelRatio(window.devicePixelRatio);
         this.renderer.setSize(this.canvas.clientWidth, this.canvas.clientHeight);
+        // this.renderer.localClippingEnabled = true;
 
         this.camera.position.set(0, -20, 6);
         this.camera.lookAt(0, 0, 0);
@@ -79,6 +87,10 @@ export const owlStudio = function (cv1, cv2, parent) {
         // this.scene.add(this.multiGroup.group)
 
         this.scene.background = new THREE.Color(0x111111);
+
+        this.setGlobalCoordinate();
+
+
 
         // controls.addEventListener('change', render); // call this only in static scenes (i.e., if there is no animation loop)
         // controls.minDistance = 0.1;
@@ -185,11 +197,19 @@ export const owlStudio = function (cv1, cv2, parent) {
         arrayData = [...loader.parse(data).children[0].geometry.attributes.position.array];
 
         this.reloadModelFromArray(filename, arrayData)
+
+
+        // // ///////////////////////////////////////////////
+        // let target = this.CustomPointCloud(filename)
+        // target.name = "asdf";
+        // target.group.add(loader.parse(data))
+        // this.scene.add(target.group)
+        // ///////////////////////////////////////////////
     }
 
     this.reloadModelFromArray = function (filename, arrayData, newModel = 'new') {
 
-        $("#modelpath").text(filename);
+        // $("#modelpath").text(filename);
 
         let target;
 
@@ -256,7 +276,9 @@ export const owlStudio = function (cv1, cv2, parent) {
             return;
         }
 
-        // this.target = target;
+
+        // this.cplanes[0].set(new THREE.Vector3(0, -1, 0), target.group.position.y + 2)
+        // this.cplanes[1].set(new THREE.Vector3(0, 1, 0), -target.group.position.y + 2)
 
         let colors = [];
 
@@ -297,10 +319,10 @@ export const owlStudio = function (cv1, cv2, parent) {
 
             document.getElementById('pointcolor').disabled = true;
 
-            material = new THREE.PointsMaterial({ size: 0.1, vertexColors: true, color: "#ffffff" });
+            material = new THREE.PointsMaterial({ size: pointsize(), vertexColors: true, clippingPlanes: this.cplanes, color: "#ffffff" });
 
         } else
-            material = new THREE.PointsMaterial({ size: 0.1, vertexColors: false, color: pointcolor() });
+            material = new THREE.PointsMaterial({ size: pointsize(), vertexColors: false, clippingPlanes: this.cplanes, color: pointcolor() });
 
         let points2 = new THREE.Points(geometry, material);
 
@@ -327,7 +349,7 @@ export const owlStudio = function (cv1, cv2, parent) {
 
         let mesh = new THREE.Mesh(
             geometry, // re-use the existing geometry
-            new THREE.MeshLambertMaterial({ color: heightmapColor() ? "#ffffff" : pointcolor(), wireframe: surface(), side: THREE.DoubleSide, vertexColors: heightmapColor(), })
+            new THREE.MeshLambertMaterial({ color: heightmapColor() ? "#ffffff" : pointcolor(), wireframe: surface(), clippingPlanes: this.cplanes, side: THREE.DoubleSide, vertexColors: heightmapColor(), })
         );
 
         mesh.visible = delauny();
@@ -349,7 +371,8 @@ export const owlStudio = function (cv1, cv2, parent) {
 
         let material3 = new THREE.PointsMaterial({
             color: selectedcolor(),
-            size: selectedsize()
+            size: selectedsize(),
+
         });
 
         target.selectedGroup = new THREE.Points(geometry3, material3);
@@ -364,7 +387,7 @@ export const owlStudio = function (cv1, cv2, parent) {
 
         let mesh5 = new THREE.Mesh(
             geometry5,
-            new THREE.MeshLambertMaterial({ color: delaunycolor(), wireframe: surface(), side: THREE.DoubleSide, })
+            new THREE.MeshLambertMaterial({ color: delaunycolor(), wireframe: surface(), clippingPlanes: this.cplanes, side: THREE.DoubleSide, })
         );
 
         mesh5.visible = delauny3();
@@ -576,12 +599,75 @@ export const owlStudio = function (cv1, cv2, parent) {
         this.mouse.x = evt.clientX;
         this.mouse.y = evt.clientY;
 
-        for (let id of this.activeId) {
+        if (!this.gcs || !this.gcs.visible) {
 
-            let target = this.groupList[id];
+            for (let id of this.activeId) {
 
-            target.group.rotation.z += deltaX / 100;
-            target.group.rotation.x += deltaY / 100;
+                let target = this.groupList[id];
+
+                target.group.rotation.z += deltaX / 100;
+                target.group.rotation.x += deltaY / 100;
+
+            }
+
+        } else {
+
+            let gp = new THREE.Vector3().copy(this.gcs.position)
+            let gm = new THREE.Matrix4().copy(this.gcs.matrix)
+            let gq = new THREE.Quaternion().setFromRotationMatrix(gm)
+            gq.x = -gq.x; gq.y = -gq.y; gq.z = -gq.z;
+
+            this.gcs.rotation.z += deltaX / 100;
+            this.gcs.rotation.x += deltaY / 100;
+            gm.makeRotationFromEuler(this.gcs.rotation)
+            let guq = new THREE.Quaternion().setFromRotationMatrix(gm);
+
+            for (let target of this.groupList) {
+
+                let group = target.group;
+                group.position.sub(gp);
+                group.position.applyQuaternion(gq)
+                group.position.applyQuaternion(guq)
+
+                group.applyQuaternion(gq)
+                group.applyQuaternion(guq)
+
+
+                group.position.add(gp)
+                // console.log(group.position)
+
+            }
+
+            if (this.clipGrid) {
+                let { normal, normal2, constant, position } = this.localClip;
+                let grid = this.clipGrid;
+                grid.position.copy(position)
+                grid.position.sub(gp);
+                grid.position.applyQuaternion(gq)
+                grid.position.applyQuaternion(guq)
+                grid.applyQuaternion(gq)
+                grid.applyQuaternion(guq)
+                grid.position.add(gp)
+
+                let ctr = grid.position;
+
+                normal.applyQuaternion(gq)
+                normal.applyQuaternion(guq).normalize()
+                normal2.applyQuaternion(gq)
+                normal2.applyQuaternion(guq).normalize()
+
+                constant = -(normal.x * ctr.x + normal.y * ctr.y + normal.z * ctr.z);
+                position = new THREE.Vector3().copy(ctr)
+                this.localClip = { normal, normal2, constant, position };
+                this.updateCrossSection()
+
+                for (let target of this.clipPoints) {
+                    target.sub(gp);
+                    target.applyQuaternion(gq)
+                    target.applyQuaternion(guq)
+                    target.add(gp)
+                }
+            }
 
         }
 
@@ -596,37 +682,26 @@ export const owlStudio = function (cv1, cv2, parent) {
 
         this.mouse.x = evt.clientX;
         this.mouse.y = evt.clientY;
+        let id1 = this.transDir[0];
+        let id2 = this.transDir[1];
 
-        if (this.transDir == 'xy') {
+        if (!this.gcs || !this.gcs.visible) {
 
             for (let id of this.activeId) {
 
                 let target = this.groupList[id];
 
-                target.group.position.x += deltaX / 100;
-                target.group.position.y -= deltaY / 100;
+                target.group.position[id1] += deltaX / 100;
+                target.group.position[id2] -= deltaY / 100;
 
             }
 
-        } else if (this.transDir == 'yz') {
+        } else {
 
-            for (let id of this.activeId) {
+            for (let target of this.groupList) {
 
-                let target = this.groupList[id];
-
-                target.group.position.y += deltaX / 100;
-                target.group.position.z -= deltaY / 100;
-
-            }
-
-        } else if (this.transDir == 'xz') {
-
-            for (let id of this.activeId) {
-
-                let target = this.groupList[id];
-
-                target.group.position.x += deltaX / 100;
-                target.group.position.z -= deltaY / 100;
+                target.group.position[id1] += deltaX / 100;
+                target.group.position[id2] -= deltaY / 100;
 
             }
 
@@ -639,7 +714,8 @@ export const owlStudio = function (cv1, cv2, parent) {
     this.rotateAbs = (axis, degree) => {
 
         let x = 0, y = 0, z = 0;
-
+        degree = parseFloat(degree)
+        isNaN(degree) && (degree = 0);
         if (axis == 'x') {
 
             x = degree;
@@ -673,6 +749,9 @@ export const owlStudio = function (cv1, cv2, parent) {
         x = parseFloat(x)
         y = parseFloat(y)
         z = parseFloat(z)
+        isNaN(x) && (x = 0);
+        isNaN(y) && (y = 0);
+        isNaN(z) && (z = 0);
 
         for (let id of this.activeId) {
 
@@ -696,23 +775,19 @@ export const owlStudio = function (cv1, cv2, parent) {
         this.mouse.x = evt.clientX;
         this.mouse.y = evt.clientY;
 
-        if (this.toolState != "addpoint") {
+        let normal = new THREE.Vector3(this.cameraLookAt.x - this.camera.position.x, this.cameraLookAt.y - this.camera.position.y, this.cameraLookAt.z - this.camera.position.z).normalize()
+        let op = new THREE.Vector3().copy(this.camera.position)
+        let p = this.camera.position;
 
-            this.camera.position.x -= deltaX / 35;
-            this.camera.position.z += deltaY / 35;
+        let quaternion = new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0, -1, 0), normal);
+        p.add(new THREE.Vector3(-deltaX / 35, 0, -deltaY / 35).applyQuaternion(quaternion))
 
-            this.cameraLookAt.x -= deltaX / 35;
-            this.cameraLookAt.z += deltaY / 35;
-
-        } else {
-            this.camera.position.x -= deltaX / 35;
-            this.camera.position.y += deltaY / 35;
-
-            this.cameraLookAt.x -= deltaX / 35;
-            this.cameraLookAt.y += deltaY / 35;
-        }
+        this.cameraLookAt.x += p.x - op.x;
+        this.cameraLookAt.y += p.y - op.y;
+        this.cameraLookAt.z += p.z - op.z;
 
         this.camera.lookAt(this.cameraLookAt);
+
 
         this.render()
 
@@ -866,6 +941,9 @@ export const owlStudio = function (cv1, cv2, parent) {
 
         if (this.activeId.length < 1) return;
 
+        // for (let id of this.activeId) {
+
+        // let target = this.groupList[id];
         let target = this.groupList[this.activeId[0]];
 
         let group = target.group;
@@ -1027,6 +1105,7 @@ export const owlStudio = function (cv1, cv2, parent) {
             }
 
         }
+        // }
 
         this.render()
 
@@ -1123,32 +1202,39 @@ export const owlStudio = function (cv1, cv2, parent) {
 
         let vector = new THREE.Vector3(x, y, z).applyMatrix4(this.groupList[sind[0]].group.matrix);
 
-        for (let id of this.activeId) {
 
-            let target = this.groupList[id];
+        if (!this.gcs || !this.gcs.visible) {
+            for (let id of this.activeId) {
 
-            let om = target.group.matrix;
+                let target = this.groupList[id];
 
-            let p = new THREE.Vector3().setFromMatrixPosition(om)
-            let q = new THREE.Quaternion().setFromRotationMatrix(om)
+                let om = target.group.matrix;
 
-            // p.x = -p.x; p.y = -p.y; p.z = -p.z;
-            q.x = -q.x; q.y = -q.y; q.z = -q.z;
+                let p = new THREE.Vector3().setFromMatrixPosition(om)
+                let q = new THREE.Quaternion().setFromRotationMatrix(om)
 
-            let v = new THREE.Vector3().copy(vector).sub(p).applyQuaternion(q);
+                // p.x = -p.x; p.y = -p.y; p.z = -p.z;
+                q.x = -q.x; q.y = -q.y; q.z = -q.z;
 
-            target.group.children[0].geometry.translate(-v.x, -v.y, -v.z)
-            target.group.children[3].geometry.translate(-v.x, -v.y, -v.z)
+                let v = new THREE.Vector3().copy(vector).sub(p).applyQuaternion(q);
 
-            target.changePosition.x -= v.x;
-            target.changePosition.y -= v.y;
-            target.changePosition.z -= v.z;
+                target.group.children[0].geometry.translate(-v.x, -v.y, -v.z)
+                target.group.children[3].geometry.translate(-v.x, -v.y, -v.z)
 
-            target.group.position.x = vector.x;
-            target.group.position.y = vector.y;
-            target.group.position.z = vector.z;
+                target.changePosition.x -= v.x;
+                target.changePosition.y -= v.y;
+                target.changePosition.z -= v.z;
 
+                target.group.position.x = vector.x;
+                target.group.position.y = vector.y;
+                target.group.position.z = vector.z;
+
+            }
+        } else {
+            this.gcs.position.copy(vector);
+            // this.gcs.rotation.copy(new THREE.Euler())
         }
+
 
         this.render();
 
@@ -1209,46 +1295,32 @@ export const owlStudio = function (cv1, cv2, parent) {
 
         let vector = new THREE.Vector3(x, y, z)
         let matrix = this.groupList[sind[0]].group.matrix;
-
+        this.linePdata = { vector: new THREE.Vector3().copy(vector), matrix }
+        vector.applyMatrix4(matrix)
         if (!this.line) {
 
-            let geometry = new THREE.BufferGeometry().setFromPoints([vector]);
+            let geometry = new THREE.BufferGeometry().setFromPoints([new THREE.Vector3()]);
 
             let material;
-
-            document.getElementById('pointcolor').disabled = true;
-
-            material = new THREE.PointsMaterial({ size: 0.5, vertexColors: false, color: "#1acaff" });
+            material = new THREE.PointsMaterial({ size: selectedsize(), vertexColors: false, color: selectedcolor() });
 
             let points = new THREE.Points(geometry, material);
             points.frustumCulled = false;
 
             this.line = new THREE.Object3D().add(points);
 
-            this.line.applyMatrix4(matrix)
+            this.line.position.copy(vector)
 
             this.scene.add(this.line);
 
         } else if (!this.line.visible) {
 
-            let array = this.line.children[0].geometry.attributes.position.array;
-
-            array[0] = vector.x;
-            array[1] = vector.y;
-            array[2] = vector.z;
-
-            this.line.children[0].geometry.attributes.position.needsUpdate = true;
-            this.line.matrix.copy(matrix)
-            this.line.position.setFromMatrixPosition(matrix);
-            this.line.quaternion.setFromRotationMatrix(matrix)
-
+            this.line.position.copy(vector)
             this.line.visible = true;
 
         } else {
 
-            let array = this.line.children[0].geometry.attributes.position.array;
-            vector.applyMatrix4(matrix)
-            let v = new THREE.Vector3(array[0], array[1], array[2]).applyMatrix4(this.line.matrix)
+            let v = this.line.position;
             let tx = vector.x - v.x;
             let ty = vector.y - v.y;
             let tz = vector.z - v.z;
@@ -1275,6 +1347,12 @@ export const owlStudio = function (cv1, cv2, parent) {
 
         this.render()
 
+    }
+
+    this.updateThisLine = function () {
+        if (!this.line || !this.line.visible) return;
+        this.line.position.copy(new THREE.Vector3().copy(this.linePdata.vector).applyMatrix4(this.linePdata.matrix))
+        this.render();
     }
 
     this.drawPolyline = function (evt) {
@@ -1329,56 +1407,232 @@ export const owlStudio = function (cv1, cv2, parent) {
 
         let vector = new THREE.Vector3(x, y, z)
         let matrix = this.groupList[sind[0]].group.matrix;
-        console.log(vector)
+
+        if (this.polyline) this.scene.remove(this.polyline);
+
+        if (!this.polylineData) {
+            this.polylineData = [];
+            this.polylineMatrix = [];
+        }
+
+        this.polylineData.push(vector)
+        this.polylineMatrix.push(matrix)
+
+        let points = [];
+        for (let i = 0; i < this.polylineData.length; i++) {
+            points.push(new THREE.Vector3().copy(this.polylineData[i]).applyMatrix4(this.polylineMatrix[i]))
+        }
+        let rdata = this.vectorCenter(points)
+
+
+        const geometry = new THREE.BufferGeometry().setFromPoints(rdata.points);
         const material = new THREE.LineBasicMaterial({
             color: pointcolor(),
             // size: 0.2
         });
-        if (!this.addpoints)
-            this.addpoints = [];
-        if (!this.polylineData) {
-            this.polylineData = [];
-        }
-
-        let vvv = new THREE.Vector3().copy(vector).applyMatrix4(matrix);
-        let oldPosition;
-        if (this.polylineData.length != 0) {
-            console.log(this.polyline)
-            oldPosition = new THREE.Vector3().copy(this.polyline.position)
-            vvv.x -= oldPosition.x; vvv.y -= oldPosition.y; vvv.z -= oldPosition.z;
-        }
-        else {
-            oldPosition = new THREE.Vector3().copy(vvv)
-            vvv.x = 0; vvv.y = 0; vvv.z = 0;
-        }
-        if (this.polyline) this.scene.remove(this.polyline);
-
-        // let xa = Math.floor(vvv.x);
-        // this.addpoints.push(xa)
-        // vvv.x -= xa;
-        // let ya = Math.floor(vvv.y);
-        // this.addpoints.push(ya)
-        // vvv.y -= ya;
-        // let za = Math.floor(vvv.z);
-        // this.addpoints.push(za)
-        // vvv.z -= za;
-
-        this.polylineData.push(vvv)
-
-
-        const geometry = new THREE.BufferGeometry().setFromPoints(this.polylineData);
-        // this.subPointToGeom(geometry, this.addpoints)
-        // let garray = geometry.attributes.position.array;
-        // for (let i = 0; i < garray.length; i++) {
-        //     garray[i] += this.addpoints[i];
-        // }
-        // console.log(garray)
         this.polyline = new THREE.Line(geometry, material);
-        this.polyline.position.copy(oldPosition)
+        this.polyline.position.copy(rdata.position)
         this.polyline.frustumCulled = false;
         this.scene.add(this.polyline);
         this.render();
-        this.showDistance(this.polylineData, oldPosition);
+        this.showDistance(this.polylineData, this.polylineMatrix);
+    }
+
+    this.updatePolyline = function () {
+        if (this.polyline) this.scene.remove(this.polyline);
+        let points = [];
+        for (let i = 0; i < this.polylineData.length; i++) {
+            points.push(new THREE.Vector3().copy(this.polylineData[i]).applyMatrix4(this.polylineMatrix[i]))
+        }
+        let rdata = this.vectorCenter(points)
+
+
+        const geometry = new THREE.BufferGeometry().setFromPoints(rdata.points);
+        const material = new THREE.LineBasicMaterial({
+            color: pointcolor(),
+            // size: 0.2
+        });
+        this.polyline = new THREE.Line(geometry, material);
+        this.polyline.position.copy(rdata.position)
+        this.polyline.frustumCulled = false;
+        this.scene.add(this.polyline);
+        this.render();
+    }
+
+    this.setCrossSection = function (evt) {
+        this.mouse.target.x = (evt.offsetX / this.canvas.clientWidth) * 2 - 1;
+        this.mouse.target.y = - (evt.offsetY / this.canvas.clientHeight) * 2 + 1;
+
+        let raycaster = new THREE.Raycaster();
+
+        raycaster.setFromCamera(this.mouse.target, this.camera);
+
+        let point = new THREE.Vector3();
+
+        let minDistance = Infinity;
+
+        let sind;
+
+        let closestPoint = new THREE.Vector3();
+
+        if (this.activeId.length <= 0) return;
+        let target = this.groupList[this.activeId[0]];
+
+        if (!target.group.visible) return;
+
+        let group = target.group;
+
+        let array = group.children[0].geometry.attributes.position.array;
+
+        for (let i = 0; i < array.length; i += 3) {
+
+            raycaster.ray.closestPointToPoint(new THREE.Vector3(array[i], array[i + 1], array[i + 2]).applyMatrix4(target.group.matrix), point)
+
+            let distanceSq = new THREE.Vector3(array[i], array[i + 1], array[i + 2]).applyMatrix4(target.group.matrix).distanceToSquared(point);
+
+            if (distanceSq < minDistance) {
+
+                closestPoint.set(array[i], array[i + 1], array[i + 2]);
+
+                minDistance = distanceSq;
+
+                sind = i;
+
+            }
+
+        }
+
+        let x = array[sind];
+        let y = array[sind + 1];
+        let z = array[sind + 2];
+
+        let vector = new THREE.Vector3(x, y, z)
+        let matrix = target.group.matrix;
+        vector.applyMatrix4(matrix)
+
+        if (!this.line) {
+
+            let geometry = new THREE.BufferGeometry().setFromPoints([new THREE.Vector3()]);
+
+            let material = new THREE.PointsMaterial({ size: selectedsize(), vertexColors: false, color: selectedcolor() });
+            let points = new THREE.Points(geometry, material);
+            points.frustumCulled = false;
+
+            this.line = new THREE.Object3D().add(points);
+            this.line.position.copy(vector)
+
+            this.scene.add(this.line);
+
+        } else {
+
+            let array = this.line.position;
+            this.getCrossSection({ x: array.x, y: array.y, z: array.z }, { x: vector.x, y: vector.y, z: vector.z });
+
+            this.scene.remove(this.line)
+            this.line = undefined;
+
+        }
+
+        this.render()
+    }
+
+    this.getCrossSection = (a, b, trigger = true) => {
+        // console.log(a, b)
+        this.clipPoints = [new THREE.Vector3(a.x, a.y, a.z), new THREE.Vector3(b.x, b.y, b.z)];
+        if (this.clipGrid) this.scene.remove(this.clipGrid);
+        let aa = new THREE.Vector3().copy(a)
+        let bb = new THREE.Vector3().copy(b)
+        let v1 = new THREE.Vector3().copy(aa)
+        let v2 = new THREE.Vector3().copy(bb)
+        let pn = document.getElementById('cross-plane').value;
+        let normal = new THREE.Vector3();
+        if (pn == "x") {
+            normal.z = 1;
+            normal.y = -(v1.z - v2.z) / (v1.y - v2.y);
+        } else if (pn == "y") {
+            normal.z = 1;
+            normal.x = -(v1.z - v2.z) / (v1.x - v2.x);
+        } else if (pn == "z") {
+            normal.y = 1;
+            normal.x = -(v1.y - v2.y) / (v1.x - v2.x);
+        }
+        normal.normalize();
+        let yb = new THREE.Vector3().copy(normal)
+        // normal.applyQuaternion(new THREE.Quaternion().setFromRotationMatrix(matrix)).normalize();
+        // v1.applyMatrix4(matrix)
+        // v2.applyMatrix4(matrix)
+        let normal2 = new THREE.Vector3(-normal.x, -normal.y, -normal.z)
+        let constant = -(normal.x * v1.x + normal.y * v1.y + normal.z * v1.z);
+        let width = crossWidth()
+        let offset = crossOffset()
+        this.cplanes[0].set(normal, (constant + width / 2 + offset))
+        this.cplanes[1].set(normal2, -(constant - width / 2 + offset))
+        this.renderer.localClippingEnabled = true;
+        let added = new THREE.Vector3(normal.x * offset, normal.y * offset, normal.z * offset)
+        this.clipGrid = new THREE.Object3D();
+        let grid = new THREE.GridHelper(20, 20);
+        this.clipGrid.add(grid);
+        let pposition = v1.add(v2).divideScalar(2);
+        this.clipGrid.position.copy(new THREE.Vector3().copy(pposition).sub(added))
+        // this.clipGrid.quaternion.copy(new THREE.Quaternion().setFromRotationMatrix(matrix))
+        // grid.rotation[pn] = Math.PI / 2;
+        grid.applyQuaternion(new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0, 1, 0), yb))
+        this.scene.add(this.clipGrid)
+        this.localClip = { normal: new THREE.Vector3().copy(normal), normal2: new THREE.Vector3().copy(normal2), constant, position: pposition };
+        console.log('setted')
+        if (trigger)
+            $('#btn-rotate3').trigger('click')
+    }
+
+    this.updateCrossSection = () => {
+        if (!this.localClip) return;
+        console.log('updated')
+        let { normal, normal2, constant, position } = this.localClip;
+        let width = crossWidth()
+        let offset = crossOffset()
+        this.cplanes[0].set(normal, (constant + width / 2 + offset))
+        this.cplanes[1].set(normal2, -(constant - width / 2 + offset))
+
+        let added = new THREE.Vector3(normal.x * offset, normal.y * offset, normal.z * offset)
+        this.clipGrid.position.copy(new THREE.Vector3().copy(position).sub(added))
+
+        this.render();
+    }
+
+    this.updateCrossSectionByGlobal = () => {
+        if (!this.localClip) return;
+        console.log('updatedG')
+        let { normal, normal2, constant, position } = this.localClip;
+        // ////////////////////////////////////////////////////////////////////////////////////
+        let gp = new THREE.Vector3().copy(this.gcs.position)
+        let gm = new THREE.Matrix4().copy(this.gcs.matrix)
+        let gq = new THREE.Quaternion().setFromRotationMatrix(gm)
+        gq.x = -gq.x; gq.y = -gq.y; gq.z = -gq.z;
+
+        this.gcs.rotation.z += deltaX / 100;
+        this.gcs.rotation.x += deltaY / 100;
+        gm.makeRotationFromEuler(this.gcs.rotation)
+        let guq = new THREE.Quaternion().setFromRotationMatrix(gm);
+        // ////////////////////////////////////////////////////////////////////////////////////
+        let grid = this.clipGrid;
+        grid.position.sub(gp);
+        grid.position.applyQuaternion(gq)
+        grid.position.applyQuaternion(guq)
+        grid.applyQuaternion(gq)
+        grid.applyQuaternion(guq)
+        grid.position.add(gp)
+
+        let ctr = grid.position;
+
+        normal.applyQuaternion(gq)
+        normal.applyQuaternion(guq).normalize()
+        normal2.applyQuaternion(gq)
+        normal2.applyQuaternion(guq).normalize()
+
+        constant = -(normal.x * ctr.x + normal.y * ctr.y + normal.z * ctr.z);
+        position = new THREE.Vector3().copy(ctr)
+
+        this.updateCrossSection()
     }
 
     this.addPoint = function (evt) {
@@ -1414,6 +1668,8 @@ export const owlStudio = function (cv1, cv2, parent) {
             let index = geometry.index;
             let v = new THREE.Vector3();
             let rv;
+            let dis = Infinity;
+            let inp = new THREE.Vector3();
             let faces = index.count / 3;
 
             for (let i = 0; i < faces; i++) {
@@ -1422,17 +1678,47 @@ export const owlStudio = function (cv1, cv2, parent) {
                 p2.fromBufferAttribute(position, index.array[i * 3 + 1]).applyMatrix4(target.group.matrix);
                 p3.fromBufferAttribute(position, index.array[i * 3 + 2]).applyMatrix4(target.group.matrix);
 
+                let d = raycaster.ray.distanceSqToPoint(p1);
+                if (d < dis) {
+                    dis = d;
+                    inp.copy(p1)
+                }
+                d = raycaster.ray.distanceSqToPoint(p2);
+                if (d < dis) {
+                    dis = d;
+                    inp.copy(p2)
+                }
+                d = raycaster.ray.distanceSqToPoint(p3);
+                if (d < dis) {
+                    dis = d;
+                    inp.copy(p3)
+                }
+
                 rv = raycaster.ray.intersectTriangle(p1, p2, p3, false, v)
                 if (rv) {
-                    let om = target.group.matrix;
-                    let p = new THREE.Vector3().setFromMatrixPosition(om)
-                    let q = new THREE.Quaternion().setFromRotationMatrix(om)
-                    q.x = -q.x; q.y = -q.y; q.z = -q.z;
-                    rv.sub(p).applyQuaternion(q);
                     break;
                 }
             }
-            if (!rv) return;
+            if (!rv) {
+                // rv = raycaster.ray.closestPointToPoint(inp, v)
+                // let ray = raycaster.ray;
+                // let b = (inp.z - ray.origin.z) / ray.direction.z;
+                // let y = b * ray.direction.y + ray.origin.y;
+                // let x = b * ray.direction.x + ray.origin.x;
+                // rv = new THREE.Vector3(x, y, inp.z);
+                // rv.z = inp.z;
+                // rv = new THREE.Vector3().copy(inp);
+                // rv.y += 0.3;
+                let normal = new THREE.Vector3(0, 0, 1).applyQuaternion(new THREE.Quaternion().setFromRotationMatrix(target.group.matrix)).normalize()
+                let distance = -(normal.x * inp.x + normal.y * inp.y + normal.z * inp.z)
+                let plane = new THREE.Plane(normal, distance)
+                rv = raycaster.ray.intersectPlane(plane, v)
+            }
+            let om = target.group.matrix;
+            let p = new THREE.Vector3().setFromMatrixPosition(om)
+            let q = new THREE.Quaternion().setFromRotationMatrix(om)
+            q.x = -q.x; q.y = -q.y; q.z = -q.z;
+            rv.sub(p).applyQuaternion(q);
 
             this.reloadModelFromArray(target.name, [...target.group.children[0].geometry.attributes.position.array, rv.x, rv.y, rv.z], this.activeId[0])
 
@@ -1448,18 +1734,18 @@ export const owlStudio = function (cv1, cv2, parent) {
     //     }
     // }
 
-    this.showDistance = (lines, position = new THREE.Vector3()) => {
+    this.showDistance = (lines, matrixs) => {
         $(".distance").remove();
         for (let i = 1; i < lines.length; i++) {
             let a = lines[i];
             let b = lines[i - 1];
-            let distance = a.distanceTo(b).toFixed(2);
-            let aa = new THREE.Vector3().copy(a).add(position);
-            let bb = new THREE.Vector3().copy(b).add(position);
-            aa.project(this.camera)
-            bb.project(this.camera)
-            let left = ((aa.x + bb.x) / 2 + 1) * this.parent_canvas.clientWidth / 2;
-            let top = (-(aa.y + bb.y) / 2 + 1) * this.parent_canvas.clientHeight / 2;
+            let aa = new THREE.Vector3().copy(a).applyMatrix4(matrixs[i]);
+            let bb = new THREE.Vector3().copy(b).applyMatrix4(matrixs[i - 1]);
+            let distance = aa.distanceTo(bb).toFixed(2);
+            let cc = new THREE.Vector3().copy(aa).add(bb).divideScalar(2);
+            cc.project(this.camera)
+            let left = (cc.x + 1) * this.parent_canvas.clientWidth / 2;
+            let top = (-cc.y + 1) * this.parent_canvas.clientHeight / 2;
             $(this.parent_canvas).append(`<span class="distance" style="position:absolute;display:inline-block;top:${top}px;left:${left}px;">${distance}m</span>`);
         }
     }
@@ -1470,8 +1756,8 @@ export const owlStudio = function (cv1, cv2, parent) {
             this.polyline = undefined;
         }
         this.polylineData = undefined;
-        this.addpoints = undefined;
-        this.showDistance([]);
+        this.polylineMatrix = undefined;
+        this.showDistance([], []);
         this.render();
     }
 
@@ -1491,9 +1777,7 @@ export const owlStudio = function (cv1, cv2, parent) {
 
         if (this.activeId.length < 1) return;
 
-        let target = this.groupList[this.activeId[0]];
 
-        let group = target.group;
 
         if (this.polygon.length > 2) {
 
@@ -1528,107 +1812,115 @@ export const owlStudio = function (cv1, cv2, parent) {
             }
             console.log(vs)
 
-            if (evt.ctrlKey && target.selectedCount > 0) {
+            for (let id of this.activeId) {
 
-                let geometry = target.selectedGroup.geometry;
+                let target = this.groupList[id];
 
-                let position = geometry.attributes.position;
+                let group = target.group;
 
-                let lop = target.selectedCount;
+                if (evt.ctrlKey && target.selectedCount > 0) {
 
-                target.selectedCount = 0;
+                    let geometry = target.selectedGroup.geometry;
 
-                for (let i = 0; i < lop; i++) {
+                    let position = geometry.attributes.position;
 
-                    let direct = new THREE.Vector3(position.array[i * 3], position.array[i * 3 + 1], position.array[i * 3 + 2])
+                    let lop = target.selectedCount;
 
-                    raycaster.set(camera.position, new THREE.Vector3().copy(direct).applyMatrix4(target.group.matrix).sub(camera.position).normalize());
+                    target.selectedCount = 0;
 
-                    raycaster.ray.intersectPlane(plane, pointOnPlane);
+                    for (let i = 0; i < lop; i++) {
 
-                    if (!isInside({ x: pointOnPlane[a], y: pointOnPlane[b] }, vs)) {
+                        let direct = new THREE.Vector3(position.array[i * 3], position.array[i * 3 + 1], position.array[i * 3 + 2])
 
-                        target.selectedPoints[target.selectedCount * 3 + 0] = direct.x;
-                        target.selectedPoints[target.selectedCount * 3 + 1] = direct.y;
-                        target.selectedPoints[target.selectedCount * 3 + 2] = direct.z;
+                        raycaster.set(camera.position, new THREE.Vector3().copy(direct).applyMatrix4(target.group.matrix).sub(camera.position).normalize());
 
-                        target.selectedCount++;
+                        raycaster.ray.intersectPlane(plane, pointOnPlane);
 
-                    } else {
+                        if (!isInside({ x: pointOnPlane[a], y: pointOnPlane[b] }, vs)) {
 
-                        target.unselectedPoints.push(direct.x, direct.y, direct.z)
+                            target.selectedPoints[target.selectedCount * 3 + 0] = direct.x;
+                            target.selectedPoints[target.selectedCount * 3 + 1] = direct.y;
+                            target.selectedPoints[target.selectedCount * 3 + 2] = direct.z;
+
+                            target.selectedCount++;
+
+                        } else {
+
+                            target.unselectedPoints.push(direct.x, direct.y, direct.z)
+
+                        }
+
+                    }
+
+                } else if (evt.shiftKey) {
+
+                    let updatedUn = [];
+
+                    for (let i = 0; i < target.unselectedPoints.length; i += 3) {
+
+                        let direct = new THREE.Vector3(target.unselectedPoints[i], target.unselectedPoints[i + 1], target.unselectedPoints[i + 2])
+
+                        raycaster.set(camera.position, new THREE.Vector3().copy(direct).applyMatrix4(target.group.matrix).sub(camera.position).normalize());
+
+                        raycaster.ray.intersectPlane(plane, pointOnPlane);
+
+                        if (isInside({ x: pointOnPlane[a], y: pointOnPlane[b] }, vs)) {
+
+                            target.selectedPoints[target.selectedCount * 3 + 0] = direct.x;
+                            target.selectedPoints[target.selectedCount * 3 + 1] = direct.y;
+                            target.selectedPoints[target.selectedCount * 3 + 2] = direct.z;
+
+                            target.selectedCount++;
+
+                        } else {
+
+                            updatedUn.push(direct.x, direct.y, direct.z)
+
+                        }
+
+                    }
+
+                    target.unselectedPoints = updatedUn;
+
+                } else {
+
+                    target.selectedCount = 0;
+
+                    let geometry = group.children[0].geometry;
+
+                    let array = geometry.attributes.position.array;
+
+                    target.unselectedPoints = [];
+
+                    for (let i = 0; i < array.length; i += 3) {
+
+                        raycaster.set(camera.position, new THREE.Vector3(array[i], array[i + 1], array[i + 2]).applyMatrix4(target.group.matrix).sub(camera.position).normalize());
+
+                        raycaster.ray.intersectPlane(plane, pointOnPlane);
+
+                        if (isInside({ x: pointOnPlane[a], y: pointOnPlane[b] }, vs)) {
+
+                            target.selectedPoints[target.selectedCount * 3 + 0] = array[i];
+                            target.selectedPoints[target.selectedCount * 3 + 1] = array[i + 1];
+                            target.selectedPoints[target.selectedCount * 3 + 2] = array[i + 2];
+
+                            target.selectedCount++;
+
+                        } else {
+
+                            target.unselectedPoints.push(array[i], array[i + 1], array[i + 2])
+
+                        }
 
                     }
 
                 }
 
-            } else if (evt.shiftKey) {
+                target.selectedGroup.geometry.setDrawRange(0, target.selectedCount);
 
-                let updatedUn = [];
-
-                for (let i = 0; i < target.unselectedPoints.length; i += 3) {
-
-                    let direct = new THREE.Vector3(target.unselectedPoints[i], target.unselectedPoints[i + 1], target.unselectedPoints[i + 2])
-
-                    raycaster.set(camera.position, new THREE.Vector3().copy(direct).applyMatrix4(target.group.matrix).sub(camera.position).normalize());
-
-                    raycaster.ray.intersectPlane(plane, pointOnPlane);
-
-                    if (isInside({ x: pointOnPlane[a], y: pointOnPlane[b] }, vs)) {
-
-                        target.selectedPoints[target.selectedCount * 3 + 0] = direct.x;
-                        target.selectedPoints[target.selectedCount * 3 + 1] = direct.y;
-                        target.selectedPoints[target.selectedCount * 3 + 2] = direct.z;
-
-                        target.selectedCount++;
-
-                    } else {
-
-                        updatedUn.push(direct.x, direct.y, direct.z)
-
-                    }
-
-                }
-
-                target.unselectedPoints = updatedUn;
-
-            } else {
-
-                target.selectedCount = 0;
-
-                let geometry = group.children[0].geometry;
-
-                let array = geometry.attributes.position.array;
-
-                target.unselectedPoints = [];
-
-                for (let i = 0; i < array.length; i += 3) {
-
-                    raycaster.set(camera.position, new THREE.Vector3(array[i], array[i + 1], array[i + 2]).applyMatrix4(target.group.matrix).sub(camera.position).normalize());
-
-                    raycaster.ray.intersectPlane(plane, pointOnPlane);
-
-                    if (isInside({ x: pointOnPlane[a], y: pointOnPlane[b] }, vs)) {
-
-                        target.selectedPoints[target.selectedCount * 3 + 0] = array[i];
-                        target.selectedPoints[target.selectedCount * 3 + 1] = array[i + 1];
-                        target.selectedPoints[target.selectedCount * 3 + 2] = array[i + 2];
-
-                        target.selectedCount++;
-
-                    } else {
-
-                        target.unselectedPoints.push(array[i], array[i + 1], array[i + 2])
-
-                    }
-
-                }
+                target.selectedGroup.geometry.attributes.position.needsUpdate = true;
 
             }
-
-            target.selectedGroup.geometry.setDrawRange(0, target.selectedCount);
-
-            target.selectedGroup.geometry.attributes.position.needsUpdate = true;
 
             this.render()
 
@@ -1672,11 +1964,36 @@ export const owlStudio = function (cv1, cv2, parent) {
 
                 case 'lineTrans':
                     if (this.mouse.rightDown) this.cameraMove(e)
+                    else if (e.altKey && this.mouse.down) {
+                        this.rotateGroup(e)
+                        this.updateThisLine()
+                    }
                     break;
 
                 case 'addpoint':
                     if (this.mouse.rightDown) this.cameraMove(e)
                     break;
+
+                case 'rotate3':
+                    if (this.mouse.down && this.clipGrid) {
+                        this.rotateGroup(e)
+                        // this.updateCrossSection()
+                    } else if (this.mouse.rightDown) this.cameraMove(e)
+                    break;
+                case 'polyline':
+                    if (this.mouse.rightDown) {
+                        this.cameraMove(e)
+                        if (this.polyline) {
+                            this.showDistance(this.polylineData, this.polylineMatrix)
+                        }
+                    }
+                    else if (e.altKey && this.mouse.down) {
+                        this.rotateGroup(e)
+                        if (this.polyline) {
+                            this.updatePolyline()
+                            this.showDistance(this.polylineData, this.polylineMatrix)
+                        }
+                    }
 
                 default:
 
@@ -1714,14 +2031,19 @@ export const owlStudio = function (cv1, cv2, parent) {
                         break;
 
                     case 'lineTrans':
+                        if (e.altKey) return;
                         this.translateByLine(e)
                         break;
 
                     case 'polyline':
+                        if (e.altKey) return;
                         this.drawPolyline(e)
                         break;
                     case 'addpoint':
                         this.addPoint(e)
+                        break;
+                    case 'cross':
+                        this.setCrossSection(e)
                         break;
 
                     default:
@@ -1731,9 +2053,9 @@ export const owlStudio = function (cv1, cv2, parent) {
             } else if (e.button == 2) {
 
                 this.mouseRightDown(e)
-                if (this.toolState == "polyline") {
-                    this.initPolyline();
-                }
+                // if (this.toolState == "polyline") {
+                //     this.initPolyline();
+                // }
                 // else if (this.toolState == "addpoint") {
                 //     this.initAddPoint();
                 // }
@@ -1781,7 +2103,7 @@ export const owlStudio = function (cv1, cv2, parent) {
 
         this.canvas2.addEventListener('mousewheel', (e) => {
 
-            if (this.toolState == 'rotate' || this.toolState == 'rotate2' || this.toolState == 'translate' || this.toolState == 'translate2' || this.toolState == 'lineTrans' || this.toolState == 'addpoint')
+            if (this.toolState == 'rotate' || this.toolState == 'rotate2' || this.toolState == 'rotate3' || this.toolState == 'translate' || this.toolState == 'translate2' || this.toolState == 'lineTrans' || this.toolState == 'addpoint')
                 this.mouseWheel(e);
 
         }, false);
@@ -1822,6 +2144,23 @@ export const owlStudio = function (cv1, cv2, parent) {
 
     }
 
+    this.getObjData = function () {
+
+        if (this.activeId.length < 1) return;
+
+        let target = this.groupList[this.activeId[0]];
+
+        const exporter = new OBJExporter();
+
+        let obj = new THREE.Object3D();
+        obj.applyMatrix4(target.group.matrix)
+        obj.add(target.group.children[0].clone());
+        if (target.group.children[1].visible) obj.add(target.group.children[1].clone());
+
+        return exporter.parse(obj);
+
+    }
+
     this.getTextData = function (param = false, matrix = false) {
 
         if (this.activeId.length < 1) return;
@@ -1835,10 +2174,11 @@ export const owlStudio = function (cv1, cv2, parent) {
         if (!param) {
 
             array = target.group.children[0].geometry.attributes.position.array;
-
+            let matrix = target.group.matrix;
             for (let i = 0; i < array.length; i += 3) {
 
-                result += `        ${array[i]},        ${array[i + 1]},        ${array[i + 2]}\n`;
+                let point = new THREE.Vector3(array[i], array[i + 1], array[i + 2]).applyMatrix4(matrix)
+                result += `        ${point.x},        ${point.y},        ${point.z}\n`;
 
             }
 
@@ -1981,12 +2321,23 @@ export const owlStudio = function (cv1, cv2, parent) {
 
     this.setSelectedSize = function (c) {
 
-        for (let id of this.activeId) {
-
-            let target = this.groupList[id];
+        for (let target of this.groupList) {
 
             target.group.children[2].material.size = c;
             target.group.children[2].material.needsUpdate = true;
+
+        }
+
+        this.render();
+
+    }
+
+    this.setPointSize = function (c) {
+
+        for (let target of this.groupList) {
+
+            target.group.children[0].material.size = c;
+            target.group.children[0].material.needsUpdate = true;
 
         }
 
@@ -2044,7 +2395,7 @@ export const owlStudio = function (cv1, cv2, parent) {
 
             }
 
-            this.reloadModelFromArray(getCurrentFilename(), updatePoints, id);
+            this.reloadModelFromArray(target.name, updatePoints, id);
 
         }
 
@@ -2106,7 +2457,7 @@ export const owlStudio = function (cv1, cv2, parent) {
 
             this.addToHistory(target.history, array)
 
-            this.reloadModelFromArray(getCurrentFilename(), [...target.unselectedPoints], id);
+            this.reloadModelFromArray(target.name, [...target.unselectedPoints], id);
 
         }
 
@@ -2160,7 +2511,7 @@ export const owlStudio = function (cv1, cv2, parent) {
 
             this.addToHistory(target.history, array)
 
-            this.reloadModelFromArray(getCurrentFilename(), filteredPoints, id)
+            this.reloadModelFromArray(target.name, filteredPoints, id)
 
         }
 
@@ -2200,7 +2551,7 @@ export const owlStudio = function (cv1, cv2, parent) {
 
             this.addToHistory(target.history, array)
             console.log("reloaded", id)
-            this.reloadModelFromArray(getCurrentFilename(), filteredPoints, id)
+            this.reloadModelFromArray(target.name, filteredPoints, id)
         }
 
         this.initDraw();
@@ -2240,7 +2591,7 @@ export const owlStudio = function (cv1, cv2, parent) {
 
             this.addToHistory(target.history, array)
 
-            this.reloadModelFromArray(getCurrentFilename(), filteredPoints, id)
+            this.reloadModelFromArray(target.name, filteredPoints, id)
 
         }
 
@@ -2281,7 +2632,7 @@ export const owlStudio = function (cv1, cv2, parent) {
 
             this.addToHistory(target.history, array)
 
-            this.reloadModelFromArray(getCurrentFilename(), filteredPoints, id)
+            this.reloadModelFromArray(target.name, filteredPoints, id)
 
         }
 
@@ -2299,7 +2650,7 @@ export const owlStudio = function (cv1, cv2, parent) {
 
                 e.preventDefault();
 
-                this.reloadModelFromArray(getCurrentFilename(), target.history.data[target.history.step - 1], id)
+                this.reloadModelFromArray(target.name, target.history.data[target.history.step - 1], id)
 
                 this.render()
 
@@ -2396,8 +2747,10 @@ export const owlStudio = function (cv1, cv2, parent) {
         let indexedGround = this.getIndexedGeom(ground);
 
         let added = { x: indexedHeap.x, y: indexedHeap.y, z: indexedHeap.z };
-
+        console.log(added)
         let triangleData = this.specialTriangleData(indexedGround);
+
+        // console.log(indexedHeap, indexedGround)
 
         let sum2 = 0;
 
@@ -2433,22 +2786,17 @@ export const owlStudio = function (cv1, cv2, parent) {
             tid = Math.floor(p3.x) + '.' + Math.floor(p3.y);
             if (triangleData[tid]) t3 = triangleData[tid]; else t3 = false;
             if (!t3) continue;
-            // console.log('fineded 1')
-            let ray = new THREE.Ray(p1)
-            let q1;
-            for (let trg of t1) {
-                // console.log('trg for')
-                q1 = ray.intersectTriangle(trg.a, trg.b, trg.c, false, v)
-                if (q1) break;
-            }
-            if (!q1) continue;
-            // console.log('fineded 2')
+
+            let z1, z2, z3;
 
             let ray2 = new THREE.Ray(p2)
             let q2;
             for (let trg of t2) {
                 q2 = ray2.intersectTriangle(trg.a, trg.b, trg.c, false, v)
-                if (q2) break;
+                if (q2) {
+                    z2 = q2.z;
+                    break;
+                }
             }
             if (!q2) continue;
 
@@ -2456,14 +2804,29 @@ export const owlStudio = function (cv1, cv2, parent) {
             let q3;
             for (let trg of t3) {
                 q3 = ray3.intersectTriangle(trg.a, trg.b, trg.c, false, v)
-                if (q3) break;
+                if (q3) {
+                    z3 = q3.z;
+                    break;
+                }
             }
             if (!q3) continue;
 
-            p1.z -= q1.z;
-            p2.z -= q2.z;
-            p3.z -= q3.z;
+            let ray1 = new THREE.Ray(p1)
+            let q1;
+            for (let trg of t1) {
+                q1 = ray1.intersectTriangle(trg.a, trg.b, trg.c, false, v)
+                if (q1) {
+                    z1 = q1.z;
+                    break;
+                }
+            }
+            if (!q1) continue;
 
+            // console.log(p1.x, p1.y, p1.z, q1.x, q1.y, q1.z)
+            p1.z -= z1;
+            p2.z -= z2;
+            p3.z -= z3;
+            console.log(q1.z - z1, q2.z = z2, q3.z - z3)
             if (p1.z > 0 && p2.z <= 0 && p3.z <= 0) result = this.e1Volume(p1, p2, p3);
             else if (p2.z > 0 && p1.z <= 0 && p3.z <= 0) result = this.e1Volume(p2, p1, p3);
             else if (p3.z > 0 && p1.z <= 0 && p2.z <= 0) result = this.e1Volume(p3, p1, p2);
@@ -2471,11 +2834,12 @@ export const owlStudio = function (cv1, cv2, parent) {
             else if (p1.z >= 0 && p3.z >= 0 && p2.z < 0) result = this.e2Volume(p1, p3, p2);
             else if (p1.z >= 0 && p2.z >= 0 && p3.z < 0) result = this.e2Volume(p1, p2, p3);
             else if (p1.z >= 0 && p2.z >= 0 && p3.z >= 0) result = this.signedVolumeOfTriangle(p1, p2, p3);
-
+            // console.log(result)
             sum2 += result;
 
         }
-
+        if (sum2 < 1e-3)
+            sum2 = 0;
         return sum2;
 
     }
@@ -2483,6 +2847,7 @@ export const owlStudio = function (cv1, cv2, parent) {
     this.specialTriangleData = ({ geometry, x, y, z }) => {
 
         let added = { x, y, z };
+        console.log(added)
         let rData = {};
 
         let position = geometry.attributes.position;
@@ -2496,6 +2861,7 @@ export const owlStudio = function (cv1, cv2, parent) {
             p3 = new THREE.Vector3();
 
         for (let i = 0; i < faces; i++) {
+
             p1.fromBufferAttribute(position, index.array[i * 3 + 0]).add(added);
             p2.fromBufferAttribute(position, index.array[i * 3 + 1]).add(added);
             p3.fromBufferAttribute(position, index.array[i * 3 + 2]).add(added);
@@ -2641,6 +3007,33 @@ export const owlStudio = function (cv1, cv2, parent) {
 
     }
 
+    this.vectorCenter = function (vectorArray) {
+
+        let x = 0, y = 0, z = 0, count = vectorArray.length;
+        let newArray = [];
+        for (let i = 0; i < count; i++) {
+
+            x += vectorArray[i].x;
+            y += vectorArray[i].y;
+            z += vectorArray[i].z;
+            newArray.push(new THREE.Vector3().copy(vectorArray[i]))
+        }
+
+        x /= count;
+        y /= count;
+        z /= count;
+
+        for (let i = 0; i < count; i++) {
+
+            newArray[i].x -= x;
+            newArray[i].y -= y;
+            newArray[i].z -= z;
+
+        }
+
+        return { position: new THREE.Vector3(x, y, z), points: newArray }
+    }
+
     this.setListViewFunc = function (special) {
 
         this.listViewEngine = special;
@@ -2720,7 +3113,7 @@ export const owlStudio = function (cv1, cv2, parent) {
             return this.groupList[id].name;
         })
 
-        $("#modelpath").text(namelist)
+        // $("#modelpath").text(namelist)
 
     }
 
@@ -2787,10 +3180,16 @@ export const owlStudio = function (cv1, cv2, parent) {
             this.birdEyePlane = undefined;
             this.setCameraPosition(this.groupList[this.activeId[0]].group.position)
         }
+        if (this.toolState == "rotate3") {
+            this.renderer.localClippingEnabled = false;
+            this.scene.remove(this.clipGrid)
+            this.clipGrid = undefined;
+        }
 
         this.polygonRender();
-
-        this.initPolyline()
+        if (this.polyline) {
+            this.initPolyline()
+        }
 
     }
 
@@ -2808,6 +3207,57 @@ export const owlStudio = function (cv1, cv2, parent) {
 
         }
 
+    }
+
+    this.setGlobalCoordinate = function () {
+
+        if (this.gcs && this.gcs.visible) return;
+        if (this.activeId.length < 1) return;
+
+
+        if (!this.gcs) {
+            this.gcs = new THREE.Object3D();
+            // let axe = new THREE.AxesHelper(15).setColors('crimson', 'chartreuse', 'cyan');
+            let arrowX = new THREE.ArrowHelper(new THREE.Vector3(1, 0, 0), new THREE.Vector3(0, 0, 0), 10)
+            arrowX.setColor('crimson')
+            let arrowY = new THREE.ArrowHelper(new THREE.Vector3(0, 1, 0), new THREE.Vector3(0, 0, 0), 10)
+            arrowY.setColor('chartreuse')
+            let arrowZ = new THREE.ArrowHelper(new THREE.Vector3(0, 0, 1), new THREE.Vector3(0, 0, 0), 10)
+            arrowZ.setColor('cyan')
+            // axe.material.linewidth = 2;
+            // axe.material.needsUpdate = true;
+            // console.log(axe)
+            this.gcs.add(arrowX)
+            this.gcs.add(arrowY)
+            this.gcs.add(arrowZ)
+            this.gcs.position.copy(this.groupList[this.activeId[0]].group.position);
+
+            // console.log('seted')
+            this.scene.add(this.gcs)
+        } else {
+            this.gcs.visible = true;
+            // console.log('visibled')
+        }
+
+
+        for (let i of this.activeId) {
+            this.groupList[i].group.children[4].visible = false;
+        }
+
+        this.render()
+    }
+
+    this.deleteGlobalCoordinate = function () {
+        // this.gcs.visible = false;
+        if (!this.gcs || this.gcs.visible == false) return;
+        // this.scene.remove(this.gcs)
+        this.gcs.visible = false;
+        // console.log('deleted')
+        for (let i of this.activeId) {
+            this.groupList[i].group.children[4].visible = true;
+        }
+
+        this.render()
     }
 
     // this.addToMultiGroup = function (id) {
@@ -2852,6 +3302,12 @@ function selectedcolor() {
 function selectedsize() {
 
     return document.getElementById('selectedsize').value;
+
+}
+
+function pointsize() {
+
+    return document.getElementById('pointsize').value;
 
 }
 
@@ -2935,11 +3391,11 @@ function isInside(point, vs) {
 
 }
 
-function getCurrentFilename() {
+// function getCurrentFilename() {
 
-    return document.getElementById('modelpath').innerText;
+//     return document.getElementById('modelpath').innerText;
 
-}
+// }
 
 function backToRotateMode(tool) {
 
@@ -2951,6 +3407,18 @@ function backToRotateMode(tool) {
 
         $("#btn-rotate").trigger('click')
 
+    } else if (tool == "cross") {
+
+        $("#btn-rotate3").trigger('click')
+
     }
 
+}
+
+function crossWidth() {
+    return parseFloat(document.getElementById('cross-width').value);
+}
+
+function crossOffset() {
+    return parseFloat(document.getElementById('cross-offset').value);
 }

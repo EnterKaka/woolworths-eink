@@ -174,6 +174,18 @@ div.container_main.small{
     overflow: hidden;
 }
 
+.mylabel{
+    font-size: 13px;
+    padding-top: 8px;
+    padding-left: 15px;
+    color: #6967ce;
+    /* border-color: #6967ce; */
+    background-color: transparent;
+    /* border: 1px solid; */
+    padding-right: 15px;
+    white-space: nowrap;
+}
+
 #editer .model span{
     text-align: left;
     overflow: hidden;
@@ -283,132 +295,40 @@ div.table-padding-set{
     text-shadow: 1px 0px black,-1px 0px black,0px 1px black,0px -1px black;
 }
 
-fieldset.close_field {
-    border: 1px groove #ddd !important;
-    padding: 0 1.4em 1.4em 1.4em !important;
-    margin: 0 0 1.5em 0 !important;
-    -webkit-box-shadow:  0px 0px 0px 0px #000;
-            box-shadow:  0px 0px 0px 0px #000;
+.mydropbtn {
+ 
 }
 
-legend.close_field {
-    font-size: 1.2em !important;
-    font-weight: bold !important;
-    text-align: left !important;
-    width:auto;
-    padding:0 10px;
-    border-bottom:none;
-}
-
-.brand-logo{
-    width: 100% !important;
-}
-
-.nav-item.mr-auto{
-    width: calc(100% - 25px);
-}
-.content-wrapper-before{
-    background-color: #FFBE15;
-}
-
-.navbar-container.content{
-    background-color: white;
-}
-
-.navbar-container.content li a{
-    color: black !important;
-}
-
-.btn-custom-line{
-    border: solid;
-    border-color: #4063AD;
-    color: #4063AD;
-}
-
-
-.btn-custom-fill{
-    background-color: #4063AD;
-    color: white;
-}
-
-.back-yellow{
-    background-color:#FFBE15;
-    color:black;
-}
-
-.hover-yellow li a:hover{
-    color:#FFBE15 !important;
-}
-
-.content-header-title{
-    font-family: Open Sans, sans-serif;
-}
-
-.breadcrumb{
-    font-family: Open Sans, sans-serif;
-}
-
-.content-body{
-    font-family: Open Sans, sans-serif;
-}
-
-.card-title{
-    font-family: Open Sans, sans-serif;
-}
-
-h1,h2,h3,h4,h5,h6{
-    font-family: Open Sans, sans-serif;
-}
-
-.date_button{
-    padding: 2px 7px; 
-    margin-bottom: 5px; 
-    /* margin: auto; */
-    border-width: thin;
-    border-style: none;
-    color: rgb(99, 101, 103);
-    background-color: #f1f2f5;
-    font-weight: bold;
-    min-width: 80px;
-}
-.date_button:hover{
-    background-color: #dadadc;
-}
-.date_button:focus{
-    outline: none;
-    background-color: #dadadc;
-}
-.date_button_group{
-    display: flex;
-    /* justify-content: space-around; */
-    justify-content: space-between;
-    flex-flow: wrap;
-    padding-left: 45px;
-    padding-right: 5px;
-}
-.view_panel{
+.mydropdown {
     position: relative;
-    /* background: white;
-    z-index: 100;
-    width: 100%;
-    left: 0;
-    margin-top: 20px;
-    border-radius: 5px;
-    border: 1px solid #f4f5fa; */
+    display: inline-block;
 }
-.view_close{
+
+.mydropdown-content {
+    display: none;
     position: absolute;
-    right: -10px;
-    top: -13px;
+    z-index: 1;
+    top:29px;
+    left:0;
+    background-color: white;
+    border: 1px solid rgba(0, 0, 0, .15);
+    border-radius: 0.25rem;
+    padding:1rem 1rem 0;
 }
-.page-item.active .page-link{
-    border-color: #4063AD;
-    background-color: #4063AD;
+
+.mydropdown-right-content{
+    top:0;
+    left:100%;
 }
-.pagination .page-link{
-    color: #4063AD;
+
+.mydropdown-content a {
+    color: black;
+    text-decoration: none;
+    display: block;
 }
-/* .navbar-container{
-    background-image: none !important;
-    background-color: white !important;
-} */
+
+/* .mydropdown-content>a:hover {background-color: #ddd;} */
+
+.mydropdown:hover>.mydropdown-content {display: block;}
+
+/* .mydropdown:hover>.mydropbtn {background-color: #3e8e41;} */
