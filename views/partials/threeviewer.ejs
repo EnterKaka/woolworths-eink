@@ -13,8 +13,16 @@
         <% }else{ %>
             <h2 id='modelpath'>filename</h2>
         <% } %> -->
+        <style>
+            #viewer_3d{
+                height: calc(100vh - 300px);
+            }
+            .view_3d{
+                height: 100vh !important;
+            }
+        </style>
     </div>
-    <div class="row container_main  <%= id %>">
+    <div class="row container_main">
         <!-- Center 3D Viewer -->
         <div class="col-sm-12 col-md-12 col-lg-12 col-xl-12 col-xxl-12" id="main_canvas">
             <!-- <img src='/img/Eule_Grau.png' alt='OWL LOGO' id="img_owllogo">             -->
@@ -22,3 +30,11 @@
         </div>
     </div>
 </div>
+<!-- <script>
+    $('a[data-action="expand"]').click(async function(){
+        await $('#viewer_3d').toggleClass('view_3d');
+        if(!$('#viewer_3d').hasClass('view_3d')){
+            $('#viewer_3d').height('300px !important');
+        }
+    });
+</script> -->
