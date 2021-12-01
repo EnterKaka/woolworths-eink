@@ -332,3 +332,133 @@ div.table-padding-set{
 .mydropdown:hover>.mydropdown-content {display: block;}
 
 /* .mydropdown:hover>.mydropbtn {background-color: #3e8e41;} */
+
+fieldset.close_field {
+    border: 1px groove #ddd !important;
+    padding: 0 1.4em 1.4em 1.4em !important;
+    margin: 0 0 1.5em 0 !important;
+    -webkit-box-shadow:  0px 0px 0px 0px #000;
+            box-shadow:  0px 0px 0px 0px #000;
+}
+
+legend.close_field {
+    font-size: 1.2em !important;
+    font-weight: bold !important;
+    text-align: left !important;
+    width:auto;
+    padding:0 10px;
+    border-bottom:none;
+}
+
+.brand-logo{
+    width: 100% !important;
+}
+
+.nav-item.mr-auto{
+    width: calc(100% - 25px);
+}
+.content-wrapper-before{
+    background-color: #FFBE15;
+}
+
+.navbar-container.content{
+    background-color: white;
+}
+
+.navbar-container.content li a{
+    color: black !important;
+}
+
+.btn-custom-line{
+    border: solid;
+    border-color: #4063AD;
+    color: #4063AD;
+}
+
+
+.btn-custom-fill{
+    background-color: #4063AD;
+    color: white;
+}
+
+.back-yellow{
+    background-color:#FFBE15;
+    color:black;
+}
+
+.hover-yellow li a:hover{
+    color:#FFBE15 !important;
+}
+
+.content-header-title{
+    font-family: Open Sans, sans-serif;
+}
+
+.breadcrumb{
+    font-family: Open Sans, sans-serif;
+}
+
+.content-body{
+    font-family: Open Sans, sans-serif;
+}
+
+.card-title{
+    font-family: Open Sans, sans-serif;
+}
+
+h1,h2,h3,h4,h5,h6{
+    font-family: Open Sans, sans-serif;
+}
+
+.date_button{
+    padding: 2px 7px; 
+    margin-bottom: 5px; 
+    /* margin: auto; */
+    border-width: thin;
+    border-style: none;
+    color: rgb(99, 101, 103);
+    background-color: #f1f2f5;
+    font-weight: bold;
+    min-width: 80px;
+}
+.date_button:hover{
+    background-color: #dadadc;
+}
+.date_button:focus{
+    outline: none;
+    background-color: #dadadc;
+}
+.date_button_group{
+    display: flex;
+    /* justify-content: space-around; */
+    justify-content: space-between;
+    flex-flow: wrap;
+    padding-left: 45px;
+    padding-right: 5px;
+}
+.view_panel{
+    position: relative;
+    /* background: white;
+    z-index: 100;
+    width: 100%;
+    left: 0;
+    margin-top: 20px;
+    border-radius: 5px;
+    border: 1px solid #f4f5fa; */
+}
+.view_close{
+    position: absolute;
+    right: -10px;
+    top: -13px;
+}
+.page-item.active .page-link{
+    border-color: #4063AD;
+    background-color: #4063AD;
+}
+.pagination .page-link{
+    color: #4063AD;
+}
+/* .navbar-container{
+    background-image: none !important;
+    background-color: white !important;
+} */
