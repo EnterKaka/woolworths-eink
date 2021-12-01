@@ -2,6 +2,13 @@
 <html class="loading" lang="en" data-textdirection="ltr">
   <head>
     <%- include('../../partials/head'); %>
+    <style>
+      .btn-custom-fill:hover{
+          font-size: 16px;
+          padding-bottom: 8px;
+          color: white;
+      }
+    </style>
   </head>
   <body class="vertical-layout vertical-menu 2-columns   menu-expanded fixed-navbar" data-open="click" data-menu="vertical-menu" data-color="bg-gradient-x-purple-blue" data-col="2-columns">
     <!-- fixed-top-->
@@ -16,7 +23,7 @@
         </div>
         <div class="content-header row">
           <div class="content-header-left col-md-4 col-12 mb-2">
-            <h3 class="content-header-title">Tables</h3>
+            <h3 class="content-header-title">Members</h3>
           </div>
           <div class="content-header-right col-md-8 col-12">
             <div class="breadcrumbs-top float-md-right">
@@ -24,7 +31,7 @@
                 <ol class="breadcrumb">
                   <li class="breadcrumb-item"><a href="/">Home</a>
                   </li>
-                  <li class="breadcrumb-item active">Tables
+                  <li class="breadcrumb-item active">Members
                   </li>
                 </ol>
               </div>
@@ -37,7 +44,7 @@
             <div class="row">
                 <div class="col-12">
                     <div class="card">
-                        <div class="card-header">
+                        <!-- <div class="card-header">
                             <h4 class="card-title">Owl Studio Member Table</h4>
                             <a class="heading-elements-toggle"><i class="la la-ellipsis-v font-medium-3"></i></a>
                             <div class="heading-elements">
@@ -48,12 +55,12 @@
                                     <li><a data-action="close"><i class="ft-x"></i></a></li>
                                 </ul>
                             </div>
-                        </div>
+                        </div> -->
                         <div class="card-content collapse show">
                             <div class="card-body">
-                                <p>This is Owl Studio Member Table.
+                                <!-- <p>This is Owl Studio Member Table.
                                    <br>You can Create new users or Edit/Delete existing users. 
-                                </p>
+                                </p> -->
                                 <% if (messages.error) { %>
                                   <!-- <p style="color:red"><%- messages.error %></p> -->
                                   <script>
@@ -80,17 +87,17 @@
                                   </script>
                                 <% } %>	      
                             </div>
-                            <a href="/user/add" class="btn btn-custom-fill btn-min-width mr-1 mb-1" style="float : right;">Add</a>
                             <div class='table-padding-set'>
+                                <a href="/user/add" class="btn btn-custom-fill btn-min-width mr-0 mb-1" style="float : right;">Add</a>
                                 <div class="table-responsive">
                                     <table class="table table-striped">
-                                        <colgroup>
+                                        <!-- <colgroup>
                                           <col style="width: 15%;">
                                           <col style="width: 15%;">
                                           <col style="width: 25%;max-width: 200px;">
                                           <col style="width: 15%;">
                                           <col style="width: 30%;">
-                                        </colgroup>
+                                        </colgroup> -->
                                         <thead class="thead-dark">
                                             <tr>
                                                 <th scope="col">Name</th>
@@ -114,8 +121,8 @@
                                                 <td><%= member.privilege %></td>
                                                 <td>
                                                   <div style="float:left">
-                                                    <a href='/user/edit/<%= member.email %>' class="btn btn-custom-line btn-min-width mr-1 mb-1">Edit</a> &nbsp;			
-                                                    <a href="javascript: onclick_delete('<%= member.email %>')" class="btn btn-custom-line btn-min-width mr-1 mb-1">Delete</a>
+                                                    <a href='/user/edit/<%= member.email %>' class="btn btn-custom-line mb-1"  style="padding:0.75rem; min-width: 3rem; margin-right:10px;"><i class="fa fa-pencil"></i></a> &nbsp;			
+                                                    <a href="javascript: onclick_delete('<%= member.email %>')" class="btn btn-custom-line mb-1"  style="padding:0.75rem; min-width: 3rem; margin-left:10px;"><i class="fa fa-remove"></i></a>
                                                   </div>
                                                 </td>
                                               </tr>

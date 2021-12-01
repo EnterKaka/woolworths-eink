@@ -2,6 +2,13 @@
 <html class="loading" lang="en" data-textdirection="ltr">
   <head>
     <%- include('../../partials/head'); %>
+    <style>
+      .btn-custom-fill:hover{
+          font-size: 16px;
+          padding-bottom: 8px;
+          color: white;
+      }
+    </style>
   </head>
   <body class="vertical-layout vertical-menu 2-columns   menu-expanded fixed-navbar" data-open="click" data-menu="vertical-menu" data-color="bg-gradient-x-purple-blue" data-col="2-columns">
     <!-- fixed-top-->
@@ -37,15 +44,15 @@
             <div class="row">
                 <div class="col-12">
                     <div class="card">
-                        <div class="card-header">
-                            <!-- <h4 class="card-title">Owl Studio Setting Table</h4>
+                        <!-- <div class="card-header">
+                            <h4 class="card-title">Owl Studio Setting Table</h4>
                             <a class="heading-elements-toggle"><i class="la la-ellipsis-v font-medium-3"></i></a>
                             <div class="heading-elements">
                                 <ul class="list-inline mb-0">
                                     <li><a data-action="expand"><i class="ft-maximize"></i></a></li>
                                 </ul>
-                            </div> -->
-                        </div>
+                            </div>
+                        </div> -->
                         <div class="card-content collapse show">
                             <div class="card-body">
                                 <!-- <p>This is Owl Studio Setting Table.
@@ -85,8 +92,8 @@
                                   <iframe name="iframe" style="display: none;"></iframe>
                                   <div class="row">
                                     <div class="col-md-9 col-12">
-                                          <input type="text" style="width: 70%; display: inline;" class="form-control mr-1 mb-1" name="path" placeholder="*.exe path" value="<%= path%>">
-                                          <input type="text" style="width: 20%; display: inline;" class="form-control" name="dtime" placeholder="Delay Kill Time" value="<%= dtime%>">
+                                          <input type="text" style="width: 65%; display: inline;" class="form-control mr-1 mb-1" name="path" placeholder="*.exe path" value="<%= path%>">
+                                          <input type="text" style="width: 10%; display: inline; padding-right: 0px;" class="form-control" name="dtime" placeholder="Delay Kill Time" value="<%= dtime%>"> &nbsp;&nbsp;min
                                     </div>
                                     <div class="col-md-3 col-12">
                                       <button type="submit" id="delaytimeset" class="btn btn-custom-fill btn-min-width mr-1 mb-1">Set</button>
@@ -96,17 +103,17 @@
                                 </form>
                               </div>
                               <div class="col-md-3 col-12">
-                                <a href="/setting/add" class="btn btn-custom-fill btn-min-width mr-1 mb-1" style="float : right;">Add</a>
+                                <a href="/setting/add" class="btn btn-custom-fill btn-min-width mr-1 mb-1" style="float : right; margin-right: 0px !important;">Add</a>
                               </div>
                             </div>
                             <div class='table-padding-set'>
                                 <div class="table-responsive">
                                     <table class="table table-striped">
-                                        <colgroup>
+                                        <!-- <colgroup>
                                           <col style="width: 30%;">
                                           <col style="width: 30%;">
                                           <col style="width: 40%;">
-                                        </colgroup>
+                                        </colgroup> -->
                                         <thead class="thead-dark">
                                             <tr>
                                                 <th scope="col">Database</th>
@@ -122,8 +129,8 @@
                                                 <td><%= member.collectionname %></td>
                                                 <td>
                                                   <div style="float:left">
-                                                    <a href='/setting/edit/<%= member._id %>' class="btn btn-custom-line btn-min-width mr-1 mb-1">Edit</a> &nbsp;			
-                                                    <a href="javascript: onclick_deletesetting('<%= member._id %>')" class="btn btn-custom-line btn-min-width mr-1 mb-1">Delete</a>
+                                                    <a href='/setting/edit/<%= member._id %>' class="btn btn-custom-line mb-1" style="padding:0.75rem; min-width: 3rem; margin-right:10px;"><i class="fa fa-pencil"></i></a> &nbsp;			
+                                                    <a href="javascript: onclick_deletesetting('<%= member._id %>')" class="btn btn-custom-line mb-1" style="padding:0.75rem; min-width: 3rem; margin-left:10px;"><i class="fa fa-remove"></i></a>
                                                   </div>
                                                 </td>
                                               </tr>

@@ -4,6 +4,8 @@ function onclick_get(){
         url = '/data/get';
         table.clear().draw();
         table.destroy();
+        $('table').width('calc(100% - 15px)');
+        // $('.dataTables_scrollHeadInner').width('100%');
         $('#prepross').html('<img src="/img/loading.gif">');
         $.post( url, function( queryResult ) {
           table = $('table').DataTable( {
@@ -18,20 +20,23 @@ function onclick_get(){
               left: 1,
             },
             columns: [
-                { data: 'name',width: '25%', responsivePriority: 1, targets: 0 },
-                { data: 'date', width: '30%', targets: 1},
-                { data: 'time', width: '30%', targets: 2},
-                { data: 'mass', width: '30%', targets: 3,render:function(data,type,row){
-                  return data.toFixed(2);
+                { data: 'name', responsivePriority: 1, targets: 0 },
+                { data: 'date', targets: 1},
+                { data: 'time', targets: 2},
+                { data: 'mass', targets: 3,render:function(data,type,row){
+                  return data.toFixed(2) + ' t';
                 }},
-                { data: 'volume', width: '30%', targets: 4,render:function(data,type,row){
-                  return data.toFixed(2);
+                { data: 'volume', targets: 4,render:function(data,type,row){
+                  return data.toFixed(2) + ' m³';
                 }},
-                      {  data: 'setid', width: '30%', targets: 5, render:function ( data, type, row ) {
+                {  data: 'setid', width: '20%', targets: 5, render:function ( data, type, row ) {
                   return '<a href="/data/view/' + row._id + '" class="btn btn-custom-line mr-1 mb-1" style="padding:0.75rem; min-width: 3rem; margin-right: 15px;"><i class="fa fa-eye" aria-hidden="true"></i></a><a href="/data/edit/' + row._id + '" class="btn btn-custom-line mr-1 mb-1" style="padding:0.75rem; min-width: 3rem; margin-left: 15px;"><i class="fa fa-pencil" aria-hidden="true"></i></a>';}},
                 ],
                 initComplete: function(settings, json) {
                   $('#prepross').empty();
+                  $('table').width('100%');
+                  $('.dataTables_scrollHeadInner').width('100%');
+
                 }
               });
         });
