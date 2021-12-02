@@ -104,10 +104,7 @@ function drawChart(ctx, data, ft, tt) {
                     maxTicksLimit: 5,
                     callback: function (value, index, values) {
                         let monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-                        var arr = this.getLabelForValue(value).split(" ");
-                        var fir_arr = arr[0].split(".");
-                        var buffer = fir_arr[1] + "." + fir_arr[0] + "." + fir_arr[2] + " " + arr[1];
-                        var d = new Date(buffer);
+                        var d = new Date(this.getLabelForValue(value));
                         return d.getDate() + "." + monthNames[d.getMonth()];
                     },
                 },
@@ -380,8 +377,8 @@ function makeChartDataFromModelSetsWithRange(data, ft, tt) {
     var cnt = 0, totalvols = 0;
     for (const element of data.log) {
         lastdatetime = element.datetime;
-        var tmpdate = makedefaultDate(lastdatetime);
-        tmpdate = new Date(tmpdate);
+        // var tmpdate = makedefaultDate(lastdatetime);
+        var tmpdate = new Date(lastdatetime);
 
         // console.log(ft.toISOString(),tmpdate.toISOString(),tt.toISOString());
         if (ft <= tmpdate) {
