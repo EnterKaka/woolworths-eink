@@ -232,7 +232,7 @@ app.post("/importdb", async function (req, res) {
             }
             // var str = 'FileName: "'+ req.body.filename + '", Database: "' + database + '", Time:' + (new Date());
             var str = 'FileName: "'+ req.body.filename + '", Database: "' + req.body.dbname + '", Username: "'+ req.session.email +'", Time:' + (new Date());
-            writeLog('Export successfully ('+str+')');
+            writeLog('Import successfully ('+str+')');
             res.send(errorMsg);
         } finally {
             // res.render('pages/import', {

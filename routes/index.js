@@ -9,6 +9,14 @@ const config = require("config");
 const MongoClient = require("mongodb").MongoClient;
 const Setting = require("../model/Setting");
 var ObjectId = require("mongoose").Types.ObjectId;
+const fs = require("fs");
+const logger = fs.createWriteStream("user-log/oe_server_logfile.txt", {
+    flags: "a", // 'a' means appending (old data will be preserved)
+});
+async function writeLog(msg) {
+    logger.write(msg + "\r\n");
+    console.log(msg);
+}
 
 app.get("/", function (req, res) {
     // render to views/index.ejs template file
@@ -166,6 +174,8 @@ app.get("/login", function (req, res) {
 
 app.get("/logout", function (req, res) {
     req.session.destroy();
+    var str = 'Time:' + (new Date());
+    writeLog(user_info.email + ' logout ('+str+')');
     loadedData = "";
     return res.redirect("/");
 });
@@ -188,7 +198,6 @@ app.post("/login", async function (req, res) {
         console.log("name");
         user1 = await User.findOne({ name: req.body.email });
     }
-    console.log(user1);
     let token = jwt.sign({ ...user1 }, config.get("myprivatekey"));
     if (user1) {
         if (bcrypt.compareSync(req.body.pass, user1.pass)) {
@@ -196,6 +205,8 @@ app.post("/login", async function (req, res) {
             req.session.email = user1.email;
             await req.session.save();
             user_info = user1;
+            var str = 'Time:' + (new Date());
+            writeLog(user1.email + ' login ('+str+')');
             res.redirect("/");
         } else {
             for (const key in req.body) {
