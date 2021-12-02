@@ -7,9 +7,17 @@ const fs = require("fs");
 const Setting = require("../model/Setting");
 var http = require("http");
 var converter = require("json-2-csv");
+var csvtojson = require("csvtojson");
 const fileUpload = require("express-fileupload");
 app.use(fileUpload());
 var dateTime = require("node-datetime");
+const logger = fs.createWriteStream("user-log/oe_server_logfile.txt", {
+    flags: "a", // 'a' means appending (old data will be preserved)
+});
+async function writeLog(msg) {
+    logger.write(msg + "\r\n");
+    console.log(msg);
+}
 /* export page */
 
 app.get("/export", auth, function (req, res) {
@@ -111,6 +119,8 @@ app.post("/exportdb", auth, function (req, res) {
                 };
                 converter.json2csv(totaldata, json2csvCallback, option);
             } else await fs.writeFileSync("download/" + modelname + ".json", JSON.stringify(totaldata), "utf8");
+            var str = 'ModelName: "'+ models + '", FileFormat: "' + file + '", Username: "'+ req.user.email +'", Time:' + (new Date());
+            writeLog('Export successfully ('+str+')');
             client.close();
             res.render("pages/export", {
                 title: "Export page - Owl Studio Web App",
@@ -220,6 +230,9 @@ app.post("/importdb", async function (req, res) {
                             });
                     });
             }
+            var str = 'FileName: "'+ req.body.filename + '", Database: "' + database + '", Time:' + (new Date());
+            // var str = 'FileName: "'+ req.body.filename + '", Database: "' + database + '", Username: "'+ req.user.email +'", Time:' + (new Date());
+            writeLog('Export successfully ('+str+')');
             res.send(errorMsg);
         } finally {
             // res.render('pages/import', {

@@ -3,6 +3,10 @@ var app = express();
 const MongoClient = require("mongodb").MongoClient;
 var ObjectId = require("mongoose").Types.ObjectId;
 const Setting = require("../model/Setting");
+const fs = require("fs");
+const logger = fs.createWriteStream("user-log/oe_server_logfile.txt", {
+    flags: "a", // 'a' means appending (old data will be preserved)
+});
 
 /* custom sort function */
 

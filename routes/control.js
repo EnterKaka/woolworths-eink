@@ -9,7 +9,7 @@ const Setting = require("../model/Setting");
 const { spawn } = require("child_process");
 const WebSocket = require("ws");
 const fs = require("fs");
-const logger = fs.createWriteStream("oe_server_logfile.txt", {
+const logger = fs.createWriteStream("user-log/oe_server_logfile.txt", {
     flags: "a", // 'a' means appending (old data will be preserved)
 });
 // const { networkInterfaces } = require("os");
@@ -215,14 +215,14 @@ var auto_Schedule = async function () {
             //kill timer before start time
             if (current_day.getTime() < today.getTime()) {
                 start_flag = 0;
-                console.log("kill timer");
+                // console.log("kill timer");
                 clearInterval(daytimer);
                 delaytime = 24 * 3600 * 1000;
             }
             //kill timer when end time.
             if (current_day.getTime() >= today_end.getTime()) {
                 start_flag = 0;
-                console.log("kill timer");
+                // console.log("kill timer");
                 clearInterval(daytimer);
                 delaytime = 24 * 3600 * 1000;
             }
@@ -230,7 +230,7 @@ var auto_Schedule = async function () {
             //when date change reset daytimer
             start_flag = 0;
             console.log("change");
-            console.log("kill timer");
+            // console.log("kill timer");
             last_week_day = week_day;
             clearInterval(daytimer);
             delaytime = 24 * 3600 * 1000;
