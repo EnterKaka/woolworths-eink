@@ -55,6 +55,10 @@ app.post("/runApp", async function (req, res, next) {
         });
         if (flag) {
             children.push(child);
+            // var dt = new Date();
+            // var msg = "Run App (Path:" + path + ", User: " + req.session.email + ", Time:" + dt + ")";
+            // writeLog(msg);
+    
             res.send("success");
         }
     } catch (error) {
@@ -97,6 +101,9 @@ app.post("/save_sch", async function (req, res, next) {
         await Schedule.deleteOne({ day: req.body.day });
         let v_sch = new Schedule(sch);
         await v_sch.save();
+        var dt = new Date();
+        var msg = "Schedule changed (Day:" + req.body.day + ", User: " + req.session.email + ", Time:" + dt + ")";
+        writeLog(msg);
         week_schedule = await get_week_schedule();
         res.send("success");
     } catch (error) {

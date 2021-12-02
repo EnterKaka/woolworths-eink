@@ -11,7 +11,7 @@ var interval;
 /* load data page */
 app.get("/", auth, async function (req, res, next) {
     console.log("*********** load data page ************");
-
+    console.log(req.session);
     async function run() {
         try {
             res.render("pages/data", {

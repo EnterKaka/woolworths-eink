@@ -119,7 +119,7 @@ app.post("/exportdb", auth, function (req, res) {
                 };
                 converter.json2csv(totaldata, json2csvCallback, option);
             } else await fs.writeFileSync("download/" + modelname + ".json", JSON.stringify(totaldata), "utf8");
-            var str = 'ModelName: "'+ models + '", FileFormat: "' + file + '", Username: "'+ req.user.email +'", Time:' + (new Date());
+            var str = 'ModelName: "'+ models + '", FileFormat: "' + file + '", Username: "'+ req.session.email +'", Time:' + (new Date());
             writeLog('Export successfully ('+str+')');
             client.close();
             res.render("pages/export", {
@@ -230,8 +230,8 @@ app.post("/importdb", async function (req, res) {
                             });
                     });
             }
-            var str = 'FileName: "'+ req.body.filename + '", Database: "' + database + '", Time:' + (new Date());
-            // var str = 'FileName: "'+ req.body.filename + '", Database: "' + database + '", Username: "'+ req.user.email +'", Time:' + (new Date());
+            // var str = 'FileName: "'+ req.body.filename + '", Database: "' + database + '", Time:' + (new Date());
+            var str = 'FileName: "'+ req.body.filename + '", Database: "' + req.body.dbname + '", Username: "'+ req.session.email +'", Time:' + (new Date());
             writeLog('Export successfully ('+str+')');
             res.send(errorMsg);
         } finally {

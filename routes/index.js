@@ -193,7 +193,9 @@ app.post("/login", async function (req, res) {
     if (user1) {
         if (bcrypt.compareSync(req.body.pass, user1.pass)) {
             req.session.accessToken = token;
+            req.session.email = user1.email;
             await req.session.save();
+            user_info = user1;
             res.redirect("/");
         } else {
             for (const key in req.body) {

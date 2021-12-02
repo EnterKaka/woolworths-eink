@@ -7,6 +7,10 @@ const fs = require("fs");
 const logger = fs.createWriteStream("user-log/oe_server_logfile.txt", {
     flags: "a", // 'a' means appending (old data will be preserved)
 });
+async function writeLog(msg) {
+    logger.write(msg + "\r\n");
+    console.log(msg);
+}
 
 /* custom sort function */
 
@@ -83,10 +87,13 @@ app.post("/allmodels/timeinterval", async function (req, res, next) {
     if (typeof toTime === "undefined") toTime = new Date();
     else toTime = new Date(toTime);
     if (fromTime > toTime) {
+        var str = 'IP: "'+ (req.header('x-forwarded-for') || req.connection.remoteAddress) + '", Url: "/allmodels/timeinterval", Parameters: "[fromtime:'+ req.body.from +',totime:' + req.body.to + ',modelname:'+ req.body.name +']", Time:' + (new Date());
+        writeLog('Api failed ('+str+')');
         res.header(400).json({
             status: "failed",
             reason: "No document found.",
         });
+
     }
     /* model name */
     let name = req.body.name;
@@ -100,7 +107,9 @@ app.post("/allmodels/timeinterval", async function (req, res, next) {
                 await loadAllData();
                 if (loadedData.length === 0) {
                     console.log("No documents found!");
-                    res.header(400).json({
+                    var str = 'IP: "'+ (req.header('x-forwarded-for') || req.connection.remoteAddress) + '", Url: "/allmodels/timeinterval", Parameters: "[fromtime:'+ req.body.from +',totime:' + req.body.to + ',modelname:'+ req.body.name +']", Time:' + (new Date());
+                    writeLog('Api failed ('+str+')');
+                            res.header(400).json({
                         status: "failed",
                         reason: "No document found.",
                     });
@@ -136,6 +145,9 @@ app.post("/allmodels/timeinterval", async function (req, res, next) {
                     sendData.push(divided_arr[key].pop());
                 }
             }
+            console.log(req);
+            var str = 'IP: "'+ req.headers['x-forwarded-for'] + '", Url: "/allmodels/timeinterval", Parameters: "[fromtime:'+ req.body.from +',totime:' + req.body.to + ',modelname:'+ req.body.name +']", Time:' + (new Date());
+            writeLog('Api run successfully ('+str+')');
             res.header(200).json({
                 status: "success",
                 data: sendData,
@@ -158,7 +170,9 @@ app.post("/allmodels/number", async function (req, res, next) {
     console.log("*********** API **** allmodel ****** number  ********");
     let number = req.body.number;
     if (number * 1 == 0 || typeof number === "undefined") {
-        res.header(400).json({
+        var str = 'IP: "'+ (req.header('x-forwarded-for') || req.connection.remoteAddress) + '", Url: "/allmodels/number", Parameters: "[number:'+ req.body.number + ',modelname:'+ req.body.name +']", Time:' + (new Date());
+        writeLog('Api failed ('+str+')');
+    res.header(400).json({
             status: "failed",
             reason: "No document found.",
         });
@@ -176,7 +190,9 @@ app.post("/allmodels/number", async function (req, res, next) {
                 await loadAllData();
                 if (loadedData.length === 0) {
                     console.log("No documents found!");
-                    res.header(400).json({
+                    var str = 'IP: "'+ (req.header('x-forwarded-for') || req.connection.remoteAddress) + '", Url: "/allmodels/number", Parameters: "[number:'+ req.body.number + ',modelname:'+ req.body.name +']", Time:' + (new Date());
+                    writeLog('Api failed ('+str+')');
+                            res.header(400).json({
                         status: "failed",
                         reason: "No document found.",
                     });
@@ -203,6 +219,9 @@ app.post("/allmodels/number", async function (req, res, next) {
                 }
             }
             /* get latest number of values from all data */
+            var str = 'IP: "'+ (req.header('x-forwarded-for') || req.connection.remoteAddress) + '", Url: "/allmodels/number", Parameters: "[number:'+ req.body.number + ',modelname:'+ req.body.name +']", Time:' + (new Date());
+            writeLog('Api run successfully ('+str+')');
+
             res.header(200).json({
                 status: "success",
                 data: sendData,
