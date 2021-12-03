@@ -65,7 +65,7 @@ app.post('/add', auth, admin, async function(req, res, next){
 			email: req.body.email,
 			privilege: req.body.privilege,
 		});
-		var str = 'Username:' + req.session.email + ' User: '+ req.body.name +' Email:'+ req.body.email +' Time:' + (new Date());
+		var str = 'Username:' + req.session.user_info.email + ' User: '+ req.body.name +' Email:'+ req.body.email +' Time:' + (new Date());
 		writeLog('User Added ('+str+')');	
 		v_user.pass = await bcrypt.hash(v_user.pass, 10);
 		await v_user.save();
@@ -118,7 +118,7 @@ app.post('/edit/(:email)', auth, admin, async function(req, res, next) {
 		let prev = await User.findOne({_id: _id});
 		console.log(prev);
 		let mem = await User.findOneAndUpdate({_id: _id}, v_user);
-		var str = 'Username:' + req.session.email + ' User: '+ prev.name +' => ' + v_user.name +' Email:'+ prev.email + ' => ' + v_user.email +' Time:' + (new Date());
+		var str = 'Username:' + req.session.user_info.email + ' User: '+ prev.name +' => ' + v_user.name +' Email:'+ prev.email + ' => ' + v_user.email +' Time:' + (new Date());
 		writeLog('User Updated ('+str+')');	
 		req.flash('success', 'The User Information has updated successfully');
 		return res.redirect('/user')
@@ -129,7 +129,7 @@ app.post('/edit/(:email)', auth, admin, async function(req, res, next) {
 app.get('/delete/(:email)', auth, admin,async function(req, res, next) {	
 	var email_addr = req.params.email;
 	let prev = await User.findOne({email: req.params.email});
-	var str = 'Username:' + req.session.email + ' User: '+ prev.name +' Email:'+ prev.email +' Time:' + (new Date());
+	var str = 'Username:' + req.session.user_info.email + ' User: '+ prev.name +' Email:'+ prev.email +' Time:' + (new Date());
 	writeLog('User Deleted ('+str+')');	
 	User.findOneAndDelete({email: email_addr }, function (err, docs) {
 		if (err){

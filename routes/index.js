@@ -17,7 +17,10 @@ async function writeLog(msg) {
     logger.write(msg + "\r\n");
     console.log(msg);
 }
-
+app.use(function(req, res, next) {
+    res.locals.user = req.session.user_info;
+    next();
+});
 app.get("/", function (req, res) {
     // render to views/index.ejs template file
     res.redirect("/dashboard");
@@ -175,7 +178,7 @@ app.get("/login", function (req, res) {
 app.get("/logout", function (req, res) {
     req.session.destroy();
     var str = 'Time:' + (new Date());
-    writeLog('Logout: ' + user_info.email + ' ('+str+')');
+    writeLog('Logout: ' + req.session.user_info.email + ' ('+str+')');
     loadedData = "";
     return res.redirect("/");
 });
@@ -199,11 +202,10 @@ app.post("/login", async function (req, res) {
     if (user1) {
         if (bcrypt.compareSync(req.body.pass, user1.pass)) {
             req.session.accessToken = token;
-            req.session.email = user1.email;
+            req.session.user_info = user1;
             await req.session.save();
-            user_info = user1;
             var str = 'Time:' + (new Date());
-            writeLog('Login: ' + user1.email + ' ('+str+')');
+            writeLog('Login: ' + req.session.user_info.email + ' ('+str+')');
             res.redirect("/");
         } else {
             for (const key in req.body) {

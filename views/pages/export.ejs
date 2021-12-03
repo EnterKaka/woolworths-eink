@@ -5,6 +5,49 @@
 		<%- include('../partials/head'); %>
 		<link rel="stylesheet" href="/prettydropdowns/prettydropdowns.css">		<!-- BEGIN Three.js Load -->
 		<!-- END Three.js Load -->
+		<style>
+			<% if(user.privilege == 'admin'){%>
+				.btn-custom-fill{
+					min-width: 150px;
+					position :absolute; 
+
+				}
+				.export_buttons1{
+					right: 0px; top: 20px; 
+				}
+				.export_buttons2{
+					right: 0px; top: 80px; 
+				}
+				@media (max-width: 576px){
+					.btn-custom-fill{
+						position: inherit;
+						right: auto;
+						top:auto;
+						margin: 10px auto;
+						width: 200px;
+					}
+				}
+			<%}else{%>
+				.export_button{
+					display: flex; 
+					flex-direction: row-reverse;
+				}
+				.btn-custom-fill{
+					margin: auto 0;
+				}
+				@media (max-width: 576px){
+					.export_button{
+						flex-direction: column;
+					}
+					.btn-custom-fill{
+						margin: auto;
+						width: 200px;
+					}
+				}
+
+			<%}%>
+
+		</style>
 	</head>
 	<body class="vertical-layout vertical-menu 2-columns   menu-expanded fixed-navbar" data-open="click" data-menu="vertical-menu" data-color="bg-gradient-x-purple-blue" data-col="2-columns">
 		<!-- fixed-top-->
@@ -113,8 +156,14 @@
 														</label>
 													</div>
 												</div>
-												<div class="col-lg-3 col-md-3 col-sm-3" style="display: flex; flex-direction: row-reverse;">
-													<button type="button" class="btn btn-custom-fill" onclick="onclick_get()" style="margin: auto 0;"><i class="ft-download"></i> Export</button>
+												<% if(user.privilege == 'admin'){%>
+												<div class="col-lg-3 col-md-3 col-sm-3 " style="display: flex; flex-direction: column;">
+													<button type="button" class="btn btn-custom-fill export_buttons1" onclick="onclick_get()"><i class="ft-download"></i> Export</button>
+													<button type="button" class="btn btn-custom-fill export_buttons2" onclick="onclick_getlog()"><i class="ft-download"></i> ExportLog</button>
+												<%}else{%>
+												<div class="col-lg-3 col-md-3 col-sm-3 export_button">
+													<button type="button" class="btn btn-custom-fill" onclick="onclick_get()"><i class="ft-download"></i> Export</button>														
+												<%}%>
 													<% if (messages.error) { %>
 														<!-- <p style="color:red"><%- messages.error %></p> -->
 														<script>
@@ -167,6 +216,10 @@
 		$('#loadingimg').hide();
 		$('#models').prettyDropdown({width:'100%'});
 	});
+	function onclick_getlog(){
+		$('#loadingimg').parent().append('<iframe name="hiddenframe" frameborder="0" style="display: none;"></iframe>');
+		window.open('/database/exportlog',"hiddenframe");
+	}
 	/* confirm alert */
 	function onclick_get(){
 		/* get value */

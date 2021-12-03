@@ -119,7 +119,7 @@ app.post("/exportdb", auth, function (req, res) {
                 };
                 converter.json2csv(totaldata, json2csvCallback, option);
             } else await fs.writeFileSync("download/" + modelname + ".json", JSON.stringify(totaldata), "utf8");
-            var str = 'ModelName: "'+ models + '", FileFormat: "' + file + '", Username: "'+ req.session.email +'", Time:' + (new Date());
+            var str = 'ModelName: "'+ models + '", FileFormat: "' + file + '", Username: "'+ req.session.user_info.email +'", Time:' + (new Date());
             writeLog('Export successfully ('+str+')');
             client.close();
             res.render("pages/export", {
@@ -145,6 +145,16 @@ app.get("/exportdb", auth, function (req, res) {
     res.download(
         __dirname + "/../download/" + req.query.name,
         dt.format("d.m.Y") + "_" + req.query.name
+    );
+});
+app.get("/exportlog", auth, function (req, res) {
+    console.log("************ download log *************");
+    var dt = dateTime.create();
+    var str = 'Username: "'+ req.session.user_info.email +'", Time:' + (new Date());
+    writeLog('Export Log successfully ('+str+')');
+    res.download(
+        __dirname + "/../user-log/oe_server_logfile.txt",
+        'oe_server_logfile('+dt.format("d.m.Y") + ").txt"
     );
 });
 
@@ -231,7 +241,7 @@ app.post("/importdb", async function (req, res) {
                     });
             }
             // var str = 'FileName: "'+ req.body.filename + '", Database: "' + database + '", Time:' + (new Date());
-            var str = 'FileName: "'+ req.body.filename + '", Database: "' + req.body.dbname + '", Username: "'+ req.session.email +'", Time:' + (new Date());
+            var str = 'FileName: "'+ req.body.filename + '", Database: "' + req.body.dbname + '", Username: "'+ req.session.user_info.email +'", Time:' + (new Date());
             writeLog('Import successfully ('+str+')');
             res.send(errorMsg);
         } finally {

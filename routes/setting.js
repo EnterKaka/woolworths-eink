@@ -47,7 +47,7 @@ app.post("/setpath", auth, admin, async function (req, res, next) {
     v_setting = new Value(val);
     await v_setting.save();
     dtime = req.body.dtime * 60000;
-    var str = 'Username:' + req.session.email + ' Path: '+ req.body.path +' DelayTime:'+ req.body.dtime +' Time:' + (new Date());
+    var str = 'Username:' + req.session.user_info.email + ' Path: '+ req.body.path +' DelayTime:'+ req.body.dtime +' Time:' + (new Date());
     writeLog('Setting Changed ('+str+')');
     res.send();
 });
@@ -87,7 +87,7 @@ app.post("/add", auth, admin, async function (req, res, next) {
             dbname: req.body.dbname,
             collectionname: req.body.collectionname,
         });
-        var str = 'Username:' + req.session.email + ' Database:' + req.body.dbname + ' Collectionname: '+ req.body.collectionname +' Time:' + (new Date());
+        var str = 'Username:' + req.session.user_info.email + ' Database:' + req.body.dbname + ' Collectionname: '+ req.body.collectionname +' Time:' + (new Date());
         writeLog('Database Added in Setting Page ('+str+')');
     
         await v_setting.save();
@@ -129,7 +129,7 @@ app.post("/edit/(:_id)", auth, admin, async function (req, res, next) {
         };
         let prev = await Setting.findOne(
             { _id: new ObjectId(req.params._id) });
-        var str = 'Username:' + req.session.email + ' Database:' + prev.dbname + '=>'+ v_user.dbname +' Collectionname: '+ prev.collectionname +'=>'+v_user.collectionname+' Time:' + (new Date());
+        var str = 'Username:' + req.session.user_info.email + ' Database:' + prev.dbname + '=>'+ v_user.dbname +' Collectionname: '+ prev.collectionname +'=>'+v_user.collectionname+' Time:' + (new Date());
         writeLog('Database Changed in Setting Page ('+str+')');
         let mem = await Setting.findOneAndUpdate(
             { _id: new ObjectId(req.params._id) },
@@ -148,7 +148,7 @@ app.get("/delete/(:_id)", auth, admin,async function (req, res, next) {
     var _id = new ObjectId(req.params._id);
     let prev = await Setting.findOne(
         { _id: _id });
-    var str = 'Username:' + req.session.email + ' Database:' + prev.dbname +' Collectionname: '+ prev.collectionname +' Time:' + (new Date());
+    var str = 'Username:' + req.session.user_info.email + ' Database:' + prev.dbname +' Collectionname: '+ prev.collectionname +' Time:' + (new Date());
     writeLog('Database Deleted in Setting Page ('+str+')');
     Setting.findOneAndDelete({ _id: _id }, function (err, docs) {
         if (err) {
