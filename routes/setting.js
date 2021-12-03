@@ -6,6 +6,14 @@ const Setting = require("../model/Setting");
 const Value = require("../model/Value");
 const Joi = require("joi");
 var ObjectId = require("mongoose").Types.ObjectId;
+const fs = require("fs");
+const logger = fs.createWriteStream("user-log/oe_server_logfile.txt", {
+    flags: "a", // 'a' means appending (old data will be preserved)
+});
+async function writeLog(msg) {
+    logger.write(msg + "\r\n");
+    console.log(msg);
+}
 
 // SHOW LIST OF USERS
 app.get("/", auth, admin, async function (req, res, next) {
@@ -39,6 +47,8 @@ app.post("/setpath", auth, admin, async function (req, res, next) {
     v_setting = new Value(val);
     await v_setting.save();
     dtime = req.body.dtime * 60000;
+    var str = 'Username:' + user_info.email + ' Path: '+ req.body.path +' DelayTime:'+ req.body.dtime +' Time:' + (new Date());
+    writeLog('Setting Changed ('+str+')');
     res.send();
 });
 // SHOW ADD USER FORM
@@ -77,6 +87,9 @@ app.post("/add", auth, admin, async function (req, res, next) {
             dbname: req.body.dbname,
             collectionname: req.body.collectionname,
         });
+        var str = 'Database:' + req.body.dbname + ' Collectionname: '+ req.body.collectionname +' Time:' + (new Date());
+        writeLog('Database Added in Setting Page ('+str+')');
+    
         await v_setting.save();
         req.flash("success", "New User is added successfully!");
         res.redirect("/setting");
@@ -114,6 +127,10 @@ app.post("/edit/(:_id)", auth, admin, async function (req, res, next) {
             dbname: req.body.dbname,
             collectionname: req.body.collectionname,
         };
+        let prev = await Setting.findOne(
+            { _id: new ObjectId(req.params._id) });
+        var str = 'Database:' + prev.dbname + '=>'+ v_user.dbname +' Collectionname: '+ prev.collectionname +'=>'+v_user.collectionname+' Time:' + (new Date());
+        writeLog('Database Changed in Setting Page ('+str+')');
         let mem = await Setting.findOneAndUpdate(
             { _id: new ObjectId(req.params._id) },
             v_user
@@ -127,8 +144,12 @@ app.post("/edit/(:_id)", auth, admin, async function (req, res, next) {
 });
 
 // DELETE USER
-app.get("/delete/(:_id)", auth, admin, function (req, res, next) {
+app.get("/delete/(:_id)", auth, admin,async function (req, res, next) {
     var _id = new ObjectId(req.params._id);
+    let prev = await Setting.findOne(
+        { _id: _id });
+    var str = 'Database:' + prev.dbname +' Collectionname: '+ prev.collectionname +' Time:' + (new Date());
+    writeLog('Database Deleted in Setting Page ('+str+')');
     Setting.findOneAndDelete({ _id: _id }, function (err, docs) {
         if (err) {
             req.flash("error", err);

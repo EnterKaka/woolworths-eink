@@ -175,7 +175,7 @@ app.get("/login", function (req, res) {
 app.get("/logout", function (req, res) {
     req.session.destroy();
     var str = 'Time:' + (new Date());
-    writeLog(user_info.email + ' logout ('+str+')');
+    writeLog('Login: ' + user_info.email + ' ('+str+')');
     loadedData = "";
     return res.redirect("/");
 });
@@ -190,12 +190,9 @@ app.post("/login", async function (req, res) {
         return res.redirect("/login");
     }
     let user1;
-    console.log(req.body.email);
     if (req.body.email.includes("@")) {
-        console.log("email");
         user1 = await User.findOne({ email: req.body.email });
     } else {
-        console.log("name");
         user1 = await User.findOne({ name: req.body.email });
     }
     let token = jwt.sign({ ...user1 }, config.get("myprivatekey"));
@@ -206,7 +203,7 @@ app.post("/login", async function (req, res) {
             await req.session.save();
             user_info = user1;
             var str = 'Time:' + (new Date());
-            writeLog(user1.email + ' login ('+str+')');
+            writeLog('Logout: ' + user1.email + ' ('+str+')');
             res.redirect("/");
         } else {
             for (const key in req.body) {
