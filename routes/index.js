@@ -175,7 +175,7 @@ app.get("/login", function (req, res) {
 app.get("/logout", function (req, res) {
     req.session.destroy();
     var str = 'Time:' + (new Date());
-    writeLog('Login: ' + user_info.email + ' ('+str+')');
+    writeLog('Logout: ' + user_info.email + ' ('+str+')');
     loadedData = "";
     return res.redirect("/");
 });
@@ -203,7 +203,7 @@ app.post("/login", async function (req, res) {
             await req.session.save();
             user_info = user1;
             var str = 'Time:' + (new Date());
-            writeLog('Logout: ' + user1.email + ' ('+str+')');
+            writeLog('Login: ' + user1.email + ' ('+str+')');
             res.redirect("/");
         } else {
             for (const key in req.body) {
