@@ -5,6 +5,14 @@ const admin = require('../middleware/admin');
 const User = require('../model/User');
 const Joi = require('joi');
 const bcrypt = require('bcryptjs');
+const fs = require("fs");
+const logger = fs.createWriteStream("user-log/oe_server_logfile.txt", {
+    flags: "a", // 'a' means appending (old data will be preserved)
+});
+async function writeLog(msg) {
+    logger.write(msg + "\r\n");
+    console.log(msg);
+}
 
 // SHOW LIST OF USERS
 app.get('/', auth, admin, async function(req, res, next) {	
@@ -56,6 +64,8 @@ app.post('/add', auth, admin, async function(req, res, next){
 			email: req.body.email,
 			privilege: req.body.privilege,
 		});
+		var str = 'Username:' + req.session.email + ' User: '+ req.body.name +' Email:'+ req.body.email +' Time:' + (new Date());
+		writeLog('User Added ('+str+')');	
 		v_user.pass = await bcrypt.hash(v_user.pass, 10);
 		await v_user.save();
 		req.flash('success', 'New User is added successfully!');
@@ -101,15 +111,21 @@ app.post('/edit/(:email)', auth, admin, async function(req, res, next) {
 			privilege: req.body.privilege,
 		};
 		v_user.pass = await bcrypt.hash(v_user.pass, 10);
+		let prev = await User.findOne({email: req.params.email});
 		let mem = await User.findOneAndUpdate({email: req.params.email}, v_user);
+		var str = 'Username:' + req.session.email + ' User: '+ prev.name +' => ' + v_user.name +' Email:'+ prev.email + ' => ' + v_user.email +' Time:' + (new Date());
+		writeLog('User Updated ('+str+')');	
 		req.flash('success', 'The User Information has updated successfully');
 		return res.redirect('/user')
 	}
 })
 
 // DELETE USER
-app.get('/delete/(:email)', auth, admin, function(req, res, next) {	
+app.get('/delete/(:email)', auth, admin,async function(req, res, next) {	
 	var email_addr = req.params.email;
+	let prev = await User.findOne({email: req.params.email});
+	var str = 'Username:' + req.session.email + ' User: '+ prev.name +' Email:'+ prev.email +' Time:' + (new Date());
+	writeLog('User Deleted ('+str+')');	
 	User.findOneAndDelete({email: email_addr }, function (err, docs) {
 		if (err){
 			req.flash('error', err)

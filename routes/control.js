@@ -236,7 +236,6 @@ var auto_Schedule = async function () {
         } else {
             //when date change reset daytimer
             start_flag = 0;
-            console.log("change");
             // console.log("kill timer");
             last_week_day = week_day;
             clearInterval(daytimer);
