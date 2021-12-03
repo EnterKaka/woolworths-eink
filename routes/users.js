@@ -5,6 +5,7 @@ const admin = require('../middleware/admin');
 const User = require('../model/User');
 const Joi = require('joi');
 const bcrypt = require('bcryptjs');
+var ObjectId = require("mongoose").Types.ObjectId;
 const fs = require("fs");
 const logger = fs.createWriteStream("user-log/oe_server_logfile.txt", {
     flags: "a", // 'a' means appending (old data will be preserved)
@@ -81,6 +82,7 @@ app.get('/edit/(:email)', auth, admin, async function(req, res, next){
 	let mem = await User.findOne({ email: req.params.email});
 	if(mem){
 		res.render('pages/user/edit',{
+			_id: mem._id,
 			name: mem.name,
 			email: mem.email,
 			pass: mem.pass,
@@ -94,11 +96,13 @@ app.get('/edit/(:email)', auth, admin, async function(req, res, next){
 // EDIT USER POST ACTION
 app.post('/edit/(:email)', auth, admin, async function(req, res, next) {
 	const querySchema = Joi.object({
+		_id: Joi.string().required(),
 		name: Joi.string().required(),
 		email: Joi.string().email(),
 		pass: Joi.string().required(),
 		privilege: Joi.string().required()
-	})
+	});
+	const _id = new ObjectId(req.body._id);
 	const { error } = querySchema.validate(req.body);
 	if(error) {
 		req.flash('error', error);
@@ -111,8 +115,9 @@ app.post('/edit/(:email)', auth, admin, async function(req, res, next) {
 			privilege: req.body.privilege,
 		};
 		v_user.pass = await bcrypt.hash(v_user.pass, 10);
-		let prev = await User.findOne({email: req.params.email});
-		let mem = await User.findOneAndUpdate({email: req.params.email}, v_user);
+		let prev = await User.findOne({_id: _id});
+		console.log(prev);
+		let mem = await User.findOneAndUpdate({_id: _id}, v_user);
 		var str = 'Username:' + req.session.email + ' User: '+ prev.name +' => ' + v_user.name +' Email:'+ prev.email + ' => ' + v_user.email +' Time:' + (new Date());
 		writeLog('User Updated ('+str+')');	
 		req.flash('success', 'The User Information has updated successfully');
