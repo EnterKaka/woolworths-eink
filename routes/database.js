@@ -101,22 +101,41 @@ app.post("/exportdb", auth, function (req, res) {
                     // 	eol   : '\n' // Newline delimiter
                     // },
                     keys: [
-                        "_id",
-                        "datetime",
-                        "measurement.date",
-                        "measurement.mass",
-                        "measurement.name",
-                        "measurement.remark",
-                        "measurement.time",
-                        "measurement.volume",
-                        "modifeod",
-                        "name",
+                        // "_id",
+                        // "datetime",
+                        {   
+                            field:"measurement.date", 
+                            title:'date'
+                        },
+                        {
+                            field:"measurement.time",
+                            title:'time'
+                        },
+                        {
+                            field:"measurement.name",
+                            title:'name'
+                        },
+                        {
+                            field:"measurement.mass",
+                            title:'mass'
+                        },
+                        {
+                            field:"measurement.volume",
+                            title:'volume'
+                        },
+                        // "measurement.remark",
+                        // "modifeod",
+                        // "name",
                     ],
+                    unwindArrays: true,
                     // prependHeader    : true,
                     // sortHeader       : false,
                     // trimHeaderValues : true,
                     // trimFieldValues  :  true,
                 };
+                for(let ele in totaldata){
+                    delete totaldata[ele].measurement[0].pointcloud;
+                }
                 converter.json2csv(totaldata, json2csvCallback, option);
             } else await fs.writeFileSync("download/" + modelname + ".json", JSON.stringify(totaldata), "utf8");
             var str = 'ModelName: "'+ models + '", FileFormat: "' + file + '", Username: "'+ req.session.user_info.email +'", Time:' + (new Date());
