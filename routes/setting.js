@@ -46,7 +46,7 @@ app.post("/setpath", auth, admin, async function (req, res, next) {
     await Value.deleteOne({ name: "dtime" });
     v_setting = new Value(val);
     await v_setting.save();
-    dtime = req.body.dtime * 60000;
+    delaytime = req.body.dtime * 60000;
     var str = 'Username:' + req.session.user_info.email + ' Path: '+ req.body.path +' DelayTime:'+ req.body.dtime +' Time:' + (new Date());
     writeLog('Setting Changed ('+str+')');
     res.send();

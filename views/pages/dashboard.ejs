@@ -161,6 +161,11 @@
         
         <script src="/js/chart.js" type="module"></script>
         <script>
+			var server_ip = <%- JSON.stringify(server_ip) %>; 
+		</script>
+        <script>
+            var wsUri = "ws://" + server_ip + ":1234";
+            var websocket = null;
             $(document).ready(function(){
                 $("[id^=btn-]").hide();
                 $('div.container_main').addClass('small');
@@ -168,7 +173,36 @@
                     $('div.container_main').toggleClass('small');
                     $('.dashborad_three #viewer_3d').toggleClass('expand');
                 });
+                initWebSocket();
             });
+			/*
+				link socket server.
+			*/
+			function initWebSocket() {
+				try {
+					if (typeof MozWebSocket == 'function')
+						WebSocket = MozWebSocket;
+					websocket = new WebSocket( wsUri );
+                    websocket.onopen = function (evt) {
+						console.log('open');
+					};
+					websocket.onclose = function (evt) {
+						console.log('close');
+					};
+					websocket.onmessage = function (evt) {
+                        setTimeout(() => {
+                            location.href = "/dashboard";
+                        }, <%= delaytime%> + 30000);
+
+					};
+					websocket.onerror = function (evt) {
+						console.log('error');
+					};
+				} catch (exception) {
+                    console.log(exception);
+				}
+			}
+
             $('.view_panel').on('click','.view_close',function(){
                 $(this).parent().hide();
             });
@@ -179,9 +213,6 @@
                 icon: 'success',
                 hideAfter: 5000   // in milli seconds
             });
-            setTimeout(() => {
-                document.location.href = '/dashboard';
-            },<%= delaytime%>);
         </script>
         <!-- <script src="/js/alert_getmodelfromdb.js" type="text/javascript"></script> -->
 

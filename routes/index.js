@@ -9,6 +9,7 @@ const config = require("config");
 const MongoClient = require("mongodb").MongoClient;
 const Setting = require("../model/Setting");
 var ObjectId = require("mongoose").Types.ObjectId;
+const ip = require("ip");
 const fs = require("fs");
 const logger = fs.createWriteStream("user-log/oe_server_logfile.txt", {
     flags: "a", // 'a' means appending (old data will be preserved)
@@ -62,6 +63,8 @@ app.get("/dashboard", auth, function (req, res) {
         var allmodels = [];
         var allnames = [];
     
+        let server_ip = ip.address();
+
         async function run() {
             try {
                 // replace console.dir with your callback to access individual elements
@@ -146,11 +149,11 @@ app.get("/dashboard", auth, function (req, res) {
                                 cursor.measurement[0].time
                         );
                     }
-    
                     res.render("pages/dashboard", {
                         title: "Dashboard - Owl Studio Web App",
                         data: allmodels,
                         loadedData: loadedData,
+                        server_ip: server_ip,
                         names: allnames,
                         delaytime: delaytime,
                     });
@@ -181,7 +184,7 @@ app.get("/login", function (req, res) {
 app.get("/logout", function (req, res) {
     var str = 'Time:' + (new Date());
     writeLog('Logout: ' + req.session.user_info.email + ' ('+str+')');
-    loadedData = "";
+    // loadedData = "";
     req.session.destroy();
     return res.redirect("/");
 });

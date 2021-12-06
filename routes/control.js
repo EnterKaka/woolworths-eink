@@ -119,7 +119,7 @@ var auto_Schedule = async function () {
     let dt = await Value.findOne({ name: "dtime" });
     if (!dt) dt = "";
     else dt = dt.value;
-    dtime = dt * 60000;
+    delaytime = dt * 60000;
     var daytimer;
     var timeinterval;
     var timeunit;
@@ -162,7 +162,7 @@ var auto_Schedule = async function () {
                     dt = new Date();
                     msg = "Closed oes service (" + dt + ")";
                     writeLog(msg);
-                }, dtime);
+                }, delaytime);
             }
         });
         // receive_websocket.on("error", async function () {
@@ -215,7 +215,6 @@ var auto_Schedule = async function () {
                     (obj.unit === "min" ? 60 : 3600) *
                     1000;
                 daytimer_interval();
-                delaytime = int_time;
                 daytimer = setInterval(daytimer_interval, int_time);
             }
             //kill timer before start time
@@ -223,14 +222,12 @@ var auto_Schedule = async function () {
                 start_flag = 0;
                 // console.log("kill timer");
                 clearInterval(daytimer);
-                delaytime = 24 * 3600 * 1000;
             }
             //kill timer when end time.
             if (current_day.getTime() >= today_end.getTime()) {
                 start_flag = 0;
                 // console.log("kill timer");
                 clearInterval(daytimer);
-                delaytime = 24 * 3600 * 1000;
             }
         } else {
             //when date change reset daytimer
@@ -238,7 +235,6 @@ var auto_Schedule = async function () {
             // console.log("kill timer");
             last_week_day = week_day;
             clearInterval(daytimer);
-            delaytime = 24 * 3600 * 1000;
         }
     }, 60000);
 };

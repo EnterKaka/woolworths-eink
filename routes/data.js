@@ -5,17 +5,21 @@ var ObjectId = require("mongoose").Types.ObjectId;
 const auth = require("../middleware/auth");
 const Setting = require("../model/Setting");
 const Schedule = require("../model/Schedule");
+const ip = require("ip");
 
 var interval;
 
 /* load data page */
 app.get("/", auth, async function (req, res, next) {
     console.log("*********** load data page ************");
+    let server_ip = ip.address();
+
     async function run() {
         try {
             res.render("pages/data", {
                 title: "Model DB - Owl Studio Web App",
                 loadedData: loadedData,
+                server_ip: server_ip,
                 data: loadedData === "" ? [] : loadedData,
             });
         } finally {

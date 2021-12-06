@@ -190,12 +190,9 @@ app.get("/import", auth, function (req, res) {
 app.post("/upload", auth, function (req, res) {
     console.log("*********** upload page ************");
 
-    console.log(req.files);
     if (req.files) {
         const file = req.files.file;
-        console.log(file);
         const fileName = file.name;
-        console.log(fileName);
         file.mv(`${__dirname}/../upload/${fileName}`, (err) => {
             if (err) {
                 console.log(err);
@@ -212,7 +209,6 @@ app.post("/upload", auth, function (req, res) {
 app.post("/importdb", async function (req, res) {
     console.log("************ import file *************");
 
-    console.log(req.body);
     async function run() {
         const client = await new MongoClient("mongodb://localhost:27017/", {
             useUnifiedTopology: true,
