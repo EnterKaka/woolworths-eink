@@ -116,7 +116,6 @@ app.post('/edit/(:email)', auth, admin, async function(req, res, next) {
 		};
 		v_user.pass = await bcrypt.hash(v_user.pass, 10);
 		let prev = await User.findOne({_id: _id});
-		console.log(prev);
 		let mem = await User.findOneAndUpdate({_id: _id}, v_user);
 		var str = 'Username:' + req.session.user_info.email + ' User: '+ prev.name +' => ' + v_user.name +' Email:'+ prev.email + ' => ' + v_user.email +' Time:' + (new Date());
 		writeLog('User Updated ('+str+')');	

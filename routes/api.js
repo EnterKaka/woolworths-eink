@@ -145,7 +145,6 @@ app.post("/allmodels/timeinterval", async function (req, res, next) {
                     sendData.push(divided_arr[key].pop());
                 }
             }
-            console.log(req);
             var str = 'IP: "'+ req.headers['x-forwarded-for'] + '", Url: "/allmodels/timeinterval", Parameters: "[fromtime:'+ req.body.from +',totime:' + req.body.to + ',modelname:'+ req.body.name +']", Time:' + (new Date());
             writeLog('Api run successfully ('+str+')');
             res.header(200).json({

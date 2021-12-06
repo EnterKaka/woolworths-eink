@@ -68,7 +68,6 @@ app.post("/runApp", async function (req, res, next) {
 /***** kill app ***/
 app.post("/killApp", async function (req, res, next) {
     console.log("***************** kill app ******************");
-    console.log(children.length);
     if (children.length === 0) res.send("failed");
     else {
         var child = children.pop();
