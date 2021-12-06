@@ -120,6 +120,7 @@ app.use("/data", data);
 app.use("/setting", setting);
 app.use("/database", database_ei);
 app.use("/api", api);
+// control.LoadDataFunction();
 control.auto_Schedule();
 // io.on("connection", (socket) => {
 //     socket.on("broad message", (msg) => {

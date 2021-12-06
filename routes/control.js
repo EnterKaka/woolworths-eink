@@ -333,4 +333,4 @@ async function LoadDataFunction() {
  * module.exports should be used to return the object
  * when this file is required in another module like app.js
  */
-module.exports = { app, auto_Schedule };
+module.exports = { app, auto_Schedule, LoadDataFunction };
