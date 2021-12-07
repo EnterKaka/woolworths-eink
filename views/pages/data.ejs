@@ -190,32 +190,14 @@
 			});
 			if(jsdata === '')
 				onclick_get();
-			initWebSocket();
+			setInterval(() => {
+				$.post('/data/getloadflag',function(req){
+					console.log(req);
+					if(req == 'success')
+						location.href = '/data';
+				});
+			}, 10000);
 		});
-		function initWebSocket() {
-			try {
-				if (typeof MozWebSocket == 'function')
-					WebSocket = MozWebSocket;
-				websocket = new WebSocket( wsUri );
-				websocket.onopen = function (evt) {
-					console.log('open');
-				};
-				websocket.onclose = function (evt) {
-					console.log('close');
-				};
-				websocket.onmessage = function (evt) {
-					setTimeout(() => {
-						document.location.href = '/data';
-					}, <%= delaytime%> + 30000);
-
-				};
-				websocket.onerror = function (evt) {
-					console.log('error');
-				};
-			} catch (exception) {
-				console.log(exception);
-			}
-		}
 	</script>
 	</body>
 </html>

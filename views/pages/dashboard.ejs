@@ -164,10 +164,6 @@
 			var server_ip = <%- JSON.stringify(server_ip) %>; 
 		</script>
         <script>
-            var wsUri = "ws://" + server_ip + ":1234";
-            var websocket = null;
-            var sockettimer = null;
-            var socketflag = true;
             $(document).ready(function(){
                 $("[id^=btn-]").hide();
                 $('div.container_main').addClass('small');
@@ -175,7 +171,7 @@
                     $('div.container_main').toggleClass('small');
                     $('.dashborad_three #viewer_3d').toggleClass('expand');
                 });
-                sockettimer = setInterval(() => {
+                setInterval(() => {
                     $.post('/data/getloadflag',function(req){
                         console.log(req);
                         if(req == 'success')

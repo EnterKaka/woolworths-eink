@@ -171,7 +171,7 @@ var auto_Schedule = async function () {
         // });
         websocket.on("error", async function () {
             await child.kill();
-            loadedData = false;
+            loadedFlag = false;
             msg = "Can not find Websocket server ( " + dt + " )";
             writeLog(msg);
             return;
