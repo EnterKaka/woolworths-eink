@@ -477,6 +477,17 @@ app.post("/get", auth, async function (req, res, next) {
         });
     });
 });
+
+app.post("/getloadflag", auth, async function (req, res, next) {
+    console.log("*********** data **** get loadflag ********");
+    if(req.session.loadedFlag == false && loadedFlag == true){
+        req.session.loadedFlag = true;
+        res.send('success');
+    }else{
+        req.session.loadedFlag = false;
+        res.send('failed');
+    }
+});
 // async function intervalFunction() {
 //     try {
 //         const client = new MongoClient("mongodb://localhost:27017/", {

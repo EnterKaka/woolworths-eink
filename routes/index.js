@@ -209,6 +209,7 @@ app.post("/login", async function (req, res) {
         if (bcrypt.compareSync(req.body.pass, user1.pass)) {
             req.session.accessToken = token;
             req.session.user_info = user1;
+            req.session.loadedFlag = false;
             await req.session.save();
             var str = 'Time:' + (new Date());
             writeLog('Login: ' + req.session.user_info.email + ' ('+str+')');

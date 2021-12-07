@@ -156,7 +156,7 @@ var auto_Schedule = async function () {
             if (msg === "scan successfully") {
                 setTimeout(async () => {
                     await LoadDataFunction();
-
+                    loadedFlag = true;
                     await websocket.close();
                     await child.kill();
                     dt = new Date();
@@ -171,6 +171,7 @@ var auto_Schedule = async function () {
         // });
         websocket.on("error", async function () {
             await child.kill();
+            loadedData = false;
             msg = "Can not find Websocket server ( " + dt + " )";
             writeLog(msg);
             return;

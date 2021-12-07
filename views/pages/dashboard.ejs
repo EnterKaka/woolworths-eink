@@ -166,6 +166,8 @@
         <script>
             var wsUri = "ws://" + server_ip + ":1234";
             var websocket = null;
+            var sockettimer = null;
+            var socketflag = true;
             $(document).ready(function(){
                 $("[id^=btn-]").hide();
                 $('div.container_main').addClass('small');
@@ -173,35 +175,14 @@
                     $('div.container_main').toggleClass('small');
                     $('.dashborad_three #viewer_3d').toggleClass('expand');
                 });
-                initWebSocket();
+                sockettimer = setInterval(() => {
+                    $.post('/data/getloadflag',function(req){
+                        console.log(req);
+                        if(req == 'success')
+                            location.href = '/dashboard';
+                    });
+                }, 10000);
             });
-			/*
-				link socket server.
-			*/
-			function initWebSocket() {
-				try {
-					if (typeof MozWebSocket == 'function')
-						WebSocket = MozWebSocket;
-					websocket = new WebSocket( wsUri );
-                    websocket.onopen = function (evt) {
-						console.log('open');
-					};
-					websocket.onclose = function (evt) {
-						console.log('close');
-					};
-					websocket.onmessage = function (evt) {
-                        setTimeout(() => {
-                            location.href = "/dashboard";
-                        }, <%= delaytime%> + 30000);
-
-					};
-					websocket.onerror = function (evt) {
-						console.log('error');
-					};
-				} catch (exception) {
-                    console.log(exception);
-				}
-			}
 
             $('.view_panel').on('click','.view_close',function(){
                 $(this).parent().hide();
