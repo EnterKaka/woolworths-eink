@@ -429,7 +429,7 @@ app.post("/getmodels", async function (req, res, next) {
                 // const cursor = datas.aggregate([{ $match: { $or:ids } },{ $sort: { datetime: -1 } }], {
                 //     allowDiskUse: true,
                 // });
-                const cursor = await datas.find({ $or: query }).sort({ datetime: -1 })
+                const cursor = await datas.find({ $or: query }).sort({ datetime: 1 })
                 // const cursor = await datas.find({_id:new ObjectId('61a0cd0c89780000bb0070fa')})
                 // console.log(cursor.length)
                 await cursor.forEach(function (model) {

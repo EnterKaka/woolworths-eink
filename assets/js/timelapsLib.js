@@ -258,8 +258,8 @@ export const timelapsLib = function (cv1, parent, delauny, surface, color, heigh
         }
         let rdata = [];
         let lastmodel = this.activeModel;
-        parent_canvas.style.height = '768px';
-        parent_canvas.style.width = '1280px';
+        parent_canvas.style.height = '1080px';
+        parent_canvas.style.width = '1920px';
         windowResize()
         for (let model of this.models) {
             scene.remove(lastmodel)
@@ -273,8 +273,8 @@ export const timelapsLib = function (cv1, parent, delauny, surface, color, heigh
         if (rdata[0] == rdata[1]) console.log('bigerrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrror')
         // var video = new Whammy.generateWebM(rdata, 1000);
         // console.log(video)
-        parent_canvas.style.height = '100%';
-        parent_canvas.style.width = '100%';
+        parent_canvas.style.height = '135px';
+        parent_canvas.style.width = '240px';
         windowResize()
         return rdata;
     }

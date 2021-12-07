@@ -1349,10 +1349,11 @@ window.onload = function () {
         })
 
         document.getElementById('createT').addEventListener('click', function () {
-
+            setLoading();
             let images = timelaps.getImages();
             if (images && images.length !== 0)
                 finalizeVideo(images)
+            // closeLoading();
             // let conv = new Whammy.Video(3);
             // for (let image of images) {
             //     conv.add(image);
@@ -1395,23 +1396,24 @@ window.onload = function () {
 
 function setLoading() {
     console.log('setLoading')
-    $('#Tmodelcontent').append(`
-    <div id="cloading" style="
-        position: fixed;
-        z-index: 10000;
-        background: #00000073;
-        left: 0;
-        top: 0;
-        width: 100%;
-        height: 100%;
-    "><img src="img/loading.gif" style="
-        margin: auto;
-        position: absolute;
-        top: 50%;
-        transform: translate(-50%, -50%);
-        left: 50%;
-    "></div>
-    `)
+    if($('#cloading').length == 0)
+        $('#Tmodelcontent').append(`
+            <div id="cloading" style="
+                position: fixed;
+                z-index: 10000;
+                background: #00000073;
+                left: 0;
+                top: 0;
+                width: 100%;
+                height: 100%;">
+                <img src="img/loading.gif" style="
+                    margin: auto;
+                    position: absolute;
+                    top: 50%;
+                    transform: translate(-50%, -50%);left: 50%;"
+                >
+            </div>
+        `)
 }
 
 function closeLoading() {
@@ -1488,9 +1490,9 @@ function finalizeVideo(imgs) {
     console.log(frames)
     worker.postMessage({
         type: 'run',
-        TOTAL_MEMORY: 268435456,
+        TOTAL_MEMORY: 805306368,
         //arguments: 'ffmpeg -framerate 24 -i img%03d.jpeg output.mp4'.split(' '),
-        arguments: ["-r", `${frames}`, "-i", "img%03d.jpeg", "-c:v", "libx264", "-crf", "1", "-vf", "scale=1280:768", "-pix_fmt", "yuv420p", "-vb", "20M", "out.mp4"],
+        arguments: ["-r", `${frames}`, "-i", "img%03d.jpeg", "-c:v", "libx264", "-crf", "1", "-vf", "scale=1920:1080", "-pix_fmt", "yuv420p", "-vb", "20M", "out.mp4"],
         //arguments: '-r 60 -i img%03d.jpeg -c:v libx264 -crf 1 -vf -pix_fmt yuv420p -vb 20M out.mp4'.split(' '),
         MEMFS: images
     });
