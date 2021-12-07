@@ -4,6 +4,7 @@
 
 <head>
   <%- include('../partials/head'); %>
+    <link rel="stylesheet" href="/prettydropdowns/prettydropdowns.css">
     <!-- BEGIN Three.js Load -->
     <!-- END Three.js Load -->
     <style>
@@ -176,6 +177,17 @@
                                     Color
                                   </button>
                                   <div class="mydropdown-content">
+                                    <!-- <div class="btn-group float-right"> -->
+                                    <div id="heightmapColorDiv" class="form-group pb-0 mb-1"
+                                      style="padding-top: 1px; padding-left:10px; margin-bottom:0px;"
+                                      title="set heightmap color for points/mesh (shift+r)">
+                                      <label for="heightmapColor" class="mylabel"
+                                        style="padding-left:60px;padding-right:20px;">Heightmap</label>
+                                      <input type="checkbox" data-size="sm" id="heightmapColor" checked
+                                        class="switchery" data-color="primary" data-secondary-color="primary"
+                                        data-switchery="true" style="display: none;">
+                                    </div>
+                                    <!-- </div> -->
                                     <div class="btn-group float-right">
                                       <label class="mylabel">Polygon Color</label>
                                       <input type="color" value="#87CEEB" style="height: 31px;width:60px;"
@@ -221,17 +233,7 @@
                                     Size
                                   </button>
                                   <div class="mydropdown-content">
-                                    <!-- <div class="btn-group float-right"> -->
-                                    <div id="heightmapColorDiv" class="form-group pb-0 mb-1"
-                                      style="padding-top: 1px; padding-left:10px; margin-bottom:0px;"
-                                      title="set heightmap color for points/mesh (shift+r)">
-                                      <label for="heightmapColor" class="mylabel"
-                                        style="padding-left:60px;padding-right:20px;">Heightmap</label>
-                                      <input type="checkbox" data-size="sm" id="heightmapColor" checked
-                                        class="switchery" data-color="primary" data-secondary-color="primary"
-                                        data-switchery="true" style="display: none;">
-                                    </div>
-                                    <!-- </div> -->
+
                                     <div class="btn-group float-right">
                                       <label class="mylabel">Point's Size</label>
                                       <div id="pointsizeDiv" class="form-group pb-0 mb-1"
@@ -277,14 +279,6 @@
                                   style="display: none;">
                                 <label for="delauny" class="font-medium-2 text-bold-600">delauny</label>
                               </div>
-                              <div id="delaunyDiv3" class="form-group pb-0 mb-1"
-                                style="display:none;padding-top: 1px; padding-left:10px; margin-bottom:0px;"
-                                title="set 3D delauny trianglation (shift+w)">
-                                <input type="checkbox" data-size="sm" id="delauny3" class="switchery"
-                                  data-color="primary" data-secondary-color="primary" data-switchery="true"
-                                  style="display: none;">
-                                <label for="delauny3" class="font-medium-2 text-bold-600">delauny(3D)</label>
-                              </div>
                               <div id="surfaceDiv" class="form-group pb-0 mb-1"
                                 style="padding-top: 1px; padding-left:10px; margin-bottom:0px;"
                                 title="set for 2/3D trianglation mesh's surface (shift+e)">
@@ -292,6 +286,14 @@
                                   data-color="primary" data-secondary-color="primary" data-switchery="true"
                                   style="display: none;">
                                 <label for="surface" class="font-medium-2 text-bold-600">surface</label>
+                              </div>
+                              <div id="delaunyDiv3" class="form-group pb-0 mb-1"
+                                style="display:none;padding-top: 1px; padding-left:10px; margin-bottom:0px;"
+                                title="set 3D delauny trianglation (shift+w)">
+                                <input type="checkbox" data-size="sm" id="delauny3" class="switchery"
+                                  data-color="primary" data-secondary-color="primary" data-switchery="true"
+                                  style="display: none;">
+                                <label for="delauny3" class="font-medium-2 text-bold-600">delauny(3D)</label>
                               </div>
 
                               <div id="coordinateDiv" class="form-group pb-0 mb-1"
@@ -679,6 +681,9 @@
                               <button type='button' style="float:right;"
                                 class="btn btn-outline-primary btn-glow btn-sm mr-1 mb-1" data-toggle="modal"
                                 data-target="#editerModal" id="btn-emb">Model Browser</button>
+                              <button type='button' style="float:right;"
+                                class="btn btn-outline-primary btn-glow btn-sm mr-1 mb-1" data-toggle="modal"
+                                data-target="#trapModal" id="btn-trap">Timelaps</button>
 
                               <% if(messages.pointcloud){ %>
                                 <input type="hidden" id="pointcloud" value='<%- messages.pointcloud %>'>
@@ -913,9 +918,103 @@
           </div>
         </div>
       </div>
+
+      <div class="modal fade text-left" id="trapModal" tabindex="-1" role="dialog" aria-labelledby="dbMatrixLabel"
+        aria-hidden="true" style="z-index:100001;">
+        <div class="modal-dialog" role="document" style="max-width:1400px;height:90%;">
+          <div id="Tmodelcontent" class="modal-content" style="height:100%;">
+            <div class="modal-header">
+              <h5 class="modal-title">Timeraps</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">×</span>
+              </button>
+            </div>
+            <div class="modal-body" style="overflow: hidden;">
+              <div class="row" style="height:100%;">
+                <div class="col-md-3"
+                  style="height:100%; overflow-y: auto;display: flex;overflow-x: hidden;flex-direction: column;">
+                  <div class="btn-group mb-1 mr-1">
+                    <!-- <label for="models" class="mylabel">Select models:</label> -->
+                    <select id="models" name="models">
+                      <% if (loadedData) { let result=[]; %>
+                        <% loadedData.forEach(function(model){ if(result.indexOf(model.name)===-1){
+                          result.push(model.name); %>
+                          <option value="<%= model.name%>">
+                            <%= model.name%>
+                          </option>
+                          <% }}) %>
+                            <% } %>
+                    </select>
+                  </div>
+                  <div class="btn-group mb-1 mr-1" style="flex-direction: row-reverse;">
+                    <input id="fromT" type="date" class="form-control btn-glow btn-sm" style="width:80%"><label
+                      class="mylabel" style="width:20%;">From</label>
+                  </div>
+                  <div class="btn-group mb-1 mr-1" style="flex-direction: row-reverse;">
+                    <input id="toT" type="date" class="form-control btn-glow btn-sm" style="width:80%"><label
+                      class="mylabel" style="width:20%;">To</label>
+                  </div>
+                  <div class="btn-group mb-1 mr-1" style="flex-direction: row-reverse;">
+                    <button id="loadT" class="btn btn-primary btn-outline btn-sm">load</button>
+                  </div>
+                  <div class="btn-group mb-1 mr-1" style="justify-content: space-evenly;">
+                    <div style="overflow:hidden" id="delaunyTT"><label for="delaunyT" class="mylabel"
+                        style="padding-top:2px;">delauny</label>
+                      <input id="delaunyT" type="checkbox" data-size="sm" class="switchery" data-color="primary"
+                        data-secondary-color="primary" data-switchery="true" style="display: none;">
+                    </div>
+
+                    <div style="overflow:hidden" id="surfaceTT">
+                      <label for="surfaceT" class="mylabel" style="padding-top:2px;">surface</label>
+                      <input type="checkbox" id="surfaceT" data-size="sm" class="switchery" data-color="primary"
+                        data-secondary-color="primary" data-switchery="true" style="display: none;">
+                    </div>
+                  </div>
+                  <div class="btn-group mb-1 mr-1" style="justify-content: space-evenly;">
+                    <label class="mylabel" style="padding-top:2px;">color</label>
+                    <input type="color" value="#87CEEB" style="height: 26px;width:60px;padding:2px 5px;"
+                      class="btn btn-icon btn-outline-primary" id="colorT">
+                    <div style="overflow:hidden" id="heightmapTT">
+                      <label for="heightmapT" class="mylabel" style="padding-top:2px;">heightmap</label>
+                      <input type="checkbox" data-size="sm" id="heightmapT" checked class="switchery"
+                        data-color="primary" data-secondary-color="primary" data-switchery="true"
+                        style="display: none;">
+                    </div>
+                  </div>
+                  <div class="btn-group mb-1 mr-1" style="justify-content: space-evenly;">
+                    <label for="secondT" class="mylabel" style="padding-top:2px;">length(sec)</label>
+                    <input type="number" value="10" style="height: 27px;width:60px;padding:2px 5px;"
+                      class="form-control btn-glow btn-sm mr-1" id="secondT">
+                    <button id="createT" class="btn btn-primary btn-outline btn-sm">create video</button>
+                  </div>
+                  <div class="btn-group mb-1 mr-1" style="overflow: hidden;display: block;">
+                    <div id="parentcanvasT" style="width:100%;height:200px;">
+                      <canvas id="canvasT"></canvas>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-md-9" style="height:100%;overflow-y: auto;">
+                  <video id="videoT" style="width:100%;height:100%;" src="media/video.mp4" controls="true">
+                  </video>
+                </div>
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary mr-1" data-dismiss="modal">Close</button>
+              <a id="downloadT" type="button" href="#" class="btn btn-primary mr-1">Download</a>
+            </div>
+          </div>
+        </div>
+      </div>
       <!-- End: Customizer-->
       <!-- page content end -->
       <%- include('../partials/footer'); %>
+        <script type="module" src="/js/whammy.js"></script>
+        <script type="text/javascript" src="/js/LZWEncoder.js"></script>
+        <script type="text/javascript" src="/js/NeuQuant.js"></script>
+        <script type="text/javascript" src="/js/GIFEncoder.js"></script>
+        <script type="text/javascript" src="/js/b64.js"></script>
+        <script src="/prettydropdowns/jquery.prettydropdowns.js"></script>
         <script type="module" src="/js/edit_three.js"></script>
         <script type="module" src="/js/tool_three.js"></script>
         <!-- <script>
@@ -1078,6 +1177,8 @@
         </div>
 
 
+
+
         <div class="modal fade text-left" id="editerModal" tabindex="-1" role="dialog"
           aria-labelledby="editerModalLabel" aria-hidden="true" style="z-index:100000;">
           <div class="modal-dialog" role="document" style="max-width:1400px;height:90%;">
@@ -1142,23 +1243,52 @@
                             <th style="width:205px;">#</th>
                           </tr>
                         </thead>
-                        <tbody id="history-models">
-                          <!-- <tr>
-                            <td contenteditable="true">example</td>
-                            <td>06.10.2021</td>
-                            <td>12:25:14</td>
-                            <td>model</td>
-                            <td style="width:170px;">
-                              <button type='button' class="btn btn-icon btn-outline-primary  btn-sm mr-1"
-                                title='loading'><i class="ft-upload"></i>
-                              </button>
-                              <button type='button' class="btn btn-icon btn-outline-primary  btn-sm"
-                                title='delete'><i class="ft-x-square"></i>
-                              </button>
-                            </td>
-                          </tr> -->
-                        </tbody>
+
                       </table>
+                    </div>
+
+                    <div class="card-collapse">
+                      <div class="card collapse-icon accordion-icon-rotate" id="cardcollapse">
+
+                        <!-- <div class="card">
+                          <div class="card-header">
+                            <h5 class="mb-0">
+                              <button class="btn btn-link" data-toggle="collapse" data-target="#collapse"
+                                aria-expanded="false" aria-controls="collapse">
+                                model name
+                              </button>
+                            </h5>
+                          </div>
+
+                          <div id="collapse" class="collapse">
+                            <div class="card-body">
+                              <table class="table mb-0" style="table-layout: fixed;">
+                                <tbody id="history-models">
+                                   
+                                </tbody>
+                              </table>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div class="card">
+                          <div class="card-header" id="headingAOne2">
+                            <h5 class="mb-0">
+                              <button class="btn btn-link" data-toggle="collapse" data-target="#collapse2"
+                                aria-expanded="false" aria-controls="collapse2">
+                                model name
+                              </button>
+                            </h5>
+                          </div>
+
+                          <div id="collapse2" class="collapse" aria-labelledby="headingAOne2" style="">
+                            <div class="card-body">
+
+                            </div>
+                          </div>
+                        </div> -->
+
+                      </div>
                     </div>
                   </div>
                   <div class="tab-pane" id="bdatabase" role="tabpanel" aria-labelledby="bdatabase-tab"
@@ -1233,7 +1363,16 @@
             <span class="sr-only">Loading...</span>
           </div>
         </div>
+        <input type="hidden" id="loadedmodel" value='<%= JSON.stringify(loadedData) %>'>
 
 </body>
+<script>
+  $(document).ready(function () {
+    $('#models').prettyDropdown({ width: '100%', height: 35 });
+    // var encoder = new Whammy.Video(15);
+  })
+
+
+</script>
 
 </html>

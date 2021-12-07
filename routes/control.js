@@ -58,7 +58,7 @@ app.post("/runApp", async function (req, res, next) {
             // var dt = new Date();
             // var msg = "Run App (Path:" + path + ", User: " + req.session.email + ", Time:" + dt + ")";
             // writeLog(msg);
-    
+
             res.send("success");
         }
     } catch (error) {

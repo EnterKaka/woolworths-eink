@@ -1,5 +1,6 @@
 import * as THREE from './three.module.js';
 import { owlStudio } from './owlStudio.js';
+import { timelapsLib } from './timelapsLib.js';
 
 const cloudmachine = new owlStudio('viewer_3d', 'tool_2d', 'main_canvas');
 
@@ -763,34 +764,59 @@ window.onload = function () {
         }).fail(() => {
             alert('network error');
         })
-        const htable = document.getElementById('history-models');
+        const htable = document.getElementById('cardcollapse');
         htable.innerHTML = '';
         let sessionHistory = cloudmachine.sessionHistory;
         for (let i = sessionHistory.length - 1; i >= 0; i--) {
             if (!sessionHistory[i].deleted) {
-                htable.innerHTML += `<tr>
-              <td style="width:180px;padding:10px;display:none;"><span id = "preview${i}" class="rect" style=""></span></td>
-              <td data-id=${i} style="padding:0"><input title="${sessionHistory[i].name}" data-id=${i} class="m-namelist" style="border:0;padding:10px" value="${sessionHistory[i].name}"></td>
-              <td>${sessionHistory[i].date}</td>
-              <td>${sessionHistory[i].time}</td>
-              <td>${sessionHistory[i].type}</td>
-              <td>${sessionHistory[i].volume}</td>
-              <td>${sessionHistory[i].mass}</td>
-              <td>${sessionHistory[i].densty}</td>
-              <td><button data-id=${i} class="matrixview btn btn-icon btn-outline-primary round btn-sm"
-                    title='view and edit matrix' data-toggle="modal" data-target="#matrixModal" >matrix</button></td>
-              <td style="width:230px;">
-                <button data-id=${i} class="hload-btn btn btn-icon btn-outline-primary  round btn-sm"
-                  title='loading'><i class="ft-upload"></i>
-                </button>
-                <button data-id=${i} class="hdown-btn btn btn-icon btn-outline-primary round btn-sm"
-                    title='download model with txt file'><i class="ft-download"></i>
-                </button>
-                <button data-id=${i} class="hdel-btn btn btn-icon btn-outline-primary  round btn-sm"
-                  title='delete'><i class="ft-x-square"></i>
-                </button>
-              </td>
-            </tr>`;
+                let hg = sessionHistory[i];
+                if ($(`#history-models${hg.id}`).length === 0) {
+                    $('#cardcollapse').append(`
+                        <div class="card">
+                        <div class="card-header">
+                        <h5 class="mb-0">
+                            <button class="btn btn-link" data-toggle="collapse" data-target="#collapse${hg.id}"
+                            aria-expanded="false" aria-controls="collapse">
+                            ${hg.filename}
+                            </button>
+                        </h5>
+                        </div>
+
+                        <div id="collapse${hg.id}" class="collapse">
+                            <div class="card-body">
+                                <table class="table mb-0" style="table-layout: fixed;">
+                                <tbody id="history-models${hg.id}">
+                                    
+                                </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    `)
+                }
+                $(`#history-models${hg.id}`).append(`<tr>
+                    <td style="width:180px;padding:10px;display:none;"><span id = "preview${i}" class="rect" style=""></span></td>
+                    <td data-id=${i} style="width:205px;padding:0"><input title="${sessionHistory[i].name}" data-id=${i} class="m-namelist" style="border:0;padding:10px" value="${sessionHistory[i].name}"></td>
+                    <td>${sessionHistory[i].date}</td>
+                    <td>${sessionHistory[i].time}</td>
+                    <td>${sessionHistory[i].type}</td>
+                    <td>${sessionHistory[i].volume}</td>
+                    <td>${sessionHistory[i].mass}</td>
+                    <td>${sessionHistory[i].densty}</td>
+                    <td><button data-id=${i} class="matrixview btn btn-icon btn-outline-primary round btn-sm"
+                            title='view and edit matrix' data-toggle="modal" data-target="#matrixModal" >matrix</button></td>
+                    <td style="width:205px;">
+                        <button data-id=${i} class="hload-btn btn btn-icon btn-outline-primary  round btn-sm"
+                        title='loading'><i class="ft-upload"></i>
+                        </button>
+                        <button data-id=${i} class="hdown-btn btn btn-icon btn-outline-primary round btn-sm"
+                            title='download model with txt file'><i class="ft-download"></i>
+                        </button>
+                        <button data-id=${i} class="hdel-btn btn btn-icon btn-outline-primary  round btn-sm"
+                        title='delete'><i class="ft-x-square"></i>
+                        </button>
+                    </td>
+                </tr>`);
             }
         }
         $('.hload-btn').click(function () {
@@ -912,7 +938,7 @@ window.onload = function () {
             return;
         }
         let savedata = [];
-        let clonelist = document.getElementById('history-models').children;
+        let clonelist = $('#cardcollapse tr');
         for (let i = 0; i < clonelist.length; i++) {
             let n = clonelist[i].children[1].dataset.id;
             // sessionHistory[n].name = clonelist[i].children[1].innerText.trim();
@@ -1143,4 +1169,375 @@ window.onload = function () {
     })
 
     document.getElementById('expand').addEventListener('click', expand)
+
+    function timelapsEngine() {
+
+        let modelname, from, to, delauny, surface, color, heightmap, length;
+
+        function currentState() {
+            modelname = document.getElementById('models').value;
+            from = document.getElementById('fromT').value;
+            to = document.getElementById('toT').value;
+            delauny = document.getElementById('delaunyT').checked;
+            surface = document.getElementById('surfaceT').checked;
+            color = document.getElementById('colorT').value;
+            heightmap = document.getElementById('heightmapT').checked;
+            length = document.getElementById('secondT').value;
+        }
+        currentState()
+
+        const timelaps = new timelapsLib('canvasT', 'parentcanvasT', delauny, surface, color, heightmap)
+        // document.getElementById('models').addEventListener('change', function(){
+
+        // })
+        // document.getElementById('fromT').addEventListener('change', function(){
+
+        // })
+        // document.getElementById('toT').addEventListener('change', function(){
+
+        // })
+        document.getElementById('delaunyTT').addEventListener('click', function () {
+            timelaps.delauny(document.getElementById('delaunyT').checked)
+        })
+        document.getElementById('surfaceTT').addEventListener('click', function () {
+            timelaps.surface(document.getElementById('surfaceT').checked)
+        })
+        document.getElementById('colorT').addEventListener('input', function () {
+            timelaps.color(this.value)
+        })
+        document.getElementById('heightmapTT').addEventListener('click', function () {
+            timelaps.heightmap(document.getElementById('heightmapT').checked)
+        })
+        // document.getElementById('secondT').addEventListener('change', function(){
+
+        // })
+        document.getElementById('loadT').addEventListener('click', function () {
+            setLoading()
+            currentState()
+            timelaps.setParams(delauny, surface, color, heightmap)
+
+            from = document.getElementById('fromT').value;
+            to = document.getElementById('toT').value;
+            if (!from || !to) {
+                alert('please enter date correctly.')
+                return;
+            }
+            console.log(from, to)
+            let modelname = document.getElementById('models').value;
+            Tfilename = modelname;
+            let loadedmodel = JSON.parse(document.getElementById('loadedmodel').value);
+            console.log(loadedmodel)
+            let models = [];
+            // if (loadedmodel == '') location.href = '/data';
+            // loadedmodel.map((e) => {
+            //     if (e.name == modelname) models.push(e._id)
+            // })
+            // if (models.length === 0) return;
+            Tfilename = 'testmodel';
+            models = [
+                '61a69efe79610000df00437e',
+                '61a69b7a042c00003d00481e',
+                '61a697f64960000095003cbe',
+                '61a69472b44000002f007a1e',
+                '61a690ee352300003700066e',
+                '61a68d6aa6520000aa0047ae',
+                '61a689e67a7b000018001c1e',
+                '61a6866226590000c0005cee',
+                '61a682de1c2e0000ac0058de',
+                '61a67f5aef1a000026004cbe',
+                '61a67bd6413c00005b00235e',
+                '61a67852ad14000071007b6e',
+                '61a674cf576400000c000cde',
+                '61a67149df3200006600584e',
+                '61a66dc66b090000d8007a7e',
+                '61a66a42f04f0000090005be',
+                '61a666bec862000075004aae',
+                '61a6633a310f00004d0075be',
+                '61a65fb6ac720000a6003fee',
+                '61a65c32f45100005700708e',
+                '61a658aea235000060007a7e',
+                '61a6552ad80700005c002fde',
+                '61a651a63d2b0000ef0015fe',
+                '61a64e22fe0d00006c0011ae',
+                '61a64a9e696700000e0074ee',
+                '61a6471ad6270000e100645e',
+                '61a64396220f0000c8001cce',
+                '61a64012ff5600001c00544e',
+                '61a63c8ef6360000ac001bfe',
+                '61a6390a7c4e00002b00528e',
+                '61a63586093b0000ba00552e',
+                '61a63202112e0000790022ce',
+                '61a62e7dc556000003004e5e',
+                '61a62afa0c240000a30024ce',
+                '61a62775fb5400008f003bfe',
+                '61a623f109200000b4000dde',
+                '61a6206e41500000380060ae',
+                '61a61ce934560000da001c2e',
+                '61a6196622540000e600712e',
+                '61a615e2ca560000610038ee',
+                '61a6125d6c0d000027004f2e',
+                '61a60ed9ea620000ef00059e',
+                '61a60b55dd230000f80054ae',
+                '61a607d1e806000075002ece',
+                '61a6044e8b7f00009f002b9e',
+                '61a600c9c93800004a0008ce',
+                '61a5fd45b51f000032005a0e',
+                '61a5f9c1fa060000da00626e',
+                '61a5f63de46c00004e00340e',
+                '61a5e82d023d00001400225e',
+                '61a5e7d29972000076005ece',
+                '61a5e7b69972000076005e9e',
+                '61a5e77a9972000076005e6e',
+                '61a5e7479972000076005e3e',
+                '61a5e5ccf8620000cb00181a',
+                '61a5e446f8620000cb0017ea',
+                '61a5e414f8620000cb0017bc',
+                '61a5e3ae75250000040024f8',
+                '61a5e38575250000040024ca',
+                '61a5e2d3752500000400249c',
+                '61a5e2a0c6360000fc001e58',
+                '61a5e22ac6360000fc001e2a',
+                '61a5e208c6360000fc001dfc',
+                '61a5e0e82d52000041007c8c',
+                '61a5e01f1a46000034004666',
+                '61a5dfa41a46000034004638',
+                '61a5df5b1a4600003400460a',
+                '61a5de641a460000340045dc',
+                '61a5dcbfe928000017006a42',
+                '61a5dc99e928000017006a14',
+                '61a5db5be9280000170069e6',
+                '61a5dafce9280000170069b8',
+                '61a5da88e92800001700698a',
+                '61a5d87ce92800001700695c',
+                '61a5d56cdd1700001b004acc',
+                '61a5d1e8f0380000e20015ec',
+                '61a5ce64af5d0000270021ec',
+                '61a5cae08957000016000a0c',
+                '61a5c75cb53200002900704c',
+                '61a5c3d8d7570000240071fc',
+                '61a5c055a86f0000b700687c',
+                '61a4cf38b677000098001164',
+                '61a4c128b677000098001136',
+                '61a4b318b677000098001108',
+                '61a4a507b6770000980010da',
+                '61a48fd8b6770000980010ac',
+                '61a488e8f74700000100061c',
+                '61a47ad9a53600001b00764c',
+                '61a46cc8ff1c00007a00009c',
+                '61a45eb9f01f00005a005d8c',
+                '61a450a87d15000031004f4c',
+                '61a44299354600002e00386c',
+                '61a43489ce0f0000e10071bc',
+                '61a42678441f00003100550c',
+                '61a41869135f0000f500305c',
+                '61a40a59ae0e0000210071bc',
+                '61a2fee7f73000008500133c',
+                '61a2f0d7d46b00007a00058c',
+                '61a1ad605d5e00005a00060c',
+                '61a19f50b56b00009c0055ac',
+            ];
+            $.ajax({
+                url: "/data/getmodels",
+                type: "post",
+                data: { data: models, from: from, to: to }
+            }).done((res) => {
+                closeLoading()
+                if (res.status)
+                    timelaps.setModel(res.data)
+                else alert('database error')
+            })
+        })
+
+        document.getElementById('createT').addEventListener('click', function () {
+
+            let images = timelaps.getImages();
+            if (images && images.length !== 0)
+                finalizeVideo(images)
+            // let conv = new Whammy.Video(3);
+            // for (let image of images) {
+            //     conv.add(image);
+            // }
+            // conv.compile(false, function(blob){
+            //     var reader = new FileReader();
+            //     reader.readAsDataURL(blob);
+            //     reader.onloadend = function () {
+            //         var base64data = reader.result;
+            //         console.log(base64data);
+            //         document.getElementById('videoT').src = base64data;
+            //     }
+            // })
+            // var encoder = new GIFEncoder();
+            // encoder.setRepeat(0);
+            // encoder.setDelay(500);
+            // encoder.start();
+            // for (let image of images) {
+            //     encoder.addFrame(binarytoimagedata(image), true);
+            // }
+            // encoder.finish();
+            // var binary_gif = encoder.stream().getData() //notice this is different from the as3gif package!
+            // var data_url = 'data:image/gif;base64,' + encode64(binary_gif);
+            // console.log(data_url)
+
+
+        })
+
+
+
+
+    }
+
+
+
+
+    timelapsEngine();
+};
+
+
+function setLoading() {
+    console.log('setLoading')
+    $('#Tmodelcontent').append(`
+    <div id="cloading" style="
+        position: fixed;
+        z-index: 10000;
+        background: #00000073;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+    "><img src="img/loading.gif" style="
+        margin: auto;
+        position: absolute;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        left: 50%;
+    "></div>
+    `)
+}
+
+function closeLoading() {
+    console.log('closeLoading')
+    $('#cloading').remove();
+}
+
+function binarytoimagedata(b) {
+    let img = document.createElement('img')
+    img.onload = function () {
+
+    }
+    img.src = b;
+    var canvas = document.createElement('canvas');
+    var context = canvas.getContext('2d');
+    canvas.width = img.width;
+    canvas.height = img.height;
+    context.drawImage(img, 0, 0);
+    var myData = context.getImageData(0, 0, img.width, img.height);
+    return myData;
+}
+const worker = new Worker('/js/ffmpeg-worker-mp4.js')
+var start_time;
+function finalizeVideo(imgs) {
+    setLoading();
+    let images = [];
+    for (let img of imgs) {
+        const data = convertDataURIToBinary(img)
+        images.push({
+            name: `img${pad(images.length, 3)}.jpeg`,
+            data: data
+        })
+    }
+    let times = document.getElementById('secondT').value;
+    let length = images.length;
+    let frames = parseInt(length / times);
+
+    start_time = +new Date;
+
+    let messages = '';
+
+    worker.onmessage = function (e) {
+        try {
+
+            var msg = e.data;
+            switch (msg.type) {
+                case "stdout":
+                case "stderr":
+                    messages += msg.data + "\n";
+                    break;
+                case "exit":
+                    console.log("Process exited with code " + msg.data);
+                    //worker.terminate();
+                    break;
+
+                case 'done':
+                    console.log(e)
+                    const blob = new Blob([msg.data.MEMFS[0].data], {
+                        type: "video/mp4"
+                    });
+                    done(blob)
+
+                    break;
+            }
+            // alert(messages)
+        } catch {
+            closeLoading()
+        }
+
+    };
+
+    // https://trac.ffmpeg.org/wiki/Slideshow
+    // https://semisignal.com/tag/ffmpeg-js/
+    console.log(frames)
+    worker.postMessage({
+        type: 'run',
+        TOTAL_MEMORY: 268435456,
+        //arguments: 'ffmpeg -framerate 24 -i img%03d.jpeg output.mp4'.split(' '),
+        arguments: ["-r", `${frames}`, "-i", "img%03d.jpeg", "-c:v", "libx264", "-crf", "1", "-vf", "scale=1280:768", "-pix_fmt", "yuv420p", "-vb", "20M", "out.mp4"],
+        //arguments: '-r 60 -i img%03d.jpeg -c:v libx264 -crf 1 -vf -pix_fmt yuv420p -vb 20M out.mp4'.split(' '),
+        MEMFS: images
+    });
+
+}
+
+function done(output) {
+
+    const url = webkitURL.createObjectURL(output);
+
+    var end_time = +new Date;
+    alert("Compiled Video in " + (end_time - start_time) + "ms, file size: " + Math.ceil(output.size / 1024) + "KB");
+    // $('#videoT').src = url; //toString converts it to a URL via Object URLs, falling back to DataURL
+    // $('#downloadT').href = url;
+
+    var reader = new FileReader();
+    reader.readAsDataURL(output);
+    reader.onloadend = function () {
+        var base64data = reader.result;
+        // console.log(base64data);
+        document.getElementById('videoT').src = base64data;
+        document.getElementById('downloadT').setAttribute('href', base64data);
+
+        const dataobj = new Date();
+        let year = dataobj.getFullYear();
+        let month = dataobj.getMonth() + 1;
+        let date = dataobj.getDate();
+
+        document.getElementById('downloadT').setAttribute('download', Tfilename + `_${year}-${month}-${date}`);
+        closeLoading()
+    }
+}
+let Tfilename;
+function pad(n, width, z) {
+    z = z || '0';
+    n = n + '';
+    return n.length >= width ? n : new Array(width - n.length + 1).join(z) + n;
+}
+
+function convertDataURIToBinary(dataURI) {
+    var base64 = dataURI.replace(/^data[^,]+,/, '');
+    var raw = window.atob(base64);
+    var rawLength = raw.length;
+
+    var array = new Uint8Array(new ArrayBuffer(rawLength));
+    for (let i = 0; i < rawLength; i++) {
+        array[i] = raw.charCodeAt(i);
+    }
+    return array;
 };

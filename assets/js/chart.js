@@ -327,7 +327,7 @@ function makeChartDataFromModelSets(data) {
     //for last id get
     var last_id,
         last_datetime = totime;
-
+    // console.log(data.log)
     for (const element of data.log) {
         labels.push(element.datetime);
         eachdata.push(element.volume);
