@@ -270,13 +270,16 @@ function drawChart(ctx, data, ft, tt) {
     ctx.addEventListener("dblclick",async function (evt) {
         //go to 3d viewer with last id
         var fff = false;
-        var x, z, camera_x, camera_y, camera_z;
+        var x, z, camera_x, camera_y, camera_z, control_x, control_y, control_z;
         if(typeof group != 'undefined'){
             z = group.rotation.z;
             x = group.rotation.x;
             camera_x = camera.position.x;
             camera_y = camera.position.y;
             camera_z = camera.position.z;
+            control_x = controls.target.x;
+            control_y = controls.target.y;
+            control_z = controls.target.z;
             fff = true;
         }
         var viewer = document.getElementById('viewer_3d');
@@ -320,6 +323,9 @@ function drawChart(ctx, data, ft, tt) {
         if(fff){
             group.rotation.z = z;
             group.rotation.x = x;
+            camera.position.set(camera_x, camera_y, camera_z);
+            controls.target.set(control_x, control_y, control_z);
+            controls.update();
             // camera.position.x = camera_x;
             // camera.position.y = camera_y;
             // camera.position.z = camera_z;
