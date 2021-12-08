@@ -474,6 +474,13 @@ h1,h2,h3,h4,h5,h6{
 .pagination .page-link{
     color: #4063AD;
 }
+.progress{
+    height: 40px !important;
+    margin-top: 5px;
+}
+.progress-bar{
+    height: 40px !important;
+}
 /* .navbar-container{
     background-image: none !important;
     background-color: white !important;

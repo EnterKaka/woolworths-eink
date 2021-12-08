@@ -37,54 +37,28 @@ app.get("/", auth, async function (req, res) {
         title: "3D Viewer - Owl Studio Web App",
         priv: req.user.privilege,
         server_ip: server_ip,
+        delaytime:delaytime,
         schedule_data: sch_obj,
         path: path,
     });
 });
-/***** run app ***/
-app.post("/runApp", async function (req, res, next) {
-    console.log("***************** run app ******************");
-    let path = req.body.path;
-    try {
-        var child = spawn(path);
-        var flag = 1;
-        await child.on("error", async function (err) {
-            console.log("Error occurred: " + err);
-            flag = 0;
-            await res.send("failed");
-        });
-        if (flag) {
-            children.push(child);
-            // var dt = new Date();
-            // var msg = "Run App (Path:" + path + ", User: " + req.session.user_info.email + ", Time:" + dt + ")";
-            // writeLog(msg);
-
-            res.send("success");
-        }
-    } catch (error) {
-        res.send("failed");
+/******** start scan *********/
+app.post("/start_scan", async function (req, res, next) {
+    console.log("***************** start scan ******************");
+    let path = await Value.findOne({ name: "path" });
+    if (!path) path = "";
+    else path = path.value;
+    let dt = await Value.findOne({ name: "dtime" });
+    if (!dt) dt = "";
+    else dt = dt.value;
+    delaytime = dt * 60000;
+    let server_ip = ip.address();
+    var result = await  run_app(path, dt, server_ip, 1234);
+    if(result){
+        res.send('success');
     }
-});
-/***** kill app ***/
-app.post("/killApp", async function (req, res, next) {
-    console.log("***************** kill app ******************");
-    if (children.length === 0) res.send("failed");
-    else {
-        var child = children.pop();
-        child.kill();
-        // child.stdout.on("data", function (data) {
-        //     console.log("stdout:" + data);
-        // });
-
-        // child.stderr.on("data", function (data) {
-        //     console.log("stderr:" + data);
-        // });
-
-        // child.stdin.on("data", function (data) {
-        //     console.log("stdin:" + data);
-        // });
-        res.send("success");
-    }
+    else
+        res.send('failed');
 });
 /********** save schedule *********/
 app.post("/save_sch", async function (req, res, next) {
@@ -109,40 +83,25 @@ app.post("/save_sch", async function (req, res, next) {
         res.send("failed");
     }
 });
-/***************** auto interval search and load ******************/
-var auto_Schedule = async function () {
-    var last_week_day = "";
-    week_schedule = await get_week_schedule();
-    let path = await Value.findOne({ name: "path" });
-    if (!path) path = "";
-    else path = path.value;
-    let dt = await Value.findOne({ name: "dtime" });
-    if (!dt) dt = "";
-    else dt = dt.value;
-    delaytime = dt * 60000;
-    var daytimer;
-    var timeinterval;
-    var timeunit;
-    let server_ip = ip.address();
-    var daytimer_interval = async () => {
+async function run_app(path, dtime, server_ip, socket_port){
+    return new Promise(async function(resolve,reject){
         var child = await spawn(path,['script.js']);
         var dt = new Date();
         var msg = "";
         msg = "Start with oes service ( " + dt + " )";
         writeLog(msg);
-        var spawnerror = true;
+    
+        /****** open app ******/
         await child.on("error", async function (err) {
-            spawnerror = false;
             dt = new Date();
             msg = "";
             msg = "Run oes service failed ( " + dt + " )";
             writeLog(msg);
-            return;
+            reject(false);
         });
-        var websocket = await new WebSocket("ws://" + server_ip + ":1234");
-        // var receive_websocket = await new WebSocket(
-        //     "ws://" + server_ip + ":1235"
-        // );
+        /****** create socket ******/
+        var websocket = await new WebSocket("ws://" + server_ip + ":" + socket_port);
+    
         websocket.on("open", async function () {
             dt = new Date();
             msg = "";
@@ -165,28 +124,36 @@ var auto_Schedule = async function () {
                     dt = new Date();
                     msg = "Closed oes service (" + dt + ")";
                     writeLog(msg);
-                    console.log(spawnerror);
-                    if(spawnerror)
-                        await child.kill();
+                    await child.kill();
+                    resolve(true);
                 }, delaytime);
             }
         });
-        // receive_websocket.on("error", async function () {
-        //     await child.kill();
-        //     return;
-        // });
         websocket.on("error", async function () {
             msg = "Can not find Websocket server ( " + dt + " )";
             writeLog(msg);
-            console.log(spawnerror);
-            if(spawnerror)
-                await child.kill();
-            await child.on("error", async function (err) {
-                return;
-            });
-        
-            return;
+            await child.kill();
+            reject(false);
         });
+    });
+}
+/***************** auto interval search and load ******************/
+var auto_Schedule = async function () {
+    var last_week_day = "";
+    week_schedule = await get_week_schedule();
+    let path = await Value.findOne({ name: "path" });
+    if (!path) path = "";
+    else path = path.value;
+    let det = await Value.findOne({ name: "dtime" });
+    if (!det) det = "";
+    else det = det.value;
+    delaytime = det * 60000;
+    var daytimer;
+    var timeinterval;
+    var timeunit;
+    let server_ip = ip.address();
+    var daytimer_interval = async () => {
+        run_app(path,delaytime,server_ip,1234);
     };
     var start_flag = 0;
     totaltimer = setInterval(async () => {
