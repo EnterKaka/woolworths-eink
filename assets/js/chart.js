@@ -244,7 +244,7 @@ function drawChart(ctx, data, ft, tt) {
     }
     //ondblclick listener
     let time_stamp = 0; // Or Date.now()
-    ctx.addEventListener("touchstart", function (event_) {
+    ctx.addEventListener("touchstart",async function (event_) {
         if (event_.timeStamp - time_stamp < 300) {
             // A tap that occurs less than 300 ms from the last tap will trigger a double tap. This delay may be different between browsers.
             event_.preventDefault();
@@ -267,8 +267,18 @@ function drawChart(ctx, data, ft, tt) {
         time_stamp = event_.timeStamp;
     });
 
-    ctx.addEventListener("dblclick", function (evt) {
+    ctx.addEventListener("dblclick",async function (evt) {
         //go to 3d viewer with last id
+        var fff = false;
+        var x, z, camera_x, camera_y, camera_z;
+        if(typeof group != 'undefined'){
+            z = group.rotation.z;
+            x = group.rotation.x;
+            camera_x = camera.position.x;
+            camera_y = camera.position.y;
+            camera_z = camera.position.z;
+            fff = true;
+        }
         var viewer = document.getElementById('viewer_3d');
         var close = document.getElementsByClassName('view_close');
         if(close.length){
@@ -305,9 +315,17 @@ function drawChart(ctx, data, ft, tt) {
             this_canvas_modelname = document.getElementById(this_canvas_modelname).value;
         }
         init_highlow();
-        main();
-        animate();
-        load3dmodelwithidonlocal(this_canvas.slice(-1), this_canvas_modelname);
+        await main();
+        await animate();
+        if(fff){
+            group.rotation.z = z;
+            group.rotation.x = x;
+            // camera.position.x = camera_x;
+            // camera.position.y = camera_y;
+            // camera.position.z = camera_z;
+
+        }
+        await load3dmodelwithidonlocal(this_canvas.slice(-1), this_canvas_modelname);
     });
     
 }

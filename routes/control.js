@@ -125,12 +125,14 @@ var auto_Schedule = async function () {
     var timeunit;
     let server_ip = ip.address();
     var daytimer_interval = async () => {
-        var child = await spawn(path);
+        var child = await spawn(path,['script.js']);
         var dt = new Date();
         var msg = "";
         msg = "Start with oes service ( " + dt + " )";
         writeLog(msg);
+        var spawnerror = true;
         await child.on("error", async function (err) {
+            spawnerror = false;
             dt = new Date();
             msg = "";
             msg = "Run oes service failed ( " + dt + " )";
@@ -146,7 +148,6 @@ var auto_Schedule = async function () {
             msg = "";
             msg = "WebSocket connected with oes service ( " + dt + " )";
             writeLog(msg);
-
             await websocket.send("start scan");
             dt = new Date();
             msg = "Scan triggered (" + dt + ")";
@@ -161,10 +162,12 @@ var auto_Schedule = async function () {
                         loadedFlag = false;                        
                     }, 9999);
                     await websocket.close();
-                    await child.kill();
                     dt = new Date();
                     msg = "Closed oes service (" + dt + ")";
                     writeLog(msg);
+                    console.log(spawnerror);
+                    if(spawnerror)
+                        await child.kill();
                 }, delaytime);
             }
         });
@@ -173,9 +176,15 @@ var auto_Schedule = async function () {
         //     return;
         // });
         websocket.on("error", async function () {
-            await child.kill();
             msg = "Can not find Websocket server ( " + dt + " )";
             writeLog(msg);
+            console.log(spawnerror);
+            if(spawnerror)
+                await child.kill();
+            await child.on("error", async function (err) {
+                return;
+            });
+        
             return;
         });
     };
