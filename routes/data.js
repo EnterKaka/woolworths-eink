@@ -398,6 +398,73 @@ app.post("/modelsave", async function (req, res, next) {
         });
     });
 });
+app.post("/getmodels", async function (req, res, next) {
+
+    const client = new MongoClient("mongodb://localhost:27017/", {
+        useUnifiedTopology: true,
+        useNewUrlParser: true,
+        connectTimeoutMS: 30000,
+        keepAlive: 1,
+    });
+    let allmembers = await Setting.find();
+
+    var ids = req.body.data;
+    var from = req.body.from;
+    var to = req.body.to;
+    let query = [];
+    for (let id of ids) {
+        query.push({ _id: new ObjectId(id) })
+    }
+    async function run() {
+        try {
+            await client.connect();
+            let sentdata = [];
+            console.log(ids)
+            console.log(allmembers)
+
+            for (let mem of allmembers) {
+                /* get cursor */
+                let db = mem.dbname.trim();
+                let col = mem.collectionname.trim();
+                const database = client.db(db);
+                const datas = database.collection(col);
+                // const cursor = await datas.find( { $or: ids } ).sort({datetime:-1})
+                // const cursor = datas.aggregate([{ $match: { $or:ids } },{ $sort: { datetime: -1 } }], {
+                //     allowDiskUse: true,
+                // });
+                const cursor = await datas.find({ $or: query }).sort({ datetime: 1 })
+                // const cursor = await datas.find({_id:new ObjectId('61a0cd0c89780000bb0070fa')})
+                // console.log(cursor.length)
+                await cursor.forEach(function (model) {
+                    if (model.measurement[0].date >= from && model.measurement[0].date <= to)
+                        sentdata.push(model.measurement[0].pointcloud);
+                });
+
+            }
+            // console.log({data:sentdata[0]})
+            // if (sentdata.length === 0) {
+            //     res.header(400).json({ status: false });
+            // } else {
+            res.header(200).json({
+                status: true,
+                data: sentdata,
+            });
+            // }
+
+        } finally {
+            await client.close();
+        }
+    }
+    run().catch((err) => {
+        console.log("mongodb connect error ========");
+        console.error(err);
+        //  process.exit(1)
+        req.flash("error", err);
+        res.header(200).json({
+            error: "db error",
+        });
+    });
+});
 
 /* click get data button in data page */
 
