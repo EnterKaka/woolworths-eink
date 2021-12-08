@@ -49,9 +49,9 @@ cloudmachine.setListViewFunc((list, activeId) => {
         console.log('dblclicked')
         let target = cloudmachine.groupList[parseInt(this.dataset.id)];
         if (!e.ctrlKey) {
-            cloudmachine.setCameraPosition(target.group.position)
+            cloudmachine.setCameraPosition(new THREE.Vector3().copy(target.group.position).applyMatrix4(cloudmachine.oscene.matrix))
         } else {
-            cloudmachine.setCameraPosition(target.group.position)
+            cloudmachine.setCameraPosition(new THREE.Vector3().copy(target.group.position).applyMatrix4(cloudmachine.oscene.matrix))
         }
 
         cloudmachine.render();

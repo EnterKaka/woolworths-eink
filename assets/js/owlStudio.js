@@ -233,7 +233,7 @@ export const owlStudio = function (cv1, cv2, parent) {
 
             target.matrix = [...new THREE.Matrix4().setPosition(target.position).elements];
 
-            this.setCameraPosition(xyz);
+            this.setCameraPosition(new THREE.Vector3(xyz.x,xyz.y,xyz.z).applyMatrix4(this.oscene.matrix));
 
             this.oscene.add(target.group)
 
@@ -258,7 +258,7 @@ export const owlStudio = function (cv1, cv2, parent) {
 
             target.quaternion.copy(target.group.quaternion)
 
-            this.setCameraPosition(target.position);
+            this.setCameraPosition(new THREE.Vector3().copy(target.group.position).applyMatrix4(this.oscene.matrix));
 
             this.oscene.add(target.group)
 

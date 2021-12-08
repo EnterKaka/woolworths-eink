@@ -29,7 +29,7 @@ app.get("/viewer", auth, async function (req, res) {
 
     res.render("pages/viewer", {
         title: "3D Viewer - Owl Studio Web App",
-        priv: req.user.privilege,
+        priv: 'req.user.privilege',
         model_data: "",
     });
     // }
