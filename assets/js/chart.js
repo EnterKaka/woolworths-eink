@@ -4,7 +4,7 @@ import {XYZLoader, getminmaxhegiht, getrgb,init_highlow} from "./XYZLoader.js";
 
 var controls, camera, renderer, scene, canvas, parent_canvas, group; // chart global list
 var chartlist, chartnamelist;
-
+var before_canvas = '';
 function init_chart() {
     chartlist = [];
     chartnamelist = [];
@@ -290,10 +290,11 @@ function drawChart(ctx, data, ft, tt) {
         viewer.parentNode.removeChild(viewer);
         var this_canvas = $(this).attr("id");
         this_canvas = this_canvas.split("canvas-model-");
-        $('#input-model-'+this_canvas.slice(-1)).parent().append("<canvas id='viewer_3d' class='3dviewer' style='margin-top:20px;'></canvas><i class='fa fa-close view_close'></i>");
+        var canvas_name = this_canvas.slice(-1)[0];
+        $('#input-model-'+canvas_name).parent().append("<canvas id='viewer_3d' class='3dviewer' style='margin-top:20px;'></canvas><i class='fa fa-close view_close'></i>");
         $(this).parent().parent().parent().parent().find('.view_panel').show();
-        var this_canvas_totalmodel = "input-model-" + this_canvas.slice(-1);
-        var this_canvas_modelname = "input-modelid-" + this_canvas.slice(-1);
+        var this_canvas_totalmodel = "input-model-" + canvas_name;
+        var this_canvas_modelname = "input-modelid-" + canvas_name;
         const points = lineChart.getElementsAtEventForMode(evt, "nearest", lineChart.options);
         if (points.length) {
             const firstPoint = points[0];
@@ -307,8 +308,6 @@ function drawChart(ctx, data, ft, tt) {
             lm_time = "lm-time-" + data.name,
             lm_volume = "lm-volume-" + data.name,
             lm_mass = "lm-mass-" + data.name;
-            console.log(obj);
-            console.log(obj.datetime);
             var datetime = obj.datetime.split(' ');
             document.getElementById(lm_date).innerHTML = datetime[0];
             document.getElementById(lm_time).innerHTML = datetime[1];
@@ -320,17 +319,14 @@ function drawChart(ctx, data, ft, tt) {
         init_highlow();
         await main();
         await animate();
-        if(fff){
+        if(fff&&before_canvas == canvas_name){
             group.rotation.z = z;
             group.rotation.x = x;
-            camera.position.set(camera_x, camera_y, camera_z);
-            controls.target.set(control_x, control_y, control_z);
-            controls.update();
-            // camera.position.x = camera_x;
-            // camera.position.y = camera_y;
-            // camera.position.z = camera_z;
-
+            await camera.position.set(camera_x, camera_y, camera_z);
+            await controls.target.set(control_x, control_y, control_z);
+            await controls.update();
         }
+        before_canvas = canvas_name;
         await load3dmodelwithidonlocal(this_canvas.slice(-1), this_canvas_modelname);
     });
     
