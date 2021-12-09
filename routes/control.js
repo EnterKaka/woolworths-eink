@@ -52,6 +52,9 @@ app.post("/start_scan", async function (req, res, next) {
     if (!dt) dt = "";
     else dt = dt.value;
     delaytime = dt * 60000;
+    let port = await Value.findOne({ name: "port" });
+    if (!port) port = 1234;
+    else port = port.value*1;
     let server_ip = ip.address();
     var t = new Date();
     var msg = "Start Scan (User: " + req.session.user_info.email + ", Time:" + t + ")";
@@ -59,7 +62,8 @@ app.post("/start_scan", async function (req, res, next) {
     if(schedule_app_flag == true){
         res.send('running');
     }else{
-        var result = await  run_app(path, dt, server_ip, 1234);
+        console.log('port',port);
+        var result = await  run_app(path, dt, server_ip, port);
         if(result){
             res.send('success');
         }
@@ -160,6 +164,9 @@ var auto_Schedule = async function () {
     let det = await Value.findOne({ name: "dtime" });
     if (!det) det = "";
     else det = det.value;
+    let port = await Value.findOne({ name: "port" });
+    if (!port) port = 1234;
+    else port = port.value*1;
     delaytime = det * 60000;
     var daytimer;
     var timeinterval;
@@ -167,7 +174,7 @@ var auto_Schedule = async function () {
     let server_ip = ip.address();
     var daytimer_interval = async () => {
         if(schedule_app_flag == false)
-            run_app(path,delaytime,server_ip,1234);
+            run_app(path,delaytime,server_ip,port);
     };
     var start_flag = 0;
     totaltimer = setInterval(async () => {
