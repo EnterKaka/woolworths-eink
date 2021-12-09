@@ -135,6 +135,8 @@ async function run_app(path, dtime, server_ip, socket_port){
             await child.kill();
             reject(false);
         });
+    }).catch(()=>{
+        return false;
     });
 }
 /***************** auto interval search and load ******************/

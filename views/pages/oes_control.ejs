@@ -285,17 +285,19 @@
 				var timer = setInterval(() => {
 					i++;
 					$('.progress-bar').width(i+'%');
+					$('.progress-bar').html('Scan in progress: ' + i + '%');
 					if(i == 97) clearInterval(timer);
 				}, (10000 + delaytime)/100);
 				$.post( '/control/start_scan', function( result ) {
 					if(result === 'success'){
 						showMessage('success','SCAN', "Scan successfully.");
-						clearInterval(timer);
-						$('.progress-bar').width('100%');
-						$('#start').prop('disabled',false);
 					}
 					else
 						showMessage('error', 'SCAN', "Scan Failed");
+					clearInterval(timer);
+					$('.progress-bar').width('100%');
+					$('.progress-bar').html('Scan Finished');
+					$('#start').prop('disabled',false);
 				});
 			}
 
