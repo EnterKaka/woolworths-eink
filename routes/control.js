@@ -53,12 +53,19 @@ app.post("/start_scan", async function (req, res, next) {
     else dt = dt.value;
     delaytime = dt * 60000;
     let server_ip = ip.address();
-    var result = await  run_app(path, dt, server_ip, 1234);
-    if(result){
-        res.send('success');
+    var t = new Date();
+    var msg = "Start Scan (User: " + req.session.user_info.email + ", Time:" + t + ")";
+    writeLog(msg);
+    if(schedule_app_flag == true){
+        res.send('running');
+    }else{
+        var result = await  run_app(path, dt, server_ip, 1234);
+        if(result){
+            res.send('success');
+        }
+        else
+            res.send('failed');
     }
-    else
-        res.send('failed');
 });
 /********** save schedule *********/
 app.post("/save_sch", async function (req, res, next) {
@@ -85,6 +92,7 @@ app.post("/save_sch", async function (req, res, next) {
 });
 async function run_app(path, dtime, server_ip, socket_port){
     return new Promise(async function(resolve,reject){
+        schedule_app_flag = true;
         var child = await spawn(path,['script.js']);
         var dt = new Date();
         var msg = "";
@@ -97,6 +105,7 @@ async function run_app(path, dtime, server_ip, socket_port){
             msg = "";
             msg = "Run oes service failed ( " + dt + " )";
             writeLog(msg);
+            schedule_app_flag = false;
             reject(false);
         });
         /****** create socket ******/
@@ -125,6 +134,7 @@ async function run_app(path, dtime, server_ip, socket_port){
                     msg = "Closed oes service (" + dt + ")";
                     writeLog(msg);
                     await child.kill();
+                    schedule_app_flag = false;
                     resolve(true);
                 }, delaytime);
             }
@@ -133,6 +143,7 @@ async function run_app(path, dtime, server_ip, socket_port){
             msg = "Can not find Websocket server ( " + dt + " )";
             writeLog(msg);
             await child.kill();
+            schedule_app_flag = false;
             reject(false);
         });
     }).catch(()=>{
@@ -155,7 +166,8 @@ var auto_Schedule = async function () {
     var timeunit;
     let server_ip = ip.address();
     var daytimer_interval = async () => {
-        run_app(path,delaytime,server_ip,1234);
+        if(schedule_app_flag == false)
+            run_app(path,delaytime,server_ip,1234);
     };
     var start_flag = 0;
     totaltimer = setInterval(async () => {

@@ -3,11 +3,49 @@
   <head>
     <%- include('../../partials/head'); %>
     <style>
-      .btn-custom-fill:hover{
-          font-size: 16px;
-          padding-bottom: 8px;
-          color: white;
-      }
+		.btn-custom-fill:hover{
+			font-size: 16px;
+			padding-bottom: 8px;
+			color: white;
+		}
+		.min::after{
+		content: 'min';
+		position: absolute;
+		top: 10px;
+		right: 0.5em;
+		transition: all .05s ease-in-out;
+		}
+		.min input{
+			padding-right: 3rem;
+		}
+		.col-lg-3.col-md-6.col-12 input{
+			text-align: right;
+		}
+		.button_div{
+			width: 200px;
+		}
+		.input_div{
+			width: calc(100% - 200px);
+		}
+		#delaytimeset{
+			float: right;
+			margin-right: 10px !important;
+		}
+		@media (max-width: 880px){
+			.input_div{
+				width: 100%;
+			}
+			.button_div{
+				width: 100%;
+				display: flex;
+				justify-content: center;
+			}
+			#delaytimeset{
+				position: relative;
+				float: none;
+			}
+		}
+
     </style>
   </head>
   <body class="vertical-layout vertical-menu 2-columns   menu-expanded fixed-navbar" data-open="click" data-menu="vertical-menu" data-color="bg-gradient-x-purple-blue" data-col="2-columns">
@@ -85,24 +123,51 @@
                                 <% } %>	      
                             </div>
                             <div class="row" style="padding: 0 25px">
-                              <div class="col-md-9">
+                              <fieldset class="close_field" style="width: 100%;">
+                                <legend class="close_field">
+                                  Setting
+                                </legend>
                                 <form action="/setting/setpath" method="post" target="iframe">
                                   <!-- <fieldset>
                                   <legend>Set Delay Time</legend> -->
                                   <iframe name="iframe" style="display: none;"></iframe>
                                   <div class="row">
-                                    <div class="col-md-9 col-12">
-                                          <input type="text" style="width: 65%; display: inline;" class="form-control mr-1 mb-1" name="path" placeholder="*.exe path" value="<%= path%>">
-                                          <input type="text" style="width: 10%; display: inline; padding-right: 0px;" class="form-control" name="dtime" placeholder="Delay Kill Time" value="<%= dtime%>"> &nbsp;&nbsp;min
+                                    <div class="input_div">
+										<div class="row">
+											<div class="col-lg-6 col-md-12 col-12">
+												<div class="input-group mb-1">
+													<div class="input-group-prepend">
+														<span class="input-group-text" id="path-addon2">PATH</span>
+													</div>
+													<input type="text" class="form-control" name="path" placeholder="Oes APP Path" aria-label="Oes APP Path" aria-describedby="path-addon2" value="<%= path%>">
+												</div> 
+											</div> 
+											<div class="col-lg-3 col-md-6 col-12">
+												<div class="input-group mb-1 min">
+													<div class="input-group-prepend">
+														<span class="input-group-text" id="delaytime-addon2">Delay</span>
+													</div>
+													<input type="number" class="form-control" name="dtime" placeholder="Delaytime" aria-label="Delaytime" aria-describedby="delaytime-addon2" value="<%= dtime%>">
+												</div>  
+											</div>
+											<div class="col-lg-3 col-md-6 col-12">
+												<div class="input-group mb-1">
+													<div class="input-group-prepend">
+														<span class="input-group-text" id="port-addon2">Port</span>
+													</div>
+													<input type="number" class="form-control" name="port" placeholder="Port" aria-label="Port" aria-describedby="port-addon2" value="<%= port%>">
+												</div>  
+											</div>
+										</div>
                                     </div>
-                                    <div class="col-md-3 col-12">
+                                    <div class="button_div">
                                       <button type="submit" id="delaytimeset" class="btn btn-custom-fill btn-min-width mr-1 mb-1">Set</button>
                                     </div>
                                   </div>
                                 <!-- </fieldset> -->
                                 </form>
-                              </div>
-                              <div class="col-md-3 col-12">
+                              </fieldset>
+                              <div class="col-lg-12 col-md-12 col-12">
                                 <a href="/setting/add" class="btn btn-custom-fill btn-min-width mr-1 mb-1" style="float : right; margin-right: 0px !important;">Add</a>
                               </div>
                             </div>

@@ -44,7 +44,8 @@ app.use(
 global.loadedData = "";
 global.delaytime = 60000 * 60;
 global.dtime = 60000; //kill app time;
-global.loadedFlag = false;
+global.loadedFlag = false;//flag that show the update database
+global.schedule_app_flag = false;
 var index = require("./routes/index");
 var user = require("./routes/users");
 var data = require("./routes/data");
