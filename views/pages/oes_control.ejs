@@ -270,9 +270,28 @@
 			var delaytime = <%- JSON.stringify(delaytime) %>; 
 		</script>
 		<script type="text/javascript">
+			var check_timer;
 			$(document).ready(()=>{
 				$('#terminal').hide();
+				check_run();
+				check_timer = setInterval(() => {
+					check_run();
+				}, 30000);
 			});
+			function check_run(){
+				$.post( '/control/check_scan', function( result ) {
+					if(result === 'success'){
+						showMessage('warning','SCAN', "App is running now.");
+						$('.progress-bar').width('0%');
+						$('.progress-bar').html('Another app is running').css('color','black');
+						$('#start').prop('disabled',true);
+					}else{
+						$('#start').prop('disabled',false);
+						$('.progress-bar').html('').css('color','white');
+						clearInterval(check_timer);
+					}
+				});
+			}
 			let socket_state;
 			let terminal = false;
 			let expandTable = true;
@@ -281,6 +300,7 @@
 			*/
 			function start(){
 				$('#start').prop('disabled',true);
+				$('.progress-bar').css('color','white');
 				var i = 0;
 				var timer = setInterval(() => {
 					i++;
@@ -291,6 +311,11 @@
 				$.post( '/control/start_scan', function( result ) {
 					if(result === 'running'){
 						showMessage('warning','SCAN', "App is running now.");
+						clearInterval(timer);
+						$('.progress-bar').width('0%');
+						$('.progress-bar').html('Another app is running').css('color','black');
+						$('#start').prop('disabled',false);
+						return ;
 					}else if(result === 'success'){
 						showMessage('success','SCAN', "Scan successfully.");
 					}

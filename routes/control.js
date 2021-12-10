@@ -70,6 +70,17 @@ app.post("/start_scan", async function (req, res, next) {
             res.send('failed');
     }
 });
+/******** check scan *********/
+app.post("/check_scan", async function (req, res, next) {
+    console.log("***************** check scan ******************");
+    
+    if(schedule_app_flag){
+        res.send('success');
+    }
+    else{
+        res.send('failed');
+    }
+});
 /********** save schedule *********/
 app.post("/save_sch", async function (req, res, next) {
     var start_arr = req.body.start_time.split(":");
