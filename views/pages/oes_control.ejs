@@ -281,12 +281,17 @@
 			function check_run(){
 				$.post( '/control/check_scan', function( result ) {
 					if(result === 'success'){
-						showMessage('warning','SCAN', "App is running now.");
+						showMessage('warning','SCAN', "scan in progress - status unknown");
 						$('.progress-bar').width('0%');
+						$('.progress').css('justify-content','center');
+						$('.progress-bar').css('margin-left','-125px');
 						$('.progress-bar').html('Another app is running').css('color','black');
 						$('#start').prop('disabled',true);
 					}else{
 						$('#start').prop('disabled',false);
+						$('.progress').css('justify-content','unset');
+						$('.progress-bar').css('margin-left','0');
+
 						$('.progress-bar').html('').css('color','white');
 						clearInterval(check_timer);
 					}
@@ -300,6 +305,8 @@
 			*/
 			function start(){
 				$('#start').prop('disabled',true);
+				$('.progress').css('justify-content','unset');
+				$('.progress-bar').css('margin-left','0');
 				$('.progress-bar').css('color','white');
 				var i = 0;
 				var timer = setInterval(() => {
@@ -310,9 +317,11 @@
 				}, (10000 + delaytime)/100);
 				$.post( '/control/start_scan', function( result ) {
 					if(result === 'running'){
-						showMessage('warning','SCAN', "App is running now.");
+						showMessage('warning','SCAN', "scan in progress - status unknown");
 						clearInterval(timer);
 						$('.progress-bar').width('0%');
+						$('.progress').css('justify-content','center');
+						$('.progress-bar').css('margin-left','-125px');
 						$('.progress-bar').html('Another app is running').css('color','black');
 						$('#start').prop('disabled',false);
 						return ;
