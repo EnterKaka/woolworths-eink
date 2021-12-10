@@ -185,7 +185,7 @@
 						return data.toFixed(2) + ' m³';
 					}},
 					{ data: 'setid', width: '20%',targets: 5, render:function ( data, type, row ) {
-					return '<a href="/data/view/' + row._id + '" class="btn btn-custom-line mb-1" style="padding:0.75rem; min-width: 3rem; margin-right:15px;"><i class="fa fa-eye" aria-hidden="true"></i></a><a href="/data/edit/' + row._id + '" class="btn btn-custom-line mb-1" style="padding:0.75rem; min-width: 3rem; margin-left:15px"><i class="fa fa-pencil" aria-hidden="true"></i></a>';}},
+					return '<a href="/data/view/' + row._id + '" class="btn btn-custom-line mb-1" style="padding:0.75rem; min-width: 3rem; margin-right:15px;"><i class="fa fa-eye" aria-hidden="true"></i></a><% if(user.privilege.toLowerCase() != 'user') { %><a href="/data/edit/' + row._id + '" class="btn btn-custom-line mb-1" style="padding:0.75rem; min-width: 3rem; margin-left:15px"><i class="fa fa-pencil" aria-hidden="true"></i></a><%}%>';}},
 				],
 			});
 			if(jsdata === '')

@@ -11,31 +11,26 @@
       <ul class="navigation navigation-main san hover-yellow" id="main-menu-navigation" data-menu="menu-navigation">
         <li class="nav-item /dashboard"><a href="/dashboard"><i class="ft-home"></i><span class="menu-title" data-i18n="">Dashboard</span></a>
         </li>
-        <% if( typeof priv !== 'undefined'){ %>
-          <% if(priv.toLowerCase() == 'admin') { %>
-            <li class="nav-item /user"><a href="/user"><i class="ft-credit-card"></i><span class="menu-title" data-i18n="">Members</span></a>
-            </li>
-            <li class="nav-item /setting"><a href="/setting"><i class="la la-cogs"></i><span class="menu-title" data-i18n="">Settings</span></a>
-            </li>
-          <% } %>
-        <% }else{ %>
-          <li class="nav-item /user"><a href="/user"><i class="ft-credit-card"></i><span class="menu-title" data-i18n="">Members</span></a>
-          </li>
-          <li class="nav-item /setting"><a href="/setting"><i class="la la-cogs"></i><span class="menu-title" data-i18n="">Settings</span></a>
-          </li>
-        <% } %>
         <li class="nav-item /viewer"><a href="/viewer"><i class="ft-pie-chart"></i><span class="menu-title" data-i18n="">Viewer</span></a>
-        </li>
-        <li class="nav-item /editer"><a href="/editer"><i class="ft-edit"></i><span class="menu-title" data-i18n="">Edit</span></a>
         </li>
         <li class="nav-item /user"><a href="/data"><i class="ft-layers"></i><span class="menu-title" data-i18n="">Data</span></a>
         </li>
         <li class="nav-item /export"><a href="/database/export"><i class="la la-file"></i><span class="menu-title" data-i18n="">Export</span></a>
         </li>
-        <li class="nav-item /import"><a href="/database/import"><i class="la la-file-text"></i><span class="menu-title" data-i18n="">Import</span></a>
-        </li>
-        <li class="nav-item /control"><a href="/control"><i class="la la-magic"></i><span class="menu-title" data-i18n="">Control Center</span></a>
-        </li>
+        <% if(user.privilege.toLowerCase() != 'user') { %>
+            <li class="nav-item /import"><a href="/database/import"><i class="la la-file-text"></i><span class="menu-title" data-i18n="">Import</span></a>
+            </li>
+            <% if(user.privilege.toLowerCase() == 'admin') { %>
+				<li class="nav-item /user"><a href="/user"><i class="ft-credit-card"></i><span class="menu-title" data-i18n="">Members</span></a>
+				</li>
+				<li class="nav-item /setting"><a href="/setting"><i class="la la-cogs"></i><span class="menu-title" data-i18n="">Settings</span></a>
+				</li>
+				<li class="nav-item /editer"><a href="/editer"><i class="ft-edit"></i><span class="menu-title" data-i18n="">Edit</span></a>
+				</li>
+				<li class="nav-item /control"><a href="/control"><i class="la la-magic"></i><span class="menu-title" data-i18n="">Control Center</span></a>
+				</li>
+			<% } %>
+		<% } %>
       </ul>
     </div>
     <div class="navigation-background"></div>

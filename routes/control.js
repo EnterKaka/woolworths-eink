@@ -62,7 +62,6 @@ app.post("/start_scan", async function (req, res, next) {
     if(schedule_app_flag == true){
         res.send('running');
     }else{
-        console.log('port',port);
         var result = await  run_app(path, dt, server_ip, port);
         if(result){
             res.send('success');
