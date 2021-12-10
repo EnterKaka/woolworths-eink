@@ -74,7 +74,19 @@
                                                                         <li><i class="fa fa-tumblr"></i>&nbsp;&nbsp;&nbsp;<span id='<%= "lm-mass-"+element.name %>'></span>&nbsp;t</li>
                                                                         <li><span style="font-weight:bold">ρ</span>&nbsp;&nbsp;&nbsp;<span id='<%= "lm-density-"+element.name %>'></span>&nbsp;kg/m³</li>
                                                                         <li><span style="font-weight:bold">Ø</span>&nbsp;&nbsp;&nbsp;<span id='<%= "lm-averagevolume-"+element.name %>'></span>&nbsp;m³</li>
-                                                                        <li><span style="padding: .3rem 1rem; border-radius: 2rem; background-color: #f1f2f5;">●●●</span></li>
+                                                                        <li style="position: relative;" class="delete_group">
+                                                                            <span class="delete_text" style="padding: .3rem 1rem; border-radius: 2rem; background-color: #f1f2f5;">●●●</span>
+                                                                            <span class="delete_modal delete_modal_show" id='<%= "delete_modal-"+element.name %>'>
+                                                                                <dl>
+                                                                                    <li>
+                                                                                        Delete Single Dataset
+                                                                                    </li>
+                                                                                    <li>
+                                                                                        Delete Whole Model
+                                                                                    </li>
+                                                                                </dl>
+                                                                            </span>
+                                                                        </li>
                                                                     </ul>
                                                                 </div>
                                                             </div>
@@ -125,7 +137,19 @@
                                                                         <li><i class="fa fa-tumblr"></i>&nbsp;&nbsp;&nbsp;<span id='<%= "lm-mass-"+element.name %>'></span>&nbsp;t</li>
                                                                         <li><span style="font-weight:bold">ρ</span>&nbsp;&nbsp;&nbsp;<span id='<%= "lm-density-"+element.name %>'></span>&nbsp;kg/m³</li>
                                                                         <li><span style="font-weight:bold">Ø</span>&nbsp;&nbsp;&nbsp;<span id='<%= "lm-averagevolume-"+element.name %>'></span>&nbsp;m³</li>
-                                                                        <li><span style="padding: .3rem 1rem; border-radius: 2rem; background-color: #f1f2f5;">●●●</span></li>
+                                                                        <li style="position: relative;" class="delete_group">
+                                                                            <span class="delete_text" style="padding: .3rem 1rem; border-radius: 2rem; background-color: #f1f2f5;">●●●</span>
+                                                                            <span class="delete_modal delete_modal_show" id='<%= "delete_modal-"+element.name %>'>
+                                                                                <dl>
+                                                                                    <li>
+                                                                                        Delete Single Dataset
+                                                                                    </li>
+                                                                                    <li>
+                                                                                        Delete Whole Model
+                                                                                    </li>
+                                                                                </dl>
+                                                                            </span>
+                                                                        </li>
                                                                     </ul>
                                                                 </div>
                                                             </div>
@@ -177,9 +201,12 @@
                     $.post('/data/getloadflag',function(req){
                         console.log(req);
                         if(req == 'success')
-                            location.href = '/dashboard';
+                        location.href = '/dashboard';
                     });
                 }, 10000);
+            });
+            $('.delete_group').click(function(){
+                $(this).children('.delete_modal').toggleClass('delete_modal_show');
             });
 
             $('.view_panel').on('click','.view_close',function(){
