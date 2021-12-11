@@ -7,6 +7,7 @@ import { ConvexGeometry } from './ConvexGeometry.js';
 import { XYZLoader, getminmaxhegiht, getminmaxhegihtfromarray, getminmaxheightfromjson, getrgb, init_highlow } from './XYZLoader.js';
 
 import * as filters from './filters.js';
+import {getBasisTransform} from './getCoordinateTransfer.js';
 
 let gid = 0;
 // console.log($.toast)
@@ -21,8 +22,10 @@ export const owlStudio = function (cv1, cv2, parent) {
     this.renderer = new THREE.WebGLRenderer({ canvas: this.canvas, antialias: true, preserveDrawingBuffer: true });
 
     this.scene = new THREE.Scene();
-
+    
     this.oscene = new THREE.Object3D();
+    // getBasisTransform( '+X+Y+Z', '-X+Y+Z', this.scene.matrix );
+    // this.scene.matrix.decompose( this.scene.position, this.scene.quaternion, this.scene.scale );
 
     this.camera = new THREE.PerspectiveCamera(60, this.canvas.clientWidth / this.canvas.clientHeight, 0.01, 1000);
 
@@ -2138,17 +2141,30 @@ export const owlStudio = function (cv1, cv2, parent) {
     }
 
     this.getObjData = function () {
-
+        
         if (this.activeId.length < 1) return;
-
+        
         let target = this.groupList[this.activeId[0]];
 
         const exporter = new OBJExporter();
 
         let obj = new THREE.Object3D();
-        obj.applyMatrix4(target.group.matrix)
-        obj.add(target.group.children[0].clone());
-        if (target.group.children[1].visible) obj.add(target.group.children[1].clone());
+
+        let c1 = target.group.children[0].clone();
+
+        c1.matrixWorld.copy(target.group.matrix)
+
+        obj.add(c1);
+
+        if (target.group.children[1].visible){
+
+            let c2 = target.group.children[1].clone();
+
+            c2.matrixWorld.copy(target.group.matrix)
+
+            obj.add(c2);
+
+        }
 
         return exporter.parse(obj);
 

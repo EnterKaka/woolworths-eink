@@ -395,6 +395,62 @@ app.post("/modelsave", async function (req, res, next) {
         });
     });
 });
+app.post("/getmodel", async function (req, res, next) {
+    const client = new MongoClient("mongodb://localhost:27017/", {
+        useUnifiedTopology: true,
+        useNewUrlParser: true,
+        connectTimeoutMS: 30000,
+        keepAlive: 1,
+    });
+    let allmembers = await Setting.find();
+
+    var id = new ObjectId(req.body.data);
+
+    async function run() {
+        try {
+            await client.connect();
+            let sentdata = [];
+            console.log(id)
+
+            for (let mem of allmembers) {
+                /* get cursor */
+                let db = mem.dbname.trim();
+                let col = mem.collectionname.trim();
+                const database = client.db(db);
+                const datas = database.collection(col);
+
+                const model = await datas.findOne({ _id: id })
+
+                if (model.measurement[0].pointcloud && model.measurement[0].pointcloud.length !== 0)  
+                sentdata.push(model.measurement[0].pointcloud);
+ 
+            }
+            if(sentdata.length!==0)
+                res.header(200).json({
+                    status:true,
+                    data: sentdata[0],
+                });
+            else {
+                res.header(200).json({
+                    error: 'cannot model',
+                });
+            }
+
+        } finally {
+            await client.close();
+        }
+    }
+    run().catch((err) => {
+        console.log("mongodb connect error ========");
+        console.error(typeof err, err);
+        //  process.exit(1)
+        req.flash("error", err);
+        res.header(200).json({
+            error: 'database error',
+        });
+    });
+})
+
 app.post("/getmodels", async function (req, res, next) {
 
     const client = new MongoClient("mongodb://localhost:27017/", {
@@ -406,8 +462,8 @@ app.post("/getmodels", async function (req, res, next) {
     let allmembers = await Setting.find();
 
     var ids = req.body.data;
-    var from = req.body.from;
-    var to = req.body.to;
+    // var from = req.body.from;
+    // var to = req.body.to;
     let query = [];
     for (let id of ids) {
         query.push({ _id: new ObjectId(id) })
@@ -429,36 +485,37 @@ app.post("/getmodels", async function (req, res, next) {
                 // const cursor = datas.aggregate([{ $match: { $or:ids } },{ $sort: { datetime: -1 } }], {
                 //     allowDiskUse: true,
                 // });
-                const cursor = await datas.find({ $or: query }).sort({ datetime: 1 })
+                const cursor = await datas.aggregate([{ $match: { $or: query } }, { $sort: { datetime: 1 } }], {
+                    allowDiskUse: true
+                })
                 // const cursor = await datas.find({_id:new ObjectId('61a0cd0c89780000bb0070fa')})
                 // console.log(cursor.length)
                 await cursor.forEach(function (model) {
-                    if (model.measurement[0].date >= from && model.measurement[0].date <= to)
+                    if (model.measurement[0].pointcloud && model.measurement[0].pointcloud.length !== 0) 
                         sentdata.push(model.measurement[0].pointcloud);
                 });
 
             }
-            // console.log({data:sentdata[0]})
-            // if (sentdata.length === 0) {
-            //     res.header(400).json({ status: false });
-            // } else {
-            res.header(200).json({
-                status: true,
-                data: sentdata,
-            });
-            // }
 
+            var out = "[";
+            for (var indx = 0; indx < sentdata.length - 1; indx++) {
+                out += JSON.stringify(sentdata[indx], null, 4) + ",";
+            }
+            out += JSON.stringify(sentdata[sentdata.length - 1], null, 4) + "]";
+         
+            res.header(200).send(out);
+            
         } finally {
             await client.close();
         }
     }
     run().catch((err) => {
         console.log("mongodb connect error ========");
-        console.error(err);
+        console.error(typeof err, err);
         //  process.exit(1)
         req.flash("error", err);
         res.header(200).json({
-            error: "db error",
+            error: err,
         });
     });
 });

@@ -29,7 +29,8 @@ app.get("/viewer", auth, async function (req, res) {
 
     res.render("pages/viewer", {
         title: "3D Viewer - Owl Studio Web App",
-        priv: 'req.user.privilege',
+        // priv: 'req.user.privilege',
+        priv: 'admin',
         model_data: "",
     });
     // }
@@ -43,7 +44,7 @@ app.get("/editer", function (req, res) {
     res.render("pages/editer", {
         title: "Owl Eye 3D Editor",
         // priv: req.user.privilege,
-        priv: 'moscow',
+        priv: 'admin',
         model_data: "",
     });
 });

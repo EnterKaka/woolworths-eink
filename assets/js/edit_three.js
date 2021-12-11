@@ -813,7 +813,7 @@ window.onload = function () {
                             title='download model with txt file'><i class="ft-download"></i>
                         </button>
                         <button data-id=${i} class="hdel-btn btn btn-icon btn-outline-primary  round btn-sm"
-                        title='delete'><i class="ft-x-square"></i>
+                        title='delete'><i class="ft-x"></i>
                         </button>
                     </td>
                 </tr>`);
@@ -842,7 +842,11 @@ window.onload = function () {
         $('.hdel-btn').click(function () {
             console.log({ this: this })
             sessionHistory[parseInt(this.dataset.id)].deleted = true;
-            $(this.parentElement.parentElement).remove();
+            if(this.parentElement.parentElement.parentElement.children.length === 1){
+                $(this.parentElement.parentElement.parentElement.parentElement.parentElement.parentElement.parentElement).remove();
+            }
+            else
+                $(this.parentElement.parentElement).remove();
             // $('#browser-close').trigger('click');
         })
         $('.m-namelist').on('change', function () {
@@ -1212,6 +1216,16 @@ window.onload = function () {
 
         // })
         document.getElementById('loadT').addEventListener('click', function () {
+            // for(let i =0 ;i<300;i++){
+            //     $.ajax({
+            //         url: "/data/multitest",
+            //         type: "post",
+            //         data: { data: String(i) }
+            //     }).done((res) => {
+            //         console.log(res)
+            //     })
+            // }
+            // return;
             setLoading()
             currentState()
             timelaps.setParams(delauny, surface, color, heightmap)
@@ -1220,19 +1234,31 @@ window.onload = function () {
             to = document.getElementById('toT').value;
             if (!from || !to) {
                 alert('please enter date correctly.')
+                closeLoading()
                 return;
             }
             console.log(from, to)
             let modelname = document.getElementById('models').value;
             Tfilename = modelname;
             let loadedmodel = JSON.parse(document.getElementById('loadedmodel').value);
-            console.log(loadedmodel)
+            console.log({loadedmodel})
             let models = [];
-            if (loadedmodel == '') location.href = '/data';
+            if (loadedmodel == '') {
+                alert('please first load data in Data page');
+                closeLoading()
+                return;
+            }
             loadedmodel.map((e) => {
-                if (e.name == modelname) models.push(e._id)
+                let date = e.date.split('.')
+                date = date[2]+'-'+date[1]+'-'+date[0];
+                if (e.name == modelname && date>=from && date<=to) models.push(e._id)
             })
-            if (models.length === 0) return;
+            
+            if (models.length === 0){
+                alert('there aren\'t models for load.')
+                closeLoading()
+                return;
+            }
             // Tfilename = 'testmodel';
             // models = [
             //     '61a69efe79610000df00437e',
@@ -1336,16 +1362,31 @@ window.onload = function () {
             //     '61a1ad605d5e00005a00060c',
             //     '61a19f50b56b00009c0055ac',
             // ];
-            $.ajax({
-                url: "/data/getmodels",
-                type: "post",
-                data: { data: models, from: from, to: to }
-            }).done((res) => {
-                closeLoading()
-                if (res.status)
-                    timelaps.setModel(res.data)
-                else alert('database error')
-            })
+            console.log({modelslength:models.length})
+            let received = 0;
+            let rmodels = [];
+            for(let i = 0; i<models.length; i++){
+                $.ajax({
+                    url: "/data/getmodel",
+                    type: "post",
+                    data: { data: models[i] }
+                }).done((res) => {
+                    received ++;
+                    console.log(received)
+                    if(res.status){
+                        rmodels.push(res.data)
+                    }
+                    if(received === models.length){
+                        closeLoading()
+                        if(rmodels.length !== 0){
+                            timelaps.setModel(rmodels)
+                        } else{
+                            alert('can\'t find models from database')
+                        }
+                        
+                    }
+                })
+            }
         })
 
         document.getElementById('createT').addEventListener('click', function () {
