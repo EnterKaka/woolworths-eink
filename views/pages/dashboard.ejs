@@ -78,10 +78,10 @@
                                                                             <span class="delete_text" style="padding: .3rem 1rem; border-radius: 2rem; background-color: #f1f2f5;">●●●</span>
                                                                             <span class="delete_modal delete_modal_show" id='<%= "delete_modal-"+element.name %>'>
                                                                                 <dl>
-                                                                                    <li>
+                                                                                    <li class="delete_single">
                                                                                         Delete Single Dataset
                                                                                     </li>
-                                                                                    <li>
+                                                                                    <li class="delete_model">
                                                                                         Delete Whole Model
                                                                                     </li>
                                                                                 </dl>
@@ -141,10 +141,10 @@
                                                                             <span class="delete_text" style="padding: .3rem 1rem; border-radius: 2rem; background-color: #f1f2f5;">●●●</span>
                                                                             <span class="delete_modal delete_modal_show" id='<%= "delete_modal-"+element.name %>'>
                                                                                 <dl>
-                                                                                    <li>
+                                                                                    <li class="delete_single">
                                                                                         Delete Single Dataset
                                                                                     </li>
-                                                                                    <li>
+                                                                                    <li class="delete_model">
                                                                                         Delete Whole Model
                                                                                     </li>
                                                                                 </dl>
@@ -208,9 +208,74 @@
             $('.delete_group').click(function(){
                 $(this).children('.delete_modal').toggleClass('delete_modal_show');
             });
-
             $('.view_panel').on('click','.view_close',function(){
                 $(this).parent().hide();
+            });
+            $('.delete_single').click(function(){
+                    const swalWithBootstrapButtons = Swal.mixin({
+                    customClass: {
+                        confirmButton: 'btn btn-success',
+                        cancelButton: 'btn btn-danger'
+                    },
+                    buttonsStyling: false
+                    })
+
+                    swalWithBootstrapButtons.fire({
+                    title: 'Are you sure?',
+                    text: "You won't be able to revert this!",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: 'Yes, delete it!',
+                    cancelButtonText: 'No, cancel!',
+                    reverseButtons: true
+                    }).then((result) => {
+                    if (result.isConfirmed) {
+                        url = '/user/delete/' + url_del;
+                        $.get(url, function( data ) {
+                        if(data.status === 'success') {
+                            swalWithBootstrapButtons.fire(
+                            'Deleted!',
+                            'Your file has been deleted.',
+                            'success'
+                            );
+                            location.reload();
+                        }
+                        });
+                    }
+                    })
+            });
+            $('.delete_model').click(function(){
+                    const swalWithBootstrapButtons = Swal.mixin({
+                    customClass: {
+                        confirmButton: 'btn btn-success',
+                        cancelButton: 'btn btn-danger'
+                    },
+                    buttonsStyling: false
+                    })
+
+                    swalWithBootstrapButtons.fire({
+                    title: 'Are you sure?',
+                    text: "You won't be able to revert this!",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: 'Yes, delete it!',
+                    cancelButtonText: 'No, cancel!',
+                    reverseButtons: true
+                    }).then((result) => {
+                    if (result.isConfirmed) {
+                        url = '/user/delete/' + url_del;
+                        $.get(url, function( data ) {
+                        if(data.status === 'success') {
+                            swalWithBootstrapButtons.fire(
+                            'Deleted!',
+                            'Your file has been deleted.',
+                            'success'
+                            );
+                            location.reload();
+                        }
+                        });
+                    }
+                    })
             });
             $.toast({
                 heading: 'Load Database',
