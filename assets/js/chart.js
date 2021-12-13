@@ -311,6 +311,7 @@ function drawChart(ctx, data, ft, tt) {
             var datetime = obj.datetime.split(' ');
             document.getElementById(lm_date).innerHTML = datetime[0];
             document.getElementById(lm_time).innerHTML = datetime[1];
+            document.getElementById('delete_singleid-' + data.name).value = obj._id;
             document.getElementById(lm_volume).innerHTML = Math.round(obj.volume*100)/100;
             document.getElementById(lm_mass).innerHTML = Math.round(obj.mass*100)/100;
         } else {

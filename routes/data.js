@@ -237,6 +237,99 @@ app.get("/edit/(:_id)", auth, async function (req, res, next) {
         res.redirect("/data/");
     });
 });
+/* Delete select data */
+
+app.post('/delete', async function (req, res) {
+    console.log("*********** delete ******* single data ***");
+    
+    const client = new MongoClient("mongodb://localhost:27017/", {
+        useUnifiedTopology: true,
+    });
+
+    async function run() {
+        try {
+            /* find object in loaded data*/
+            var id = req.body._id;
+            let obj = loadedData.find((o) => {
+                if (o._id.toString() === id) return true;
+            });
+            /* find setting data by setting id*/
+            let setobj = await Setting.findOne({
+                _id: new ObjectId(obj.setid),
+            });
+
+            /* get pointcloud from collection */
+            let dbname = setobj.dbname;
+            let collectionname = setobj.collectionname;
+            await client.connect();
+            const database = client.db(dbname);
+            const datas = database.collection(collectionname);
+            const cursor = await datas.deleteOne({ _id: new ObjectId(id) });
+            var index = loadedData.findIndex((o) => {
+                if (o._id.toString() === id) return true;
+            });
+            console.log(loadedData.length)
+            loadedData.splice(index,1);
+            console.log(loadedData.length);
+            if (cursor) {
+                res.send("success");
+            } else {
+                res.send("failed");
+            }
+        } finally {
+        }
+    }
+    run().catch((err) => {
+        res.send("failed");
+    });
+});
+/* Delete model */
+
+app.post('/delete_model', async function (req, res) {
+    console.log("*********** delete ******* model data ***");
+    
+    const client = new MongoClient("mongodb://localhost:27017/", {
+        useUnifiedTopology: true,
+    });
+    var model_name = req.body.model_name;
+
+    async function run() {
+        try {
+            /* find object in loaded data*/
+            var elements = [];
+            loadedData.find((o) => {
+                if (o.name != model_name)  
+                elements.push(o);
+            });
+            console.log(loadedData.length)
+            loadedData = elements;
+            console.log(loadedData.length)
+
+            /* find setting data by setting id*/
+            let setobj = await Setting.find();
+            var flag = false;
+            await client.connect();
+            for (let ele of setobj) {
+                let dbname = ele.dbname;
+                let collectionname = ele.collectionname;
+                let database = client.db(dbname);
+                let datas = database.collection(collectionname);
+                cursor = await datas.deleteMany({"measurement.name":{$in:[model_name]}});
+                if(cursor) flag = true;
+            };
+
+            if (flag) {
+                res.send("success");
+            } else {
+                res.send("failed");
+            }
+        } finally {
+        }
+    }
+    run().catch((err) => {
+        res.redirect("failed");
+    });
+});
 
 app.post("/getmodellist", async function (req, res, next) {
     console.log("getmodellist");

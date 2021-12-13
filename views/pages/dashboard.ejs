@@ -78,10 +78,11 @@
                                                                             <span class="delete_text" style="padding: .3rem 1rem; border-radius: 2rem; background-color: #f1f2f5;">●●●</span>
                                                                             <span class="delete_modal delete_modal_show" id='<%= "delete_modal-"+element.name %>'>
                                                                                 <dl>
-                                                                                    <li class="delete_single">
+                                                                                    <li class="delete_single" id='<%= "delete_single-"+element.name %>'>
+                                                                                        <input type="hidden" id='<%= "delete_singleid-"+element.name %>'>
                                                                                         Delete Single Dataset
                                                                                     </li>
-                                                                                    <li class="delete_model">
+                                                                                    <li class="delete_model" id='<%= "delete_model-"+element.name %>'>
                                                                                         Delete Whole Model
                                                                                     </li>
                                                                                 </dl>
@@ -141,10 +142,11 @@
                                                                             <span class="delete_text" style="padding: .3rem 1rem; border-radius: 2rem; background-color: #f1f2f5;">●●●</span>
                                                                             <span class="delete_modal delete_modal_show" id='<%= "delete_modal-"+element.name %>'>
                                                                                 <dl>
-                                                                                    <li class="delete_single">
+                                                                                    <li class="delete_single" id='<%= "delete_single-"+element.name %>'>
+                                                                                        <input type="hidden" id='<%= "delete_singleid-"+element.name %>'>
                                                                                         Delete Single Dataset
                                                                                     </li>
-                                                                                    <li class="delete_model">
+                                                                                    <li class="delete_model" id='<%= "delete_model-"+element.name %>'>
                                                                                         Delete Whole Model
                                                                                     </li>
                                                                                 </dl>
@@ -212,70 +214,85 @@
                 $(this).parent().hide();
             });
             $('.delete_single').click(function(){
-                    const swalWithBootstrapButtons = Swal.mixin({
-                    customClass: {
-                        confirmButton: 'btn btn-success',
-                        cancelButton: 'btn btn-danger'
-                    },
-                    buttonsStyling: false
-                    })
+                var id = $(this).attr('id');
+                var buffer = id.split("delete_single-");
+                var model_name = buffer[1];
 
-                    swalWithBootstrapButtons.fire({
-                    title: 'Are you sure?',
-                    text: "You won't be able to revert this!",
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonText: 'Yes, delete it!',
-                    cancelButtonText: 'No, cancel!',
-                    reverseButtons: true
-                    }).then((result) => {
-                    if (result.isConfirmed) {
-                        url = '/user/delete/' + url_del;
-                        $.get(url, function( data ) {
-                        if(data.status === 'success') {
+                const swalWithBootstrapButtons = Swal.mixin({
+                customClass: {
+                    confirmButton: 'btn btn-success',
+                    cancelButton: 'btn btn-danger'
+                },
+                buttonsStyling: false
+                })
+
+                swalWithBootstrapButtons.fire({
+                title: 'Are you sure?',
+                text: "You won't be able to revert this!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Yes, delete it!',
+                cancelButtonText: 'No, cancel!',
+                reverseButtons: true
+                }).then((result) => {
+                if (result.isConfirmed) {
+                    var obj_id = document.getElementById("delete_singleid-" + model_name).value;
+                    $.post('/data/delete', { _id: obj_id }, function (data) {
+                        if(data === 'success') {
                             swalWithBootstrapButtons.fire(
                             'Deleted!',
                             'Your file has been deleted.',
                             'success'
                             );
-                            location.reload();
+                            document.location.reload();
                         }
-                        });
-                    }
-                    })
+                    });
+
+                    // url = '/user/delete/' + url_del;
+                    // $.get(url, function( data ) {
+                    // });
+                }
+                })
             });
             $('.delete_model').click(function(){
-                    const swalWithBootstrapButtons = Swal.mixin({
-                    customClass: {
-                        confirmButton: 'btn btn-success',
-                        cancelButton: 'btn btn-danger'
-                    },
-                    buttonsStyling: false
-                    })
+                var id = $(this).attr('id');
+                var buffer = id.split("delete_model-");
+                var model_name = buffer[1];
+                console.log(model_name)
+                const swalWithBootstrapButtons = Swal.mixin({
+                customClass: {
+                    confirmButton: 'btn btn-success',
+                    cancelButton: 'btn btn-danger'
+                },
+                buttonsStyling: false
+                })
 
-                    swalWithBootstrapButtons.fire({
-                    title: 'Are you sure?',
-                    text: "You won't be able to revert this!",
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonText: 'Yes, delete it!',
-                    cancelButtonText: 'No, cancel!',
-                    reverseButtons: true
-                    }).then((result) => {
-                    if (result.isConfirmed) {
-                        url = '/user/delete/' + url_del;
-                        $.get(url, function( data ) {
-                        if(data.status === 'success') {
+                swalWithBootstrapButtons.fire({
+                title: 'Are you sure?',
+                text: "You won't be able to revert this!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Yes, delete it!',
+                cancelButtonText: 'No, cancel!',
+                reverseButtons: true
+                }).then((result) => {
+                if (result.isConfirmed) {
+                    $.post('/data/delete_model', { model_name: model_name }, function (data) {
+                        if(data === 'success') {
                             swalWithBootstrapButtons.fire(
                             'Deleted!',
                             'Your file has been deleted.',
                             'success'
                             );
-                            location.reload();
+                            document.location.reload();
                         }
-                        });
-                    }
-                    })
+                    });
+
+                    // url = '/user/delete/' + url_del;
+                    // $.get(url, function( data ) {
+                    // });
+                }
+                })
             });
             $.toast({
                 heading: 'Load Database',
