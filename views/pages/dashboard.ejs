@@ -74,6 +74,7 @@
                                                                         <li><i class="fa fa-tumblr"></i>&nbsp;&nbsp;&nbsp;<span id='<%= "lm-mass-"+element.name %>'></span>&nbsp;t</li>
                                                                         <li><span style="font-weight:bold">ρ</span>&nbsp;&nbsp;&nbsp;<span id='<%= "lm-density-"+element.name %>'></span>&nbsp;kg/m³</li>
                                                                         <li><span style="font-weight:bold">Ø</span>&nbsp;&nbsp;&nbsp;<span id='<%= "lm-averagevolume-"+element.name %>'></span>&nbsp;m³</li>
+                                                                        <% if(user.privilege.toLowerCase() != 'user') { %>
                                                                         <li style="position: relative;" class="delete_group">
                                                                             <span class="delete_text" style="padding: .3rem 1rem; border-radius: 2rem; background-color: #f1f2f5;">●●●</span>
                                                                             <span class="delete_modal delete_modal_show" id='<%= "delete_modal-"+element.name %>'>
@@ -82,12 +83,15 @@
                                                                                         <input type="hidden" id='<%= "delete_singleid-"+element.name %>'>
                                                                                         Delete Single Dataset
                                                                                     </li>
+                                                                                    <% if(user.privilege.toLowerCase() == 'admin') { %>         
                                                                                     <li class="delete_model" id='<%= "delete_model-"+element.name %>'>
                                                                                         Delete Whole Model
                                                                                     </li>
+                                                                                    <%}%>
                                                                                 </dl>
                                                                             </span>
                                                                         </li>
+                                                                        <%}%>
                                                                     </ul>
                                                                 </div>
                                                             </div>
@@ -138,6 +142,7 @@
                                                                         <li><i class="fa fa-tumblr"></i>&nbsp;&nbsp;&nbsp;<span id='<%= "lm-mass-"+element.name %>'></span>&nbsp;t</li>
                                                                         <li><span style="font-weight:bold">ρ</span>&nbsp;&nbsp;&nbsp;<span id='<%= "lm-density-"+element.name %>'></span>&nbsp;kg/m³</li>
                                                                         <li><span style="font-weight:bold">Ø</span>&nbsp;&nbsp;&nbsp;<span id='<%= "lm-averagevolume-"+element.name %>'></span>&nbsp;m³</li>
+                                                                        <% if(user.privilege.toLowerCase() != 'user') { %>
                                                                         <li style="position: relative;" class="delete_group">
                                                                             <span class="delete_text" style="padding: .3rem 1rem; border-radius: 2rem; background-color: #f1f2f5;">●●●</span>
                                                                             <span class="delete_modal delete_modal_show" id='<%= "delete_modal-"+element.name %>'>
@@ -146,12 +151,15 @@
                                                                                         <input type="hidden" id='<%= "delete_singleid-"+element.name %>'>
                                                                                         Delete Single Dataset
                                                                                     </li>
+                                                                                    <% if(user.privilege.toLowerCase() == 'admin') { %>
                                                                                     <li class="delete_model" id='<%= "delete_model-"+element.name %>'>
                                                                                         Delete Whole Model
                                                                                     </li>
+                                                                                    <%}%>
                                                                                 </dl>
                                                                             </span>
                                                                         </li>
+                                                                        <%}%>
                                                                     </ul>
                                                                 </div>
                                                             </div>
@@ -217,6 +225,18 @@
                 var id = $(this).attr('id');
                 var buffer = id.split("delete_single-");
                 var model_name = buffer[1];
+                var obj_id = document.getElementById("delete_singleid-" + model_name).value;
+                if(obj_id == ''){
+                    // $.toast({
+                    //     heading: 'Info',
+                    //     text: 'Select Model',
+                    //     showHideTransition: 'slide',
+                    //     icon: 'info',
+                    //     hideAfter: 5000   // in milli seconds
+                    // });
+                    return;
+                }
+                    
 
                 const swalWithBootstrapButtons = Swal.mixin({
                 customClass: {
@@ -236,7 +256,6 @@
                 reverseButtons: true
                 }).then((result) => {
                 if (result.isConfirmed) {
-                    var obj_id = document.getElementById("delete_singleid-" + model_name).value;
                     $.post('/data/delete', { _id: obj_id }, function (data) {
                         if(data === 'success') {
                             swalWithBootstrapButtons.fire(

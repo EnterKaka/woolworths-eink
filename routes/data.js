@@ -6,6 +6,14 @@ const auth = require("../middleware/auth");
 const Setting = require("../model/Setting");
 const Schedule = require("../model/Schedule");
 const ip = require("ip");
+const fs = require("fs");
+const logger = fs.createWriteStream("user-log/oe_server_logfile.txt", {
+    flags: "a", // 'a' means appending (old data will be preserved)
+});
+async function writeLog(msg) {
+    logger.write(msg + "\r\n");
+    console.log(msg);
+}
 
 var interval;
 
@@ -268,10 +276,10 @@ app.post('/delete', async function (req, res) {
             var index = loadedData.findIndex((o) => {
                 if (o._id.toString() === id) return true;
             });
-            console.log(loadedData.length)
             loadedData.splice(index,1);
-            console.log(loadedData.length);
             if (cursor) {
+                var str = 'DB: ' + dbname + 'Collection: ' + collectionname + 'model: ' + obj.name + 'Time: ' + obj.date +' '+ obj.time + ' User: ' + req.session.user_info.email + 'Time:' + (new Date());
+                writeLog('Delete Data ('+str+')');    
                 res.send("success");
             } else {
                 res.send("failed");
@@ -319,6 +327,8 @@ app.post('/delete_model', async function (req, res) {
             };
 
             if (flag) {
+                var str = 'model: ' + model_name + 'User: ' + req.session.user_info.email + 'Time:' + (new Date());
+                writeLog('Delete model ('+str+')');    
                 res.send("success");
             } else {
                 res.send("failed");
