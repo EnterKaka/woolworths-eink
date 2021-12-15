@@ -5,7 +5,8 @@
   "main": "app.js",
   "scripts": {
     "start": "nodemon app.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start-dev": "nodemon index.js",
+    "test": "set NODE_ENV=development&& jest"
   },
   "keywords": [
     "three.js",
@@ -18,6 +19,7 @@
   ],
   "author": "Yatsuka Albert",
   "license": "NONE",
+  "test-dev": "jest",
   "dependencies": {
     "bcryptjs": "^2.4.3",
     "body-parser": "^1.18.3",
@@ -39,14 +41,31 @@
     "mongodb": "^3.6.2",
     "mongoose": "^6.0.7",
     "morgan": "^1.10.0",
+    "mysql2": "^2.3.3",
     "node": "^17.0.1",
     "node-cron": "^3.0.0",
     "node-datetime": "^2.1.2",
     "package": "^1.0.1",
+    "pg": "^8.7.1",
+    "sequelize": "^6.12.0-beta.3",
     "socket.io": "^4.2.0",
+    "supertest": "^6.1.6",
     "three": "^0.132.2"
   },
   "devDependencies": {
+    "cross-env": "^7.0.3",
+    "jest": "^27.4.5",
     "nodemon": "^2.0.13"
-  }
+  },
+  "jest": {
+    "testEnvironment": "node"
+     },
+  "repository": {
+    "type": "git",
+    "url": "git+https://gitlab.com/quirin.kraus/oe-webviewer.git"
+  },
+  "bugs": {
+    "url": "https://gitlab.com/quirin.kraus/oe-webviewer/issues"
+  },
+  "homepage": "https://gitlab.com/quirin.kraus/oe-webviewer#readme"
 }
