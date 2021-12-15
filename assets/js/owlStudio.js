@@ -121,7 +121,7 @@ export const owlStudio = function (cv1, cv2, parent) {
         // var gridYZ = new THREE.GridHelper(30, 60);
         // gridYZ.rotation.z = Math.PI / 2;
         // this.scene.add(gridYZ);
-
+ 
         window.addEventListener('resize', this.windowResize);
 
     }

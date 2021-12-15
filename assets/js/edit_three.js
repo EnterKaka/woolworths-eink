@@ -932,9 +932,9 @@ window.onload = function () {
     document.getElementById('bdatabase-tab').addEventListener('click', () => {
         document.getElementById('browser-save').style.display = 'none';
     })
-
+ 
     document.getElementById('browser-save').addEventListener('click', () => {
-        
+
         $('#browser-close').trigger('click');
         let database = document.getElementById('hdatabase-name').value.trim();
         let collection = document.getElementById('hcollection-name').value.trim();
