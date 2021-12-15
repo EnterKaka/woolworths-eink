@@ -103,7 +103,7 @@ export const timelapsLib = function (cv1, parent, delauny, surface, color, heigh
 
             for (let i = 0; i < arrayData.length; i++) {
 
-                points3d.push(new THREE.Vector3(parseFloat(arrayData[i].x), parseFloat(arrayData[i].y), parseFloat(arrayData[i].z)));
+                points3d.push(new THREE.Vector3(parseFloat(arrayData[i].x * -1), parseFloat(arrayData[i].y), parseFloat(arrayData[i].z)));
 
                 let zvalue = parseFloat(arrayData[i].z);
 
