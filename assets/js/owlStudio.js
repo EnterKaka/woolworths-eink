@@ -149,6 +149,8 @@ export const owlStudio = function (cv1, cv2, parent) {
 
     }
 
+    
+
     this.reloadModelFromData = function (filename, data) {
 
         this.initDraw()
@@ -168,11 +170,13 @@ export const owlStudio = function (cv1, cv2, parent) {
 
             if (lineValues.length === 3) {
                 // XYZ
-                arrayData.push(parseFloat(lineValues[0]), parseFloat(lineValues[1]), parseFloat(lineValues[2]));
+                arrayData.push(parseFloat(lineValues[0]) * -1, parseFloat(lineValues[1]), parseFloat(lineValues[2]));
 
             }
 
         }
+
+        // setInvertedX(arrayData)
 
         this.reloadModelFromArray(filename, arrayData)
 
@@ -187,9 +191,11 @@ export const owlStudio = function (cv1, cv2, parent) {
 
         data.forEach(function (xyz) {
 
-            arrayData.push(parseFloat(xyz.x), parseFloat(xyz.y), parseFloat(xyz.z));
+            arrayData.push(parseFloat(xyz.x) * -1, parseFloat(xyz.y), parseFloat(xyz.z));
 
         });
+
+        // setInvertedX(arrayData)
 
         this.reloadModelFromArray(filename, arrayData)
 
@@ -206,6 +212,8 @@ export const owlStudio = function (cv1, cv2, parent) {
 
         arrayData = [...loader.parse(data).children[0].geometry.attributes.position.array];
 
+        setInvertedX(arrayData)
+
         this.reloadModelFromArray(filename, arrayData)
 
 
@@ -220,6 +228,7 @@ export const owlStudio = function (cv1, cv2, parent) {
     this.reloadModelFromArray = function (filename, arrayData, newModel = 'new') {
 
         // $("#modelpath").text(filename);
+        
 
         let target;
 
@@ -2154,6 +2163,8 @@ export const owlStudio = function (cv1, cv2, parent) {
 
         c1.matrixWorld.copy(target.group.matrix)
 
+        setInvertedX(c1.geometry.attributes.position.array)
+
         obj.add(c1);
 
         if (target.group.children[1].visible){
@@ -2187,7 +2198,7 @@ export const owlStudio = function (cv1, cv2, parent) {
             for (let i = 0; i < array.length; i += 3) {
 
                 let point = new THREE.Vector3(array[i], array[i + 1], array[i + 2]).applyMatrix4(matrix)
-                result += `        ${point.x},        ${point.y},        ${point.z}\n`;
+                result += `        ${point.x * -1},        ${point.y},        ${point.z}\n`;
 
             }
 
@@ -2199,7 +2210,7 @@ export const owlStudio = function (cv1, cv2, parent) {
 
                 for (let i = 0; i < array.length; i += 3) {
 
-                    result += `        ${array[i]},        ${array[i + 1]},        ${array[i + 2]}\n`;
+                    result += `        ${array[i] * -1},        ${array[i + 1]},        ${array[i + 2]}\n`;
 
                 }
 
@@ -2211,7 +2222,7 @@ export const owlStudio = function (cv1, cv2, parent) {
 
                     let v = new THREE.Vector3(parseFloat(param[i]), parseFloat(param[i + 1]), parseFloat(param[i + 2])).applyMatrix4(m)
 
-                    result += `        ${v.x},        ${v.y},        ${v.z}\n`;
+                    result += `        ${v.x * -1},        ${v.y},        ${v.z}\n`;
 
                 }
 
@@ -2679,7 +2690,7 @@ export const owlStudio = function (cv1, cv2, parent) {
 
         let array = [...target.group.children[0].geometry.attributes.position.array];
 
-        return array;
+        return setInvertedX(array);
 
     }
 
@@ -3431,4 +3442,11 @@ function crossWidth() {
 
 function crossOffset() {
     return parseFloat(document.getElementById('cross-offset').value);
+}
+
+function setInvertedX(array){
+    for(let i = 0; i<array.length; i+=3){
+        array[i] = -array[i];
+    }
+    return array;
 }

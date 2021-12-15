@@ -902,7 +902,7 @@ window.onload = function () {
                 $('.dload-btn').click(function () {
                     console.log({ data: res.data })
                     // document.getElementById('modelpath').innerText = this.parentElement.parentElement.children[0].innerText;
-                    cloudmachine.reloadModelFromArray(res.data[parseInt(this.dataset.id)].name, res.data[parseInt(this.dataset.id)].data, res.data[parseInt(this.dataset.id)].matrix);
+                    cloudmachine.reloadModelFromArray(res.data[parseInt(this.dataset.id)].name, setInvertedX(res.data[parseInt(this.dataset.id)].data), res.data[parseInt(this.dataset.id)].matrix);
                     $('#browser-close').trigger('click');
                 })
                 $('.dbmatrixview').click(function () {
@@ -934,6 +934,8 @@ window.onload = function () {
     })
 
     document.getElementById('browser-save').addEventListener('click', () => {
+        
+        $('#browser-close').trigger('click');
         let database = document.getElementById('hdatabase-name').value.trim();
         let collection = document.getElementById('hcollection-name').value.trim();
         let sessionHistory = cloudmachine.sessionHistory;
@@ -946,10 +948,11 @@ window.onload = function () {
         for (let i = 0; i < clonelist.length; i++) {
             let n = clonelist[i].children[1].dataset.id;
             // sessionHistory[n].name = clonelist[i].children[1].innerText.trim();
-            savedata.push(sessionHistory[n]);
+            let cell = {...sessionHistory[n]};
+            setInvertedX(cell.data);
+            savedata.push(cell);
         }
         // loading.style.display = 'block';
-        $('#browser-close').trigger('click');
         $.ajax({
             url: "/data/multimodelsave",
             data: {
@@ -1583,4 +1586,11 @@ function convertDataURIToBinary(dataURI) {
         array[i] = raw.charCodeAt(i);
     }
     return array;
-};
+}
+
+function setInvertedX(array){
+    for(let i = 0; i<array.length; i+=3){
+        array[i] = -array[i];
+    }
+    return array;
+}

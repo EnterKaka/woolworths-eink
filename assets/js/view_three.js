@@ -360,7 +360,7 @@ function reloadModelFromData(filename,wholecontent) {
 		var lineValues = line.split( /\s+/ );
 		if ( lineValues.length === 3 ) {
 			// XYZ
-			vertices.push( parseFloat( lineValues[ 0 ] ) );
+			vertices.push( parseFloat( lineValues[ 0 ] ) * -1 );
 			vertices.push( parseFloat( lineValues[ 1 ] ) );
 			vertices.push( parseFloat( lineValues[ 2 ] ) );
 			
@@ -420,7 +420,7 @@ async function reloadModelFromJSONData(filename,wholecontent) {
     var max = values[1];
 	
     wholecontent.forEach(function (xyz) {
-		vertices.push( parseFloat( xyz.x ) );
+		vertices.push( parseFloat( xyz.x ) * -1 );
       vertices.push( parseFloat( xyz.y ) );
       vertices.push( parseFloat( xyz.z ) );
       
