@@ -1253,7 +1253,8 @@ window.onload = function () {
             }
             loadedmodel.map((e) => {
                 let date = e.date.split('.')
-                date = date[2]+'-'+date[1]+'-'+date[0];
+                if(date[2].length == 4) date = date[2]+'-'+date[1]+'-'+date[0];
+                else if(date[0].length == 4) date = date[0]+'-'+date[1]+'-'+date[2];
                 console.log('database date',date)
                 if (e.name == modelname && date>=from && date<=to) models.push(e._id)
             })
