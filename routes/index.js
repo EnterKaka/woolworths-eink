@@ -41,6 +41,141 @@ app.get("/viewer", auth, async function (req, res) {
     // 	res.redirect('/data/');
     // }
 });
+
+app.get("/help", auth, async function (req, res) {
+    // render to views/help.ejs template file
+    console.log("******** load help ************");
+
+    res.render("pages/help_pages/help", {
+        title: "Help Page - Owl Studio Web App",
+        priv: req.user.privilege,
+        model_data: "",
+    });
+});
+
+app.get("/connectDB", auth, async function (req, res) {
+    // render to views/help.ejs template file
+    console.log("******** load /help/connectDB ************");
+
+    res.render("pages/help_pages/connectDB", {
+        title: "Help Page - Owl Studio Web App",
+        priv: req.user.privilege,
+        model_data: "",
+    });
+});
+
+app.get("/dashAndData", auth, async function (req, res) {
+    // render to views/help.ejs template file
+    console.log("******** load /help/dashAndData ************");
+
+    res.render("pages/help_pages/dashAndData", {
+        title: "Help Page - Owl Studio Web App",
+        priv: req.user.privilege,
+        model_data: "",
+    });
+});
+
+app.get("/exportImport", auth, async function (req, res) {
+    // render to views/help.ejs template file
+    console.log("******** load /help/exportImport ************");
+
+    res.render("pages/help_pages/exportImport", {
+        title: "Help Page - Owl Studio Web App",
+        priv: req.user.privilege,
+        model_data: "",
+    });
+});
+
+app.get("/REST", auth, async function (req, res) {
+    // render to views/help.ejs template file
+    console.log("******** load /help/REST ************");
+
+    res.render("pages/help_pages/REST", {
+        title: "Help Page - Owl Studio Web App",
+        priv: req.user.privilege,
+        model_data: "",
+    });
+});
+
+app.get("/member", auth, async function (req, res) {
+    // render to views/help.ejs template file
+    console.log("******** load /help/member ************");
+
+    res.render("pages/help_pages/member", {
+        title: "Help Page - Owl Studio Web App",
+        priv: req.user.privilege,
+        model_data: "",
+    });
+});
+
+app.get("/help_control", auth, async function (req, res) {
+    // render to views/help.ejs template file
+    console.log("******** load /help/control ************");
+
+    res.render("pages/help_pages/help_control", {
+        title: "Help Page - Owl Studio Web App",
+        priv: req.user.privilege,
+        model_data: "",
+    });
+});
+
+app.get("/oes", auth, async function (req, res) {
+    // render to views/help.ejs template file
+    console.log("******** load /help/oes ************");
+
+    res.render("pages/help_pages/oes", {
+        title: "Help Page - Owl Studio Web App",
+        priv: req.user.privilege,
+        model_data: "",
+    });
+});
+
+app.get("/sensors", auth, async function (req, res) {
+    // render to views/help.ejs template file
+    console.log("******** load /help/sensors ************");
+
+    res.render("pages/help_pages/sensors", {
+        title: "Help Page - Owl Studio Web App",
+        priv: req.user.privilege,
+        model_data: "",
+    });
+});
+
+app.get("/aoi", auth, async function (req, res) {
+    // render to views/help.ejs template file
+    console.log("******** load /help/aoi ************");
+
+    res.render("pages/help_pages/aoi", {
+        title: "Help Page - Owl Studio Web App",
+        priv: req.user.privilege,
+        model_data: "",
+    });
+});
+
+app.get("/modelBrowser", auth, async function (req, res) {
+    // render to views/help.ejs template file
+    console.log("******** load /help/modelBrowser ************");
+
+    res.render("pages/help_pages/modelBrowser", {
+        title: "Help Page - Owl Studio Web App",
+        priv: req.user.privilege,
+        model_data: "",
+    });
+});
+
+app.get("/vht", auth, async function (req, res) {
+    // render to views/help.ejs template file
+    console.log("******** load /help/vht ************");
+
+    res.render("pages/help_pages/vht", {
+        title: "Help Page - Owl Studio Web App",
+        priv: req.user.privilege,
+        model_data: "",
+    });
+});
+
+
+
 app.get("/editer", function (req, res) {
     // render to views/index.ejs template file
 
