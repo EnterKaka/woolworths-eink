@@ -21,6 +21,7 @@
   "license": "NONE",
   "test-dev": "jest",
   "dependencies": {
+    "@shelf/jest-mongodb": "^2.1.1",
     "bcryptjs": "^2.4.3",
     "body-parser": "^1.18.3",
     "config": "^3.3.6",
@@ -57,9 +58,11 @@
     "jest": "^27.4.5",
     "nodemon": "^2.0.13"
   },
-  "jest": {
-    "testEnvironment": "node"
-     },
+  "config": {
+    "mongodbMemoryServer": {
+      "version": "4.2.3"
+    }
+  },
   "repository": {
     "type": "git",
     "url": "git+https://gitlab.com/quirin.kraus/oe-webviewer.git"

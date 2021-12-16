@@ -12,6 +12,29 @@ const cron = require("node-cron");
 const http = require("http").Server(app);
 const io = require("socket.io")(http);
 
+var link  = async function(){
+    console.log(config.database.url)
+    await mongoose
+        .connect(config.database.url, {
+            // 'mongodb://127.0.0.1:27017'            process.env.MONGO_URI
+            useNewUrlParser: true,
+            useUnifiedTopology: true,
+        })
+        .then(async () => {
+            console.log("connected to db");
+            await http.listen(8888, "0.0.0.0", () => {
+                console.log(`Node server running at http://localhost:3000/`);
+            });
+        })
+        .catch((err) => {
+            console.log("mongodb connect error ========");
+            // console.error(err);
+            // process.exit(1);
+        });
+}
+
+// link();
+
 /**
  * Store database credentials in a separate config.js file
  * Load the file/module and its values
@@ -123,27 +146,13 @@ app.use("/setting", setting);
 app.use("/database", database_ei);
 app.use("/api", api);
 // control.LoadDataFunction();
-control.auto_Schedule();
+// control.auto_Schedule();
 // io.on("connection", (socket) => {
 //     socket.on("broad message", (msg) => {
 //         io.emit("broad message", msg);
 //     });
 // });
     
-mongoose
-        .connect(config.database.url, {
-            // 'mongodb://127.0.0.1:27017'            process.env.MONGO_URI
-            useNewUrlParser: true,
-            useUnifiedTopology: true,
-        })
-        .then(async () => {
-            console.log("connected to db");
-            await http.listen(3000, "0.0.0.0", () => {
-                console.log(`Node server running at http://localhost:3000/`);
-            });
-        })
-        .catch((err) => {
-            console.log("mongodb connect error ========");
-            console.error(err);
-            process.exit(1);
-        });
+module.exports = app
+
+    
