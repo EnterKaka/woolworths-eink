@@ -422,7 +422,7 @@ app.post("/getmodel", async function (req, res, next) {
                 const model = await datas.findOne({ _id: id })
 
                 if (model.measurement[0].pointcloud && model.measurement[0].pointcloud.length !== 0)  
-                sentdata.push(model.measurement[0].pointcloud);
+                sentdata.push({data: model.measurement[0].pointcloud, time:model.measurement[0].date});
  
             }
             if(sentdata.length!==0)

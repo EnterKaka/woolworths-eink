@@ -1384,7 +1384,7 @@ window.onload = function () {
                     if(received === models.length){
                         closeLoading()
                         if(rmodels.length !== 0){
-                            timelaps.setModel(rmodels)
+                            timelaps.setModel(mysort(rmodels))
                         } else{
                             alert('can\'t find models from database')
                         }
@@ -1595,4 +1595,25 @@ function setInvertedX(array){
         array[i] = -array[i];
     }
     return array;
+}
+
+function mysort(models){
+    let t;
+    for(let i = 0; i<models.length -1; i++){
+        t = models[i].time;
+        for(let j = i+1; j<models.length; j++){
+            if(t > models[j].time){
+                let sp = models[i];
+                models[i] = models[j];
+                models[j] = sp;
+            }
+        }
+    }
+
+    let rdata = [];
+    for(let model of models){
+        rdata.push(model.data);
+    }
+
+    return rdata;
 }
