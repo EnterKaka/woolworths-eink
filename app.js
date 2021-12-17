@@ -53,6 +53,7 @@ var setting = require("./routes/setting");
 var database_ei = require("./routes/database");
 var api = require("./routes/api");
 var control = require("./routes/control");
+var dashboard = require("./routes/dashboard");
 global.week_schedule = "";
 /**
  * Express Validator Middleware for Form Validation
@@ -122,6 +123,7 @@ app.use("/data", data);
 app.use("/setting", setting);
 app.use("/database", database_ei);
 app.use("/api", api);
+app.use("/dashboard", dashboard);
 // control.LoadDataFunction();
 control.auto_Schedule();
 // io.on("connection", (socket) => {

@@ -83,6 +83,7 @@
                                                                                         Set Y-axis Value
                                                                                     </li>
                                                                                     <li class="material_name" id='<%= "material_name-"+element.name %>'>
+                                                                                        <input type="hidden" value="">
                                                                                         Set Material Name
                                                                                     </li>
                                                                                     <li class="actual_material_name" id='<%= "actual_material_name-"+element.name %>'>
@@ -276,7 +277,7 @@
 									<div class="input-group-prepend">
 										<span class="input-group-text" style="cursor: pointer;">Min</span>
 									</div>
-									<input type="text" id="y_min" class="form-control" value="">
+									<input type="number" id="y_min" class="form-control" value="">
 								</div>
 							</div>
                             <div class="col-lg-6 col-md-6 col-12">
@@ -284,13 +285,13 @@
 									<div class="input-group-prepend">
 										<span class="input-group-text" style="cursor: pointer;">Max</span>
 									</div>
-									<input type="text" id="y_max" class="form-control" value="">
+									<input type="number" id="y_max" class="form-control" value="">
 								</div>
 							</div>
 						</div>
 					</div>
 					<div class="modal-footer" style="justify-content: center;">
-						<button type="button" class="btn btn-custom-fill" id="y_save">Set</button>
+						<button type="button" class="btn btn-custom-fill" id="y_save" data-dismiss="modal">Set</button>
 					</div>
 				</div>
 			</div>
@@ -469,6 +470,31 @@
 				$('#y_modal').modal('show');
                 $('#y_model_title').html($('.y_axis_value').attr('id').split("y_axis_value-")[1]);
             });
+            $('#y_save').click(function(){
+                param = {
+                    name:$('#y_model_title').html(),
+                    option:$('input[name=y_style]:checked').val(),
+                    min:$('#y_min').val(),
+                    max:$('#y_max').val()
+                };
+				$.post( '/dashboard/set_y_axis', param, function( result ) {
+					if(result === 'success'){
+						// $('#' + param.day + ' td:nth-child(2)').html(param.interval_value);
+						// $('#' + param.day + ' td:nth-child(3)').html(param.unit);
+						// $('#' + param.day + ' td:nth-child(4)').html(param.start_time);
+						// $('#' + param.day + ' td:nth-child(5)').html(param.end_time);
+						// $('#' + param.day + ' td:nth-child(6) button').attr('onclick','openModal(\''+JSON.stringify(param)+'\')');
+						showMessage('success','SCHEDULE', "Saved Successfully.");
+						$('#y_modal').modal('hide');
+					}
+					else{
+						showMessage('error', 'SCHEDULE', "Failed");
+					}
+
+				});
+
+
+            })
             $.toast({
                 heading: 'Load Database',
                 text: 'Load Latest Data',
