@@ -44,6 +44,8 @@ app.use(
 global.loadedData = "";
 global.delaytime = 60000 * 60;
 global.dtime = 60000; //kill app time;
+global.loadedFlag = false;//flag that show the update database
+global.schedule_app_flag = false;
 var index = require("./routes/index");
 var user = require("./routes/users");
 var data = require("./routes/data");
@@ -127,21 +129,21 @@ control.auto_Schedule();
 //         io.emit("broad message", msg);
 //     });
 // });
-
+    
 mongoose
-    .connect(config.database.url, {
-        // 'mongodb://127.0.0.1:27017'            process.env.MONGO_URI
-        useNewUrlParser: true,
-        useUnifiedTopology: true,
-    })
-    .then(() => {
-        console.log("connected to db");
-        http.listen(3000, "0.0.0.0", () => {
-            console.log(`Node server running at http://localhost:3000/`);
+        .connect(config.database.url, {
+            // 'mongodb://127.0.0.1:27017'            process.env.MONGO_URI
+            useNewUrlParser: true,
+            useUnifiedTopology: true,
+        })
+        .then(async () => {
+            console.log("connected to db");
+            await http.listen(3000, "0.0.0.0", () => {
+                console.log(`Node server running at http://localhost:3000/`);
+            });
+        })
+        .catch((err) => {
+            console.log("mongodb connect error ========");
+            console.error(err);
+            process.exit(1);
         });
-    })
-    .catch((err) => {
-        console.log("mongodb connect error ========");
-        console.error(err);
-        process.exit(1);
-    });

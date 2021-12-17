@@ -95,18 +95,18 @@
 									</div> -->
 									<div class="card-content collapse show"  style="position: relative;">
 										<div class="card-body san">
-											<h2 class="san">Socket Status : <span style="font-size: smaller;" id="status"></span></h2><br>
-											<fieldset class="close_field">
+											<!-- <h2 class="san">Socket Status : <span style="font-size: smaller;" id="status"></span></h2><br> -->
+											<!-- <fieldset class="close_field">
 												<legend class="close_field">Socket Control</legend>
 												<button type="button" onclick="initWebSocket()" id="connect" class="btn btn-custom-fill btn-min-width mr-1 mb-1"><i class="ft-wifi"></i> Connect</button>
 												<button type="button" onclick="scan()" id="start_scan" class="btn btn-custom-fill btn-min-width mr-1 mb-1"><i class="ft-eye"></i> Scan</button>
 												<button type="button" onclick="stopWebSocket()" id="disconnect" class="btn btn-custom-fill btn-min-width mr-1 mb-1"><i class="ft-wifi-off"></i> Disconnect</button>
-											</fieldset>
+											</fieldset> -->
 
 											<fieldset class="close_field">
 												<legend class="close_field">APP Control</legend>
 												<div class="row">
-													<div class="col-md-6 col-12">
+													<!-- <div class="col-md-6 col-12">
 														<div class="input-group" style="margin: 5px;">
 															<input type="text" id="filepath" class="form-control" value="<%= path%>" placeholder="*.exe File path" aria-label="Recipient's username" aria-describedby="basic-addon2">
 															<div class="input-group-append">
@@ -117,6 +117,14 @@
 													<div class="col-md-6 col-12">
 														<button type="button" onclick="runApp()" id="run" class="btn btn-custom-fill btn-min-width mr-1 mb-1"><i class="ft-sun"></i> Run</button>
 														<button type="button" onclick="killApp()" id="kill" class="btn btn-custom-fill btn-min-width mr-1 mb-1"><i class="ft-alert-triangle"></i> Kill</button>
+													</div> -->
+													<div class="col-md-9 col-12">
+														<div class="progress">
+															<div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100" style="width: 0%"></div>
+														</div>
+													</div>
+													<div class="col-md-3 col-12">
+														<button type="button" onclick="start()" id="start" class="btn btn-custom-fill btn-min-width mr-1 mb-1"><i class="ft-sun"></i> Start Scan</button>
 													</div>
 												</div>
 											</fieldset>
@@ -259,53 +267,77 @@
 		<!-- page content end -->
 		<script>
 			var server_ip = <%- JSON.stringify(server_ip) %>; 
+			var delaytime = <%- JSON.stringify(delaytime) %>; 
 		</script>
 		<script type="text/javascript">
+			var check_timer;
 			$(document).ready(()=>{
-				initWebSocket();
 				$('#terminal').hide();
+				check_run();
+				check_timer = setInterval(() => {
+					check_run();
+				}, 30000);
 			});
+			function check_run(){
+				$.post( '/control/check_scan', function( result ) {
+					if(result === 'success'){
+						showMessage('warning','SCAN', "scan in progress - status unknown");
+						$('.progress-bar').width('0%');
+						$('.progress').css('justify-content','center');
+						$('.progress-bar').css('margin-left','-125px');
+						$('.progress-bar').html('Another app is running').css('color','black');
+						$('#start').prop('disabled',true);
+					}else{
+						$('#start').prop('disabled',false);
+						$('.progress').css('justify-content','unset');
+						$('.progress-bar').css('margin-left','0');
+
+						$('.progress-bar').html('').css('color','white');
+						clearInterval(check_timer);
+					}
+				});
+			}
 			let socket_state;
 			let terminal = false;
 			let expandTable = true;
-			/******************************  app  section  ******************/
 			/*
 				run app along path
 			*/
-			function runApp(){
-				let param = {path:$('#filepath').val()};
-				$.post( '/control/runApp', param, function( result ) {
-					if(result === 'success')
-						showMessage('success','OPEN APP', "Open Successfully.");
+			function start(){
+				$('#start').prop('disabled',true);
+				$('.progress').css('justify-content','unset');
+				$('.progress-bar').css('margin-left','0');
+				$('.progress-bar').css('color','white');
+				var i = 0;
+				var timer = setInterval(() => {
+					i++;
+					$('.progress-bar').width(i+'%');
+					$('.progress-bar').html('Scan in progress: ' + i + '%');
+					if(i == 97) clearInterval(timer);
+				}, (10000 + delaytime)/100);
+				$.post( '/control/start_scan', function( result ) {
+					if(result === 'running'){
+						showMessage('warning','SCAN', "scan in progress - status unknown");
+						clearInterval(timer);
+						$('.progress-bar').width('0%');
+						$('.progress').css('justify-content','center');
+						$('.progress-bar').css('margin-left','-125px');
+						$('.progress-bar').html('Another app is running').css('color','black');
+						$('#start').prop('disabled',false);
+						return ;
+					}else if(result === 'success'){
+						showMessage('success','SCAN', "Scan successfully.");
+					}
 					else
-						showMessage('error', 'OPEN APP', "Input correct *.exe file path");
+						showMessage('error', 'SCAN', "Scan Failed");
+					clearInterval(timer);
+					$('.progress-bar').width('100%');
+					$('.progress-bar').html('Scan Finished');
+					$('#start').prop('disabled',false);
+				});
+			}
 
-				});
-			}
-			/*
-				kill app
-			*/
-			function killApp(){
-				let param = [];
-				$.post( '/control/killApp', param, function( result ) {
-					if(result === 'success')
-						showMessage('success','Close APP', "Closed Successfully.");
-					else
-						showMessage('warning', 'Close APP', "There isn't opened App");
-				});
-			}
-			/******************************  socket  section  ******************/
-			/*
-				scan pointcloud if socket live
-			*/
-			function scan(){
-				var state = checkSocket();
-				if(state === 1){
-					sendMessage("start scan");
-				}else{
-					showMessage('warning','SOCKET', 'Socket disconnected');
-				}
-			}
+			/******************************  app  section  ******************/
 			/*
 				message show
 			*/
@@ -317,99 +349,6 @@
 					icon: status,
 					hideAfter: 5000   // in milli seconds
 				});
-			}
-			/*
-				send data to socket server and receive message from websocket server.
-			*/
-			function sendMessage(msg) {
-			if ( websocket != null )
-				{
-					websocket.send( msg );
-					console.log( "string sent :", '"'+msg+'"' );
-				}
-			}
-			
-			var wsUri = "ws://" + server_ip + ":1234";
-			var websocket = null;
-			/*
-				link socket server.
-			*/
-			function initWebSocket() {
-				try {
-					if (typeof MozWebSocket == 'function')
-						WebSocket = MozWebSocket;
-					if ( websocket && websocket.readyState == 1 ){
-						showMessage('success','STATUS', 'Socket is already connected');
-						return;
-					}
-					websocket = new WebSocket( wsUri );
-					websocket.onopen = function (evt) {
-						setStatus('Connected');
-						showMessage('success','SOCKET', 'Socket connected');
-					};
-					websocket.onclose = function (evt) {
-						setStatus('Disconnected');
-						showMessage('warning','SOCKET', 'Socket disconnected');
-					};
-					websocket.onmessage = function (evt) {
-						setStatus('Scan');
-						showMessage('info','MESSAGE', evt.data);
-					};
-					websocket.onerror = function (evt) {
-						showMessage('error','SOCKET', 'FAILED');
-					};
-				} catch (exception) {
-					showMessage('error','SOCKET', 'FAILED');
-				}
-			}
-			/*
-				disconnect socket server.
-			*/
-			function stopWebSocket() {
-				if (websocket){
-					websocket.close();
-					showMessage('success','STATUS', 'Disconnect successfully');
-				}else{
-					showMessage('warning','STATUS', 'Socket is already disconnected');
-				}
-			}
-			/*
-				display status message
-			*/
-			function checkSocket_message(status){
-				switch(status){
-					case 0: {
-						showMessage('success','STATUS', 'Socket connecting');
-						break;
-					}
-					case 1: {
-						showMessage('success','STATUS', 'Socket open');
-						break;
-					}
-					case 2: {
-						showMessage('warning','STATUS', 'Socket closing');
-						break;
-					}
-					case 3: {
-						showMessage('warning','STATUS', 'Socket closed');
-						break;
-					}
-					default: {
-						showMessage('error','STATUS', 'UNKNOW');
-						break;
-					}
-				}
-			}
-			/*
-				check socket status
-			*/
-			function checkSocket() {
-				if (websocket != null) {
-					return websocket.readyState;
-				} else {
-					showMessage('error','SOCKET', 'FAILED');
-					return 'no';
-				}
 			}
 			/*
 				set socket status
@@ -425,14 +364,12 @@
 						if(socket_state === 'connect') return;
 						socket_state = 'connect';
 						var str = 'Connected ( ' + dateTime + ' )';
-						$('#status').html(str).css('color','green');
 						$('#terminal').append('<div class="alert alert-success alert-dismissible fade show" role="alert"><strong>' + str + '</strong><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>');
 						break;
 					case 'Disconnected':
 						if(socket_state === 'disconnect') return;
 						socket_state = 'disconnect';
 						var str = 'Disconnected ( ' + dateTime + ' )';
-						$('#status').html(str).css('color','red');
 						$('#terminal').append('<div class="alert alert-danger alert-dismissible fade show" role="alert"><strong>' + str + '</strong><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>');
 						break;
 					case 'Scan':

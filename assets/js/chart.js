@@ -4,7 +4,7 @@ import {XYZLoader, getminmaxhegiht, getrgb,init_highlow} from "./XYZLoader.js";
 
 var controls, camera, renderer, scene, canvas, parent_canvas, group; // chart global list
 var chartlist, chartnamelist;
-
+var before_canvas = '';
 function init_chart() {
     chartlist = [];
     chartnamelist = [];
@@ -244,7 +244,7 @@ function drawChart(ctx, data, ft, tt) {
     }
     //ondblclick listener
     let time_stamp = 0; // Or Date.now()
-    ctx.addEventListener("touchstart", function (event_) {
+    ctx.addEventListener("touchstart",async function (event_) {
         if (event_.timeStamp - time_stamp < 300) {
             // A tap that occurs less than 300 ms from the last tap will trigger a double tap. This delay may be different between browsers.
             event_.preventDefault();
@@ -267,8 +267,21 @@ function drawChart(ctx, data, ft, tt) {
         time_stamp = event_.timeStamp;
     });
 
-    ctx.addEventListener("dblclick", function (evt) {
+    ctx.addEventListener("dblclick",async function (evt) {
         //go to 3d viewer with last id
+        var fff = false;
+        var x, z, camera_x, camera_y, camera_z, control_x, control_y, control_z;
+        if(typeof group != 'undefined'){
+            z = group.rotation.z;
+            x = group.rotation.x;
+            camera_x = camera.position.x;
+            camera_y = camera.position.y;
+            camera_z = camera.position.z;
+            control_x = controls.target.x;
+            control_y = controls.target.y;
+            control_z = controls.target.z;
+            fff = true;
+        }
         var viewer = document.getElementById('viewer_3d');
         var close = document.getElementsByClassName('view_close');
         if(close.length){
@@ -277,10 +290,11 @@ function drawChart(ctx, data, ft, tt) {
         viewer.parentNode.removeChild(viewer);
         var this_canvas = $(this).attr("id");
         this_canvas = this_canvas.split("canvas-model-");
-        $('#input-model-'+this_canvas.slice(-1)).parent().append("<canvas id='viewer_3d' class='3dviewer' style='margin-top:20px;'></canvas><i class='fa fa-close view_close'></i>");
+        var canvas_name = this_canvas.slice(-1)[0];
+        $('#input-model-'+canvas_name).parent().append("<canvas id='viewer_3d' class='3dviewer' style='margin-top:20px;'></canvas><i class='fa fa-close view_close'></i>");
         $(this).parent().parent().parent().parent().find('.view_panel').show();
-        var this_canvas_totalmodel = "input-model-" + this_canvas.slice(-1);
-        var this_canvas_modelname = "input-modelid-" + this_canvas.slice(-1);
+        var this_canvas_totalmodel = "input-model-" + canvas_name;
+        var this_canvas_modelname = "input-modelid-" + canvas_name;
         const points = lineChart.getElementsAtEventForMode(evt, "nearest", lineChart.options);
         if (points.length) {
             const firstPoint = points[0];
@@ -294,20 +308,27 @@ function drawChart(ctx, data, ft, tt) {
             lm_time = "lm-time-" + data.name,
             lm_volume = "lm-volume-" + data.name,
             lm_mass = "lm-mass-" + data.name;
-            console.log(obj);
-            console.log(obj.datetime);
             var datetime = obj.datetime.split(' ');
             document.getElementById(lm_date).innerHTML = datetime[0];
             document.getElementById(lm_time).innerHTML = datetime[1];
+            document.getElementById('delete_singleid-' + data.name).value = obj._id;
             document.getElementById(lm_volume).innerHTML = Math.round(obj.volume*100)/100;
             document.getElementById(lm_mass).innerHTML = Math.round(obj.mass*100)/100;
         } else {
             this_canvas_modelname = document.getElementById(this_canvas_modelname).value;
         }
         init_highlow();
-        main();
-        animate();
-        load3dmodelwithidonlocal(this_canvas.slice(-1), this_canvas_modelname);
+        await main();
+        await animate();
+        if(fff&&before_canvas == canvas_name){
+            group.rotation.z = z;
+            group.rotation.x = x;
+            await camera.position.set(camera_x, camera_y, camera_z);
+            await controls.target.set(control_x, control_y, control_z);
+            await controls.update();
+        }
+        before_canvas = canvas_name;
+        await load3dmodelwithidonlocal(this_canvas.slice(-1), this_canvas_modelname);
     });
     
 }
@@ -327,7 +348,7 @@ function makeChartDataFromModelSets(data) {
     //for last id get
     var last_id,
         last_datetime = totime;
-
+    // console.log(data.log)
     for (const element of data.log) {
         labels.push(element.datetime);
         eachdata.push(element.volume);
