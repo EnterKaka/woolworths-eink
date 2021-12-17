@@ -119,33 +119,11 @@ app.get("/help_control", auth, async function (req, res) {
     });
 });
 
-app.get("/oes", auth, async function (req, res) {
+app.get("/studio", auth, async function (req, res) {
     // render to views/help.ejs template file
-    console.log("******** load /help/oes ************");
+    console.log("******** load /help/studio ************");
 
-    res.render("pages/help_pages/oes", {
-        title: "Help Page - Owl Studio Web App",
-        priv: req.user.privilege,
-        model_data: "",
-    });
-});
-
-app.get("/sensors", auth, async function (req, res) {
-    // render to views/help.ejs template file
-    console.log("******** load /help/sensors ************");
-
-    res.render("pages/help_pages/sensors", {
-        title: "Help Page - Owl Studio Web App",
-        priv: req.user.privilege,
-        model_data: "",
-    });
-});
-
-app.get("/aoi", auth, async function (req, res) {
-    // render to views/help.ejs template file
-    console.log("******** load /help/aoi ************");
-
-    res.render("pages/help_pages/aoi", {
+    res.render("pages/help_pages/studio", {
         title: "Help Page - Owl Studio Web App",
         priv: req.user.privilege,
         model_data: "",
@@ -162,19 +140,6 @@ app.get("/modelBrowser", auth, async function (req, res) {
         model_data: "",
     });
 });
-
-app.get("/vht", auth, async function (req, res) {
-    // render to views/help.ejs template file
-    console.log("******** load /help/vht ************");
-
-    res.render("pages/help_pages/vht", {
-        title: "Help Page - Owl Studio Web App",
-        priv: req.user.privilege,
-        model_data: "",
-    });
-});
-
-
 
 app.get("/editer", function (req, res) {
     // render to views/index.ejs template file
