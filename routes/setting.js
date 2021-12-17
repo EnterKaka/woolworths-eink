@@ -24,10 +24,14 @@ app.get("/", auth, admin, async function (req, res, next) {
     let dtime = await Value.findOne({ name: "dtime" });
     if (!dtime) dtime = "1";
     else dtime = dtime.value;
+    let port = await Value.findOne({ name: "port" });
+    if (!port) port = "1234";
+    else port = port.value;
     let allmembers = await Setting.find();
     res.render("pages/setting/list", {
         data: allmembers,
         path: path,
+        port: port,
         dtime: dtime,
     });
 });
@@ -46,8 +50,15 @@ app.post("/setpath", auth, admin, async function (req, res, next) {
     await Value.deleteOne({ name: "dtime" });
     v_setting = new Value(val);
     await v_setting.save();
+    val = {
+        name: "port",
+        value: req.body.port,
+    };
+    await Value.deleteOne({ name: "port" });
+    v_setting = new Value(val);
+    await v_setting.save();
     delaytime = req.body.dtime * 60000;
-    var str = 'Username:' + req.session.user_info.email + ' Path: '+ req.body.path +' DelayTime:'+ req.body.dtime +' Time:' + (new Date());
+    var str = 'Username:' + req.session.user_info.email + ' Path: '+ req.body.path +' DelayTime:'+ req.body.dtime +' Port:'+ req.body.port +' Time:' + (new Date());
     writeLog('Setting Changed ('+str+')');
     res.send();
 });

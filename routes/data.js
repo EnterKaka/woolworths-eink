@@ -6,6 +6,14 @@ const auth = require("../middleware/auth");
 const Setting = require("../model/Setting");
 const Schedule = require("../model/Schedule");
 const ip = require("ip");
+const fs = require("fs");
+const logger = fs.createWriteStream("user-log/oe_server_logfile.txt", {
+    flags: "a", // 'a' means appending (old data will be preserved)
+});
+async function writeLog(msg) {
+    logger.write(msg + "\r\n");
+    console.log(msg);
+}
 
 var interval;
 
@@ -237,6 +245,101 @@ app.get("/edit/(:_id)", auth, async function (req, res, next) {
         res.redirect("/data/");
     });
 });
+/* Delete select data */
+
+app.post('/delete', async function (req, res) {
+    console.log("*********** delete ******* single data ***");
+    
+    const client = new MongoClient("mongodb://localhost:27017/", {
+        useUnifiedTopology: true,
+    });
+
+    async function run() {
+        try {
+            /* find object in loaded data*/
+            var id = req.body._id;
+            let obj = loadedData.find((o) => {
+                if (o._id.toString() === id) return true;
+            });
+            /* find setting data by setting id*/
+            let setobj = await Setting.findOne({
+                _id: new ObjectId(obj.setid),
+            });
+
+            /* get pointcloud from collection */
+            let dbname = setobj.dbname;
+            let collectionname = setobj.collectionname;
+            await client.connect();
+            const database = client.db(dbname);
+            const datas = database.collection(collectionname);
+            const cursor = await datas.deleteOne({ _id: new ObjectId(id) });
+            var index = loadedData.findIndex((o) => {
+                if (o._id.toString() === id) return true;
+            });
+            loadedData.splice(index,1);
+            if (cursor) {
+                var str = 'DB: ' + dbname + 'Collection: ' + collectionname + 'model: ' + obj.name + 'Time: ' + obj.date +' '+ obj.time + ' User: ' + req.session.user_info.email + 'Time:' + (new Date());
+                writeLog('Delete Data ('+str+')');    
+                res.send("success");
+            } else {
+                res.send("failed");
+            }
+        } finally {
+        }
+    }
+    run().catch((err) => {
+        res.send("failed");
+    });
+});
+/* Delete model */
+
+app.post('/delete_model', async function (req, res) {
+    console.log("*********** delete ******* model data ***");
+    
+    const client = new MongoClient("mongodb://localhost:27017/", {
+        useUnifiedTopology: true,
+    });
+    var model_name = req.body.model_name;
+
+    async function run() {
+        try {
+            /* find object in loaded data*/
+            var elements = [];
+            loadedData.find((o) => {
+                if (o.name != model_name)  
+                elements.push(o);
+            });
+            console.log(loadedData.length)
+            loadedData = elements;
+            console.log(loadedData.length)
+
+            /* find setting data by setting id*/
+            let setobj = await Setting.find();
+            var flag = false;
+            await client.connect();
+            for (let ele of setobj) {
+                let dbname = ele.dbname;
+                let collectionname = ele.collectionname;
+                let database = client.db(dbname);
+                let datas = database.collection(collectionname);
+                cursor = await datas.deleteMany({"measurement.name":{$in:[model_name]}});
+                if(cursor) flag = true;
+            };
+
+            if (flag) {
+                var str = 'model: ' + model_name + 'User: ' + req.session.user_info.email + 'Time:' + (new Date());
+                writeLog('Delete model ('+str+')');    
+                res.send("success");
+            } else {
+                res.send("failed");
+            }
+        } finally {
+        }
+    }
+    run().catch((err) => {
+        res.redirect("failed");
+    });
+});
 
 app.post("/getmodellist", async function (req, res, next) {
     console.log("getmodellist");
@@ -398,6 +501,73 @@ app.post("/modelsave", async function (req, res, next) {
         });
     });
 });
+app.post("/getmodels", async function (req, res, next) {
+
+    const client = new MongoClient("mongodb://localhost:27017/", {
+        useUnifiedTopology: true,
+        useNewUrlParser: true,
+        connectTimeoutMS: 30000,
+        keepAlive: 1,
+    });
+    let allmembers = await Setting.find();
+
+    var ids = req.body.data;
+    var from = req.body.from;
+    var to = req.body.to;
+    let query = [];
+    for (let id of ids) {
+        query.push({ _id: new ObjectId(id) })
+    }
+    async function run() {
+        try {
+            await client.connect();
+            let sentdata = [];
+            console.log(ids)
+            console.log(allmembers)
+
+            for (let mem of allmembers) {
+                /* get cursor */
+                let db = mem.dbname.trim();
+                let col = mem.collectionname.trim();
+                const database = client.db(db);
+                const datas = database.collection(col);
+                // const cursor = await datas.find( { $or: ids } ).sort({datetime:-1})
+                // const cursor = datas.aggregate([{ $match: { $or:ids } },{ $sort: { datetime: -1 } }], {
+                //     allowDiskUse: true,
+                // });
+                const cursor = await datas.find({ $or: query }).sort({ datetime: 1 })
+                // const cursor = await datas.find({_id:new ObjectId('61a0cd0c89780000bb0070fa')})
+                // console.log(cursor.length)
+                await cursor.forEach(function (model) {
+                    if (model.measurement[0].date >= from && model.measurement[0].date <= to)
+                        sentdata.push(model.measurement[0].pointcloud);
+                });
+
+            }
+            // console.log({data:sentdata[0]})
+            // if (sentdata.length === 0) {
+            //     res.header(400).json({ status: false });
+            // } else {
+            res.header(200).json({
+                status: true,
+                data: sentdata,
+            });
+            // }
+
+        } finally {
+            await client.close();
+        }
+    }
+    run().catch((err) => {
+        console.log("mongodb connect error ========");
+        console.error(err);
+        //  process.exit(1)
+        req.flash("error", err);
+        res.header(200).json({
+            error: "db error",
+        });
+    });
+});
 
 /* click get data button in data page */
 
@@ -476,6 +646,17 @@ app.post("/get", auth, async function (req, res, next) {
             data: [],
         });
     });
+});
+
+app.post("/getloadflag", auth, async function (req, res, next) {
+    console.log("*********** data **** get loadflag ********");
+    if(req.session.loadedFlag == false && loadedFlag == true){
+        req.session.loadedFlag = true;
+        res.send('success');
+    }else{
+        req.session.loadedFlag = false;
+        res.send('failed');
+    }
 });
 // async function intervalFunction() {
 //     try {
