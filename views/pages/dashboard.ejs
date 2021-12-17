@@ -81,9 +81,9 @@
                                                                                 <dl>
                                                                                     <li class="y_axis_value" id='<%= "y_axis_value-"+element.name %>'>
                                                                                         Set Y-axis Value
+                                                                                        <input type="hidden" value='<%= y_min_maxes[element.name] %>'>
                                                                                     </li>
                                                                                     <li class="material_name" id='<%= "material_name-"+element.name %>'>
-                                                                                        <input type="hidden" value="">
                                                                                         Set Material Name
                                                                                     </li>
                                                                                     <li class="actual_material_name" id='<%= "actual_material_name-"+element.name %>'>
@@ -259,16 +259,16 @@
 					<div class="modal-body">
                         <div class="row" style="margin-left: 5px;">
                             <div class="form-check form-check-inline">
-                                <input class="form-check-input" type="radio" name="y_style" id="y_auto" value="1">
-                                <label class="form-check-label" for="y_auto">Auto</label>
+                                <input class="form-check-input" type="radio" name="y_style" id="y_1" value="1">
+                                <label class="form-check-label" for="y_1">Auto</label>
                               </div>
                               <div class="form-check form-check-inline">
-                                <input class="form-check-input" type="radio" name="y_style" id="y_0_max" value="2">
-                                <label class="form-check-label" for="y_0_max">0 - Max</label>
+                                <input class="form-check-input" type="radio" name="y_style" id="y_2" value="2">
+                                <label class="form-check-label" for="y_2">0 - Max</label>
                               </div>
                               <div class="form-check form-check-inline">
-                                <input class="form-check-input" type="radio" name="y_style" id="y_manual" value="3">
-                                <label class="form-check-label" for="y_manual">Manual</label>
+                                <input class="form-check-input" type="radio" name="y_style" id="y_3" value="3">
+                                <label class="form-check-label" for="y_3">Manual</label>
                               </div>
                         </div>
 						<div class="row">
@@ -468,6 +468,17 @@
             });
             $('.y_axis_value').click(function(){
 				$('#y_modal').modal('show');
+                let string = $(this).children('input').val();
+                if(string === '') {
+                    $("#y_1").prop("checked", true);
+                    $('#y_min').val('');
+                    $('#y_max').val('');
+                }else{
+                    string = JSON.parse(string);
+                    $("#y_"+string.option).prop("checked", true);
+                    $('#y_min').val(string.min);
+                    $('#y_max').val(string.max);
+                }
                 $('#y_model_title').html($('.y_axis_value').attr('id').split("y_axis_value-")[1]);
             });
             $('#y_save').click(function(){

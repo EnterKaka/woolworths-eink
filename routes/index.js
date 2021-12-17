@@ -2,6 +2,7 @@ var express = require("express");
 var app = express();
 const auth = require("../middleware/auth");
 const User = require("../model/User");
+const Y_min_max = require("../model/Y_min_max");
 const Joi = require("joi");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
@@ -52,8 +53,13 @@ app.get("/editer", function (req, res) {
     });
 });
 
-app.get("/dashboard", auth, function (req, res) {
+app.get("/dashboard", auth, async function (req, res) {
     console.log("********* load dashboard page ************");
+    let buffer = await Y_min_max.find();
+    let y_min_maxes = [];
+    buffer.forEach(element => {
+        y_min_maxes[element.name] = JSON.stringify(element);
+    });
     if (loadedData === "") res.redirect("/data");
     else{
         const client = new MongoClient("mongodb://localhost:27017/", {
@@ -104,6 +110,7 @@ app.get("/dashboard", auth, function (req, res) {
                         title: "Dashboard - Owl Studio Web App",
                         data: allmodels,
                         loadedData: loadedData,
+                        y_min_maxes: y_min_maxes,
                         server_ip: server_ip,
                         names: allnames,
                         delaytime: delaytime,
