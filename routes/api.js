@@ -1,4 +1,5 @@
 var express = require("express");
+const NodeEnvironment = require('jest-environment-node');
 var app = express();
 const MongoClient = require("mongodb").MongoClient;
 var ObjectId = require("mongoose").Types.ObjectId;
@@ -31,19 +32,22 @@ var mysortfunction = (a, b) => {
 /* load all data form db */
 async function loadAllData() {
     console.log('loadalldata');
-    const client = new MongoClient("mongodb://localhost:27017/", {
+    const client = await new MongoClient("mongodb://localhost:27017/", {
         useUnifiedTopology: true,
         useNewUrlParser: true,
         // connectTimeoutMS: 30000,
         // keepAlive: 1,
     });
-    /* get all collections */
     let allmembers = await Setting.find();
+    console.log('connect------------------------')
+
+    await client.connect();
+    console.log('settting------------------------')
+    /* get all collections */
     console.log('here1');
     /* DB connect */
     console.log('here2');
 
-    await client.connect();
     let sentdata = [];
     /* connect all collections */
     for (let mem of allmembers) {

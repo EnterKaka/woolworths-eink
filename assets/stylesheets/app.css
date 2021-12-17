@@ -494,6 +494,7 @@ h1,h2,h3,h4,h5,h6{
     border: solid thin;
     border-radius: 8px;
     box-shadow: 1px 1px 1px grey;
+    z-index: 100;
 }
 .delete_modal_show{
     display: none;
@@ -504,6 +505,9 @@ h1,h2,h3,h4,h5,h6{
 }
 .delete_modal li:hover{
     background-color: #eee;
+}
+button.close{
+    outline: none;
 }
 /* .navbar-container{
     background-image: none !important;
