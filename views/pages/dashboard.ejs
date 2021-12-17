@@ -479,7 +479,7 @@
                     $('#y_min').val(string.min);
                     $('#y_max').val(string.max);
                 }
-                $('#y_model_title').html($('.y_axis_value').attr('id').split("y_axis_value-")[1]);
+                $('#y_model_title').html($(this).attr('id').split("y_axis_value-")[1]);
             });
             $('#y_save').click(function(){
                 param = {
@@ -488,6 +488,9 @@
                     min:$('#y_min').val(),
                     max:$('#y_max').val()
                 };
+                var string = 
+                console.log($('#y_axis_value-' + param.name).children('input'));
+                $('#y_axis_value-' + param.name).children('input').val(JSON.stringify(param));
 				$.post( '/dashboard/set_y_axis', param, function( result ) {
 					if(result === 'success'){
 						// $('#' + param.day + ' td:nth-child(2)').html(param.interval_value);
