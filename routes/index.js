@@ -3,6 +3,7 @@ var app = express();
 const auth = require("../middleware/auth");
 const User = require("../model/User");
 const Y_min_max = require("../model/Y_min_max");
+const Actual_material_name = require("../model/Actual_material_name");
 const Joi = require("joi");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
@@ -60,6 +61,12 @@ app.get("/dashboard", auth, async function (req, res) {
     buffer.forEach(element => {
         y_min_maxes[element.name] = JSON.stringify(element);
     });
+
+    buffer = await Actual_material_name.find();
+    let actual_model_name = [];
+    buffer.forEach(element => {
+        actual_model_name[element.model_name] = JSON.stringify(element);
+    });
     if (loadedData === "") res.redirect("/data");
     else{
         const client = new MongoClient("mongodb://localhost:27017/", {
@@ -111,6 +118,7 @@ app.get("/dashboard", auth, async function (req, res) {
                         data: allmodels,
                         loadedData: loadedData,
                         y_min_maxes: y_min_maxes,
+                        actual_model_name:actual_model_name,
                         server_ip: server_ip,
                         names: allnames,
                         delaytime: delaytime,

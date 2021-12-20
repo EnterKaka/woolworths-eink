@@ -3,6 +3,8 @@ var app = express();
 const auth = require("../middleware/auth");
 const MongoClient = require("mongodb").MongoClient;
 const Y_min_max = require("../model/Y_min_max");
+const Actual_material_name = require("../model/Actual_material_name");
+
 var ObjectId = require("mongoose").Types.ObjectId;
 const fs = require("fs");
 const logger = fs.createWriteStream("user-log/oe_server_logfile.txt", {
@@ -19,6 +21,27 @@ app.post("/set_y_axis", async function (req, res) {
         let v_setting = new Y_min_max(req.body);
         await v_setting.save();
         res.send('success');        
+    } catch (error) {
+        res.send('failed');
+    }
+});
+
+app.post("/set_material_name", async function (req, res) {
+    try {
+        await Y_min_max.deleteOne({ name: req.body.name });
+        let v_setting = new Y_min_max(req.body);
+        await v_setting.save();
+        res.send('success');
+    } catch (error) {
+        res.send('failed');
+    }
+});
+app.post("/set_actual_material_name", async function (req, res) {
+    try {
+        await Actual_material_name.deleteOne({ model_name: req.body.model_name });
+        let v_setting = new Actual_material_name(req.body);
+        await v_setting.save();
+        res.send('success');
     } catch (error) {
         res.send('failed');
     }

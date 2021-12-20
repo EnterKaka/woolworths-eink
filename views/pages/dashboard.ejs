@@ -88,6 +88,7 @@
                                                                                     </li>
                                                                                     <li class="actual_material_name" id='<%= "actual_material_name-"+element.name %>'>
                                                                                         Set Actual Material Name
+                                                                                        <input type="hidden" value='<%= actual_model_name[element.name] %>'>
                                                                                     </li>
                                                                                     <li class="delete_single" id='<%= "delete_single-"+element.name %>'>
                                                                                         <input type="hidden" id='<%= "delete_singleid-"+element.name %>'>
@@ -166,6 +167,7 @@
                                                                                     </li>
                                                                                     <li class="actual_material_name" id='<%= "actual_material_name-"+element.name %>'>
                                                                                         Set Actual Material Name
+                                                                                        <input type="hidden" value='<%= actual_model_name[element.name] %>'>
                                                                                     </li>
                                                                                     <li class="delete_single" id='<%= "delete_single-"+element.name %>'>
                                                                                         <input type="hidden" id='<%= "delete_singleid-"+element.name %>'>
@@ -467,9 +469,36 @@
 				$('#material_modal').modal('show');
                 $('#material_model_title').html($('.material_name').attr('id').split("material_name-")[1]);
             });
+            $('.material_save').click(function(){
+                
+            });
             $('.actual_material_name').click(function(){
 				$('#actual_material_modal').modal('show');
-                $('#actual_material_model_title').html($('.actual_material_name').attr('id').split("actual_material_name-")[1]);
+                let string = $(this).children('input').val();
+                if(string === '') {
+                    $('#actual_material_name').val('');
+                }else{
+                    string = JSON.parse(string);
+                    $('#actual_material_name').val(string.material_name);
+                }
+                $('#actual_material_model_title').html($(this).attr('id').split("actual_material_name-")[1]);
+            });
+            $('#actual_material_save').click(function(){
+                param = {
+                    model_name:$('#actual_material_model_title').html(),
+                    material_name:$('#actual_material_name').val()
+                };
+				$.post( '/dashboard/set_actual_material_name', param, function( result ) {
+                    if(result === 'success'){
+                        $('#actual_material_name-' + param.model_name).children('input').val(JSON.stringify(param));
+						// updateGraph(param.name,'start');
+						// showMessage('success','SCHEDULE', "Saved Successfully.");
+						$('#actual_material_modal').modal('hide');
+					}
+					else{
+						// showMessage('error', 'SCHEDULE', "Failed");
+					}
+				});
             });
             $('.y_axis_value').click(function(){
 				$('#y_modal').modal('show');
@@ -505,8 +534,6 @@
 					}
 
 				});
-
-
             })
             $.toast({
                 heading: 'Load Database',
