@@ -258,16 +258,20 @@
 						<button type="button" class="close" data-dismiss="modal">&times;</button>
 					</div>
 					<div class="modal-body">
-                        <div class="row" style="margin-left: 5px;">
+                        <div class="row" style="margin: 5px;">
                             <div class="form-check form-check-inline">
                                 <input class="form-check-input" type="radio" name="y_style" id="y_1" value="1">
                                 <label class="form-check-label" for="y_1">Auto</label>
                               </div>
-                              <div class="form-check form-check-inline">
+                        </div>
+                        <div class="row" style="margin: 5px;">
+                            <div class="form-check form-check-inline">
                                 <input class="form-check-input" type="radio" name="y_style" id="y_2" value="2">
                                 <label class="form-check-label" for="y_2">0 - Max</label>
                               </div>
-                              <div class="form-check form-check-inline">
+                        </div>
+                        <div class="row" style="margin-left: 5px;">
+                            <div class="form-check form-check-inline">
                                 <input class="form-check-input" type="radio" name="y_style" id="y_3" value="3">
                                 <label class="form-check-label" for="y_3">Manual</label>
                               </div>
@@ -489,21 +493,15 @@
                     min:$('#y_min').val(),
                     max:$('#y_max').val()
                 };
-                var string = 
-                console.log($('#y_axis_value-' + param.name).children('input'));
-                $('#y_axis_value-' + param.name).children('input').val(JSON.stringify(param));
 				$.post( '/dashboard/set_y_axis', param, function( result ) {
-					if(result === 'success'){
-						// $('#' + param.day + ' td:nth-child(2)').html(param.interval_value);
-						// $('#' + param.day + ' td:nth-child(3)').html(param.unit);
-						// $('#' + param.day + ' td:nth-child(4)').html(param.start_time);
-						// $('#' + param.day + ' td:nth-child(5)').html(param.end_time);
-						// $('#' + param.day + ' td:nth-child(6) button').attr('onclick','openModal(\''+JSON.stringify(param)+'\')');
-						showMessage('success','SCHEDULE', "Saved Successfully.");
+                    if(result === 'success'){
+                        $('#y_axis_value-' + param.name).children('input').val(JSON.stringify(param));
+						updateGraph(param.name,'start');
+						// showMessage('success','SCHEDULE', "Saved Successfully.");
 						$('#y_modal').modal('hide');
 					}
 					else{
-						showMessage('error', 'SCHEDULE', "Failed");
+						// showMessage('error', 'SCHEDULE', "Failed");
 					}
 
 				});

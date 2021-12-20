@@ -16,6 +16,23 @@ function init_chart() {
         let ctx = document.getElementById(canvasname);
         let data = document.getElementById(inputname).value;
         data = JSON.parse(data);
+        let filterdata = [];
+        if($('#y_axis_value-' + name).children('input').val()){
+            let y_axis = JSON.parse($('#y_axis_value-' + name).children('input').val());
+            if(y_axis.option*1 == 2){
+                data.log.forEach((ele)=>{
+                    if(ele.volume >= 0)
+                        filterdata.push(ele);
+                });
+                data.log = filterdata;
+            }else if(y_axis.option*1 == 3){
+                data.log.forEach((ele)=>{
+                    if(ele.volume >= y_axis.min*1 && y_axis.max*1>= ele.volume)
+                        filterdata.push(ele);
+                });
+                data.log = filterdata;
+            }
+        }
         drawChart(ctx, data);
     }
 }
@@ -39,6 +56,9 @@ async function updateGraph(id, flag) {
         case "ytd" :
             ft = new Date(tt.getFullYear(), 0, 1)
             break;
+        default :
+            ft = new Date('2000-01-01 00:00:00');
+            break;
     }
     let canvasname = "canvas-model-" + id;
     let inputname = "input-model-" + id;
@@ -51,6 +71,23 @@ async function updateGraph(id, flag) {
     ctx = document.querySelector("#" + canvasname);
     let data = document.getElementById(inputname).value;
     data = JSON.parse(data);
+    let filterdata = [];
+    if($('#y_axis_value-' + id).children('input').val()){
+        let y_axis = JSON.parse($('#y_axis_value-' + id).children('input').val());
+        if(y_axis.option*1 == 2){
+            data.log.forEach((ele)=>{
+                if(ele.volume >= 0)
+                    filterdata.push(ele);
+            });
+            data.log = filterdata;
+        }else if(y_axis.option*1 == 3){
+            data.log.forEach((ele)=>{
+                if(ele.volume >= y_axis.min*1 && y_axis.max*1>= ele.volume)
+                    filterdata.push(ele);
+            });
+            data.log = filterdata;
+        }
+    }
     drawChart(ctx, data, ft, tt);
 }
 
@@ -372,6 +409,7 @@ function makeChartDataFromModelSets(data) {
             last_id = element._id;
         }
     }
+    if(data.log.length > 0)
     lastdatetime = data.log[0].datetime.split(" ");
     dens = parseFloat(mass) / parseFloat(vol);
     fromtime.setMinutes(fromtime.getMinutes() - fromtime.getTimezoneOffset());
@@ -381,8 +419,8 @@ function makeChartDataFromModelSets(data) {
         eachdata,
         lastdatetime[0],
         lastdatetime[1],
-        data.log[0].volume.toFixed(2),
-        data.log[0].mass.toFixed(2),
+        (data.log.length > 0)?data.log[0].volume.toFixed(2):0,
+        (data.log.length > 0)?data.log[0].mass.toFixed(2):0,
         dens.toFixed(2),
         (totalvols / cnt).toFixed(2),
         _id,
@@ -693,3 +731,5 @@ function update_lastidofmodel(modelname, modelid) {
 
 //start chart draw
 init_chart();
+
+window.updateGraph = updateGraph;
