@@ -721,6 +721,7 @@ function load3dmodelwithidonlocal(modelname, _id) {
     var posturl = "/data/view/" + _id;
     $.post(posturl, { id: _id }, function (data, status) {
         reloadModelFromJSONData(data.name, data.data);
+        $('#input-model-'+modelname).parents('.card').children('.card-header').html(data.name);
     });
 }
 

@@ -31,22 +31,16 @@ var mysortfunction = (a, b) => {
 
 /* load all data form db */
 async function loadAllData() {
-    console.log('loadalldata');
     const client = await new MongoClient("mongodb://localhost:27017/", {
         useUnifiedTopology: true,
         useNewUrlParser: true,
         // connectTimeoutMS: 30000,
         // keepAlive: 1,
     });
-    let allmembers = await Setting.find();
-    console.log('connect------------------------')
-
-    await client.connect();
-    console.log('settting------------------------')
     /* get all collections */
-    console.log('here1');
+    let allmembers = await Setting.find();
     /* DB connect */
-    console.log('here2');
+    await client.connect();
 
     let sentdata = [];
     /* connect all collections */
@@ -57,15 +51,11 @@ async function loadAllData() {
         if (db === "delaytime") {
             continue;
         }
-    console.log('here3');
-
         const database = client.db(db);
         const datas = database.collection(col);
         const cursor = datas.aggregate([{ $sort: { datetime: -1 } }], {
             allowDiskUse: true,
         });
-        console.log('here2');
-
         await cursor.forEach(function (model) {
             let splitdata = model.datetime.split(" ");
             let eachmodeldata = {
@@ -91,7 +81,6 @@ async function loadAllData() {
 app.post("/allmodels/timeinterval", async function (req, res, next) {
     console.log("*********** API **** allmodel ****** timeinterval  ********");
     let fromTime = req.body.from;
-    console.log(fromTime);
     if (typeof fromTime === "undefined") fromTime = "1900.01.01 00:00:00";
     fromTime = new Date(fromTime);
 
@@ -111,11 +100,9 @@ app.post("/allmodels/timeinterval", async function (req, res, next) {
     let name = req.body.name;
     if (typeof name === "undefined") name = "all";
     else name = name.toLowerCase();
-    console.log(name)
     async function run() {
         try {
             /* if loadedData is empty, get data from db */
-            console.log("name--------------1------",name)
             if (loadedData === "") {
                 await loadAllData();
                 if (loadedData.length === 0) {
@@ -128,7 +115,6 @@ app.post("/allmodels/timeinterval", async function (req, res, next) {
                     });
                 }
             }
-            console.log("name--------------2------",name)
 
             let sendData = [];
             /* sort loaded_data asc */

@@ -373,6 +373,12 @@
             $('.view_panel').on('click','.view_close',function(){
                 $(this).parent().hide();
             });
+            /*
+            //////////////////////////////////////////////////////////////////////////////////
+            delete data and model.
+            //////////////////////////////////////////////////////////////////////////////////
+            */
+
             $('.delete_single').click(function(){
                 var id = $(this).attr('id');
                 var buffer = id.split("delete_single-");
@@ -465,13 +471,46 @@
                 }
                 })
             });
+            /*
+            //////////////////////////////////////////////////////////////////////////////////
+            material name by period
+            //////////////////////////////////////////////////////////////////////////////////
+            */
             $('.material_name').click(function(){
 				$('#material_modal').modal('show');
-                $('#material_model_title').html($('.material_name').attr('id').split("material_name-")[1]);
+                let name = $(this).attr('id').split("material_name-")[1];
+                $('#material_model_title').html(name);
+                let string = $('#actual_material_name-' + name).children('input').val();
+                if(string === '') {
+                    $('#material_name').val('');
+                }else{
+                    string = JSON.parse(string);
+                    $('#material_name').val(string.material_name);
+                }
             });
-            $('.material_save').click(function(){
-                
+            $('#material_save').click(function(){
+                param = {
+                    name: $('#material_model_title').html(),
+                    material_name: $('#material_name').val(),
+                    from: $('#material_from').val(),
+                    to: $('#material_to').val(),
+                };
+				$.post( '/dashboard/set_material_name', param, function( result ) {
+                    if(result === 'success'){
+						// updateGraph(param.name,'start');
+						// showMessage('success','SCHEDULE', "Saved Successfully.");
+						$('#material_modal').modal('hide');
+					}
+					else{
+						// showMessage('error', 'SCHEDULE', "Failed");
+					}
+				});
             });
+            /*
+            //////////////////////////////////////////////////////////////////////////////////
+            set actual material name
+            //////////////////////////////////////////////////////////////////////////////////
+            */
             $('.actual_material_name').click(function(){
 				$('#actual_material_modal').modal('show');
                 let string = $(this).children('input').val();
@@ -500,6 +539,11 @@
 					}
 				});
             });
+            /*
+            //////////////////////////////////////////////////////////////////////////////////
+            y axis value
+            //////////////////////////////////////////////////////////////////////////////////
+            */
             $('.y_axis_value').click(function(){
 				$('#y_modal').modal('show');
                 let string = $(this).children('input').val();

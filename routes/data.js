@@ -20,8 +20,8 @@ var interval;
 /* load data page */
 app.get("/", auth, async function (req, res, next) {
     console.log("*********** load data page ************");
-    let server_ip = ip.address();
-
+    let server_ip = await ip.address();
+    console.log(server_ip);
     async function run() {
         try {
             res.render("pages/data", {
@@ -41,6 +41,7 @@ app.get("/", auth, async function (req, res, next) {
         // redirect to users list page
         res.render("pages/data", {
             title: "Model DB - Owl Studio Web App",
+            server_ip: server_ip,
             // data: sentdata,
             loadedData: loadedData,
             data: [],
@@ -142,23 +143,10 @@ app.post("/view/(:id)", auth, async function (req, res, next) {
                 // replace console.dir with your callback to access individual elements
                 var pcl = cursor.measurement[0].pointcloud;
                 var display_name = "";
-                if (cursor.measurement[0].name.toLowerCase() === "general")
-                    display_name =
-                        cursor.measurement[0].name +
-                        " : " +
-                        cursor.measurement[0].date +
-                        " " +
-                        cursor.measurement[0].time;
+                if (cursor.measurement[0].material_name)
+                    display_name = cursor.measurement[0].name + " - " + cursor.measurement[0].material_name;
                 else
-                    display_name =
-                        cursor.measurement[0].name +
-                        " : " +
-                        cursor.measurement[0].date +
-                        " " +
-                        cursor.measurement[0].time +
-                        " (" +
-                        format +
-                        ")";
+                    display_name = cursor.measurement[0].name;
                 res.header(200).json({
                     status: "sucess",
                     data: pcl,
@@ -309,9 +297,7 @@ app.post('/delete_model', async function (req, res) {
                 if (o.name != model_name)  
                 elements.push(o);
             });
-            console.log(loadedData.length)
             loadedData = elements;
-            console.log(loadedData.length)
 
             /* find setting data by setting id*/
             let setobj = await Setting.find();
