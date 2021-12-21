@@ -143,10 +143,10 @@ app.post("/view/(:id)", auth, async function (req, res, next) {
                 // replace console.dir with your callback to access individual elements
                 var pcl = cursor.measurement[0].pointcloud;
                 var display_name = "";
-                if (cursor.measurement[0].material_name)
+                if (cursor.measurement[0].material_name && cursor.measurement[0].material_name != '')
                     display_name = cursor.measurement[0].name + " - " + cursor.measurement[0].material_name;
                 else
-                    display_name = cursor.measurement[0].name;
+                    display_name = '';
                 res.header(200).json({
                     status: "sucess",
                     data: pcl,

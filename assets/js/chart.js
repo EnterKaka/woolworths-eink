@@ -721,7 +721,13 @@ function load3dmodelwithidonlocal(modelname, _id) {
     var posturl = "/data/view/" + _id;
     $.post(posturl, { id: _id }, function (data, status) {
         reloadModelFromJSONData(data.name, data.data);
-        $('#input-model-'+modelname).parents('.card').children('.card-header').html(data.name);
+        if(data.name != '')
+            $('#input-model-'+modelname).parents('.card').children('.card-header').html('<h4 class="card-title">'+data.name+'</h4>');
+        else{
+            let actual_model_name = JSON.parse($('#actual_material_name-' + modelname).children('input').val());
+            if(actual_model_name.material_name)
+                $('#input-model-'+modelname).parents('.card').children('.card-header').html('<h4 class="card-title">'+modelname + ' - ' + actual_model_name.material_name+'</h4>');
+        }
     });
 }
 
