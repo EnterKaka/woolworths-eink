@@ -94,6 +94,33 @@ async function updateGraph(id, flag) {
 //draw chart
 function drawChart(ctx, data, ft, tt) {
     // initialize chart option
+    console.log(data.name);
+    let y_axis = $('#y_axis_value-' + data.name).children('input').val();
+    let zero = {
+        ticks:{
+            // scaleOverride: true,
+            // scaleStartValue: 0,
+            // beginAtZero: false,
+            callback: function (value, index, values) {
+                return parseInt(value*100)/100 + ' m³';
+            },
+        }
+    };
+    if(y_axis){
+        y_axis = JSON.parse(y_axis);
+        if(y_axis.option*1 == 2)
+            zero = {
+                suggestedMin:0,
+                ticks:{
+                    // scaleOverride: true,
+                    // scaleStartValue: 0,
+                    // beginAtZero: false,
+                    callback: function (value, index, values) {
+                        return parseInt(value*100)/100 + ' m³';
+                    },
+                }
+            };
+    }
     var chartOptions = {
         maintainAspectRatio: false,
         responsive: true,
@@ -146,13 +173,7 @@ function drawChart(ctx, data, ft, tt) {
                     },
                 },
             },
-            y:{
-                ticks:{
-                    callback: function (value, index, values) {
-                        return parseInt(value*100)/100 + ' m³';
-                    },
-                }
-            }
+            y:zero,
         },
     };
     if (!ft) {
