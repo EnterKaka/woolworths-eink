@@ -219,28 +219,32 @@
 					</div>
 					<div class="modal-body">
 						<div class="row">
-							<div class="col-lg-6 col-md-12 col-12">
+                            <div class="col-lg-4 col-md-6 col-12" style="margin-top: 5px;">
+                                <div id="datepicker_from" class="input-group date" data-date-format="yyyy-mm-dd">
+                                    <div class="input-group-prepend">
+										<span class="input-group-text" style="cursor: pointer;" for="material_from">From</span>
+									</div>
+                                    <input class="form-control" type="text" id="material_from" />
+                                    <span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>
+                                
+                                </div>
+                            </div>
+                            <div class="col-lg-4 col-md-6 col-12" style="margin-top: 5px;">
+                                <div id="datepicker_to" class="input-group date" data-date-format="yyyy-mm-dd">
+                                    <div class="input-group-prepend">
+										<span class="input-group-text" style="cursor: pointer;" for="material_to">To</span>
+									</div>
+                                    <input class="form-control" type="text" id="material_to" />
+                                    <span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>
+                                
+                                </div>
+                            </div>
+							<div class="col-lg-4 col-md-12 col-12">
 								<div class="input-group" style="margin-top: 5px;">
 									<div class="input-group-prepend">
 										<span class="input-group-text" style="cursor: pointer;" for="material_name">Material Name</span>
 									</div>
 									<input type="text" id="material_name" class="form-control" value="">
-								</div>
-							</div>
-							<div class="col-lg-3 col-md-6 col-12" style="margin-top: 5px;">
-                                <div id="datepicker_from" class="input-group date" data-date-format="yyyy-mm-dd">
-                                
-                                    <input class="form-control" type="text" id="material_from" />
-                                    <span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>
-                                
-								</div>
-							</div>
-							<div class="col-lg-3 col-md-6 col-12" style="margin-top: 5px;">
-								<div id="datepicker_to" class="input-group date" data-date-format="yyyy-mm-dd">
-                                
-                                    <input class="form-control" type="text" id="material_to" />
-                                    <span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>
-                                
 								</div>
 							</div>
 						</div>

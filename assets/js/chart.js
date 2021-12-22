@@ -94,7 +94,6 @@ async function updateGraph(id, flag) {
 //draw chart
 function drawChart(ctx, data, ft, tt) {
     // initialize chart option
-    console.log(data.name);
     let y_axis = $('#y_axis_value-' + data.name).children('input').val();
     let zero = {
         ticks:{
@@ -745,9 +744,10 @@ function load3dmodelwithidonlocal(modelname, _id) {
         if(data.name != '')
             $('#input-model-'+modelname).parents('.card').children('.card-header').html('<h4 class="card-title">'+data.name+'</h4>');
         else{
-            let actual_model_name = JSON.parse($('#actual_material_name-' + modelname).children('input').val());
-            if(actual_model_name.material_name)
-                $('#input-model-'+modelname).parents('.card').children('.card-header').html('<h4 class="card-title">'+modelname + ' - ' + actual_model_name.material_name+'</h4>');
+            // let actual_model_name = JSON.parse($('#actual_material_name-' + modelname).children('input').val());
+            // if(actual_model_name.material_name)
+            //     $('#input-model-'+modelname).parents('.card').children('.card-header').html('<h4 class="card-title">'+modelname + ' - ' + actual_model_name.material_name+'</h4>');
+            $('#input-model-'+modelname).parents('.card').children('.card-header').html('<h4 class="card-title">'+modelname + '</h4>');
         }
     });
 }
