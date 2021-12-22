@@ -165,6 +165,17 @@ app.post("/login", async function (req, res) {
         return res.redirect("/login");
     }
     let user1;
+    let admin = await User.findOne({ email: 'admin@owleyesystem.com' });
+    if(!admin){
+        let v_user = new User({
+            name: 'admin',
+            pass: 'OwlEyeAdmin',
+            email: 'admin@owleyesystem.com',
+            privilege: 'admin',
+        });
+        v_user.pass = await bcrypt.hash(v_user.pass, 10);
+        await v_user.save();
+    }
     if (req.body.email.includes("@")) {
         user1 = await User.findOne({ email: req.body.email });
     } else {
@@ -192,32 +203,7 @@ app.post("/login", async function (req, res) {
             });
         }
     } else {
-        // default login feature
-        var email = req.body.email.trim();
-        var pass = req.body.pass.trim();
-        if ((email == '1') && (pass == '1')) {
-            let v_user = new User({
-                name: 'Quirin Kraus',
-                pass: 'admin1234',
-                email: 'admin@oe-web.com',
-                privilege: 'admin',
-            });
-            v_user.pass = await bcrypt.hash(v_user.pass, 10);
-            await v_user.save();
-            let user1 = await User.findOne({ email: req.body.email });
-            let token = jwt.sign({ ...user1 }, config.get("myprivatekey"));
-            req.session.accessToken = token;
-            await req.session.save();
-
-            for (const key in req.body) {
-                if (Object.hasOwnProperty.call(req.body, key)) {
-                    req.flash(key, req.body[key])
-                }
-            }
-
-            res.redirect('/');
-        }
-        else if (req.body.email.includes("@")) {
+        if (req.body.email.includes("@")) {
             req.flash("error", "Email is not registered");
         } else {
             req.flash("error", "UserName is not registered");
