@@ -570,6 +570,9 @@
                     min:$('#y_min').val(),
                     max:$('#y_max').val()
                 };
+                if($('#y_max').val()*1<$('#y_min').val()*1){
+                    return;
+                }
 				$.post( '/dashboard/set_y_axis', param, function( result ) {
                     if(result === 'success'){
                         $('#y_axis_value-' + param.name).children('input').val(JSON.stringify(param));
