@@ -119,6 +119,19 @@ function drawChart(ctx, data, ft, tt) {
                     },
                 }
             };
+        if(y_axis.option*1 == 3)
+            zero = {
+                suggestedMin: y_axis.min,
+                suggestedMax: y_axis.max,
+                ticks:{
+                    // scaleOverride: true,
+                    // scaleStartValue: 0,
+                    // beginAtZero: false,
+                    callback: function (value, index, values) {
+                        return parseInt(value*100)/100 + ' m³';
+                    },
+                }
+            };
     }
     var chartOptions = {
         maintainAspectRatio: false,
