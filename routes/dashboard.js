@@ -47,7 +47,7 @@ app.post("/set_material_name", async function (req, res) {
                             "measurement.name":true,
                             isBetween: {
                                 $and: [{
-                                    $lt: [{
+                                    $lte: [{
                                         $dateFromString: {
                                             dateString: { "$arrayElemAt": ["$measurement.date", 0] }
                                         }
@@ -57,7 +57,7 @@ app.post("/set_material_name", async function (req, res) {
                                         }
                                     }]
                                 }, {
-                                    $gt: [{
+                                    $gte: [{
                                         $dateFromString: {
                                             dateString: { "$arrayElemAt": ["$measurement.date", 0] }
                                         }
